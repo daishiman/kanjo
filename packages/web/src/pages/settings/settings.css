@@ -1,0 +1,611 @@
+/* 設定: 色は styles.css のトークンだけを使う (直書き色を置かない)。 */
+.settings {
+  display: grid;
+  /* 横長の表が main を押し広げないよう列の下限を 0 にする */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  min-width: 0;
+}
+
+.settings .card {
+  margin: 0;
+}
+
+.settings h2 {
+  margin: 0 0 8px;
+  font-size: var(--fs-md);
+}
+
+.settings h3 {
+  margin: 16px 0 6px;
+  font-size: var(--fs-sm);
+}
+
+.settings h4 {
+  margin: 12px 0 4px;
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+
+.settings-question {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--primary);
+  font-size: var(--fs-xl);
+  line-height: 1.35;
+}
+
+/* -------- 節ナビ -------- */
+
+.settings-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  min-width: 0;
+}
+
+.settings-content,
+.settings-inspector,
+.settings-rest,
+.settings-workspace > * {
+  min-width: 0;
+}
+
+.settings-nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 4;
+  display: block;
+  overflow-x: auto;
+  padding: 6px 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: thin;
+}
+
+.settings-nav ul {
+  display: flex;
+  gap: 4px;
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.settings-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target-min);
+  padding: 0 12px;
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .settings-nav a:hover {
+    background: var(--row-hover);
+    color: var(--ink);
+  }
+}
+
+.settings-nav a[aria-current] {
+  background: var(--biz-soft);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.settings-sections {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+/* 節ナビで飛んだ先の見出しが sticky のナビに隠れないようにする */
+.settings-section {
+  scroll-margin-top: calc(var(--tap-target-min) + 24px);
+}
+
+.settings-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.settings-group-heading {
+  margin: 8px 0 0;
+}
+
+.settings-notice {
+  margin: 0;
+}
+
+.settings-save-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--danger);
+}
+
+/* -------- 共通の小物 -------- */
+
+.settings-table-wrap {
+  overflow-x: auto;
+}
+
+.settings-field-error {
+  display: block;
+  margin: 4px 0 0;
+  color: var(--danger);
+  font-size: var(--fs-2xs);
+}
+
+.settings-note,
+.settings-count {
+  display: block;
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+}
+
+.settings-info {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+}
+
+ul.settings-info,
+.settings-legend,
+.settings-diff,
+.settings-exports {
+  list-style: none;
+}
+
+ul.settings-info,
+.settings-legend {
+  padding-left: 12px;
+}
+
+.settings-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: var(--fs-2xs);
+  white-space: nowrap;
+  background: var(--surface-alt);
+  color: var(--ink-soft);
+}
+
+.settings-badge.is-latest {
+  background: var(--biz-soft);
+  color: var(--primary);
+}
+
+.settings-badge.is-ok {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.settings-badge.is-failed {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.settings-row-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* -------- 集計ルール -------- */
+
+.settings-rules-main {
+  min-width: 0;
+}
+
+.settings-rules-table input[type="text"],
+.settings-rules-table select {
+  width: 100%;
+  min-height: var(--tap-target-min);
+}
+
+.settings-rule-row {
+  cursor: pointer;
+}
+
+.settings-rule-row:hover {
+  background: var(--row-hover);
+}
+
+.settings-rule-row.selected {
+  background: var(--biz-soft);
+}
+
+.settings-rule-row.is-disabled td {
+  color: var(--ink-soft);
+}
+
+.settings-col-check,
+.settings-col-handle {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.settings-handle {
+  cursor: grab;
+  color: var(--ink-soft);
+  user-select: none;
+}
+
+.settings-move {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.settings-bulk,
+.settings-rules-add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.settings-empty {
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.settings-panel {
+  position: sticky;
+  top: calc(var(--tap-target-min) + 24px);
+}
+
+.settings-panel-empty {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.settings-panel-empty .sub {
+  margin: 0;
+}
+
+.settings-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.settings-panel-head h3 {
+  margin: 0;
+}
+
+.settings-panel-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  margin: 0 0 12px;
+  font-size: var(--fs-xs);
+}
+
+.settings-panel-fields dt {
+  color: var(--ink-soft);
+}
+
+.settings-panel-fields dt:not(:first-of-type) {
+  margin-top: 8px;
+}
+
+.settings-panel-fields dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.settings-panel-fields ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+/* -------- 名義・統計 -------- */
+
+.settings-owner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 12px;
+}
+
+.settings-field {
+  display: grid;
+  gap: 4px;
+}
+
+.settings-field input {
+  min-height: var(--tap-target-min);
+}
+
+.settings-stat-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.settings-stat-input input {
+  width: 6rem;
+  min-height: var(--tap-target-min);
+}
+
+/* -------- 現金上書き -------- */
+
+.settings-cash-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+  align-items: start;
+  gap: 16px;
+}
+
+.settings-cash-table input,
+.settings-cash-table select {
+  min-height: var(--tap-target-min);
+}
+
+.settings-scope {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.settings-cash-add td {
+  border-bottom: none;
+}
+
+.settings-legend {
+  margin: 0;
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+
+/* -------- データ・バックアップ -------- */
+
+.settings-exports {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.settings-export {
+  display: grid;
+  gap: 2px;
+  height: 100%;
+  text-align: left;
+}
+
+.settings-export span {
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+  font-weight: normal;
+}
+
+.settings-restore,
+.settings-file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-file-name {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+  overflow-wrap: anywhere;
+}
+
+.settings-diff {
+  margin: 8px 0;
+  padding: 0;
+}
+
+.settings-diff li {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.settings-backups-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+  align-items: start;
+  gap: 16px;
+}
+
+.settings-backups-main {
+  min-width: 0;
+}
+
+.settings-backups-about {
+  margin: 0;
+}
+
+.settings-backups-about h3 {
+  margin-top: 0;
+}
+
+.settings-unrecorded-input {
+  width: min(20rem, 100%);
+}
+
+/* -------- 保存バー -------- */
+
+.settings-save-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-floating-action);
+}
+
+.settings-save-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+
+.settings-unsaved {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.settings-save-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* -------- 幅 -------- */
+
+@media (min-width: 1024px) {
+  .settings-workspace {
+    grid-template-columns: 5.75rem minmax(0, 1fr) 9.5rem;
+    gap: 8px;
+  }
+
+  .settings-nav {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .settings-content {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .settings-inspector {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+  .settings-rest {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .settings-nav {
+    top: 16px;
+    overflow: visible;
+    padding: 0 12px 0 0;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  .settings-nav ul {
+    display: grid;
+    gap: 4px;
+    width: auto;
+    min-width: 0;
+  }
+
+  .settings-nav a {
+    width: 100%;
+  }
+
+  .settings-rules-table {
+    width: 100%;
+    min-width: 26.75rem;
+    table-layout: fixed;
+  }
+
+  .settings-rules-table th,
+  .settings-rules-table td {
+    padding-right: 4px;
+    padding-left: 4px;
+  }
+
+  .settings-rules-table .settings-col-check {
+    width: 2.75rem;
+    padding: 0;
+  }
+
+  .settings-rules-table .settings-col-handle {
+    width: 3rem;
+    padding-right: 2px;
+    padding-left: 2px;
+    text-align: center;
+  }
+
+  .settings-rules-table .settings-col-kind {
+    width: 6.25rem;
+  }
+
+  .settings-rules-table .settings-col-raw,
+  .settings-rules-table .settings-col-norm {
+    width: 6rem;
+  }
+
+  .settings-rules-table .settings-col-actions {
+    width: 2.75rem;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .settings-handle {
+    display: block;
+  }
+
+  .settings-move {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .settings-workspace {
+    grid-template-columns: 9rem minmax(0, 1fr) var(--aside-panel-w);
+    gap: 16px;
+  }
+
+  .settings-rules-table {
+    min-width: 42rem;
+    table-layout: auto;
+  }
+}
+
+@media (max-width: 1023px) {
+  .settings-cash-layout,
+  .settings-backups-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .settings-panel {
+    position: static;
+  }
+}
+
+/* 375px: 節ナビは折り返さず横へ送る */
+@media (max-width: 760px) {
+  .settings-save-actions {
+    width: 100%;
+  }
+
+  .settings-save-actions > * {
+    flex: 1 1 0;
+  }
+}

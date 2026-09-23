@@ -123,6 +123,8 @@ export function canonicalJsonSnapshot(snapshot: Record<string, unknown>): string
     'budgets',
     'budgetPlans',
     'cashOverride',
+    'normRules',
+    'cashOverrideRules',
     'unrecordedExpMonths',
     'cashProjection',
   ])

@@ -46,6 +46,7 @@ export function ConfirmDialog({
   confirmLabel,
   busyLabel,
   dismissLabel = 'やめる',
+  confirmDisabled = false,
   onConfirm,
   onDismiss,
   className,
@@ -63,6 +64,8 @@ export function ConfirmDialog({
   busyLabel: string;
   /** 閉じた後の行き先が分かる場合は画面固有の語を渡す。 */
   dismissLabel?: string;
+  /** 実行しても何も変わらない (差分が 0 件など) ときに確定だけを止める。閉じる側は押せるまま */
+  confirmDisabled?: boolean;
   onConfirm: () => void;
   onDismiss: () => void;
   className?: string;
@@ -87,7 +90,12 @@ export function ConfirmDialog({
         </h3>
         {children}
         <div className="deletion-run-actions">
-          <Button type="button" variant="primary" disabled={dialog.busy} onClick={onConfirm}>
+          <Button
+            type="button"
+            variant="primary"
+            disabled={dialog.busy || confirmDisabled}
+            onClick={onConfirm}
+          >
             {dialog.busy ? busyLabel : confirmLabel}
           </Button>
           <Button type="button" variant="secondary" disabled={dialog.busy} onClick={onDismiss}>

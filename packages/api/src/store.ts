@@ -8,17 +8,21 @@
 import {
   type BudgetPlanRow,
   type CashEntry,
+  type CashOverrideRule,
   DEFAULT_RULES,
   DEFAULT_STAT_MIN_MONTHS,
   type Dataset,
   type FreeeDeal,
   type MfTx,
+  type NormRule,
   type Owner,
   type Rule,
   type SubVendor,
   type TxEdit,
   type TxSplit,
   type VendorMemoryRecord,
+  accountNormMap,
+  applyCashOverrides,
   applyClassification,
   applyFreeeDeals,
   cashBizDeals,
@@ -34,6 +38,7 @@ import {
   parseSplitTemplate,
   projectAccountingDataset,
   recomputeClassification,
+  sortCashOverrides,
   subVendorDefs,
 } from '@kanjo/core';
 import { and, asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
@@ -410,13 +415,122 @@ async function loadBudgetRows(
   return { budgets, plans };
 }
 
+/** 設定画面の集計ルール・現金上書きと、旧 cash_overrides の月の値 */
+export interface SettingsRuleRows {
+  cashOverride: Dataset['cashOverride'];
+  normRules: NormRule[];
+  cashOverrideRules: CashOverrideRule[];
+}
+
+/**
+ * 旧 cash_overrides と 0051・0052 の新表を 1 statement で読む。
+ * loadDataset の SELECT 数は取込の D1 query 上限に効くので、表を足しても本数は増やさない (loadBudgetRows と同じ)。
+ */
+async function loadSettingsRuleRows(db: Db, userId: string): Promise<SettingsRuleRows> {
+  const result = await db.$client
+    .prepare(
+      `SELECT 'cash' AS source, month AS a, NULL AS b, NULL AS c, NULL AS d,
+              revenue AS n1, expense AS n2, NULL AS scope, NULL AS month, NULL AS memo
+         FROM cash_overrides WHERE user_id=?
+       UNION ALL
+       SELECT 'norm', rule_id, kind, raw, norm, sort_order, enabled, NULL, NULL, NULL
+         FROM settings_norm_rules WHERE user_id=?
+       UNION ALL
+       SELECT 'override', override_id, kind, NULL, NULL, amount, NULL, scope, month, memo
+         FROM settings_cash_overrides WHERE user_id=?
+       ORDER BY source, n1, a`,
+    )
+    .bind(userId, userId, userId)
+    .all<{
+      source: string;
+      a: string;
+      b: string | null;
+      c: string | null;
+      d: string | null;
+      n1: number | null;
+      n2: number | null;
+      scope: string | null;
+      month: string | null;
+      memo: string | null;
+    }>();
+  const out: SettingsRuleRows = { cashOverride: {}, normRules: [], cashOverrideRules: [] };
+  for (const row of result.results) {
+    if (row.source === 'cash') {
+      out.cashOverride[row.a] = { revenue: row.n1 ?? 0, expense: row.n2 ?? 0 };
+    } else if (row.source === 'norm') {
+      out.normRules.push(
+        normRuleFromRow({
+          ruleId: row.a,
+          kind: row.b,
+          raw: row.c,
+          norm: row.d,
+          sortOrder: row.n1,
+          enabled: row.n2,
+        }),
+      );
+    } else {
+      out.cashOverrideRules.push(
+        cashOverrideRuleFromRow({
+          overrideId: row.a,
+          kind: row.b,
+          amount: row.n1,
+          scope: row.scope,
+          month: row.month,
+          memo: row.memo,
+        }),
+      );
+    }
+  }
+  // 並び順は 1 始まりの連番へ詰める (保存値に欠番があっても core の order は連続させる)
+  out.normRules.forEach((rule, i) => {
+    rule.order = i + 1;
+  });
+  out.cashOverrideRules = sortCashOverrides(out.cashOverrideRules);
+  return out;
+}
+
+export const normRuleFromRow = (r: {
+  ruleId: string;
+  kind: string | null;
+  raw: string | null;
+  norm: string | null;
+  sortOrder: number | null;
+  enabled: number | null;
+}): NormRule => ({
+  ruleId: r.ruleId,
+  kind: r.kind === 'vendor' ? 'vendor' : 'account',
+  raw: r.raw ?? '',
+  norm: r.norm ?? '',
+  order: r.sortOrder ?? 0,
+  enabled: r.enabled !== 0,
+});
+
+export const cashOverrideRuleFromRow = (r: {
+  overrideId: string;
+  kind: string | null;
+  amount: number | null;
+  scope: string | null;
+  month: string | null;
+  memo: string | null;
+}): CashOverrideRule => ({
+  overrideId: r.overrideId,
+  kind: r.kind === 'receipt' ? 'receipt' : 'payment',
+  amount: r.amount,
+  scope: r.scope === 'month' ? 'month' : 'all',
+  month: r.scope === 'month' ? r.month : null,
+  memo: r.memo ?? '',
+});
+
 export async function loadDataset(
   db: Db,
   userId: string,
   cashEntriesSnapshot?: ReadonlyArray<CashEntry>,
-  options: { withSplits?: boolean; loadSplitRows?: boolean; now?: Date } = {},
+  options: { withSplits?: boolean; loadSplitRows?: boolean; now?: Date; cashOverrides?: boolean } = {},
 ): Promise<Dataset> {
   const withSplits = options.withSplits ?? true;
+  // 設定画面の現金上書き (BR-14) は表示・集計の読み手にだけ掛ける。取込計画 (withSplits:false) と
+  // 集計キャッシュの書き直し (cashOverrides:false) は現金の原本の値のまま扱う。
+  const withCashOverrides = options.cashOverrides ?? withSplits;
   // canonical mutationの事前計画は、生の親明細を保ったまま分割metadataも要る。
   // 通常のwithSplits:false(取込preview)は従来どおり1 query節約する。
   const loadSplitRows = options.loadSplitRows ?? withSplits;
@@ -427,7 +541,7 @@ export async function loadDataset(
     ruleRows,
     editRows,
     budgetRows,
-    cashRows,
+    settingsRows,
     unrecRows,
     instRows,
     vendorRows,
@@ -444,7 +558,7 @@ export async function loadDataset(
     loadOrderedRuleRows(db, userId),
     db.select().from(s.txEdits).where(eq(s.txEdits.userId, userId)),
     loadBudgetRows(db, userId),
-    db.select().from(s.cashOverrides).where(eq(s.cashOverrides.userId, userId)),
+    loadSettingsRuleRows(db, userId),
     db.select().from(s.unrecordedMonths).where(eq(s.unrecordedMonths.userId, userId)),
     db.select().from(s.institutionOwners).where(eq(s.institutionOwners.userId, userId)),
     loadSubVendors(db, userId),
@@ -534,15 +648,15 @@ export async function loadDataset(
   data.budgets = budgetRows.budgets;
   data.budgetPlans = budgetRows.plans;
   data.budgetAsOf = jstMonth(options.now ?? new Date());
-  cashRows.forEach((r) => {
-    data.cashOverride[r.month] = { revenue: r.revenue ?? 0, expense: r.expense ?? 0 };
-  });
+  data.cashOverride = settingsRows.cashOverride;
+  data.normRules = settingsRows.normRules;
+  data.cashOverrideRules = settingsRows.cashOverrideRules;
   data.unrecordedExpMonths = unrecRows.filter((r) => r.kind === 'expense').map((r) => r.month);
 
   data.txSplits = splitRows.map(splitFromRow);
 
   // 個人分の現金明細を口座「現金」の明細として合流させ、生明細がある月は再計算が正(ルール・手動判定の現在値を反映)
-  mergeCashTxs(data, cashEntries);
+  mergeCashTxs(data, cashEntries, withCashOverrides ? data.cashOverrideRules : []);
   const rawMfMonths = new Set(txRows.map((r) => r.month));
   const cashOnlyPersonalMonths = new Set(
     cashEntries.filter((e) => e.side === 'per' && !rawMfMonths.has(e.month)).map((e) => e.month),
@@ -588,10 +702,17 @@ export async function loadCashEntries(db: Db, userId: string): Promise<CashEntry
  * 個人分の現金明細(cash:*)を MF 明細に合流させて仕分けを再計算する。
  * JSON復元で data.mfTx が丸ごと差し替わった後にも呼び、現金明細が落ちないようにする。
  */
-export function mergeCashTxs(data: Dataset, entries: CashEntry[]): void {
+export function mergeCashTxs(
+  data: Dataset,
+  entries: CashEntry[],
+  cashOverrideRules: readonly CashOverrideRule[] = [],
+): void {
   const cash = entries.filter((e) => e.side === 'per').map(cashToTx);
-  data.mfTx = data.mfTx.filter((t) => !isCashTxId(t.id)).concat(cash);
   cash.forEach((t) => ensureMonth(data, t.m));
+  // 現金上書き (BR-14) は現金の明細の月の合計を置き換える。上書きの明細も cash: 接頭辞を持つ
+  data.mfTx = data.mfTx
+    .filter((t) => !isCashTxId(t.id))
+    .concat(applyCashOverrides(cash, cashOverrideRules, data.months));
   recomputeClassification(data);
 }
 
@@ -691,6 +812,11 @@ interface BackupSourceSnapshot {
   cashEntries: CashEntry[];
   txSplits: TxSplit[];
   normMap: Record<string, string>;
+  /** 0051〜0052: 設定画面の集計ルールと現金上書き。exportJSON が normRules・cashOverrideRules として運ぶ */
+  normRules: NormRule[];
+  cashOverrideRules: CashOverrideRule[];
+  /** 0045: 名義の表示名。行が無ければ空 (既定の表示名) */
+  ownerLabels: Record<string, string>;
   statMinMonths: number;
   subVendorExclusions: Array<{ partner: string; vendorKey: string }>;
   subVendorReviewDecisions: SubVendorReviewDecisionRow[];
@@ -781,6 +907,11 @@ export interface ImportRestoreSettingsSnapshot {
     budgets: number;
     budgetPlans: number;
     cashOverrides: number;
+    /** 0054〜0056。全データ JSON 復元が設定画面の表へ写すときの差分判定と revision の起点 */
+    settingsNormRules: number;
+    settingsCashOverrides: number;
+    settingsRevision: string | null;
+    settingsCashOverrideRules: CashOverrideRule[];
     /** 0052: 論理削除中を含む現金明細の件数。JSON 復元で現金明細を入れてよいかの判定に使う */
     cashEntries: number;
   };
@@ -818,6 +949,10 @@ UNION ALL
 SELECT 'rule', id, sort_order, NULL,
        keyword, cls, category_major, category_mid, owner, payee, scope, split_template_json, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM rules WHERE user_id = ?
+UNION ALL
+SELECT 'settings_cash_override', NULL, NULL, amount,
+       override_id, kind, scope, month, memo, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM settings_cash_overrides WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
@@ -866,9 +1001,9 @@ SELECT 'split', id, seq, amount,
        owner, NULL, NULL, parent_amount, NULL, NULL, NULL
 FROM tx_splits WHERE user_id = ?
 UNION ALL
-SELECT 'norm', NULL, NULL, NULL,
-       raw, norm, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
-FROM account_norm_map WHERE user_id = ?
+SELECT 'norm', NULL, sort_order, enabled,
+       raw, norm, rule_id, kind, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM settings_norm_rules WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
@@ -883,6 +1018,10 @@ UNION ALL
 SELECT 'budget_plan', NULL, plan_adjustment, annual_amount,
        account, period_start, kind, plan_reason, updated_at, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM budget_plans WHERE user_id = ?
+UNION ALL
+SELECT 'owner_label', NULL, NULL, NULL,
+       owner, label, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM owner_labels WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
@@ -910,7 +1049,7 @@ ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 22 }, () => userId);
+  const params = Array.from({ length: 24 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -1071,8 +1210,35 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
       }),
     )
     .sort((a, b) => a.txId.localeCompare(b.txId) || a.seq - b.seq);
-  const normMap: Record<string, string> = {};
-  for (const row of bySource('norm')) normMap[row.v1 ?? ''] = row.v2 ?? '';
+  // 0051: 集計ルールは settings_norm_rules が正本。normMap は有効な勘定科目ルールから組み直す
+  const normRules = bySource('norm')
+    .map((row) =>
+      normRuleFromRow({
+        ruleId: row.v3 ?? '',
+        kind: row.v4 ?? '',
+        raw: row.v1 ?? '',
+        norm: row.v2 ?? '',
+        sortOrder: row.rank ?? 0,
+        enabled: row.amount ?? 0,
+      }),
+    )
+    .sort((a, b) => a.order - b.order || a.ruleId.localeCompare(b.ruleId))
+    .map((rule, i) => ({ ...rule, order: i + 1 }));
+  const normMap = accountNormMap(normRules);
+  const cashOverrideRules = sortCashOverrides(
+    bySource('settings_cash_override').map((row) =>
+      cashOverrideRuleFromRow({
+        overrideId: row.v1 ?? '',
+        kind: row.v2 ?? '',
+        amount: row.amount,
+        scope: row.v3 ?? '',
+        month: row.v4,
+        memo: row.v5 ?? '',
+      }),
+    ),
+  );
+  const ownerLabels: Record<string, string> = {};
+  for (const row of bySource('owner_label')) ownerLabels[row.v1 ?? ''] = row.v2 ?? '';
   const statMinMonths = bySource('analysis_setting')[0]?.amount ?? DEFAULT_STAT_MIN_MONTHS;
   const subVendorExclusions = bySource('sub_vendor_exclusion').map((row) => ({
     partner: row.v1 ?? '',
@@ -1139,6 +1305,9 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     cashEntries,
     txSplits,
     normMap,
+    normRules,
+    cashOverrideRules,
+    ownerLabels,
     statMinMonths,
     subVendorExclusions,
     subVendorReviewDecisions,
@@ -1156,8 +1325,8 @@ export async function loadImportRestoreSettingsSnapshot(
   userId: string,
 ): Promise<ImportRestoreSettingsSnapshot> {
   const sql = `SELECT * FROM (
-       SELECT 'norm' AS source, raw AS v1, norm AS v2, NULL AS amount
-         FROM account_norm_map WHERE user_id=?
+       SELECT 'norm' AS source, raw AS v1, norm AS v2, sort_order AS amount
+         FROM settings_norm_rules WHERE user_id=? AND kind='account' AND enabled=1
        UNION ALL
        SELECT 'analysis', NULL, NULL, stat_min_months
          FROM analysis_settings WHERE user_id=?
@@ -1221,7 +1390,15 @@ export async function loadImportRestoreSettingsSnapshot(
          'budgetPlans', (SELECT count(*) FROM budget_plans WHERE user_id=?),
          'cashOverrides', (SELECT count(*) FROM cash_overrides WHERE user_id=?),
          -- 論理削除中も数える。id が残っているので、復元で同じ id を入れると衝突する
-         'cashEntries', (SELECT count(*) FROM cash_entries WHERE user_id=?)
+         'cashEntries', (SELECT count(*) FROM cash_entries WHERE user_id=?),
+         'settingsNormRules', (SELECT count(*) FROM settings_norm_rules WHERE user_id=?),
+         'settingsCashOverrides', (SELECT count(*) FROM settings_cash_overrides WHERE user_id=?),
+         'settingsRevision', (SELECT MAX(changed_at) FROM settings_change_log WHERE user_id=?),
+         'settingsCashOverrideRules', json((
+           SELECT json_group_array(json_object(
+             'overrideId',override_id,'kind',kind,'amount',amount,'scope',scope,'month',month,'memo',memo))
+           FROM settings_cash_overrides WHERE user_id=?
+         ))
        ), NULL, NULL
        )
        ORDER BY source, v1, v2`;
@@ -1231,10 +1408,19 @@ export async function loadImportRestoreSettingsSnapshot(
     .prepare(sql)
     .bind(...Array.from({ length: sql.split('?').length - 1 }, () => userId))
     .all<{ source: string; v1: string | null; v2: string | null; amount: number | null }>();
-  const normMap: Record<string, string> = {};
-  for (const row of result.results.filter((row) => row.source === 'norm')) {
-    normMap[row.v1 ?? ''] = row.v2 ?? '';
-  }
+  // 有効な勘定科目行を並び順に見て、同じ元の表記は最初の行 (core accountNormMap と同じ)
+  const normMap = accountNormMap(
+    result.results
+      .filter((row) => row.source === 'norm')
+      .map((row, i) => ({
+        ruleId: String(i),
+        kind: 'account' as const,
+        raw: row.v1 ?? '',
+        norm: row.v2 ?? '',
+        order: row.amount ?? i,
+        enabled: true,
+      })),
+  );
   const payloads = <T>(source: string): T[] =>
     result.results
       .filter((row) => row.source === source && row.v1)
@@ -1306,8 +1492,15 @@ export async function loadImportRestoreSettingsSnapshot(
     budgets: 0,
     budgetPlans: 0,
     cashOverrides: 0,
+    settingsNormRules: 0,
+    settingsCashOverrides: 0,
+    settingsRevision: null,
+    settingsCashOverrideRules: [],
     cashEntries: 0,
   };
+  destinationRowCounts.settingsCashOverrideRules = sortCashOverrides(
+    (destinationRowCounts.settingsCashOverrideRules ?? []).map(cashOverrideRuleFromRow),
+  );
   destinationRowCounts.subVendorReviewDecisions = subVendorReviewDecisions.length;
   return {
     normMap,
@@ -1334,6 +1527,8 @@ function datasetFromBackupSnapshot(snapshot: BackupSourceSnapshot): Dataset {
   data.budgets = snapshot.budgets;
   data.budgetPlans = snapshot.budgetPlans;
   data.cashOverride = snapshot.cashOverride;
+  data.normRules = snapshot.normRules;
+  data.cashOverrideRules = snapshot.cashOverrideRules;
   data.unrecordedExpMonths = [...snapshot.unrecordedExpMonths];
   data.txSplits = [...snapshot.txSplits];
   data.subs.vendors = snapshot.vendors.map((vendor) => vendor.name);
@@ -1412,6 +1607,8 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     // projection childは表示・集計専用。snapshotのcanonical MF原本は親行のまま保存する。
     mfTx: raw.mfTx,
     analysisSettings: { statMinMonths: snapshot.statMinMonths },
+    // 0045: 名義の表示名。設定の比較・設定だけの復元 (settingsJsonFromBackup) が読む
+    ownerLabels: snapshot.ownerLabels,
     subVendorExclusions: snapshot.subVendorExclusions.map(({ partner }) => ({ partner })),
     subVendorMetadata: snapshot.vendors.map(({ name, category, reviewedAt }) => ({
       name,
@@ -1649,7 +1846,8 @@ export async function planRecomputeFromDeals(
     db,
     userId,
     cashEntries,
-    canonicalMutation ? { withSplits: false, loadSplitRows: true } : undefined,
+    // 集計キャッシュは現金の原本の値で書く。現金上書きは読み出し (loadDataset) の側で掛ける
+    canonicalMutation ? { withSplits: false, loadSplitRows: true } : { cashOverrides: false },
   );
   if (canonicalMutation) {
     const removedMf = new Set(canonicalMutation.removeMfTxIds ?? []);
@@ -1974,12 +2172,15 @@ export async function replaceFreeeDeals(
   for (const grp of chunk(rows, 10)) await db.insert(s.freeeDeals).values(grp);
 }
 
-/** 科目正規化マップの取得(未設定行は既定値で補完済みのマイグレーションが入る) */
+/**
+ * 科目正規化マップの取得。正本は設定画面の集計ルール (0051) の有効な勘定科目行で、
+ * 同じ元の表記は並び順の最初の行が効く (core accountNormMap)。旧 account_norm_map は互換の写しとして残るだけ。
+ */
 export async function loadNormMap(db: Db, userId: string): Promise<Record<string, string>> {
-  const rows = await db.select().from(s.accountNormMap).where(eq(s.accountNormMap.userId, userId));
-  const map: Record<string, string> = {};
-  rows.forEach((r) => {
-    map[r.raw] = r.norm;
-  });
-  return map;
+  const rows = await db
+    .select()
+    .from(s.settingsNormRules)
+    .where(and(eq(s.settingsNormRules.userId, userId), eq(s.settingsNormRules.kind, 'account')))
+    .orderBy(asc(s.settingsNormRules.sortOrder), asc(s.settingsNormRules.ruleId));
+  return accountNormMap(rows.map((r, i) => ({ ...normRuleFromRow(r), order: i + 1 })));
 }

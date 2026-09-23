@@ -371,6 +371,65 @@ export const cashOverrides = sqliteTable('cash_overrides', {
   expense: integer('expense'),
 });
 
+/** 0051: 集計ルール (勘定科目・取引先)。並び順は sort_order、同じ照合キーは上の行が効く (spec-settings-screen) */
+export const settingsNormRules = sqliteTable(
+  'settings_norm_rules',
+  {
+    userId: text('user_id').notNull(),
+    ruleId: text('rule_id').notNull(),
+    kind: text('kind', { enum: ['account', 'vendor'] }).notNull(),
+    raw: text('raw').notNull(),
+    norm: text('norm').notNull(),
+    sortOrder: integer('sort_order').notNull(),
+    enabled: integer('enabled').notNull().default(1),
+    updatedAt: text('updated_at').notNull(),
+    updatedBy: text('updated_by').notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.ruleId] }),
+    index('settings_norm_rules_order').on(t.userId, t.sortOrder),
+  ],
+);
+
+/** 0052: 現金上書き (支払い・受け取り × 全期間・月指定)。amount の null は『上書きしない』 */
+export const settingsCashOverrides = sqliteTable(
+  'settings_cash_overrides',
+  {
+    userId: text('user_id').notNull(),
+    overrideId: text('override_id').notNull(),
+    kind: text('kind', { enum: ['payment', 'receipt'] }).notNull(),
+    amount: integer('amount'),
+    scope: text('scope', { enum: ['all', 'month'] }).notNull(),
+    month: text('month'),
+    memo: text('memo').notNull().default(''),
+    updatedAt: text('updated_at').notNull(),
+    updatedBy: text('updated_by').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.overrideId] })],
+);
+
+/** 0053: 設定の変更履歴。seq は利用者ごとの連番、保持は無期限 */
+export const settingsChangeLog = sqliteTable(
+  'settings_change_log',
+  {
+    userId: text('user_id').notNull(),
+    seq: integer('seq').notNull(),
+    target: text('target', {
+      enum: ['norm_rule', 'owner_label', 'stat_min_months', 'cash_override'],
+    }).notNull(),
+    targetKey: text('target_key').notNull(),
+    before: text('before'),
+    after: text('after'),
+    changedBy: text('changed_by').notNull(),
+    changedAt: text('changed_at').notNull(),
+    origin: text('origin', { enum: ['screen', 'restore', 'migration'] }).notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.seq] }),
+    index('settings_change_log_target').on(t.userId, t.target, t.targetKey, t.seq),
+  ],
+);
+
 export const unrecordedMonths = sqliteTable('unrecorded_months', {
   userId: text('user_id').notNull(),
   month: text('month').notNull(),

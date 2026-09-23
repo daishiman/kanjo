@@ -311,3 +311,92 @@ export function cashBizDeals(
     .filter((e) => e.side === 'biz' && (!ms || ms.has(e.month)))
     .map((e) => cashToDeal(e, normMap));
 }
+
+/* -------- 現金上書き(設定画面) -------- */
+
+/** payment = 現金の支払い / receipt = 現金の受け取り */
+export type CashOverrideKind = 'payment' | 'receipt';
+
+export interface CashOverrideRule {
+  overrideId: string;
+  kind: CashOverrideKind;
+  /** null = 上書きしない、0 = 0 円で上書き */
+  amount: number | null;
+  scope: 'all' | 'month';
+  /** scope = 'month' のとき 'YYYY-MM'、'all' のとき null */
+  month: string | null;
+  memo: string;
+}
+
+export const CASH_OVERRIDE_KINDS: readonly CashOverrideKind[] = ['payment', 'receipt'];
+export const CASH_OVERRIDE_AMOUNT_MAX = 10_000_000_000;
+export const CASH_OVERRIDE_MEMO_MAX = 100;
+
+/**
+ * その月・その種別の現金の月額の上書き値(BR-13)。
+ * 月指定 > 全期間。どちらも無い・null なら null(上書きしない)。
+ */
+export function resolveCashOverride(
+  rules: readonly CashOverrideRule[],
+  month: string,
+  kind: CashOverrideKind,
+): number | null {
+  const byMonth = rules.find((r) => r.kind === kind && r.scope === 'month' && r.month === month);
+  if (byMonth) return byMonth.amount;
+  const all = rules.find((r) => r.kind === kind && r.scope === 'all');
+  return all ? all.amount : null;
+}
+
+/** 上書きで置いた明細の ID。cash: 接頭辞なので現金の明細として扱われる */
+export const cashOverrideTxId = (kind: CashOverrideKind, month: string): string =>
+  `${CASH_TX_PREFIX}override:${kind}:${month}`;
+
+export const CASH_OVERRIDE_TX_LABEL: Record<CashOverrideKind, string> = {
+  payment: '現金の支払い（設定の上書き）',
+  receipt: '現金の受け取り（設定の上書き）',
+};
+
+/**
+ * 現金入力の明細に上書きを掛ける(BR-14)。
+ * 上書きがある月・種別では、その月の現金の支払い(a<0)または受け取り(a>0)の明細を外し、
+ * 上書き値の明細 1 件に置き換える。0 円の上書きは明細を外すだけにする。
+ * 現金入力でない明細・上書きの無い月はそのまま返す。
+ */
+export function applyCashOverrides(
+  txs: readonly MfTx[],
+  rules: readonly CashOverrideRule[],
+  months: readonly string[],
+): MfTx[] {
+  if (rules.length === 0) return [...txs];
+  const targetMonths = [
+    ...new Set([...months, ...txs.filter((t) => isCashTxId(t.id)).map((t) => t.m)]),
+  ].sort();
+  const replaced = new Set<string>();
+  const added: MfTx[] = [];
+  for (const month of targetMonths) {
+    for (const kind of CASH_OVERRIDE_KINDS) {
+      const amount = resolveCashOverride(rules, month, kind);
+      if (amount == null) continue;
+      replaced.add(`${kind}|${month}`);
+      if (amount === 0) continue;
+      added.push({
+        id: cashOverrideTxId(kind, month),
+        m: month,
+        d: `${month.slice(5, 7)}/01`,
+        c: CASH_OVERRIDE_TX_LABEL[kind],
+        a: kind === 'receipt' ? amount : -amount,
+        big: CASH_INSTITUTION,
+        mid: '',
+        inst: CASH_INSTITUTION,
+        isTarget: true,
+        isTransfer: false,
+      });
+    }
+  }
+  const kept = txs.filter((t) => {
+    if (!isCashTxId(t.id) || t.a === 0) return true;
+    const kind: CashOverrideKind = t.a < 0 ? 'payment' : 'receipt';
+    return !replaced.has(`${kind}|${t.m}`);
+  });
+  return kept.concat(added);
+}

@@ -1,4 +1,6 @@
 import type { BudgetPlanRow } from './budget-screen.js';
+import type { CashOverrideRule } from './cash.js';
+import type { NormRule } from './norm-rules.js';
 /** 公私判定の区分 */
 export type Cls = 'biz' | 'per';
 
@@ -307,6 +309,10 @@ export interface Dataset {
   /** 予算の基準月 (今月・日本時間 'YYYY-MM')。api が要求時刻から入れる (BR-23) */
   budgetAsOf?: string;
   cashOverride: Record<string, { revenue: number; expense: number }>;
+  /** 集計ルール(設定画面)。account は取込時の正規化、vendor は集計時の大項目 */
+  normRules?: NormRule[];
+  /** 現金上書き(設定画面)。読み手は resolveCashOverride 経由で読む */
+  cashOverrideRules?: CashOverrideRule[];
   unrecordedExpMonths: string[];
 }
 
@@ -342,6 +348,8 @@ export function emptyDataset(): Dataset {
     budgets: {},
     budgetPlans: [],
     cashOverride: {},
+    normRules: [],
+    cashOverrideRules: [],
     unrecordedExpMonths: [],
   };
 }

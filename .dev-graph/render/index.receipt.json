@@ -1,16 +1,16 @@
 {
   "renderer": "render-graph-html.py (dev-graph 0.1.11)",
-  "rendered_at": "2026-09-21T23:27:23Z",
+  "rendered_at": "2026-09-22T11:33:56Z",
   "scope": "all nodes",
   "graph_revision": 4,
   "input": ".dev-graph/state/graph.json",
-  "input_sha256": "a4df228ff33212092a3d40d2da63510c7ee81a6fc4545ec1b60566d6b34d8611",
+  "input_sha256": "fe93ba1321016d9e77e7283a042071e4cf4f46b13317763c239ec7635ceaaa4c",
   "output": ".dev-graph/render/index.html",
-  "output_sha256": "50e791e8991c52ea50e96422e90d310bd53dbaa0bae26e99db1ea4a622a080fd",
+  "output_sha256": "997ac24fd4565f9692efb0a2d4f6d9f54ec707b2856ebbf7f980385e76940f9a",
   "nodes": 23,
   "edges": 21,
   "feature_progress": {
-    "feat-import-screen": {
+    "feat-settings-screen": {
       "done": 0,
       "total": 13
     }
@@ -19,23 +19,10 @@
   "svg": 1,
   "inline_scripts": 2,
   "registration_receipt": {
-    "path": ".dev-graph/plans/feature-package-feat-import-screen/dev-graph-registration-receipt.json",
+    "path": ".dev-graph/plans/feature-package-feat-settings-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+    "source_digest": "sha256:77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
   },
-  "beads_linked_nodes": 14,
-  "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG と SYS-IMPORT-P01..P13・arch-import-screen-* 8 件・'active · feature · 0/13' の表示を確認",
-  "known_display_issue": "長い title (P02/P05/P09・arch-import-screen-* 等) がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
-  "checks": {
-    "input_digest": true,
-    "output_digest": true,
-    "nodes": true,
-    "edges": true,
-    "progress": true,
-    "external_refs_zero": true,
-    "svg": true,
-    "inline_script": true
-  },
-  "note": "renderer は receipt を書かないため、本 receipt は render-graph-html.py の stdout と registration receipt から再作成し digest を実ファイルと照合した"
+  "browser_trial": "headless Chrome 1600x1000 / 1000x2600 で SVG 描画と feat-settings-screen 0/13 を目視確認"
 }

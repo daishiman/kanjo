@@ -1,0 +1,308 @@
+{
+  "feature_id": "feat-settings-screen",
+  "repository_id": "github:daishiman/kanjo",
+  "run_id": "plan-feat-settings-screen-20260922T1041Z",
+  "artifact_kind": "feature",
+  "generated_at": "2026-09-22T10:41:00Z",
+  "identity_check": {
+    "graph_node_id": "feat-settings-screen",
+    "graph_node_id_matches_feature_id": true,
+    "artifact_kind_matches": true,
+    "feature_context_path": "features/feat-settings-screen.context.json",
+    "feature_context_sha256": "8d3065af44802ddbd2eb5e81824fd5bdd59a3f1c2e4c035b29912ecc21d13560",
+    "resolved_by": "caller (run-system-dev-plan) が C09/C08/feature-context preflight 後に提示した digest。本 elicit セッションにハッシュ計算ツールが無いため独自の再計算はせず、graph_node_id=feat-settings-screen と --feature-id の一致・artifact_kind=feature の一致を確認したうえで提示値をそのまま引用した。"
+  },
+  "purpose": "利用者が『集計ルールと復元設定を、安全に管理しますか？』という問いに /settings の 1 画面で答え切れるようにする。勘定科目と取引先の表記ゆれを種別つきの 1 つの一覧でまとめ、右の説明パネルでそのルールが何に効き、いつ誰が変えたかを確かめて直前の保存値へ戻せ、名義・統計・現金上書きを同じ下書きで編集して 1 回で保存でき、設定だけを JSON で書き出して復元でき、毎晩の自動バックアップを状態つきで一覧して現在の設定と比べてから設定だけを戻せる状態にする。集計ルールの適用順・現金上書きの意味・設定 JSON の形式は core の純関数に固定し、設定画面・集計・書き出し・バックアップの解釈をずらさず、戻せない操作を 0 件にする。",
+  "goal": "/settings が 18-settings.png の全構成要素 (パンくず・期間タブと期間送り・見出しと問い・節ナビ 8 項目 (集計ルール・名義・統計・現金上書き・データ・バックアップ・アカウント・その他の管理)・集計ルールの表と一括操作と並べ替え・この設定の説明パネル・名義・統計・現金上書き・データ出力 4 種と復元・バックアップの表と『自動バックアップについて』・下部の保存バー・読込 / 空 / 失敗) をトークンと共通部品で描画し、375px 幅でも崩れず、画面に出す値が core の settingsScreen から出て web で計算し直されず、取引先ルールが 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類 の順に集計時だけ効き、現金上書きが core の現金集計 1 か所で空欄と 0 を区別して効き、全節の変更が 1 回の保存で baseSavedAt の 409 つきで確定して変更履歴が追記のみで残り、設定だけの版番号つき JSON の書き出しと復元・夜間バックアップ (JST 2:00・状態つき) の比較と設定だけの復元が動き、migration は追加のみで、画像外の既存設定機能を 1 つも消さず、外部送信 0 件で verify:full が緑の状態。",
+  "scope_in": [
+    "/settings の作り直し (18-settings.png の全構成要素と読込・空・失敗の各状態)。Settings.tsx (457 行) を packages/web/src/pages/settings/ 配下のページ本体・節ナビ・節ごとの部品・説明パネル・保存バー・下書き・view-model に分け、pages/Settings.tsx は互換の re-export だけ残す",
+    "節ナビは画像の 6 節の後ろに『アカウント』『その他の管理』を足し、画像外の既存機能 (パスワード変更・利用者管理・名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・HTML 版からの初期移行) を 1 つも消さずに移す (利用者決定 qa-settings-decision-004)",
+    "集計ルール: 種別 (勘定科目 / 取引先) を持つ 1 つの一覧で、並び順・有効・更新日時・更新者を持つ。勘定科目は従来どおり取込時、取引先は集計時に適用し、保存済みの明細を書き換えない (利用者決定 qa-settings-decision-001・005)",
+    "取引先ルールの適用順 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類、完全一致の照合と並び順での優先 (利用者決定 qa-settings-decision-005)",
+    "現金上書き: 支払い・受け取りの 2 行に 上書き値 (空欄 = 上書きしない / 0 = 0 円で上書き)・適用範囲 (全期間 / 月指定)・メモを持たせ、core の現金集計 1 か所で実際に効かせる (利用者決定 qa-settings-decision-003)",
+    "名義 4 名義の表示名を設定画面から編集し、検証は既存 core の validateOwnerLabels を共有する (利用者決定 qa-settings-decision-002)",
+    "統計の最小月数の入力 (既定 6、範囲 3〜24) (利用者決定 qa-settings-decision-009)",
+    "全節の編集を 1 つの下書きに集め、未保存件数・端末への自動保存と復元・リセットと離脱の確認・baseSavedAt による 409 を備える",
+    "設定の変更履歴 (追記のみ) と、説明パネルの最終更新・更新者・『このルールを元に戻す』(直前の保存値を下書きへ戻す) (利用者決定 qa-settings-decision-008)",
+    "設定だけの版番号つき JSON の書き出しと復元 (厳密な検証・サイズ上限・差分プレビュー・確認・復元直前の自動退避) (利用者決定 qa-settings-decision-006) と、データ出力 3 種 (集計マトリクス CSV・取引 CSV・レポート HTML) の選択中期間での出力と CSV の式注入の無害化",
+    "夜間バックアップを JST 2:00 にし、状態 (成功 / 失敗)・メモ・設定部分の要約を残して失敗も一覧に出し、『比較』とバックアップからの設定だけの復元を足す (利用者決定 qa-settings-decision-007・010)",
+    "core に設定画面の算出 settingsScreen と、集計ルールの照合と適用・現金上書きの解決・設定 JSON の検証と差分を新設し、設定系の新しい書込み API を変更系フェンスへ登録する",
+    "追加のみの migration (番号は予定。着手時に main の最新と突き合わせる) と runtimeSchemaGuard の EXPECTED_D1_MIGRATION の更新、JSON の書き出しと復元・JSON snapshot の無効化・夜間バックアップ本文への新しい設定の表の追加",
+    "routeMetadata の設定の task / taskDetail の文言更新、設計判断の docs (docs/settings-screen/ を新設)・docs/data-schema.md・docs/ui-decisions.md の更新と core 単体・API 統合・scheduled・migration 検査・DOM テスト"
+  ],
+  "scope_out": [
+    "取引データそのものの復元形式の変更 (HTML 版からの初期移行 POST /api/restore は現状のまま『その他の管理』に残す)",
+    "既存の仕分けルール・ベンダー記憶の意味の変更 (集計ルール(取引先) はその下の優先順位に入るだけ)",
+    "共通シェル (サイドバー・ヘッダ・フッタ) の作り直し。ヘッダの『取引ライン：正常』は既存の『防衛ライン』の表示を保つ",
+    "外部 LLM・外部サービスへの送信 (取込データと設定を外部へ送らない。C4)",
+    "複数テナント化・web 以外の専用アプリ (375px 幅は web のレスポンシブで扱う)",
+    "バックアップの保持期間 (30 日) の変更",
+    "バックアップからの全データ (取引を含む) の復元 (利用者決定 qa-settings-decision-010。設定だけを戻す)",
+    "既存 API (GET/PUT /api/settings・GET/PUT /api/settings/owner-labels・GET /api/backups/:date・POST /api/restore・/api/export/*) の削除 (互換のため残す)",
+    "既存表 (account_norm_map・cash_overrides) の削除・書き換え (初回の写しの元として読むだけ)"
+  ],
+  "acceptance": [
+    "S1 (G1): /settings に 18-settings.png の構成要素 (§7.1 の全領域) と節ナビ 8 項目が描画され、色・余白・部品はトークンと共通部品を通し、直書き色の lint が 0 件。375px 幅で崩れず、横スクロールは表の容器の中だけである。",
+    "S2 (G2): 説明パネルの『このルールが影響するもの』・集計結果・書き出しが同じ core の関数から出て、取引先ルールの優先順位 (手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類) と現金上書きの 空欄 / 0 / 全期間 / 月指定 がテストで固定され、既存の勘定科目正規化の結果の回帰が 0 件である。",
+    "S3 (G3): 全節の変更が 1 回の保存で確定し、古い baseSavedAt の保存は 409 で何も書かない。変更履歴は追記だけで、『このルールを元に戻す』は直前の保存値を下書きへ戻す。",
+    "S4 (G4): 設定だけの JSON の書き出し → 復元で設定が一致し取引の件数は変わらず、不正な JSON は何も変えずに拒否される。自動バックアップが JST 2:00 に状態つきで残り、比較と設定の復元ができる。",
+    "S5 (G5): migration は追加のみで既存行の書き換えが 0 件、外部送信が 0 件、画像外の既存設定機能が 1 つも消えず、verify:full が緑である。"
+  ],
+  "architecture_refs": [
+    "architecture/settings-ui-ux.md",
+    "architecture/settings-frontend.md",
+    "architecture/settings-backend.md",
+    "architecture/settings-database.md",
+    "architecture/settings-auth.md",
+    "architecture/settings-security.md",
+    "architecture/settings-infrastructure.md",
+    "architecture/settings-maintenance-ops.md",
+    "specs/spec-settings-screen.md"
+  ],
+  "readiness_pin": {
+    "checked_at": "2026-09-22T10:32:09Z",
+    "completeness_report": "system-spec/completeness-findings.json",
+    "verdict": "PASS",
+    "missing_sections": [],
+    "source_pin": {
+      "compile_entrypoint": "run-system-spec-compile",
+      "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+      "plugin": "system-spec-harness",
+      "source_digest": "sha256:29852ac29db368eb53033066d47ae9078c233aae24d69ad6d470c9ceafce56ef",
+      "version": "0.1.14"
+    },
+    "status": "complete"
+  },
+  "notes": [
+    "本 goal-spec の purpose/goal/scope_in/scope_out/acceptance/architecture_refs は features/feat-settings-screen.context.json (graph_node_id=feat-settings-screen, updated_at=2026-09-22T10:32:09Z) の値をそのまま写し、features/feat-settings-screen.md front matter (confirmation_status=confirmed, evaluation_status=pass) と一致することを確認した。",
+    "正本の優先順位は specs/spec-settings-screen.md 冒頭の宣言どおり (1) system-spec/ 配下、(2) 本 spec-settings-screen.md、(3) 画像 18-settings.png。goal-spec はこの正本を再構成せず、path/digest で引用するだけである。",
+    "readiness_pin.source_pin.source_digest (caller が C08 check-implementation-readiness で提示した sha256:29852ac29...) と、specs/spec-settings-screen.md front matter の confirmation_evidence.evaluated_digest / source_lineage.source_digest (fe2cb400fae7451bcb757a2d19acb671784ac694414511f169d81790dd24ad75、system-spec/00-requirements-definition.md を指す) は値が異なる。両方とも system-spec/00-requirements-definition.md を指す digest だが測定時点が異なる (spec 側は system-spec インポート時点 2026-09-22T10:13:43Z、C08 側はそれ以降の readiness 再チェック時点) と推測されるが、本セッションにハッシュ計算ツールが無いため agent はどちらが現在の実ファイルと一致するかを再検算していない。この差分は agent 推定で解消せず、両digestをそれぞれの出所のまま source_lineage に個別に記録した (fail-closed の対象にはせず、事実として並記する)。",
+    "specs/spec-settings-screen.md 未決事項 Q-1〜Q-12 と実装時に要確認 R-1〜R-7 は仕様本文で確定していない、または architecture 担当が見つけた既存コードとの食い違いであり、本 goal-spec では原文の意味を保って open_items へ転記した。goal-spec 自体はこれらを解決しない (specs/spec-settings-screen.md を正本として実装時に解決する)。",
+    "受入の詳細 (AT-01〜AT-22。specs/spec-settings-screen.md に定義) は同ファイルの「テストと受入条件」を正本とし、本 goal-spec へは複製しない。",
+    "migration 番号 (0051〜) は予定番号であり、features/feat-settings-screen.md Handoff の指示どおり着手時に origin/main を fetch し直して最新番号と突き合わせる。"
+  ],
+  "open_items": [
+    {
+      "id": "Q-1",
+      "item": "名義の API。qa-settings-decision-002 は『家計収支画面の OwnerLabelsCard と同じ API（GET/PUT /api/settings/owner-labels）を共有する』、G3 は『全節の編集を 1 つの下書きに集め、1 回の PUT で保存』。現状は設定画面が PUT /api/settings/screen に名義を含めて 1 回で送り、書く表（owner_labels）・検証（validateOwnerLabels）・読み出し（loadOwnerLabels）を既存 API と共有する。既存 API は家計収支画面のために残す。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-1 を正本とする。名義だけ既存 API へ別に送る案にすると、1 回の保存と 409 の判定が 2 つに割れる。利用者に確認してよい、とされている。",
+      "resolution_owner": "PUT /api/settings/screen と名義の保存経路を実装する task (R2-decompose/R3-emit で割当を確定)。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-2",
+      "item": "既存の書込み経路（旧 PUT /api/settings・PUT /api/settings/owner-labels・POST /api/restore）と新表・revision の同期（BR-22）。現状は既存経路も新表と変更履歴へ同じ意味で書き、revision を進め、既存表にも従来どおり書く。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-2 を正本とする。system-spec は『既存 API は互換のため残す』とだけ定める。旧 PUT の normMap・cashOverrides を廃止扱いにする案もある (R-2 も参照)。",
+      "resolution_owner": "既存書込み経路の互換維持を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-3",
+      "item": "名義 4 欄の並び・ラベル・例文（§7.6）。画像の『個人の表示名』に当たる内部値が無いため、現状は配偶者・事業・家族・未設定 を 2 列 × 2 段、例文は事業だけ画像どおり他は本書の具体化とする。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-3 を正本とする。利用者に並びと例文を確認してよい、とされている。",
+      "resolution_owner": "OwnerLabelsSection.tsx を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-4",
+      "item": "現金上書きの意味の細部（BR-14）。上書き値を月額と読んだ点、上書きの対象を現金入力の明細の月の合計とした点、効く画面（家計収支・総収支・概要）、既存の月ごとの値の NULL を上書きしないとして写す点。現状は本書の読みで実装し、写した既存の値は現金集計に効き始める。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-4 を正本とする。全期間の値を期間合計と読む案もある。既存の値を持つ利用者の数字が変わりうるので、リリース前に利用者へ知らせる、とされている。R-1 とも関連する。",
+      "resolution_owner": "core の現金上書き解決と CashOverridesSection.tsx / migration 0052 の写しを実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-5",
+      "item": "取引先ルールで決まる値の範囲（BR-09）。大項目だけで中項目を空にし、公私と名義は変えない点。照合する値を明細の内容そのものとした点（payeeOf で取引先名に絞る案もある）。現状は大項目だけ、照合は内容の照合キーの完全一致とする。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-5 を正本とする。利用者に、店舗名つきの内容（例『スターバックス 渋谷店』）もまとめたいかを確認してよく、まとめるなら照合の決定を直す、とされている。",
+      "resolution_owner": "core の取引先ルール照合・適用を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-6",
+      "item": "旧 NightlyBackups の全データ上書き（POST /api/restore に全データを渡す）を画面から外す点。現状は qa-settings-decision-010『設定だけ戻す』に従い外し、全データの戻し方は D1 Time Travel と HTML 版の初期移行が残る。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-6 を正本とする。全データの戻しを画面に残したいなら『その他の管理』に置く決定が要る (R-7 も参照)。",
+      "resolution_owner": "BackupsSection.tsx / バックアップ復元経路を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-7",
+      "item": "画像の最新の行の『復元』が灰色で、無効の意図か判読不能。現状は有効にする。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-7 を正本とする。利用者に確認してよい。無効にするなら最新の回と現在の設定が同じ前提になるが、最新の回の後にも設定は変わりうる、とされている。",
+      "resolution_owner": "BackupsSection.tsx を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-8",
+      "item": "レポート（HTML）の補足『設定内容のレポートを出力』と、出力の中身（既存の会計レポート）の食い違い。現状は補足は画像どおり、中身は既存の会計レポートとする。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-8 を正本とする。補足を『選択中の期間の会計レポートを出力』に変えるか、設定内容を載せるかを利用者に確認してよい、とされている。",
+      "resolution_owner": "DataSection.tsx の出力ボタン文言を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-9",
+      "item": "古いバックアップ・古い全データ JSON（新表なし）の設定部分の読み方（BR-29）。現状は migration の写しと同じ意味で直す。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-9 を正本とする。30 日の保持で古い形式は自然に消える、とされている。",
+      "resolution_owner": "バックアップ比較・復元の読み手を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-10",
+      "item": "夜間バックアップのファイル名の日付を JST とする点。既存は UTC の today（index.ts 182 行）で、cron が JST 2:00 = UTC 17:00 になると前日の UTC 日付になる。現状は JST の日付にそろえ、切替の日だけ同じ日付が 2 回にならないよう既存のキーがあれば上書きする。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-10 を正本とする。既存どおり UTC の日付のままにする案もある (画面の日付と 1 日ずれる)。R-3 も参照。",
+      "resolution_owner": "夜間バックアップ scheduled 処理を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-11",
+      "item": "変更履歴の表示場所。右パネルは集計ルールだけで、名義・統計・現金上書きの変更履歴は画面に出ない。現状は API（/api/settings/history）と表には残すが、画面は集計ルールだけとする。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-11 を正本とする。他の節にも最終更新を出したいなら、画像に無い表示の決定が要る、とされている。",
+      "resolution_owner": "RuleExplainPanel.tsx / 変更履歴表示を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "Q-12",
+      "item": "本書の agent 推定・利用者未確認の値と、本書で具体化した値の一覧 (節ナビ 7〜8rem・説明パネル 16〜18rem・フィールド単位の未保存件数・行の追加削除は 1 行 1 項目・メモ n/100・バッジ 最新/成功/失敗・375px の配置・削除とバックアップ復元の確認ダイアログ・下書きのキー/v1/30日/800ms・ドラッグと上下ボタンの併用・IntersectionObserver・useSettingsDraft・ログアウトで下書きを消す・409の文言と再取得・withPeriod・設定JSONの形・照合キー・recomputeFromDealsを勘定科目ルールの変更に限る・APIのパス10本・バックアップ本文から設定部分を取り出す・settingsScreen・customMetadata・migration 0051〜0053の3本・変更履歴の無期限保持・3表の新設・主キーの先頭/由来/取込時の正規化の読み手/バックアップとsnapshotの対象・更新者はメールのローカル部・leaseの直列化・actorから取る・権限は/restoreと同じ・プレビューをフェンスから外す・64KB/256KB/500行・未知キーの拒否・coreが正本・CSVの無害化・ログに値を出さない・失敗マーカー・要約の項目・0 17 * * *・backups/pre-restore/・バインディングを足さない・listのcursor・版の移行関数と1世代・docsの置き場所・Deployの再実行・D1 Time Travelは最後の手段・テストの置き場所、および本書で具体化したもの: 説明パネルのstickyと選択なしで閉じる点・routeMetadataのtask/taskDetailの文言・CategoryPickerの既定のタブ・0件/500行/空/失敗/一括削除/リセット/離脱/比較/復元の各文言・一括の有効/無効の操作・元に戻すに確認を挟まない点と『これより前の保存値はありません。』・勘定科目の行の影響するものの5項目目・統計の範囲外の文言・月指定の追加の並び・全データJSONの置き場所・サイズのKB切り上げ・失敗の回のメモ・未保存なしの保存バー・並び順の変更の数え方・ruleIdの発行とm-接頭辞・catSrcの『集計ルール』・同じ照合キーの注記・現金上書きの上限額・差分の突き合わせの鍵・節ごとの全件置換・error code名 (settings_conflict・invalid_settings_file・unsupported_settings_version・pre_restore_backup_failed・backup_settings_unreadable)・バックアップからの復元の本文上限1KB・Query key・書き出しのファイル名・ファイル構成とcoreの関数名/型の形・settings-screen.tsのroute分割・通知の秒数・巻き戻し時の差分報告の手順・画像の括弧の全角への統一)。",
+      "note": "specs/spec-settings-screen.md §未決事項 Q-12 を正本とする。実装はこの値で進める、とされている (agent 推定値であり confirmed ではない)。",
+      "resolution_owner": "各値が関わる個別 task (R2-decompose/R3-emit で割当を確定)。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "R-1",
+      "item": "既存 cash_overrides は、画面の空欄が 0 に潰れて保存されている（PUT /api/settings の cashOverrides は非負整数か null で、空欄は 0 として送られてきた）。",
+      "note": "specs/spec-settings-screen.md §実装時に要確認 R-1 を正本とする。影響: そのまま『月指定の 0 円』へ写すと、利用者が空欄のつもりだった月の現金集計を 0 円で上書きする。関連: §データモデル 0052 の写し、BR-12・BR-14、Q-4。",
+      "resolution_owner": "migration 0052 の写しと現金上書き解決を実装する task。着手時に既存コードとテストを確かめ、必要なら利用者に確認する。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "R-2",
+      "item": "旧 PUT /api/settings が account_norm_map を書き続けると、新表 settings_norm_rules と科目正規化の正本が 2 つになる。",
+      "note": "specs/spec-settings-screen.md §実装時に要確認 R-2 を正本とする。影響: 取込時の正規化の読み手と、旧経路で書いた値がずれうる。関連: BR-22、§互換性・移行・リリース、Q-2。",
+      "resolution_owner": "既存書込み経路と新表の同期を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "R-3",
+      "item": "バックアップのキーの日付は UTC（new Date().toISOString().slice(0, 10)）なので、JST 2:00 の実行では JST の日付と 1 日ずれる（現行の JST 3:00 の実行でも同じ）。",
+      "note": "specs/spec-settings-screen.md §実装時に要確認 R-3 を正本とする。影響: 一覧の日付と実行日の表示がずれる。日付の付け方を変える日に、同じ日付のキーが重なりうる。関連: §イベント・非同期処理、Q-10。",
+      "resolution_owner": "夜間バックアップ scheduled 処理を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "R-4",
+      "item": "夜間バックアップの削除処理は、キーの backups/ の後ろの先頭 10 文字を日付として比べる。",
+      "note": "specs/spec-settings-screen.md §実装時に要確認 R-4 を正本とする。影響: backups/pre-restore/ の退避は先頭 10 文字が日付にならないので、30 日を過ぎても消えない。既存の一覧にも日付でない行として出る。関連: §イベント・非同期処理 の保持、GET /api/backups。",
+      "resolution_owner": "夜間バックアップの保持削除処理を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "R-5",
+      "item": "失敗マーカー backups/YYYY-MM-DD.failed.json を置くと、既存の GET /api/backups には同じ日付が 2 行出る。",
+      "note": "specs/spec-settings-screen.md §実装時に要確認 R-5 を正本とする。影響: 一覧の重複と、失敗の行での比較・復元の誤起動。関連: §イベント・非同期処理、GET /api/backups。",
+      "resolution_owner": "BackupsSection.tsx / GET /api/backups を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "R-6",
+      "item": "core の toCsv はセルの先頭の式文字（= + - @）を無害化していない。",
+      "note": "specs/spec-settings-screen.md §実装時に要確認 R-6 を正本とする。影響: 無害化を足すと、既存の CSV 出力（集計マトリクス・取引）の内容と、文字列として出している負数の表記が変わりうる。既存の CSV のテストに影響する。関連: BR-30、AT-19。",
+      "resolution_owner": "core の toCsv 無害化を実装する task。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "R-7",
+      "item": "既存 backup-restore.dom.test.tsx は『バックアップからの復元は POST /api/restore（全データ置換）に合流する』ことを固定している。",
+      "note": "specs/spec-settings-screen.md §実装時に要確認 R-7 を正本とする。影響: qa-settings-decision-010（設定だけを戻す）と衝突する。テストの書き換えが要る。関連: §7.10、§互換性・移行・リリース、Q-6。",
+      "resolution_owner": "バックアップからの設定だけの復元経路と既存 DOM テストの書き換えを実装する task。",
+      "status": "unresolved_precondition"
+    }
+  ],
+  "source_lineage": [
+    {
+      "source_kind": "feature_context",
+      "path": "features/feat-settings-screen.context.json",
+      "sha256": "8d3065af44802ddbd2eb5e81824fd5bdd59a3f1c2e4c035b29912ecc21d13560",
+      "note": "呼出し元 (run-system-dev-plan) から明示された feature-context の digest。graph_node_id=feat-settings-screen と --feature-id の一致を確認した。"
+    },
+    {
+      "source_kind": "feature_document",
+      "path": "features/feat-settings-screen.md",
+      "sha256": "fe2cb400fae7451bcb757a2d19acb671784ac694414511f169d81790dd24ad75",
+      "note": "features/feat-settings-screen.md front matter の confirmation_evidence.evaluated_digest。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "specification",
+      "path": "specs/spec-settings-screen.md",
+      "sha256": "2bb01f21c9b3a451f175b3ecf4d1b74cc4cf84fa73b65f9c65c18c10b93a5b9e",
+      "note": "画面仕様の正本。digest は呼出し元指示および features/feat-settings-screen.md front matter の source_lineage.source_digest (source_path=specs/spec-settings-screen.md, source_version=0.1.11, source_plugin=dev-graph) と一致する。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "system_spec_requirements",
+      "path": "system-spec/00-requirements-definition.md",
+      "sha256": "fe2cb400fae7451bcb757a2d19acb671784ac694414511f169d81790dd24ad75",
+      "note": "specs/spec-settings-screen.md front matter の confirmation_evidence.evaluated_digest / source_lineage.source_digest から引用 (system-spec-harness 0.1.14 が spec を import した時点 2026-09-22T10:13:43Z の digest)。readiness_pin.source_pin.source_digest (sha256:29852ac29...、C08 check-implementation-readiness 提示) とは値が異なる。両方とも同じファイルを指すが測定時点が異なるとみられ、agent は再計算していない (notes 参照)。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "completeness_evaluation",
+      "path": "system-spec/completeness-findings.json",
+      "sha256": "fe2cb400fae7451bcb757a2d19acb671784ac694414511f169d81790dd24ad75",
+      "note": "verdict=PASS の完成度 evaluator 記録 (evidence_ref)。digest はこのファイルが評価した対象 (00-requirements-definition.md) の evaluated_digest を引用したもので、completeness-findings.json 自体のバイト内容のハッシュではない。全 6 観点 (foundation_trace, decision_guidance, matrix_coverage, design_knowledge_reflection, doc_freshness, prompt_quality) が verdict=PASS。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/settings-ui-ux.md",
+      "sha256": "376a461e32d6277d040822ed6cd4d4b016c46332dece3f6f8c7c412114b754de",
+      "note": "arch-settings-ui-ux。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/ui-ux.md, version=0.1.14) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/settings-frontend.md",
+      "sha256": "711a2fd0946231628d693ec05f71d6f7013ad9d4d589f3b06dc548264f76f000",
+      "note": "arch-settings-frontend。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/frontend.md, version=0.1.14) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/settings-backend.md",
+      "sha256": "8ed202ee635561a574f5fb733a146afe35b10e295340e7e5a49f50d75ec1bb3c",
+      "note": "arch-settings-backend。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/backend.md, version=0.1.14) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/settings-database.md",
+      "sha256": "0f71b39eb0d4aef2864a0fb9b5ba913b68a72fb2d69bd08ef7a7792ef470f78f",
+      "note": "arch-settings-database。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/database.md, version=0.1.14) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/settings-auth.md",
+      "sha256": "1968df8fa1eed625d5ba1376decf22c7c0a3e636d0e0ecda927fce14049294ff",
+      "note": "arch-settings-auth。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/auth.md, version=0.1.14) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/settings-security.md",
+      "sha256": "c0d64d31afc54115c07bc73eaa3884d65f3a33205d92327fda0e583c56edb163",
+      "note": "arch-settings-security。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/security.md, version=0.1.14) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/settings-infrastructure.md",
+      "sha256": "6b7af8e430bf9e58190417f42bb9e68c682f79d5c790e70419330e6e5ef75192",
+      "note": "arch-settings-infrastructure。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/infrastructure.md, version=0.1.14) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/settings-maintenance-ops.md",
+      "sha256": "55b201ec86e261da7cb5fceb2ba2d639875931c7a72a259401e72e623add4452",
+      "note": "arch-settings-maintenance-ops。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/maintenance-ops.md, version=0.1.14) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    }
+  ],
+  "checklist_summary": {
+    "feature_identity_matches": true,
+    "purpose_goal_scope_acceptance_nonempty": true,
+    "architecture_refs_resolved_in_repo": true,
+    "system_spec_source_confirmed_pass": true,
+    "lineage_has_path_version_digest": true,
+    "no_feature_split_or_task_generation": true
+  }
+}

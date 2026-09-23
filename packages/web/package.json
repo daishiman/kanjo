@@ -21,7 +21,8 @@
     "check:ai-screen": "KANJO_VISUAL_SCOPE=ai node scripts/check-financial-visuals.mjs",
     "check:analysis-hub": "node scripts/check-analysis-hub-visuals.mjs",
     "check:budget-visual": "tsx scripts/check-budget-visual.mts",
-    "check:cash-screen": "KANJO_VISUAL_SCOPE=cash node scripts/check-financial-visuals.mjs"
+    "check:cash-screen": "KANJO_VISUAL_SCOPE=cash node scripts/check-financial-visuals.mjs",
+    "check:settings-visual": "tsx scripts/check-settings-visual.mts"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.1.0",

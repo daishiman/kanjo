@@ -46,968 +46,924 @@
     "database": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-imp-decision-005",
+        "qa_ref": "qa-settings-database-web-003",
         "serves_goals": [
-          "G1",
           "G2",
           "G3",
-          "G4",
-          "G5",
-          "G6"
+          "G5"
         ],
         "qa_refs": [
-          "qa-imp-database-web-evidence-001",
-          "qa-imp-database-web-004",
-          "qa-imp-decision-002",
-          "qa-imp-decision-003",
-          "qa-imp-decision-004",
-          "qa-imp-decision-006",
-          "qa-imp-decision-008",
-          "qa-imp-decision-010"
+          "qa-settings-database-web-evidence-001",
+          "qa-settings-database-web-002",
+          "qa-settings-database-web-004",
+          "qa-settings-decision-001",
+          "qa-settings-decision-003",
+          "qa-settings-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、database では端末内に未送信の取込を保存するローカル DB とサーバとの同期規則を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、database ではスマートフォン向け専用アプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、database では端末に履歴を先読みしておく複製の範囲と鮮度を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、database ではタブレット向け専用アプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、database では取込前の原本をローカルに残す保存場所と暗号化の要否を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、database ではWindows 向けデスクトップアプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、database では XDG のデータ置き場に原本の写しを置くかどうかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、database ではLinux 向けデスクトップアプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、database では Application Support 配下の原本の写しと iCloud 同期の除外を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、database ではmacOS 向けデスクトップアプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "auth": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-imp-decision-010",
+        "qa_ref": "qa-settings-auth-web-003",
         "serves_goals": [
-          "G1",
-          "G2",
           "G3",
-          "G4",
-          "G5",
-          "G6"
+          "G5"
         ],
         "qa_refs": [
-          "qa-imp-auth-web-evidence-001",
-          "qa-imp-auth-web-004",
-          "qa-imp-decision-003",
-          "qa-imp-decision-004",
-          "qa-imp-decision-005",
-          "qa-imp-decision-008"
+          "qa-settings-auth-web-evidence-001",
+          "qa-settings-auth-web-002",
+          "qa-settings-auth-web-004"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、auth では生体認証でのロック解除とトークンの端末内保管を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、auth ではスマートフォン向け専用アプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、auth では家族で共有する端末での利用者の切替と自動ログアウトを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、auth ではタブレット向け専用アプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth では資格情報マネージャーへのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth ではWindows 向けデスクトップアプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth では Secret Service が無い環境でのトークン保管の代替を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth ではLinux 向けデスクトップアプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではキーチェーンへのトークン保管とアクセス許可の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではmacOS 向けデスクトップアプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "ui-ux": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-imp-decision-003",
+        "qa_ref": "qa-settings-ui-ux-web-003",
         "serves_goals": [
           "G1",
-          "G2",
           "G3",
-          "G4",
-          "G5",
-          "G6"
+          "G4"
         ],
         "qa_refs": [
-          "qa-imp-ui-ux-web-evidence-001",
-          "qa-imp-ui-ux-web-004",
-          "qa-imp-decision-001",
-          "qa-imp-decision-002",
-          "qa-imp-decision-004",
-          "qa-imp-decision-005",
-          "qa-imp-decision-006",
-          "qa-imp-decision-008"
+          "qa-settings-ui-ux-web-evidence-001",
+          "qa-settings-ui-ux-web-002",
+          "qa-settings-ui-ux-web-004",
+          "qa-settings-decision-001",
+          "qa-settings-decision-002",
+          "qa-settings-decision-003",
+          "qa-settings-decision-004",
+          "qa-settings-decision-006",
+          "qa-settings-decision-007",
+          "qa-settings-decision-008",
+          "qa-settings-decision-009",
+          "qa-settings-decision-010",
+          "qa-settings-target-platforms-001"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux では取込ファイル一覧の 9 列をカードへ畳む規則と、下部の選択中バーを親指の届く位置に固定する配置を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux ではスマートフォン向け専用アプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux では横向きで取込履歴と詳細ペインを左右に並べるか重ねるかの切替を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux ではタブレット向け専用アプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux ではエクスプローラーからのドラッグ&ドロップとファイル選択ダイアログの既定フォルダを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux ではWindows 向けデスクトップアプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux ではファイルマネージャーごとに異なるドラッグ&ドロップの受け取り方の吸収を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux ではLinux 向けデスクトップアプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux では Finder からのドロップと Dock へのファイル投下で取込を始める導線を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux ではmacOS 向けデスクトップアプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "security": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-imp-decision-006",
+        "qa_ref": "qa-settings-security-web-003",
         "serves_goals": [
-          "G1",
-          "G2",
-          "G3",
           "G4",
-          "G5",
-          "G6"
+          "G5"
         ],
         "qa_refs": [
-          "qa-imp-security-web-evidence-001",
-          "qa-imp-security-web-004",
-          "qa-imp-decision-003",
-          "qa-imp-decision-004",
-          "qa-imp-decision-007",
-          "qa-imp-decision-008",
-          "qa-imp-decision-009",
-          "qa-imp-decision-010",
-          "qa-imp-decision-011"
+          "qa-settings-security-web-evidence-001",
+          "qa-settings-security-web-002",
+          "qa-settings-security-web-004",
+          "qa-settings-decision-010"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、security では端末の紛失時に仮置きファイルと取込履歴を遠隔で消す手段を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、security ではスマートフォン向け専用アプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、security では共有端末に残るダウンロード済み原本の扱いを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、security ではタブレット向け専用アプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、security ではコード署名と SmartScreen の警告への対処を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、security ではWindows 向けデスクトップアプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、security では配布パッケージの署名検証の手段を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、security ではLinux 向けデスクトップアプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、security では公証 (notarization) と Gatekeeper の通過を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、security ではmacOS 向けデスクトップアプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "infrastructure": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-imp-decision-007",
+        "qa_ref": "qa-settings-infrastructure-web-003",
         "serves_goals": [
-          "G1",
-          "G2",
-          "G3",
-          "G4",
-          "G5",
-          "G6"
+          "G4"
         ],
         "qa_refs": [
-          "qa-imp-infrastructure-web-evidence-001",
-          "qa-imp-infrastructure-web-002",
-          "qa-imp-decision-003",
-          "qa-imp-decision-006",
-          "qa-imp-decision-009",
-          "qa-imp-decision-010"
+          "qa-settings-infrastructure-web-evidence-001",
+          "qa-settings-infrastructure-web-002",
+          "qa-settings-infrastructure-web-004",
+          "qa-settings-decision-007"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではストア配布とプッシュ通知の基盤を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではスマートフォン向け専用アプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure では端末管理 (MDM) 下での配布経路を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向け専用アプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではインストーラの配布と自動更新の配信元を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではWindows 向けデスクトップアプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではパッケージリポジトリの運用を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではLinux 向けデスクトップアプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure では Sparkle 等の更新フィードの配信を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure ではmacOS 向けデスクトップアプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "backend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-imp-decision-005",
+        "qa_ref": "qa-settings-backend-web-003",
         "serves_goals": [
-          "G1",
           "G2",
           "G3",
           "G4",
-          "G5",
-          "G6"
+          "G5"
         ],
         "qa_refs": [
-          "qa-imp-backend-web-evidence-001",
-          "qa-imp-backend-web-005",
-          "qa-imp-decision-001",
-          "qa-imp-decision-002",
-          "qa-imp-decision-003",
-          "qa-imp-decision-004",
-          "qa-imp-decision-007",
-          "qa-imp-decision-008",
-          "qa-imp-decision-011"
+          "qa-settings-backend-web-evidence-001",
+          "qa-settings-backend-web-002",
+          "qa-settings-backend-web-004",
+          "qa-settings-decision-001",
+          "qa-settings-decision-003",
+          "qa-settings-decision-005",
+          "qa-settings-decision-006",
+          "qa-settings-decision-007",
+          "qa-settings-decision-008",
+          "qa-settings-decision-010"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、backend では回線が切れやすい端末向けに検査要求の再開 (分割アップロード) の契約を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、backend ではスマートフォン向け専用アプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、backend では端末ごとの取込セッションの識別と、複数端末から同じ検査 ID を確定する競合の扱いを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、backend ではタブレット向け専用アプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend ではローカルで前処理したパース結果を受け取る別経路の契約を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend ではWindows 向けデスクトップアプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend ではコマンドラインからの一括取込を受ける API トークンの契約を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend ではLinux 向けデスクトップアプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではフォルダ監視による自動取込を受ける冪等な受付口を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではmacOS 向けデスクトップアプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "frontend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-imp-decision-005",
+        "qa_ref": "qa-settings-frontend-web-003",
         "serves_goals": [
           "G1",
-          "G2",
-          "G3",
-          "G4",
-          "G5",
-          "G6"
+          "G3"
         ],
         "qa_refs": [
-          "qa-imp-frontend-web-evidence-001",
-          "qa-imp-frontend-web-005",
-          "qa-imp-decision-002",
-          "qa-imp-decision-003",
-          "qa-imp-decision-006",
-          "qa-imp-decision-007",
-          "qa-imp-decision-008"
+          "qa-settings-frontend-web-evidence-001",
+          "qa-settings-frontend-web-002",
+          "qa-settings-frontend-web-004",
+          "qa-settings-decision-004",
+          "qa-settings-decision-006"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend では端末のファイル選択 (共有シート) から明細ファイルを受け取る入口と、バックグラウンドでのアップロード継続を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend ではスマートフォン向け専用アプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、frontend では分割表示で別アプリからファイルをドラッグして受け取る実装を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、frontend ではタブレット向け専用アプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend では Electron 等の外枠からローカルファイルを直接読む権限の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend ではWindows 向けデスクトップアプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend では配布形式 (AppImage / Flatpak) ごとのファイルアクセスのサンドボックス差を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend ではLinux 向けデスクトップアプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend では App Sandbox の下でユーザーが選んだファイルへのアクセス権を保つ方法を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend ではmacOS 向けデスクトップアプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "maintenance-ops": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-imp-decision-006",
+        "qa_ref": "qa-settings-maintenance-ops-web-003",
         "serves_goals": [
-          "G1",
-          "G2",
           "G3",
           "G4",
-          "G5",
-          "G6"
+          "G5"
         ],
         "qa_refs": [
-          "qa-imp-maintenance-ops-web-evidence-001",
-          "qa-imp-maintenance-ops-web-005",
-          "qa-imp-decision-002",
-          "qa-imp-decision-004",
-          "qa-imp-decision-005",
-          "qa-imp-decision-007",
-          "qa-imp-decision-008",
-          "qa-imp-decision-009",
-          "qa-imp-decision-010",
-          "qa-imp-decision-011"
+          "qa-settings-maintenance-ops-web-evidence-001",
+          "qa-settings-maintenance-ops-web-002",
+          "qa-settings-maintenance-ops-web-004",
+          "qa-settings-decision-007",
+          "qa-settings-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops では OS 更新ごとの実機検証と、ストア審査の手順を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops ではスマートフォン向け専用アプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops では画面サイズと向きの組合せごとの回帰確認を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops ではタブレット向け専用アプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops では Windows 更新ごとのインストーラ回帰の手順を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops ではWindows 向けデスクトップアプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops ではディストリビューションごとの動作確認の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops ではLinux 向けデスクトップアプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops では macOS の版ごとの公証のやり直しと確認を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-imp-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops ではmacOS 向けデスクトップアプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     }
   },
   "qa_log": [
     {
-      "id": "qa-imp-decision-001",
-      "question": "画像の対応サービス案内 (マネーフォワード・銀行・freee) のうち、銀行・クレジットカードの明細を直接取り込む対象にするか。",
-      "answer": "対象にしない。銀行とクレジットカードの明細詳細は不要で、今回取り込むのは freee と マネーフォワードの CSV だけ。既存の ZIP・JSON 復元・MF 資産推移の受け付けは維持する。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
+      "id": "qa-settings-decision-001",
+      "question": "『集計ルール (カテゴリの正規化マップ)』は何を正規化するか。既存の正規化マップは freee 勘定科目の表記 → 集計用の科目名 (取込時に適用) だが、画像の例はスターバックス / スタバ / Starbucks → カフェ・外食 という取引先名 → カテゴリで、既存の仕分けルールやベンダー記憶と役割が近い。",
+      "answer": "両方を 1 つの一覧で扱う。種別列 (勘定科目 / 取引先) を足し、両方の正規化を同じ表で管理する (利用者は推奨の『既存の意味を保つ』ではなくこちらを選択)。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (推奨外を選択)",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:16:46Z",
-      "required_info_items": [
-        "context-of-use",
-        "domain-model",
-        "product-goal"
-      ]
-    },
-    {
-      "id": "qa-imp-decision-002",
-      "question": "画像の詳細設定『前回データを残す』(既定で checked) をどう解釈するか。",
-      "answer": "行単位で追加する。既定はオン。オンのときは既存の行を消さず、同一性の鍵で既にある行を飛ばして新しい行だけを足す。オフのときは従来どおり月単位で入れ替える。強制再取込は維持する。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:16:46Z",
+      "answered_at": "2026-09-22T08:24:29Z",
       "required_info_items": [
         "domain-model",
         "product-goal"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[0]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「集計ルール（カテゴリの正規化マップ）」は何を正規化しますか？ 既存の正規化マップは『freee 勘定科目の表記 → 集計用の科目名』(取込時に適用)ですが、画像の例は『スターバックス / スタバ / Starbucks → カフェ・外食』という取引先名 → カテゴリです（既存の仕分けルールやベンダー記憶と役割が近い）。 【選択肢】(1)『既存の意味を保つ (推奨)』— account_norm_map を『元の表記 → 正規化後のカテゴリ』として画像の見た目にする。正規化後は select（既存の科目・カテゴリ候補から選ぶ）、並び順・有効/無効・更新日時・更新者の列を追加のみの migration で足す。取引先名の表記ゆれは既存の仕分けルールが担当のまま。 (2)『取引先名→カテゴリに変える』— 画像の例どおり、取引先名の表記ゆれをカテゴリへまとめる新しいルール表を作る。既存の仕分けルール・ベンダー記憶と役割が重なるため、優先順位の整理と移行が必要になり範囲が大きい。 (3)『両方を1つの一覧で扱う』— 種類列（勘定科目 / 取引先）を足して、両方の正規化を同じ表で管理する。UI は画像に近いが、適用箇所が2系統になり検証が重い。"
+        }
       ]
     },
     {
-      "id": "qa-imp-decision-003",
-      "question": "画像の 3 段 (ファイル選択 / 内容確認 / 取込結果) を、1 ファイルずつ即時に書き込む現行の流れにどう対応させるか。",
-      "answer": "サーバに仮置きする。選んだファイルをまず検査用に送ってサーバ (R2) に一時保存し、検査結果 (重複・バリデーション・件数・対象期間) を返す。利用者が内容を確認して『取り込む』を押したら、検査 ID で確定し、ファイルは再送しない。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
+      "id": "qa-settings-decision-002",
+      "question": "『名義』の表示名は、画像の 2 項目 (個人 / 事業) に対し既存は 4 名義 (事業・配偶者・家族・未設定)。設定画面でどう扱うか。",
+      "answer": "4 名義すべて出す (推奨)。画像の 2 欄の並びと部品で 4 名義を編集でき、家計収支画面の OwnerLabelsCard と同じ API・core の validateOwnerLabels を共有する。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:16:46Z",
+      "answered_at": "2026-09-22T08:24:29Z",
       "required_info_items": [
-        "context-of-use",
         "domain-model",
-        "security-posture"
+        "product-goal"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[1]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「名義」の表示名は、画像の2項目（個人 / 事業）に対し既存は4名義（事業・配偶者・家族・未設定）です。設定画面でどう扱いますか？ 【選択肢】(1)『4名義すべて出す (推奨)』— 画像の2欄の並びと部品を使い、既存の4名義（事業・配偶者・家族・未設定）をすべて設定画面で編集できるようにする。家計収支画面の OwnerLabelsCard と同じ API・検証（core の validateOwnerLabels）を共有する。 (2)『画像どおり2欄だけ』— 『個人』= 家族（または未設定）、『事業』= 事業 の2つだけを設定画面に出す。配偶者などは家計収支画面で編集する。"
+        }
       ]
     },
     {
-      "id": "qa-imp-decision-004",
-      "question": "画像の取込履歴 (取込元・ファイル数・取込明細数・結果、選択した履歴の一括削除) の 1 行の単位と、一括削除の意味をどうするか。",
-      "answer": "1 回の取込で 1 行にする。複数ファイルをまとめた取込を 1 行で見せ、詳細ペインに含まれるファイルと影響の数を出す。一括削除は履歴の記録だけを消し、取り込んだ明細は残す。明細ごと戻したいときは各行の『取り消し』を使う。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
+      "id": "qa-settings-decision-003",
+      "question": "『現金上書き』をどう作るか。既存は月ごとの入金・支出の値で、どの集計にも効いていない。画像は現金の支払い / 受け取りそれぞれに上書き値・適用範囲 (全期間)・メモ (100 字)、空欄 = 上書きしない / 0 = 0 円で上書き。",
+      "answer": "画像どおり＋集計へ反映 (推奨)。支払い・受け取りの 2 行に上書き値 (空欄と 0 を区別)・適用範囲 (全期間 / 月指定)・メモを持たせ、core の現金集計に実際に効かせる。既存の月ごとの値は『月指定』の行として追加のみの migration で引き継ぐ。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:16:46Z",
-      "required_info_items": [
-        "context-of-use",
-        "domain-model",
-        "information-priority",
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-imp-target-platforms-001",
-      "question": "データ取込画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
-      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『web 以外の専用アプリ』を置き、利用者が U1-U9 をこの内容で承認した (appr-foundation-import-screen-001)。狭い画面は既存 web のレスポンシブ規約 (段の縦積み、表の横スクロール) の中で扱う。",
-      "provenance": "AskUserQuestion / U1-U9 承認 (scope.out に web 以外を明記)",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:16:46Z",
-      "required_info_items": [
-        "target-platforms"
-      ]
-    },
-    {
-      "id": "qa-imp-ui-ux-web-evidence-001",
-      "question": "ui-ux 章の裏付けとして、現行のデータ取込画面と画像の差について何を観測したか。",
-      "answer": "現行の /import は packages/web/src/pages/Import.tsx (897 行) の 1 ファイルで、ステッパー・取込ファイル一覧の表・内容確認の要約・結果の 4 枚カード・履歴の詳細ペイン・下部の選択中バーを持たない。accept は .csv,.xlsx,.xls,.zip,.json で .txt を含まない。履歴はファイル単位で最新 100 件を出す。差分の事前表示 (ImportDiff.tsx) は MF だけ。共通シェルは Layout.tsx で、ヘッダーの『防衛ライン』は前回までの spec で変更しないと決定済み。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-frontend-web-evidence-001",
-      "question": "frontend 章の裏付けとして、現行の取込画面の実装構成について何を観測したか。",
-      "answer": "Import.tsx は 1 ファイルずつ POST /api/imports を送り、部品は ImportDiff.tsx・ImportDeletion.tsx・import-retry.ts に分かれる。取得と更新は TanStack Query 5、ルーティングは react-router 7、期間は period.tsx の usePeriod と PeriodPicker。DOM テストは packages/web の Import.*.test.tsx 群。サイドバーの取込バッジは /review-queue の counts.import を読む。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-backend-web-evidence-001",
-      "question": "backend 章の裏付けとして、現行の取込 API と処理の流れについて何を観測したか。",
-      "answer": "packages/api/src/routes/imports.ts の POST /imports (1381 行) は 1 ファイルを受け、force・keepOnShrink・resolutionPlan を読む。流れはパース → unitFingerprint → preflightWriteSetConflicts → keepOnShrink → MF の解決 → クエリ予算 → R2 保存 → activeDuplicateOf → 月単位の洗い替え。取込元はヘッダーで判定し (import-pipeline.ts classifyRows)、文字コードは UTF-8 から Shift-JIS へ落とす (core/csv.ts decodeBuf)。GET /imports (1785 行)、GET /imports/:id/original (1870 行)、POST /imports/diff (import-diff.ts)、取り消しと破棄の preflight (deletions.ts)。取込は import_writer_claims で直列化され、同時実行は 409 import_busy。重複候補は core/total-cashflow.ts の duplicateMatchScore と reconcileBizDuplicates、サブスク候補は core/subs.ts の subsCandidates と GET /sub-vendors/candidates。packages/core に import-screen.ts は無い。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-database-web-evidence-001",
-      "question": "database 章の裏付けとして、取込に関わる表と列について何を観測したか。",
-      "answer": "imports 表は id・user_id・filename・kind・months・row_count・status・r2_key・content_hash・duplicate_of・run_id・target_keys・failure_reason・fingerprint_version・committed_at を持つ。取込の束は import_runs、書込の直列化は import_writer_claims、有効な対象は import_active_targets、取り消しは import_deletion_operations・import_deleted_rows・import_deleted_targets (migration 0030、30 日)。mf_transactions.import_id と freee_deals.import_id が行の由来を持つ。最新の migration は migrations/0049_ai_report_invariants.sql。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-auth-web-evidence-001",
-      "question": "auth 章の裏付けとして、取込 API の認証と所有者の確認について何を観測したか。",
-      "answer": "取込の経路は /api 配下のセッション認証の後ろにあり、Cookie は SameSite=Strict (packages/api/src/routes/auth.ts:131)。imports・import_runs の読み書きは user_id で絞り込む。原本の取得 GET /imports/:id/original も所有者の行だけを返す。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-security-web-evidence-001",
-      "question": "security 章の裏付けとして、取込経路の入口の防御について何を観測したか。",
-      "answer": "bodyLimit は /api/auth/* にだけ 16KB で掛かる (packages/api/src/index.ts:86-94)。POST /imports は c.req.formData() で本文を読んだ後 (imports.ts:1384) に 25MB を判定する (imports.ts:1410)。レート制限はログイン向けの login-rate-limit.ts だけで、取込には無い。CSRF の対策は Cookie の SameSite=Strict だけで Origin の検査は無い。secureHeaders で referrerPolicy=strict-origin-when-cross-origin (index.ts:79)。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-infrastructure-web-evidence-001",
-      "question": "infrastructure 章の裏付けとして、取込の保存先と定期処理について何を観測したか。",
-      "answer": "packages/api は Cloudflare Workers の Hono アプリで、設定は packages/api/wrangler.jsonc。D1 と Drizzle で表を持ち、原本は R2 の FILES バインディング (kanjo-files) に保存する。夜間保守は cron 0 18 * * * で動く。migration はリポジトリ直下の migrations/ に番号順で置く。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-maintenance-ops-web-evidence-001",
-      "question": "maintenance-ops 章の裏付けとして、取込まわりの検証と文書について何を観測したか。",
-      "answer": "テストは packages/api の import-pipeline・import-lifecycle・import-diff・import-history-discard・deletion-* 群、packages/core の parsers・fingerprint・import-history-discard-contract、packages/web の Import.*.test.tsx 群。既存の文書は specs/import-deletion-and-override-reapply.md・features/feat-import-deletion-override-reapply.md・architecture/arch-import-deletion-undo-boundary.md。直近の画面作り直しは docs/<画面>/ に規則を残している。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-ui-ux-web-003",
-      "question": "web のデータ取込画面で、利用者が決めていない 表示の細部 を何にするか。",
-      "answer": "ステータスは 5 種 (アップロード中 n% / 検査中 / 取込準備完了 / 取込不可 / 取込済み) で、色だけに頼らず文字とアイコンを併記する。重複チェックは『なし / n 件 / 取込済みと同一』、バリデーションは『OK / 警告 n / エラー n』。操作はアップロード中=キャンセル、準備完了=削除、取込不可=再試行と削除。結果カードの『重複の可能性』は総収支画面、『サブスク候補』はサブスク画面へのリンクを持つ。狭い画面では段を縦に積み、表は横スクロールにする。共通シェル (ヘッダーの防衛ライン、フッターの文言) は変更しない。これは agent の推定で、利用者は未確認である。",
-      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-frontend-web-003",
-      "question": "web のデータ取込画面で、利用者が決めていない 送信とアップロード進捗の扱い を何にするか。",
-      "answer": "検査要求はファイルごとに並列 2 本までで送り、XMLHttpRequest の upload.onprogress で進捗 % を出す (fetch はアップロード進捗を取れないため)。アップロード中のキャンセルは abort で止め、サーバ側の仮置きは夜間保守が片づける。.txt はタブ区切りまたはカンマ区切りの CSV として扱う。取込可能が 0 件のとき取り込むボタンは押せない。これは agent の推定で、利用者は未確認である。",
-      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-backend-web-003",
-      "question": "データ取込で、利用者が決めていない 件数の数え方と同一内容の扱い を何にするか。",
-      "answer": "『重複の可能性』は既存の duplicateMatchScore による freee と MF の二重計上候補の件数、『サブスク候補』は取込後の subsCandidates の新規件数とする。ファイルが取込済みと同一内容 (content_hash が一致し duplicate_of が立つ) なら『取込済みと同一』として取込可能から外し、強制再取込のときだけ含める。行単位の追加の対象は MF 明細と freee 取引だけで、MF 資産推移と JSON 復元は従来の動作のまま。取込 1 回の結果は、全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗。これは agent の推定で、利用者は未確認である。",
-      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-database-web-003",
-      "question": "取込の記録で、利用者が決めていない 保持期間と索引 を何にするか。",
-      "answer": "import_inspections は期限 24 時間で、夜間保守 (cron 0 18 * * *) が期限切れの行と R2 の仮置きを消す。確定済みの検査行は確定時に消す。import_runs の履歴非表示は hidden_at の時刻列で表し、取り消し (30 日) の判定には影響しない。索引は import_inspections(user_id, expires_at) と import_runs(user_id, created_at)。これは agent の推定で、利用者は未確認である。",
-      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-auth-web-003",
-      "question": "取込の認可で、利用者が決めていない 応答の細部 を何にするか。",
-      "answer": "他人の検査 ID・取込 ID・期限切れの検査 ID はすべて 404 not_found を返し、存在の有無を区別させない。検査 ID は推測できない乱数 (crypto.randomUUID) にする。一括削除は 1 要求 100 件までで、所有者でない ID が混ざれば全体を 404 にして 1 件も消さない。これは agent の推定で、利用者は未確認である。",
-      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-security-web-003",
-      "question": "取込の入口の防御で、利用者が決めていない 上限値と判定の順序 を何にするか。",
-      "answer": "1 要求あたり最大 10 ファイル・1 ファイル 25MB・合計 50MB とし、Content-Length で本文を読む前に 413 payload_too_large を返す。レート制限は利用者ごとに検査 10 回/分、確定 5 回/分で、超過は 429 rate_limited と Retry-After。/api/imports* の変更要求 (POST / DELETE) は Origin ヘッダーが自サイトと一致しなければ 403 forbidden_origin。ファイル名は制御文字を除き 255 文字で切る。これは agent の推定で、利用者は未確認である。",
-      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-infrastructure-web-003",
-      "question": "取込の基盤で、利用者が決めていない 保存の配置と 1 要求の処理量 を何にするか。",
-      "answer": "仮置きの接頭辞は import-staging/<user_id>/<inspection_id>/ とし、確定時に既存の取込の鍵へコピーしてから仮置きを消す。夜間保守は 1 回あたり期限切れ 500 件まで消して残りは翌日に回す。検査 1 要求の D1 クエリは既存のクエリ予算に収める。これは agent の推定で、利用者は未確認である。",
-      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-maintenance-ops-web-003",
-      "question": "データ取込画面で、利用者が決めていない 境界テストの具体 を何にするか。",
-      "answer": "上限ちょうどと 1 超過 (10 / 11 ファイル、50MB / 50MB+1 byte)、期限ちょうどの検査 ID、他人の検査 ID、Origin 不一致、レート超過、前回データを残すのオンとオフで同じファイルを 2 回取り込んだときの行数、取込済みと同一内容のファイル、一部成功の結果、一括削除後に明細が残ることを固定する。テストは旧実装で落ちることを確かめる。これは agent の推定で、利用者は未確認である。",
-      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:21:42Z"
-    },
-    {
-      "id": "qa-imp-ui-ux-web-001",
-      "question": "web のデータ取込画面の構成と、段・表・カードの並べ方をどうするか。",
-      "answer": "見出し『複数の明細ファイルを、安全に取り込みますか？』の下に 3 段のステッパー (ファイル選択 / 内容確認 / 取込結果) を置き、1.ファイルを選択 (ドラッグ&ドロップ、CSV・Excel・txt、freee と マネーフォワードの取得方法の案内、詳細設定の強制再取込と前回データを残す=既定オン)、2.取込ファイル一覧 (# / ファイル名 / 取込元 / 対象期間 / ファイルサイズ / 重複チェック / バリデーション / ステータス / 操作)、3.取込内容の確認 (対象ファイル数と取込可能数、取り込み予定の明細数、対象期間、影響する取込元、重複の可能性、サブスク候補、エラーのファイルは除外される注記)、4.取込結果 (成功 / 失敗 / 重複の可能性 / サブスク候補のカードとエラーのファイルのみ再試行)、5.取込履歴 (1 回の取込で 1 行、詳細ペインに影響の 3 数値) の順に並べる。下部バーに選択中ファイル数・取込可能数・エラー数・選択をキャンセル・N ファイルを取り込むを置く。案内から『銀行』を外す (qa-imp-decision-001)。束の順位は頻度 × 失敗コストで、取り込む前に何が入るかを確かめる 3.確認を 1.選択の直後に常に見せる。",
-      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:21:42Z",
-      "required_info_items": [
-        "context-of-use",
-        "information-priority",
-        "product-goal",
-        "target-platforms"
-      ]
-    },
-    {
-      "id": "qa-imp-frontend-web-001",
-      "question": "web のデータ取込画面のフロントエンド構成 (ファイル分割・状態・取得・部品) をどう作るか。",
-      "answer": "Import.tsx を packages/web/src/pages/import/ 配下へ分割し (ファイル選択・取込ファイル一覧・内容確認・取込結果・取込履歴・履歴詳細・選択中バー)、ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果は core の純関数の結果を描くだけにする。流れは検査 (ファイルを送って検査 ID を受け取る) → 確認 → 確定 (検査 ID だけを送る) の 2 段階 (qa-imp-decision-003)。前回データを残すは既定オンで確定要求に載せる (qa-imp-decision-002)。取得は TanStack Query で履歴一覧と履歴詳細を分け、確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する。選択中の履歴は URL の検索パラメータに持つ。画面は遅延読み込みのまま。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。",
-      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:21:42Z",
-      "required_info_items": [
-        "frontend-arch",
-        "target-platforms"
-      ]
-    },
-    {
-      "id": "qa-imp-backend-web-001",
-      "question": "データ取込の検査・確定・履歴の規則をどこに置き、どの契約で返すか。",
-      "answer": "ファイルの状態、検証の段階、取込可否、内容確認の要約 (対象ファイル数・取込可能数・予定明細数・対象期間・影響する取込元・重複の可能性・サブスク候補)、取込 1 回の結果 (成功 / 一部成功 / 失敗) を packages/core の import-screen.ts の純関数に置く。API は 2 段階にする (qa-imp-decision-003)。POST /imports/inspections はファイルを受けてパースと検査だけを行い、原本を R2 に 24 時間仮置きして検査 ID と検査結果を返す。POST /imports/runs は検査 ID の列と前回データを残す・強制再取込を受けて確定し、ファイルを再送させない。前回データを残す=オンは MF 明細は mfStableKey、freee 取引は freeeDealKeys で既にある行を飛ばして新しい行だけを足し、オフは従来の月単位の入れ替え (qa-imp-decision-002)。GET /imports/runs は取込 1 回を 1 行で返し、GET /imports/runs/:id は影響の 3 数値 (新規追加・重複スキップ・サブスク候補) と含まれるファイルを返す (qa-imp-decision-004)。再取込・取り消し (30 日)・原本の取得は既存の経路を取込単位へ束ねる。一括削除は履歴の記録だけを消す。対象は freee と マネーフォワードの CSV で、銀行・カードは扱わない (qa-imp-decision-001)。",
-      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:21:42Z",
-      "required_info_items": [
-        "api-contract",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-imp-database-web-001",
-      "question": "検査の仮置き・取込 1 回の記録・履歴の削除を、どの表でどう持つか。",
-      "answer": "検査の結果は新しい表 import_inspections (検査 ID・利用者・ファイル名・取込元・対象期間・サイズ・内容ハッシュ・検査結果の要約・R2 の仮置きキー・期限) に持ち、確定で imports と import_runs へ移す (qa-imp-decision-003)。取込 1 回は import_runs を 1 行の単位とし、ファイル数・取込明細数・新規追加・重複スキップ・サブスク候補・結果を記録する (qa-imp-decision-004)。一括削除は import_runs に履歴の非表示の印を付けるだけで、imports と明細の行は消さない。行単位の追加で飛ばした行の数は import_runs に残す (qa-imp-decision-002)。migration は 0050 以降の新番号で追加し、既存の表の意味を変えない。",
-      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:21:42Z",
+      "answered_at": "2026-09-22T08:24:29Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[2]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「現金上書き」をどう作りますか？ 既存は月ごとの入金・支出の値で、しかも現状どの集計にも効いていません（保存・出力のみ）。画像は『現金の支払い / 受け取り』それぞれに上書き値・適用範囲（全期間）・メモ(100字)、空欄=上書きしない / 0=0円で上書き。 【選択肢】(1)『画像どおり＋集計へ反映 (推奨)』— 支払い・受け取りの2行に上書き値（空欄と0を区別）・適用範囲（全期間 / 月指定）・メモを持たせ、core の現金集計に実際に効かせる。既存の月ごとの値は『月指定』の行として引き継ぐ（追加のみの migration）。 (2)『画像どおり、集計反映は別件』— 見た目・保存・空欄と0の区別までは作るが、集計への反映は今回は行わず後続の課題にする。 (3)『月ごとのまま見た目だけ』— 既存の月ごとの入金・支出の仕組みを保ち、画像の表の見た目に寄せるだけにする。"
+        }
       ]
     },
     {
-      "id": "qa-imp-auth-web-001",
-      "question": "検査 ID・取込 1 回・原本を、誰がどこまで操作できるようにするか。",
-      "answer": "検査・確定・履歴・原本の取得・再取込・取り消し・履歴の削除はすべて既存のセッション認証の後ろに置き、どの操作も利用者 ID で行を絞る。確定要求の検査 ID は本人が作った未期限のものだけを受け、他人の ID や期限切れは存在しないものとして扱う (qa-imp-decision-003)。一括削除は本人の履歴だけを対象にする (qa-imp-decision-004)。新しい認証方式は足さない。",
-      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-settings-decision-004",
+      "question": "画像に無い既存の設定機能 (パスワード変更・利用者管理・金融機関の名義割当・仕分けルール・科目の候補・手動編集した明細・ベンダー記憶・未記帳月・HTML 版からの初期移行) はどこに置くか。",
+      "answer": "節ナビに節を足して残す (推奨)。画像の 6 節の後ろに『アカウント』(パスワード・利用者管理) と『その他の管理』(名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・初期移行) を足し、機能は 1 つも消さない。画像の 6 節は画像どおりに作る。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:21:42Z",
+      "answered_at": "2026-09-22T08:24:29Z",
       "required_info_items": [
-        "auth-model"
+        "information-priority",
+        "product-goal"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[3]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】画像に無い既存の設定機能（パスワード変更・利用者管理・金融機関の名義割当・仕分けルール・科目の候補・手動編集した明細・ベンダー記憶・未記帳月・HTML版からの初期移行）はどこに置きますか？ 【選択肢】(1)『節ナビに節を足して残す (推奨)』— 画像の6節の後ろに『アカウント』（パスワード・利用者管理）と『その他の管理』（名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・初期移行）を足し、機能は1つも消さない。画像の6節は画像どおりに作る。 (2)『画像の6節だけにして他画面へ移す』— 設定画面は画像どおり6節のみ。残りは明細仕分け画面・アカウントメニュー等へ移す。移動先ごとの改修が必要で範囲が広がる。"
+        }
       ]
     },
     {
-      "id": "qa-imp-security-web-001",
-      "question": "データ取込の入口で、何を防ぎ、何を外へ出さないか。",
-      "answer": "取込の変更要求は本文を読む前に大きさで止め、1 要求のファイル件数と合計サイズの上限を置く。取込専用のレート制限を置く。取込の変更要求は同一オリジンからだけ受ける。ファイル名・取込元・エラー文などファイル由来の文字列は React のエスケープで描き、HTML として解釈しない。取込データは外部へ送信しない。仮置きの原本は本人だけが確定・取得でき、24 時間で消える (qa-imp-decision-003)。一括削除は記録だけで、明細は消さない (qa-imp-decision-004)。",
-      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-settings-decision-005",
+      "question": "集計ルールの『取引先』種別の行 (例: スタバ → カフェ・外食) は、いつ・どの優先順位で効かせるか。",
+      "answer": "集計時に適用・手動と仕分けルールの次 (推奨)。保存済みの明細は書き換えず集計時に適用する。優先順位は 手動編集 > 仕分けルール > 集計ルール (取引先) > 自動分類。照合は NFKC・大小文字を揃えた完全一致。行の並び順は同じ元表記が重なった時の優先度。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:21:42Z",
+      "answered_at": "2026-09-22T08:26:39Z",
       "required_info_items": [
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-imp-infrastructure-web-001",
-      "question": "検査の仮置きと片づけを、どの基盤にどう載せるか。",
-      "answer": "仮置きの原本は既存の R2 (FILES) の専用の接頭辞に置き、確定時に取込の保存先へ移すか参照を移す。期限切れの仮置きは既存の夜間保守 (cron) で消す (qa-imp-decision-003)。新しいバインディング・外部サービス・キューは足さない。レート制限の計数は D1 の表で持つ。migration は D1 の番号順で追加する。",
-      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:21:42Z",
-      "required_info_items": [
-        "infra-topology"
-      ]
-    },
-    {
-      "id": "qa-imp-maintenance-ops-web-001",
-      "question": "データ取込画面の品質をどう保ち、規則をどこに残すか。",
-      "answer": "ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果の規則、行単位の追加と月単位の入れ替えの違い、仮置きの期限、履歴の削除の意味を docs/import-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。既存の取込・取り消し・破棄のテストを緑のまま保ち、初期 JS 予算 (CI 実測) と verify:full を通す。境界テストの具体は qa-imp-maintenance-ops-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:21:42Z",
-      "required_info_items": [
-        "ops-runbook"
-      ]
-    },
-    {
-      "id": "qa-imp-decision-005",
-      "question": "検査要求 1 回が何ファイルを運び、検査 ID を何の単位で発行するか。",
-      "answer": "複数ファイルを 1 要求で送る。1 要求に検査 ID を 1 つ発行し、その中にファイルごとの項目 (ファイル項目 ID と検査結果) を持つ。確定は検査 ID と、そのうち取り込むファイル項目 ID を送り、ファイルは再送しない。1 回の取込 = 1 つの検査 ID = 取込履歴の 1 行とする。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり。完成度評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:41:14Z",
-      "required_info_items": [
-        "api-contract",
         "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[0]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】集計ルールの『取引先』種別の行（例: スタバ → カフェ・外食）は、いつ・どの優先順位で効かせますか？ 【選択肢】(1)『集計時に適用・手動と仕分けルールの次 (推奨)』— 保存済みの明細は書き換えず、集計時に適用するので『元に戻す』が安全。優先順位は 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類。照合は NFKC・大小文字を揃えた完全一致。行の並び順は同じ元表記が重なった時の優先度。 (2)『取込時にカテゴリを書き込む』— 勘定科目の正規化と同じく取込時に適用し、明細のカテゴリを確定させる。変更したら過去分の再計算が要る。 (3)『仕分けルールより優先』— 集計時に適用し、手動編集以外では最優先にする。既存の仕分けルールの結果が変わる可能性がある。"
+        }
       ]
     },
     {
-      "id": "qa-imp-decision-006",
-      "question": "取込の入口の上限値とレート制限をいくつにするか。",
-      "answer": "推奨値で確定する。1 ファイル 25MB、1 回の取込 10 ファイル、xlsx / ZIP は展開後の大きさにも上限を置く。レート制限は利用者ごとに検査 30 回/分・確定 5 回/分。上限の超過は 413、レート超過は 429 を返す。bodyLimit は Content-Length が無い要求でも本文を数えて上限で止める。合計と展開後の値は qa-imp-decision-007 で Worker のメモリに合わせて下げた値を正とする。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり。完成度評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。",
+      "id": "qa-settings-decision-006",
+      "question": "『復元』と『設定のエクスポート (JSON)』の範囲は。現在の JSON 出力は取引を含む全データで、復元は HTML 版からの初期移行 (全データ置換) だけ。",
+      "answer": "設定だけを出力・復元 (推奨)。集計ルール・名義・統計・現金上書きだけを版番号つき JSON で出し、同じ形だけを復元で受ける (厳密な形の検証・サイズ上限・復元前に現在の設定を自動バックアップ・差分プレビューと確認)。取引は消えない。全データの初期移行は『その他の管理』に残す。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:26:39Z",
       "required_info_items": [
         "api-contract",
+        "domain-model",
         "security-posture"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[1]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「復元」と「設定のエクスポート(JSON)」の範囲は？ 現在の JSON 出力は設定だけでなく取引を含む全データで、復元は HTML 版からの初期移行（全データを置き換え）だけです。 【選択肢】(1)『設定だけを出力・復元 (推奨)』— 集計ルール・名義・統計・現金上書きだけを版番号つき JSON で出力し、同じ形だけを復元で受ける（厳密な形の検証・サイズ上限・復元前に現在の設定を自動でバックアップ・差分プレビューと確認）。取引は消えない。全データの初期移行は『その他の管理』に残す。 (2)『全データを出力・復元』— 取引を含む全データを出力・復元する。復元で取引も置き換わるため影響が大きい。"
+        }
       ]
     },
     {
-      "id": "qa-imp-decision-007",
-      "question": "Worker のメモリ上限 (128MB) に対し、複数ファイル 1 要求のまま上限をどう調整するか。",
-      "answer": "複数ファイル 1 要求のまま上限を下げる。1 回の取込の合計を 30MB、xlsx / ZIP の展開後を 1 ファイル 60MB にする。サーバは 1 ファイルずつ順に検査して R2 へ置き、同時に展開するのは 1 ファイルだけにする (ピーク約 90MB)。1 ファイル 25MB・10 ファイル・検査 30 回/分・確定 5 回/分は維持する。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり。完成度評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。",
+      "id": "qa-settings-decision-007",
+      "question": "自動バックアップをどうするか。画像は『毎日 午前2:00』・ステータス (最新 / 成功)・メモ・比較・復元。現状は毎日 3:00 (JST) に全データを R2 へ保存、30 日保持、失敗はログのみ。",
+      "answer": "2:00 に変更＋状態・メモ・比較を足す (推奨)。cron を JST 2:00 に変え、各バックアップに状態 (成功 / 失敗)・メモ・設定部分の要約を持たせ、失敗も一覧に出す。『比較』はその日の設定と現在の設定の差分を表示する。中身は従来どおり全データ。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:26:39Z",
       "required_info_items": [
         "infra-topology",
-        "security-posture"
+        "ops-runbook"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[2]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】自動バックアップをどうしますか？ 画像は『毎日 午前2:00』・ステータス（最新/成功）・メモ・比較・復元。現状は毎日 3:00(JST) に全データを R2 へ保存、30日保持、失敗はログのみです。 【選択肢】(1)『2:00に変更＋状態・メモ・比較を足す (推奨)』— cron を JST 2:00 に変え、各バックアップに状態（成功/失敗）・メモ・設定部分の要約を持たせる。失敗も一覧に出す。『比較』はその日の設定と現在の設定の差分を表示。中身は従来どおり全データ。 (2)『3:00のまま、表示を実際に合わせる』— 実行時刻は変えず、説明文を『午前3:00』にする。状態・メモ・比較は足す。"
+        }
       ]
     },
     {
-      "id": "qa-imp-ui-ux-web-002",
-      "question": "web のデータ取込画面の構成・段・表・カードと、表示の細部をどうするか (改訂版)。",
-      "answer": "見出し『複数の明細ファイルを、安全に取り込みますか？』の下に 3 段のステッパー (ファイル選択 / 内容確認 / 取込結果) を置き、1.ファイルを選択 (ドラッグ&ドロップ、CSV・Excel・txt、freee と マネーフォワードの取得方法の案内、詳細設定の強制再取込と前回データを残す=既定オン、『1 回に 10 ファイル・合計 30MB まで、1 ファイル 25MB まで』の注記)、2.取込ファイル一覧 (# / ファイル名 / 取込元 / 対象期間 / ファイルサイズ / 重複チェック / バリデーション / ステータス / 操作)、3.取込内容の確認 (対象ファイル数と取込可能数、取り込み予定の明細数、対象期間、影響する取込元、重複の可能性、サブスク候補、エラーのファイルは除外される注記)、4.取込結果 (成功 / 失敗 / 重複の可能性 / サブスク候補のカードとエラーのファイルのみ再試行)、5.取込履歴 (1 回の取込 = 1 つの検査 ID = 1 行、詳細ペインに影響の 3 数値) の順に並べる。下部バーに選択中ファイル数・取込可能数・エラー数・選択をキャンセル・N ファイルを取り込むを置く。案内から『銀行』を外す。ステータスは 5 種 (アップロード中 n% / 検査中 / 取込準備完了 / 取込不可 / 取込済み) で、色だけに頼らず文字とアイコンを併記する。重複チェックは『なし / n 件 / 取込済みと同一』、バリデーションは『OK / 警告 n / エラー n』。操作はアップロード中=キャンセル、準備完了=削除、取込不可=再試行と削除。上限を超えるファイルは送る前に取込不可として理由 (25MB 超・10 ファイル超・合計 30MB 超) を出す。結果カードの『重複の可能性』は総収支画面、『サブスク候補』はサブスク画面へのリンクを持つ。狭い画面では段を縦に積み、表は横スクロールにする。共通シェル (ヘッダーの防衛ライン、フッターの文言) は変更しない。束の順位は頻度 × 失敗コストで、取り込む前に何が入るかを確かめる 3.確認を 1.選択の直後に常に見せる。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "id": "qa-settings-decision-008",
+      "question": "右パネルの『最終更新 (更新者)』と『このルールを元に戻す』は何を基準にするか。",
+      "answer": "変更履歴表で直前の保存値へ (推奨)。設定の変更を追記のみの履歴表 (変更前・後・更新者・日時) に残し、『元に戻す』はそのルールの直前の保存値を下書きへ戻す (保存で確定)。更新者は利用者名、復元や移行で入った値は『システム』。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:26:39Z",
+      "required_info_items": [
+        "data-persistence",
+        "security-posture"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[3]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】右パネルの『最終更新（更新者）』と『このルールを元に戻す』は何を基準にしますか？ 【選択肢】(1)『変更履歴表で直前の保存値へ (推奨)』— 設定の変更を追記のみの履歴表に（変更前・後・更新者・日時）残し、『元に戻す』はそのルールの直前の保存値を下書きへ戻す（保存で確定）。更新者は利用者名、復元や移行で入った値は『システム』。 (2)『未保存の編集だけを戻す』— 履歴は持たず、行に更新日時・更新者の列だけ足す。『元に戻す』は最後に保存した値への取消しになる。"
+        }
+      ]
+    },
+    {
+      "id": "qa-settings-target-platforms-001",
+      "question": "設定画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
+      "answer": "対象にしない (web のみ、推奨)。専用アプリは作らず、設定画面は 375px 幅でも節ナビと表が崩れないようにする。U1-U9 の scope.out にも『web 以外の専用アプリ』を置き、利用者が承認した (appr-foundation-settings-001)。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:31:09Z",
+      "required_info_items": [
+        "target-platforms"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01CAGSHVBkmvg3jtokPUQJQW の questions[0]、提示 2026-09-22T08:26:59Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】対象プラットフォームはこれまでの画面と同じく web（レスポンシブ、スマホ幅でも崩れない）のみでよいですか？ 【選択肢】(1)『web のみ (推奨)』— スマホ・タブレット・デスクトップの専用アプリは作らない。設定画面は 375px 幅でも節ナビと表が崩れないようにする。 (2)『専用アプリも検討する』— web 以外のプラットフォームも仕様の対象にする。"
+        },
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "回答文中の『U1-U9 承認』への言及は、回答受領 (08:31:09Z) より後の承認 appr-foundation-settings-001 (08:37:17Z) を先取りした記述で誤り。回答そのものは『web のみ (推奨)』の選択であり、承認とは独立に成立する。"
+        }
+      ]
+    },
+    {
+      "id": "qa-settings-decision-009",
+      "question": "『AI分析の対象月数 (最小)』の既定値は画像では 12 か月、実装では 6 か月 (範囲 3〜24)。どうするか。",
+      "answer": "既定は 6 のまま (推奨)。保存済みの値が無い利用者の挙動を変えない。画像の 12 は入力例として扱い、説明文 (満たない期間では傾向分析が実行されない・長いと精度が上がる) は画像どおりにする。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:31:09Z",
+      "required_info_items": [
+        "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01CAGSHVBkmvg3jtokPUQJQW の questions[1]、提示 2026-09-22T08:26:59Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「AI分析の対象月数（最小）」の既定値は画像では 12 か月、実装では 6 か月（範囲 3〜24）です。どうしますか？ 【選択肢】(1)『既定は 6 のまま (推奨)』— 保存済みの値が無い利用者の挙動を変えない。画像の 12 は入力例として扱い、説明文（満たない期間では傾向分析が実行されない・長いと精度が上がる）は画像どおりにする。 (2)『既定を 12 に変える』— 画像に合わせる。値を保存していない利用者は、取引が 6〜11 か月しか無いと傾向分析が止まる。"
+        }
+      ]
+    },
+    {
+      "id": "qa-settings-ui-ux-web-evidence-001",
+      "question": "web の設定画面の ui-ux について、既存コードで何が観測できるか。",
+      "answer": "現行 /settings (packages/web/src/pages/Settings.tsx) は .card を縦に並べるだけで、節ナビ・説明パネル・下部の保存バー・未保存件数が無い。ルートは routeMetadata.ts:140-151 (ナビ群『管理』)。共通ヘッダ (Layout.tsx:415-488) に期間タブ (PeriodPicker)・最終更新・検索・ダウンロード・ヘルプがあり、バッジの文言は『防衛ライン』。フッタ (Layout.tsx:492-519) は既存。予算画面に保存バー (BudgetSaveBar)・下書き・離脱確認の先例がある。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-ui-ux-web-002",
+      "question": "web の設定画面の ui-ux で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 節ナビは sticky で幅 7〜8rem、説明パネルは 16〜18rem。『未保存』は変更したフィールド単位で数える (行の追加・削除は 1 行 1 項目)。メモの上限 100 字は数えて『n/100』と出す。バックアップ表は最新 1 件に『最新』、成功に『成功』、失敗に『失敗』のバッジ。ヒント文は画像の文言を使う。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-ui-ux-web-001",
+      "question": "web の設定画面の ui-ux 要件は何か。",
+      "answer": "web の設定画面の UI/UX 要件: パンくず『管理 / 設定』、期間タブ、見出し『設定』と問い『集計ルールと復元設定を、安全に管理しますか？』と説明文 2 行。左に節ナビ (集計ルール・名義・統計・現金上書き・データ・バックアップ、続けてアカウント・その他の管理) を置き、選択中の節を強調し、クリックでその節へ移る。集計ルールの表は チェックボックス・並べ替えハンドル・種別 (勘定科目 / 取引先)・元の表記 (入力値)・正規化後のカテゴリ select・削除 の列と『+ ルールを追加』。行を選ぶと右の『この設定の説明』に 元の表記・正規化後のカテゴリ・このルールが影響するもの・最終更新 (日時と更新者)・『このルールを元に戻す』・設定のヒント を出す (閉じられる)。名義 4 欄 (例文つき)、統計の月数入力と説明、現金上書きの 2 行 (上書き値・適用範囲・メモ 0/100) と 空欄 / 0 の凡例、データの 4 ボタン (設定 JSON・集計マトリクス CSV・取引 CSV・レポート HTML、各説明つき)、復元 (ファイル選択・警告・『設定を復元』は選ぶまで無効)、バックアップ表 (日付・サイズ・ステータス・メモ・比較・復元) と自動バックアップの説明。下部固定の保存バーに『未保存 N 項目』『変更をリセット』『設定を保存』。破壊的操作 (削除・リセット・復元・バックアップから戻す) は必ず確認ダイアログを経る。375px 幅では節ナビを上部の横並びにし、説明パネルは表の下へ回し、横スクロールは表の容器の中だけにする。情報の優先: 未保存件数と保存 > 集計ルール > 復元・バックアップ > 他の節。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "context-of-use",
         "information-priority",
-        "product-goal"
+        "product-goal",
+        "target-platforms"
       ]
     },
     {
-      "id": "qa-imp-frontend-web-002",
-      "question": "web のデータ取込画面のフロントエンド構成と、送信・アップロード進捗の扱いをどうするか (改訂版)。",
-      "answer": "Import.tsx を packages/web/src/pages/import/ 配下へ分割し (ファイル選択・取込ファイル一覧・内容確認・取込結果・取込履歴・履歴詳細・選択中バー)、ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果は core の純関数の結果を描くだけにする。流れは検査 → 確認 → 確定の 2 段階。選んだファイルを 1 つの multipart 要求にまとめて XMLHttpRequest で送り、1 つの検査 ID とファイルごとの項目を受け取る。進捗は upload.onprogress の累計バイトを multipart に積んだ順のファイルへ割り当てて、ファイルごとの % を出す (fetch はアップロード進捗を取れないため)。アップロード中のキャンセルは要求全体を abort し、そのファイルを外した残りを送り直す。送る前に 1 ファイル 25MB・10 ファイル・合計 30MB を画面で判定し、超えるものは送らない。取込不可のファイルの再試行と後からの追加は、同じ検査 ID へファイルを足す要求で行う。確定は検査 ID と取り込むファイル項目 ID と前回データを残す (既定オン)・強制再取込を送る。取込可能が 0 件のとき取り込むボタンは押せない。.txt はタブ区切りまたはカンマ区切りの CSV として扱う。取得は TanStack Query で履歴一覧と履歴詳細を分け、確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する。選択中の履歴は URL の検索パラメータに持つ。画面は遅延読み込みのまま。413 と 429 は上限と待ち時間 (Retry-After) を文言で出す。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "id": "qa-settings-frontend-web-evidence-001",
+      "question": "web の設定画面の frontend について、既存コードで何が観測できるか。",
+      "answer": "Settings.tsx は 457 行の 1 ファイルで、各節が PUT /api/settings を個別に送る (:58-67)。予算画面は pages/budget/ 配下に分割され、draft.ts (useBudgetDraft、localStorage キー kanjo:budget:draft:{userId}:{start}、v1、TTL 30 日、800ms debounce、pagehide flush)、BudgetSaveBar、view-model.ts の文言関数、409 時の再取得 (BudgetPage.tsx:194-237)、離脱確認 (:250-280) を持つ。共通部品 SelectionCheckbox・ConfirmDialog/usePendingConfirm・CategoryPicker・DataTable・AccessibleTabs・PageHeader がある。ログアウト時の下書き消去は Layout.tsx:151-152。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-frontend-web-002",
+      "question": "web の設定画面の frontend で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 下書きキーは kanjo:settings:draft:{userId}、v1、TTL 30 日、debounce 800ms (予算と同値)。並べ替えはドラッグと上下ボタンの併用で、ドラッグ用ライブラリは足さない (HTML の drag and drop とボタン)。節ナビは IntersectionObserver で現在節を追う。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-frontend-web-001",
+      "question": "web の設定画面の frontend 要件は何か。",
+      "answer": "web の設定画面のフロントエンド要件: pages/settings/ 配下へ分割 (ページ本体・節ナビ・節ごとの部品・説明パネル・保存バー・draft・view-model)。全節の編集を 1 つの下書き (useSettingsDraft) に集め、未保存件数を数え、localStorage へ自動保存・復元し、ログアウトで消す。保存は 1 回の PUT (baseSavedAt つき) で、409 は『他の画面で更新されました』を出して再取得する。変更をリセットと離脱 (beforeunload・アプリ内リンク) の前に確認する。表示用の値 (影響するもの・未保存件数の数え方・空欄 / 0 の表記) は core の settingsScreen から受け、web で計算し直さない。チェックボックスは SelectionCheckbox、カテゴリ select は既存のカテゴリ候補、並べ替えはキーボードでも行える (上下移動ボタン)。データの出力 3 種は選択中の期間を付ける (ExportMenu の withPeriod と同じ)。画像外の既存部品 (PasswordChangeForm・UserAdmin・ClassificationSettings・VendorMemorySettings・未記帳月・初期移行) はアカウント / その他の管理の節へそのまま移す。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "frontend-arch"
       ]
     },
     {
-      "id": "qa-imp-backend-web-002",
-      "question": "データ取込の検査・確定・履歴の規則をどこに置き、どの契約で返すか (改訂版)。",
-      "answer": "ファイルの状態、検証の段階、取込可否、内容確認の要約 (対象ファイル数・取込可能数・予定明細数・対象期間・影響する取込元・重複の可能性・サブスク候補)、取込 1 回の結果 (全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗) を packages/core の import-screen.ts の純関数に置く。POST /imports/inspections は 1〜10 ファイルを 1 要求で受け、1 ファイルずつ順にパース・検査して原本を R2 に 24 時間仮置きし、1 つの検査 ID とファイルごとの項目 (ファイル項目 ID・取込元・対象期間・サイズ・重複・バリデーション・明細数) を返す。POST /imports/inspections/:id/files は同じ検査 ID へファイルを足し (再試行と追加)、合わせて 10 ファイルまで。DELETE /imports/inspections/:id/files/:fileId は確定前の項目を外す。POST /imports/runs は検査 ID・取り込むファイル項目 ID・前回データを残す・強制再取込を受けて確定し、ファイルを再送させない。確定は既存の書込の直列化 (import_writer_claims) の内側でファイルを順に書き、先に全ファイルのクエリ予算を合算して上限を超えるなら 1 件も書かずに 409 を返す。前回データを残す=オンは MF 明細は mfStableKey、freee 取引は freeeDealKeys で既にある行を飛ばして新しい行だけを足し、オフは従来の月単位の入れ替え。行単位の追加の対象は MF 明細と freee 取引だけで、MF 資産推移と JSON 復元は従来の動作のまま。『重複の可能性』は既存の duplicateMatchScore による二重計上候補の件数、『サブスク候補』は取込後の subsCandidates の新規件数。取込済みと同一内容 (content_hash が一致) のファイルは取込可能から外し、強制再取込のときだけ含める。GET /imports/runs は取込 1 回を 1 行で返し、GET /imports/runs/:id は影響の 3 数値 (新規追加・重複スキップ・サブスク候補) と含まれるファイルを返す。再取込・取り消し (30 日)・原本の取得は既存の経路を取込単位へ束ねる。一括削除は履歴の記録だけを消す。対象は freee と マネーフォワードの CSV で、銀行・カードは扱わない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "id": "qa-settings-backend-web-evidence-001",
+      "question": "web の設定画面の backend について、既存コードで何が観測できるか。",
+      "answer": "routes/settings.ts: GET /settings (:89-111) は statMinMonths・normMap・unrecordedExpMonths・cashOverrides を返し、PUT /settings (:113-264、素の zValidator) は normMap を全件置換して recomputeFromDeals を伴い、cashOverrides は月単位の upsert/削除。GET/PUT /settings/owner-labels (:735-800) は 4 名義必須で core の validateOwnerLabels を使う。GET /backups・/backups/:date (:703-725)。出力は routes/analytics.ts:826-886、復元は routes/imports.ts:1924 POST /restore (形だけ検査、import writer lease)。予算の PUT /api/budget-plans は revisionOf (MAX(updated_at)) と baseSavedAt で 409、publicJsonValidator を使う。core の cashOverride はどの集計にも効いていない。normalizeAccount は core/normalize.ts:23。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-backend-web-002",
+      "question": "web の設定画面の backend で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 設定 JSON は {format:'kanjo-settings', version:1, exportedAt, normRules[], ownerLabels, statMinMonths, cashOverrides[]}。取引先ルールの照合キーは NFKC → 大文字小文字の畳み込み → 前後空白除去。recomputeFromDeals は勘定科目ルールが変わった保存のときだけ走らせる。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-backend-web-001",
+      "question": "web の設定画面の backend 要件は何か。",
+      "answer": "web の設定画面のバックエンド要件: core に settingsScreen (画面の表示値・影響するもの・未保存件数の基準)、集計ルールの照合と適用 (勘定科目は取込時の normalizeAccount と同じ意味、取引先は集計時に 手動 > 仕分けルール > 集計ルール > 自動、NFKC・大小文字を揃えた完全一致、並び順優先、無効行は不適用)、現金上書きの解決 (空欄 = 不適用 / 0 = 0 円 / 全期間 / 月指定)、設定 JSON の検証と差分 (版番号つき) を純関数で置く。API: GET /api/settings/screen (画面の全値と savedAt)、PUT /api/settings/screen (全節の変更を baseSavedAt つきで 1 回に受け、古ければ 409、変更履歴を同じ batch で追記)、GET /api/settings/history?ruleId= (元に戻す用の直前値)、GET /api/settings/export (設定のみ JSON)、POST /api/settings/restore/preview (差分) と POST /api/settings/restore (復元前に現在の設定を R2 へ退避して置換、更新者はシステム)、GET /api/backups に状態・メモ・要約、GET /api/backups/:date/compare (現在の設定との差分)。既存 API (PUT /settings・owner-labels・/restore) は互換のため残す。scheduled は JST 2:00 に実行し、成否を R2 の customMetadata に残す。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-imp-database-web-002",
-      "question": "検査の仮置き・取込 1 回の記録・履歴の削除・取込のレート制限を、どの表でどう持つか (改訂版)。",
-      "answer": "検査 1 要求は新しい表 import_inspections (検査 ID・利用者・状態・期限 24 時間・作成時刻) の 1 行、ファイルごとの項目は新しい表 import_inspection_files (ファイル項目 ID・検査 ID・利用者・ファイル名・取込元・対象期間・サイズ・内容ハッシュ・検査結果の要約・エラー種別・R2 の仮置きキー) に持つ。確定で imports と import_runs へ移し、確定済みの検査行は確定時に消す。import_runs は取込 1 回 = 1 つの検査 ID を 1 行とし、ファイル数・取込明細数・新規追加・重複スキップ・サブスク候補・結果・前回データを残すの値と、履歴の非表示の時刻 hidden_at を列で足す。一括削除は hidden_at を付けるだけで imports と明細の行は消さず、取り消し (30 日) の判定に影響しない。取込のレート制限は新しい表 import_rate_limits (利用者・経路の種別 (検査 / 確定)・1 分の時間枠の開始・回数、主キーはこの 3 つ) で数え、ログイン用の password_login_rate_limits とは分ける。索引は import_inspections(user_id, expires_at)・import_inspection_files(inspection_id)・import_runs(user_id, created_at)。夜間保守が期限切れの検査行と 1 日より古い時間枠を消す。migration は 0050 以降の新番号で表と列の追加だけにし、既存の表の意味を変えない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "id": "qa-settings-database-web-evidence-001",
+      "question": "web の設定画面の database について、既存コードで何が観測できるか。",
+      "answer": "account_norm_map (0000_init.sql:58) は (user_id, raw, norm) のみ。cash_overrides (0000_init.sql:56) は (user_id, month, revenue, expense)。analysis_settings (0019) は stat_min_months (既定 6)。owner_labels (0045)。rules (0000→0001) は sort_order を持つ。最新 migration は 0050_budget_plans.sql で、schema-guard.ts:4 の EXPECTED_D1_MIGRATION と一致 (0016・0017 は欠番)。監査表 audit_log (0033) の action は delete/undo/import_resolution のみ。夜間バックアップ (store.ts:1382 loadBackupPayload) は owner_labels を含まない。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-database-web-002",
+      "question": "web の設定画面の database で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: migration 番号は 0051 (集計ルール)・0052 (現金上書き)・0053 (変更履歴) の 3 本、または 0051 の 1 本。変更履歴の保持は無期限 (件数は少ない)。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-database-web-001",
+      "question": "web の設定画面の database 要件は何か。",
+      "answer": "web の設定画面のデータベース要件: 追加のみの migration で、(1) 集計ルールの新表 (種別 勘定科目 / 取引先・元の表記・正規化後・並び順・有効・更新時刻・更新者) を設け、既存 account_norm_map の行は初回に種別『勘定科目』として同じ意味で写し、既存表は 1 行も書き換えない (取込時の正規化の読み手は新表の勘定科目行を読む)、(2) 現金上書きの新表 (種別 支払い / 受け取り・上書き値 NULL 可・適用範囲 全期間 / 月・対象月・メモ 100 字・更新時刻・更新者) を設け、既存 cash_overrides の月ごとの値は『月指定』の行として写す、(3) 設定の変更履歴表 (追記のみ: 対象・キー・変更前・変更後・更新者・日時・由来 画面 / 復元 / 移行) を設ける。どの表も主キーの先頭は利用者とし利用者で区切る。新表は設定 JSON の書き出しと復元、夜間バックアップ、JSON snapshot の無効化の対象に加え、owner_labels もバックアップに含める。schema-guard の期待番号を上げる。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
       ]
     },
     {
-      "id": "qa-imp-auth-web-002",
-      "question": "検査 ID・ファイル項目・取込 1 回・原本を、誰がどこまで操作できるようにするか (改訂版)。",
-      "answer": "検査・ファイルの追加と除外・確定・履歴・原本の取得・再取込・取り消し・履歴の削除はすべて既存のセッション認証の後ろに置き、どの操作も利用者 ID で行を絞る。確定は本人が作った未期限の検査 ID と、その検査 ID に属するファイル項目 ID だけを受ける。他人の検査 ID・取込 ID・期限切れの検査 ID・別の検査のファイル項目 ID はすべて 404 not_found を返し、存在の有無を区別させない。検査 ID とファイル項目 ID は推測できない乱数 (crypto.randomUUID) にする。一括削除は本人の履歴だけを対象にし、1 要求 100 件まで、所有者でない ID が混ざれば全体を 404 にして 1 件も消さない。レート制限は利用者 ID ごとに数える。新しい認証方式は足さない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "id": "qa-settings-auth-web-evidence-001",
+      "question": "web の設定画面の auth について、既存コードで何が観測できるか。",
+      "answer": "ミドルウェア順は authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence (index.ts:105-109)。authGuard (auth.ts:245) は Access JWT かセッション Cookie を検証し userId=TENANT_ID('default') と actor を set する。adminGuard (auth.ts:319-) がある。/api/settings は CANONICAL_MUTATION_ROUTES (canonical-mutation-fence.ts:159-163) に登録済み。POST /restore は admin 限定ではない。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-auth-web-002",
+      "question": "web の設定画面の auth で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 更新者の表示名は actor のメールアドレスのローカル部。restore 系は import writer lease と同じ直列化を取る。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-auth-web-001",
+      "question": "web の設定画面の auth 要件は何か。",
+      "answer": "web の設定画面の認証要件: 新しい設定 API はすべて既存の authGuard・パスワード変更強制・スキーマ確認・canonicalMutationFence の内側に置き、未認証は 401。変更系 (PUT screen・restore・restore/preview を除く) は CANONICAL_MUTATION_ROUTES に登録する。変更履歴の更新者は authGuard が set する actor から取り、クライアントから受けない。設定の復元とバックアップからの復元は現行の /restore と同じ権限とし、権限を広げない。アカウント節 (パスワード変更・利用者管理) の権限判定は既存のまま (利用者管理は admin のみ描画)。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "auth-model"
       ]
     },
     {
-      "id": "qa-imp-security-web-002",
-      "question": "データ取込の入口で、何をどの上限と順序で防ぎ、何を外へ出さないか (改訂版)。",
-      "answer": "POST /imports/inspections と同じ検査 ID へのファイル追加に hono/body-limit で 30MB の上限を掛け、Content-Length が無い要求や宣言と実長が違う要求も本文をストリームで数えて上限で止め、413 payload_too_large を返す。本文を読んだ後に 1 要求 10 ファイル・1 ファイル 25MB を判定し、超えれば 413 を返す。xlsx と ZIP は展開する前に中央ディレクトリの展開後サイズを合計し、1 ファイル 60MB を超えるものは展開せずにそのファイルを取込不可にする。サーバは同時に展開するファイルを 1 つに限り、Worker のメモリ 128MB の中に収める。確定と一括削除の本文は小さい上限で止める。レート制限は利用者ごとに検査 30 回/分・確定 5 回/分で、超過は 429 rate_limited と Retry-After。/api/imports* の変更要求 (POST / DELETE) は Origin ヘッダーが自サイトと一致しなければ 403 forbidden_origin。ファイル名は制御文字を除き 255 文字で切り、ファイル名・取込元・エラー文などファイル由来の文字列は React のエスケープで描いて HTML として解釈しない。取込データは外部へ送信しない。仮置きの原本は本人だけが確定・取得でき、24 時間で消える。一括削除は記録だけで、明細は消さない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "id": "qa-settings-security-web-evidence-001",
+      "question": "web の設定画面の security について、既存コードで何が観測できるか。",
+      "answer": "CSRF 専用ミドルウェアは無く、SameSite=Strict の Cookie (auth.ts:131)・fetch の Content-Type: application/json 固定 (api-client.ts:42-47)・secureHeaders の CSP (form-action 'self'、frame-ancestors 'none') に頼る。bodyLimit は /api/auth/*・balances・ai にだけある。publicJsonValidator (public-validation.ts) は zod の詳細を外に出さない。エラー応答は {error:{code,message}}、onError は requestId を付け明細内容をログに出さない。/restore の body は形の検査のみで上限なし。フッタに『取込データは外部送信しません』。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-security-web-002",
+      "question": "web の設定画面の security で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 本文上限は画面の PUT 64KB、復元 256KB、集計ルールは 500 行まで。CSV の式注入対策は既存の CSV 出力に既にあるかを実装時に確かめる。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-security-web-001",
+      "question": "web の設定画面の security 要件は何か。",
+      "answer": "web の設定画面のセキュリティ要件: 設定系の新 API は publicJsonValidator で形を検査し、値の規則は core を正本にする (zod は形だけ)。本文サイズ上限を掛ける (画面の PUT と復元)。復元は版番号・形式名・全フィールドの型と範囲・件数上限を厳密に検査し、未知のキーは拒否し、1 つでも不正なら何も変えない。取引先・元の表記・メモは表示時にエスケープされる (React の既定) ことを保ち、CSV 出力はセルの先頭が = + - @ のときに式注入を防ぐ。エラーは詳細を返さずログにも設定値を出さない。外部送信は 0 件。バックアップ・変更履歴に秘密情報を入れない。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "security-posture"
       ]
     },
     {
-      "id": "qa-imp-infrastructure-web-002",
-      "question": "検査の仮置き・片づけ・1 要求の処理量を、どの基盤にどう載せるか (改訂版)。",
-      "answer": "仮置きの原本は既存の R2 (FILES) の接頭辞 import-staging/<user_id>/<inspection_id>/<file_id> に置き、確定時に既存の取込の鍵へコピーしてから仮置きを消す。期限切れの仮置きと検査行は既存の夜間保守 (cron 0 18 * * *) が 1 回あたり 500 件まで消し、残りは翌日に回す。同じ夜間保守で import_rate_limits の 1 日より古い時間枠を消す。Worker 1 isolate のメモリは 128MB なので、検査の 1 要求は multipart 本文 (最大 30MB) を読んだ後、1 ファイルずつ順にパースと展開 (最大 60MB) をして R2 へ置き、前のファイルの展開結果を手放してから次へ進む (ピーク約 90MB)。request body の上限 (Free/Pro 100MB) と CPU 時間 (既定 30 秒) の中に収まる。検査と確定の D1 クエリは既存のクエリ予算に収める。新しいバインディング・外部サービス・キューは足さない。レート制限の計数は D1 の表で持つ。migration は D1 の番号順で追加し、反映は Migrate → Deploy の順。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "id": "qa-settings-infrastructure-web-evidence-001",
+      "question": "web の設定画面の infrastructure について、既存コードで何が観測できるか。",
+      "answer": "packages/api/wrangler.jsonc: R2 は FILES → kanjo-files、D1 は DB、cron は \"0 18 * * *\" (JST 03:00)。nightlyBackup (index.ts:171-196) は loadBackupPayload を R2 backups/YYYY-MM-DD.json に put し 30 日より古いものを削除。scheduled は :390-393。失敗はログのみ (:239-249)。R2 list は 1000 件のページングを考慮していない (30 件保持なので実害なし)。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-infrastructure-web-002",
+      "question": "web の設定画面の infrastructure で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 失敗マーカーは backups/YYYY-MM-DD.failed.json (本文は理由コードのみ)。要約は集計ルール件数・名義の設定有無・統計の月数・現金上書きの件数。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-infrastructure-web-001",
+      "question": "web の設定画面の infrastructure 要件は何か。",
+      "answer": "web の設定画面のインフラ要件: cron を JST 2:00 (\"0 17 * * *\") に変える (wrangler.jsonc の 1 行)。バックアップの R2 オブジェクトに customMetadata として 状態・メモ・設定部分の要約・形式の版 を持たせ、失敗した回も状態『失敗』の小さなマーカーを残して一覧に出す。保持 30 日は据え置く。復元前の自動退避は同じ R2 の別プレフィックス (backups/pre-restore/) に置き、同じ保持規則で消す。新しいバインディングは足さない。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "infra-topology"
       ]
     },
     {
-      "id": "qa-imp-maintenance-ops-web-002",
-      "question": "データ取込画面の品質をどう保ち、規則と境界テストをどこに残すか (改訂版)。",
-      "answer": "ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果の規則、1 回の取込 = 1 つの検査 ID の単位、行単位の追加と月単位の入れ替えの違い、仮置きの期限、上限値とレート制限、履歴の削除の意味を docs/import-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。境界テストは、上限ちょうどと 1 超過 (10 / 11 ファイル、1 ファイル 25MB / 25MB+1 byte、合計 30MB / 30MB+1 byte を Content-Length ありと無しの両方、展開後 60MB / 60MB+1 byte)、検査 30 / 31 回目と確定 5 / 6 回目 (1 分の時間枠)、期限ちょうどの検査 ID、他人の検査 ID と別の検査のファイル項目 ID、Origin 不一致、前回データを残すのオンとオフで同じファイルを 2 回取り込んだときの行数、取込済みと同一内容のファイル、一部成功の結果、一括削除後に明細が残ること、夜間保守で期限切れの仮置きと古い時間枠が消えることを固定する。テストは旧実装で落ちることを確かめる。既存の取込・取り消し・破棄のテストを緑のまま保ち、初期 JS 予算 (CI 実測) と verify:full を通す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "id": "qa-settings-maintenance-ops-web-evidence-001",
+      "question": "web の設定画面の maintenance-ops について、既存コードで何が観測できるか。",
+      "answer": "設定変更の監査記録は無い (audit-log.ts:248 の action は delete/undo/import_resolution に限る)。夜間バックアップの失敗は画面に出る経路が無い。既存テストに settings-restore.dom.test.tsx・backup-restore.dom.test.tsx・owner-labels.integration.test.ts がある。前例 (予算) は docs/budget-screen/ に設計判断と証拠、spec-reflection-receipt を置く。verify:full は 4175 の vite を前提とする。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-maintenance-ops-web-002",
+      "question": "web の設定画面の maintenance-ops で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 設定 JSON の版を上げるときは core に移行関数を置き、古い版の復元を 1 世代まで受ける。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:41:14Z",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-maintenance-ops-web-001",
+      "question": "web の設定画面の maintenance-ops 要件は何か。",
+      "answer": "web の設定画面の保守運用要件: 設定の変更は変更履歴表に残り、誰がいつ何を変えたかを画面と API で辿れる。バックアップの失敗は一覧に『失敗』として出て、利用者が気づける。migration は追加のみで、失敗時は Deploy の再実行で戻せる手順 (既存の運用) に従う。docs/settings-screen/ に設計判断 (集計ルールの 2 種別と適用順・現金上書きの意味・設定 JSON の形式と版・バックアップの状態) と画面の証拠を残し、docs/data-schema.md と docs/ui-decisions.md を更新する。既存テストは緑のまま保ち、新しい core・API・DOM のテストを足す。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "ops-runbook"
       ]
     },
     {
-      "id": "qa-imp-decision-008",
-      "question": "取込不可のファイルの再試行や後からのファイル追加を、同じ検査 ID に足す経路 (POST /imports/inspections/:id/files) で行うか。",
-      "answer": "残す。同じ検査 ID へファイルを足せるようにし、上限は検査 ID ごとの累計で数える (合わせて 10 ファイル・合計 30MB)。この追加の要求は検査のレート制限 (30 回/分) に数える。1 回の取込 = 1 つの検査 ID の形を保つ。",
-      "provenance": "AskUserQuestion / 再評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。提示した選択肢と推奨: (1) 残す・累計で上限 [推奨。理由: 再試行でも全ファイルを送り直さずに済み、1 回の取込 = 1 検査 ID を保てる] (2) やめる・全体を送り直す [経路は減るが、再試行のたびに全ファイルを再アップロードする]。利用者は (1) を選択。",
+      "id": "qa-settings-decision-010",
+      "question": "設定画面の『バックアップ』節で、ある日のバックアップを『復元』したとき、何を戻しますか？ 【提示した選択肢 (逐語)】(1)『設定だけ戻す (Recommended)』— 集計ルール・名義・統計・現金上書きだけをその日の値へ戻し、取引は消さない。『比較』の差分と同じ範囲で、設定 JSON の復元と同じ経路 (差分プレビュー→確認→直前に現在の設定を退避) を通す。U3 G4『取引は消えない』と一致する。 (2)『全データを戻す』— 取引も含めてその日の状態へ置き換える (既存 /api/restore と同じ意味)。取引が消えうるので、G4『取引は消えない』の書き換えと強い確認が必要になる。",
+      "answer": "設定だけ戻す (推奨)。",
+      "provenance": "AskUserQuestion / 選択肢 2 件の文面を question に逐語で保存 (推奨案を選択)",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T22:27:38Z",
+      "answered_at": "2026-09-22T09:40:36Z",
       "required_info_items": [
         "api-contract",
+        "domain-model",
         "security-posture"
       ]
     },
     {
-      "id": "qa-imp-decision-009",
-      "question": "xlsx / ZIP を展開する前に確かめる、中のファイル数 (エントリ数) の上限をいくつにするか。",
-      "answer": "1,000 件。展開する前に中央ディレクトリのエントリ数を数え、1,000 件を超えるファイルは展開せずに取込不可にする。展開後 1 ファイル 60MB の上限と合わせて、ASVS 5.2.3 の 2 つの検査 (展開後の大きさとファイル数) を満たす。",
-      "provenance": "AskUserQuestion / 再評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。提示した選択肢と推奨: (1) 1,000 件 [推奨。理由: xlsx も MF の ZIP も通常は数十件で十分な余裕がある] (2) 10,000 件 [緩く、展開爆弾への備えが弱い] (3) 100 件 [厳しく、正当な大きな ZIP を弾きうる]。利用者は (1) を選択。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:27:38Z",
-      "required_info_items": [
-        "security-posture"
-      ]
+      "id": "qa-settings-ui-ux-web-004",
+      "question": "web の設定画面の ui-ux で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (UI/UX): 375px 幅では節ナビを上部の横並びにし、説明パネルは表の下へ回し、横スクロールは表の容器の中だけにする。行の削除とバックアップからの復元にも確認ダイアログを挟む。情報の優先順位は 未保存件数と保存 > 集計ルール > 復元・バックアップ > 他の節 (task 頻度 × 失敗コストによる推定)。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T09:45:25Z"
     },
     {
-      "id": "qa-imp-decision-010",
-      "question": "agent が補った値と認可の方針 (一括削除 1 要求 100 件・夜間保守の片づけ 1 回 500 件で残りは翌日・ファイル名は制御文字を除き 255 文字で切る・認可は本人の行だけで他人・期限切れ・別の検査のファイル ID はすべて 404) を確定するか。",
-      "answer": "この内容で確定する。一括削除は 1 要求 100 件まで、夜間保守の片づけは 1 回 500 件まで (残りは翌日)、ファイル名は制御文字を除いて 255 文字で切る。認可は既存のセッション認証の後ろで本人の行だけを対象にし、他人の・期限切れの・別の検査のファイル項目の ID にはすべて 404 を返して存在を区別させない。新しい認証方式は足さない。",
-      "provenance": "AskUserQuestion / 再評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。提示した選択肢と推奨: (1) この内容で確定 [推奨。理由: 既存の認証と運用の規模に合い、存在の有無を漏らさない] (2) 修正する [値を利用者が書き直す]。利用者は (1) を選択。",
+      "id": "qa-settings-ui-ux-web-003",
+      "question": "web の設定画面の ui-ux 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面の UI/UX 要件 (画像・G1・決定 001〜004・006〜010 に基づく): パンくず『管理 / 設定』、期間タブ、見出し『設定』と問い『集計ルールと復元設定を、安全に管理しますか？』と説明文。左の節ナビは画像の 6 節 (集計ルール・名義・統計・現金上書き・データ・バックアップ) の後ろに『アカウント』『その他の管理』を足し、画像外の既存機能を 1 つも消さない (決定 004)。集計ルールは勘定科目と取引先を 1 つの一覧で扱い、種別の列を持つ (決定 001)。表は チェックボックス・並べ替えハンドル・元の表記・正規化後のカテゴリ・削除 と『+ ルールを追加』。右の『この設定の説明』は 元の表記・正規化後のカテゴリ・影響するもの・最終更新と更新者・『このルールを元に戻す』(直前の保存値へ、決定 008)・設定のヒント。名義は 4 名義すべて (決定 002)。統計は最小月数の入力と説明で既定 6 (決定 009)。現金上書きは支払い・受け取りの 2 行に 上書き値 (空欄と 0 を区別)・適用範囲・メモ (決定 003)。データは 設定 JSON・集計マトリクス CSV・取引 CSV・レポート HTML の 4 種 (決定 006)。復元は設定だけ (決定 006)。バックアップ表は 日付・サイズ・ステータス・メモ・比較・復元 で、復元は設定だけを戻す (決定 007・010)。下部の保存バーに 未保存 N 項目・変更をリセット・設定を保存。リセット・復元・離脱の前に確認する (G3・G4)。375px 幅でも崩れない (G1)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T22:27:38Z",
+      "answered_at": "2026-09-22T09:45:25Z",
       "required_info_items": [
-        "auth-model",
-        "ops-runbook",
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-imp-decision-011",
-      "question": "承認済みの O6 は『上限を超える body・ファイル数・合計サイズを本文を読む前に 413 で拒否する』とするが、multipart のファイル数は本文を読まないと分からない。どう扱うか。",
-      "answer": "O6 を直して再承認する。上限を超える body (合計サイズ) は本文を読む前に 413、ファイル数と 1 ファイルの大きさは本文を読んだ直後・パースの前に 413 とする。この回答を上位概念の再承認 (appr-foundation-import-screen-002) として記録する。",
-      "provenance": "AskUserQuestion / 再評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。提示した選択肢と推奨: (1) O6 を直して再承認 [推奨。理由: 目標の測り方を実現できる判定順に合わせる] (2) O6 は据え置き、security とテストの節に読み方を注記する [上位概念は変えない]。利用者は (1) を選択。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:27:38Z",
-      "required_info_items": [
+        "context-of-use",
+        "information-priority",
         "product-goal",
-        "security-posture"
+        "target-platforms"
       ]
     },
     {
-      "id": "qa-imp-security-web-004",
-      "question": "データ取込の入口で、何をどの上限と順序で防ぎ、何を外へ出さないか (再改訂版)。",
-      "answer": "POST /imports/inspections と同じ検査 ID へのファイル追加に hono/body-limit で 30MB の上限を掛け、本文を読む前に止めて 413 payload_too_large を返す。hono/body-limit は Content-Length があればその値で判定し、無ければ本文をストリームで数えて上限で止める。宣言と実長のずれは HTTP の枠組み (Workers ランタイム) に任せ、仕様としては検査しない。ファイル数と 1 ファイルの大きさは本文を読んだ直後・パースの前に判定し、検査 ID ごとの累計 10 ファイル・1 ファイル 25MB・累計 30MB を超えれば 413 を返す (ファイル追加の要求では、既にある項目のサイズと数を足して判定する)。xlsx と ZIP は展開する前に中央ディレクトリのエントリ数と展開後サイズの合計を確かめ、エントリ数 1,000 件か展開後 1 ファイル 60MB を超えるものは展開せずにそのファイルを取込不可にする (ASVS 5.2.3)。サーバは同時に展開するファイルを 1 つに限り、Worker のメモリ 128MB の中に収める。確定と一括削除 (1 要求 100 件まで) の本文は小さい上限で止める。レート制限は利用者ごとに検査 30 回/分 (ファイル追加の要求も検査に数える)・確定 5 回/分で、超過は 429 rate_limited と Retry-After。/api/imports* の変更要求 (POST / DELETE) は Origin ヘッダーが自サイトと一致しなければ 403 forbidden_origin。ファイル名は制御文字を除き 255 文字で切り、ファイル名・取込元・エラー文などファイル由来の文字列は React のエスケープで描いて HTML として解釈しない。取込データは外部へ送信しない。仮置きの原本は本人だけが確定・取得でき、24 時間で消える。一括削除は記録だけで、明細は消さない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "id": "qa-settings-frontend-web-004",
+      "question": "web の設定画面の frontend で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (frontend): 下書きの hook 名は useSettingsDraft。ログアウトで下書きを消す (Layout.tsx の先例)。409 のときは『他の画面で更新されました』を出して再取得する。並べ替えはキーボードでも行える上下移動ボタンを併設する。期間の付け方は ExportMenu の withPeriod と同じにする。既存部品 (PasswordChangeForm・UserAdmin・ClassificationSettings・VendorMemorySettings・未記帳月・初期移行) はそのまま移す。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:27:38Z",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-frontend-web-003",
+      "question": "web の設定画面の frontend 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のフロントエンド要件 (I1・I4・G3・C2・決定 004・006 に基づく): Settings.tsx を pages/settings/ 配下へ分割し、見出し・期間タブ・節ナビ・各節・説明パネル・保存バーの構成にする (I1)。全節の編集を 1 つの下書きに集め、未保存件数を数え、localStorage へ自動保存・復元し、リセットと離脱の前に確認する。予算画面の先例 (draft.ts・BudgetSaveBar) にならう (I4)。保存は baseSavedAt つきの 1 回の PUT で、競合は 409 で検出する (G3)。表示用の値は core の算出から受ける (I2)。色はトークンだけ、部品は共通部品 (PageHeader・Button・ConfirmDialog・PeriodPicker・SelectionCheckbox・DataTable・CategoryPicker) を使う (C2)。出力 3 種は選択中の期間で出す (G4)。画像外の既存機能はアカウント / その他の管理の節へ移して残す (決定 004)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
       "required_info_items": [
-        "security-posture"
+        "frontend-arch"
       ]
     },
     {
-      "id": "qa-imp-backend-web-004",
-      "question": "データ取込の検査・確定・履歴の規則をどこに置き、どの契約で返すか (再改訂版)。",
-      "answer": "ファイルの状態、検証の段階、取込可否、内容確認の要約 (対象ファイル数・取込可能数・予定明細数・対象期間・影響する取込元・重複の可能性・サブスク候補)、取込 1 回の結果 (全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗) を packages/core の import-screen.ts の純関数に置く。POST /imports/inspections は 1〜10 ファイルを 1 要求で受け、ファイル数と 1 ファイルの大きさを本文を読んだ直後・パースの前に確かめてから、1 ファイルずつ順にパース・検査して原本を R2 に 24 時間仮置きし、1 つの検査 ID とファイルごとの項目 (ファイル項目 ID・取込元・対象期間・サイズ・重複・バリデーション・明細数) を返す。POST /imports/inspections/:id/files は同じ検査 ID へファイルを足し (再試行と追加)、上限は検査 ID ごとの累計で合わせて 10 ファイル・合計 30MB まで (既にある項目のサイズを import_inspection_files から合計して判定する)。この要求は検査のレート制限に数える。DELETE /imports/inspections/:id/files/:fileId は確定前の項目を外す。POST /imports/runs は検査 ID・取り込むファイル項目 ID・前回データを残す・強制再取込を受けて確定し、ファイルを再送させない。確定は既存の書込の直列化 (import_writer_claims) の内側でファイルを順に書き、先に全ファイルのクエリ予算を合算して上限を超えるなら 1 件も書かずに 409 を返す。前回データを残す=オンは MF 明細は mfStableKey、freee 取引は freeeDealKeys で既にある行を飛ばして新しい行だけを足し、オフは従来の月単位の入れ替え。行単位の追加の対象は MF 明細と freee 取引だけで、MF 資産推移と JSON 復元は従来の動作のまま。『重複の可能性』は既存の duplicateMatchScore による二重計上候補の件数、『サブスク候補』は取込後の subsCandidates の新規件数。取込済みと同一内容 (content_hash が一致) のファイルは取込可能から外し、強制再取込のときだけ含める。GET /imports/runs は取込 1 回を 1 行で返し、GET /imports/runs/:id は影響の 3 数値 (新規追加・重複スキップ・サブスク候補) と含まれるファイルを返す。再取込・取り消し (30 日)・原本の取得は既存の経路を取込単位へ束ねる。一括削除は履歴の記録だけを消す。対象は freee と マネーフォワードの CSV で、銀行・カードは扱わない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "id": "qa-settings-backend-web-004",
+      "question": "web の設定画面の backend で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (backend): パスは GET /api/settings/screen、PUT /api/settings/screen、GET /api/settings/history?ruleId=、GET /api/settings/export、POST /api/settings/restore/preview、POST /api/settings/restore、GET /api/backups (状態・メモ・要約を追加)、GET /api/backups/:date/compare、POST /api/backups/:date/restore/preview、POST /api/backups/:date/restore。バックアップ本文から設定部分を取り出して設定 JSON と同じ検証と置換に渡す。算出の名前は settingsScreen。recomputeFromDeals は勘定科目ルールが変わった保存に限る。成否は R2 の customMetadata に残す。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:27:38Z",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-backend-web-003",
+      "question": "web の設定画面の backend 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のバックエンド要件 (G2〜G5・I2・I3・I5・I6・決定 001・003・005〜008・010 に基づく): core に設定画面の算出、集計ルールの照合と適用、現金上書きの解決、設定 JSON の検証と差分を純関数で置く (I2)。集計ルールは勘定科目を従来どおり取込時に、取引先を集計時に 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類 の順で適用し、照合は NFKC・大小文字を揃えた完全一致、同じ元表記は並び順で優先、無効の行は効かない (決定 005・G2)。現金上書きは 空欄 = 上書きしない / 0 = 0 円 と 全期間 / 月指定 を区別し、core の現金集計に効かせる (決定 003)。API は 画面の取得、全節の変更を baseSavedAt つきで 1 回に受けて古ければ 409 にし変更履歴を追記する保存 (G3・決定 008)、元に戻す用の直前値、設定のみ JSON の書き出し、差分プレビューと確認を経て復元直前に現在の設定を退避する設定の復元 (決定 006)、状態・メモ・要約つきのバックアップ一覧と現在の設定との比較 (決定 007)、バックアップからの設定だけの復元 (設定の復元と同じ経路、取引は消さない、決定 010) を持つ。夜間バックアップは JST 2:00 に実行し、成否を残す (決定 007)。既存の API と機能は消さない (G5)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
       "required_info_items": [
         "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-imp-database-web-004",
-      "question": "検査の仮置き・取込 1 回の記録・履歴の削除・取込のレート制限を、どの表でどう持つか (再改訂版)。",
-      "answer": "検査 1 要求は新しい表 import_inspections (検査 ID・利用者・状態・期限 24 時間・作成時刻) の 1 行、ファイルごとの項目は新しい表 import_inspection_files (ファイル項目 ID・検査 ID・利用者・ファイル名・取込元・対象期間・サイズ・内容ハッシュ・検査結果の要約・エラー種別・R2 の仮置きキー) に持つ。確定で imports と import_runs へ移し、確定済みの検査行は確定時に消す。import_runs は取込 1 回 = 1 つの検査 ID を 1 行とし、ファイル数・取込明細数・新規追加・重複スキップ・サブスク候補・結果・前回データを残すの値と、履歴の非表示の時刻 hidden_at を列で足す。一括削除は hidden_at を付けるだけで imports と明細の行は消さず、取り消し (30 日) の判定に影響しない。検査 ID ごとの累計 (10 ファイル・30MB) は import_inspection_files のサイズと行数を合計して判定し、検査の行に合計を別に持たない。取込のレート制限は新しい表 import_rate_limits (利用者・経路の種別 (検査 / 確定。ファイル追加は検査に数える)・1 分の時間枠の開始・回数、主キーはこの 3 つ) で数え、ログイン用の password_login_rate_limits とは分ける。索引は import_inspections(user_id, expires_at)・import_inspection_files(inspection_id)・import_runs(user_id, created_at)。夜間保守が期限切れの検査行と 1 日より古い時間枠を 1 回 500 件まで消す (残りは翌日)。migration は 0050 以降の新番号で表と列の追加だけにし、既存の表の意味を変えない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "id": "qa-settings-database-web-004",
+      "question": "web の設定画面の database で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (database): 集計ルール・現金上書き・変更履歴の 3 表を新設し、主キーの先頭を利用者にする。変更履歴には由来 (画面 / 復元 / 移行) を持たせる。取込時の正規化の読み手を新表の勘定科目行へ寄せる。新表を設定 JSON・夜間バックアップ・JSON snapshot の無効化の対象に加え、owner_labels もバックアップに含める。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:27:38Z",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-database-web-003",
+      "question": "web の設定画面の database 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のデータベース要件 (C3・G2・G3・G5・決定 001・003・008 に基づく): migration は追加のみで 0050 の次の番号から、既存行の書き換えは 0 件、schema-guard の期待番号を合わせる (C3)。集計ルールは種別 (勘定科目 / 取引先) を持つ 1 つの一覧で、元の表記・正規化後・並び順・有効・更新日時・更新者を持つ (決定 001・G2・決定 008)。既存の科目正規化マップの値は初回に種別『勘定科目』として同じ意味で引き継ぐ (G5)。現金上書きは 支払い / 受け取り・上書き値 (空欄と 0 を区別)・適用範囲 (全期間 / 月指定)・メモを持ち、既存の月ごとの値は『月指定』として追加のみで引き継ぐ (決定 003)。設定の変更は追記のみの変更履歴に 変更前・変更後・更新者・日時 を残し、復元や移行で入った値の更新者は『システム』とする (決定 008・G3)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
       ]
     },
     {
-      "id": "qa-imp-auth-web-004",
-      "question": "検査 ID・ファイル項目・取込 1 回・原本を、誰がどこまで操作できるようにするか (再改訂版)。",
-      "answer": "検査・ファイルの追加と除外・確定・履歴・原本の取得・再取込・取り消し・履歴の削除はすべて既存のセッション認証の後ろに置き、どの操作も利用者 ID で行を絞る。確定は本人が作った未期限の検査 ID と、その検査 ID に属するファイル項目 ID だけを受ける。他人の検査 ID・取込 ID・期限切れの検査 ID・別の検査のファイル項目 ID はすべて 404 not_found を返し、存在の有無を区別させない。検査 ID とファイル項目 ID は推測できない乱数 (crypto.randomUUID) にする。一括削除は本人の履歴だけを対象にし、1 要求 100 件まで、所有者でない ID が混ざれば全体を 404 にして 1 件も消さない。ファイル名は制御文字を除き 255 文字で切って記録する。レート制限は利用者 ID ごとに数える。新しい認証方式は足さない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "id": "qa-settings-auth-web-004",
+      "question": "web の設定画面の auth で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (auth): 変更履歴の更新者は authGuard が set する actor から取り、要求本文の値を使わない。表示名は actor のメールアドレスのローカル部。設定の復元とバックアップからの復元の権限は既存 /restore と同じに留める。復元系は取込の洗替えと重ならないよう既存の直列化に揃える。差分プレビューは POST だが読むだけなのでフェンス対象から外す。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:27:38Z",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-auth-web-003",
+      "question": "web の設定画面の auth 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面の認証・認可要件 (G5・C4・O5 に基づく): 設定系の新 API はすべて既存の認証・パスワード変更強制・スキーマ確認・canonicalMutationFence の内側に置き、未認証は 401 にする (G5・O5)。書込み API (全節の保存・設定の復元・バックアップからの設定の復元) はすべて CANONICAL_MUTATION_ROUTES に登録する。読むだけの API (画面の取得・元に戻す用の直前値・書き出し・差分プレビュー・比較・一覧) は登録しない (C4・O5)。画像外の既存機能 (パスワード変更・利用者管理) の権限は変えない (G5)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
       "required_info_items": [
         "auth-model"
       ]
     },
     {
-      "id": "qa-imp-frontend-web-004",
-      "question": "web のデータ取込画面のフロントエンド構成と、送信・アップロード進捗の扱いをどうするか (再改訂版)。",
-      "answer": "Import.tsx を packages/web/src/pages/import/ 配下へ分割し (ファイル選択・取込ファイル一覧・内容確認・取込結果・取込履歴・履歴詳細・選択中バー)、ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果は core の純関数の結果を描くだけにする。流れは検査 → 確認 → 確定の 2 段階。選んだファイルを 1 つの multipart 要求にまとめて XMLHttpRequest で送り、1 つの検査 ID とファイルごとの項目を受け取る。進捗は upload.onprogress の累計バイトを multipart に積んだ順のファイルへ割り当てて、ファイルごとの % を出す (fetch はアップロード進捗を取れないため)。アップロード中のキャンセルは要求全体を abort し、そのファイルを外した残りを送り直す。送る前に 1 ファイル 25MB・10 ファイル・合計 30MB を画面で判定し、超えるものは送らない。取込不可のファイルの再試行と後からの追加は、同じ検査 ID へファイルを足す要求で行い、送る前に検査 ID の既存の項目と合わせた累計 (10 ファイル・30MB) を画面で判定する。確定は検査 ID と取り込むファイル項目 ID と前回データを残す (既定オン)・強制再取込を送る。取込可能が 0 件のとき取り込むボタンは押せない。.txt はタブ区切りまたはカンマ区切りの CSV として扱う。取得は TanStack Query で履歴一覧と履歴詳細を分け、確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する。選択中の履歴は URL の検索パラメータに持つ。画面は遅延読み込みのまま。413 と 429 は上限と待ち時間 (Retry-After) を文言で出す。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "id": "qa-settings-security-web-004",
+      "question": "web の設定画面の security で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (security): 本文上限は画面の PUT 64KB、復元 256KB、集計ルールは 500 行まで。未知のキーを拒否する。値の規則は core を正本にし zod は形だけを見る。取引先名・メモは React の既定のエスケープで表示し、CSV 出力はセル先頭の = + - @ を無害化する (ASVS V1.2.10)。エラー応答とログに設定値を出さない。バックアップ・変更履歴に秘密情報を入れない。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:27:38Z",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-security-web-003",
+      "question": "web の設定画面の security 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のセキュリティ要件 (G4・G5・C4・S4 に基づく): 設定系の新 API は公開向けの入力検証で詳細を外に出さず、本文サイズ上限を掛ける (G5・C4)。設定の復元は同じ形の版番号つき JSON だけを受け、厳密に形を検証し、サイズ上限を掛け、差分プレビューと確認を経て、復元直前に現在の設定を退避する (G4)。不正な JSON は何も変えずに拒否する (S4)。バックアップからの復元も同じ検証を通し、取引は消えない (決定 010)。外部送信は 0 件 (G5)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
       "required_info_items": [
-        "frontend-arch"
+        "security-posture"
       ]
     },
     {
-      "id": "qa-imp-maintenance-ops-web-004",
-      "question": "データ取込画面の品質をどう保ち、規則と境界テストをどこに残すか (再改訂版)。",
-      "answer": "ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果の規則、1 回の取込 = 1 つの検査 ID の単位、行単位の追加と月単位の入れ替えの違い、仮置きの期限、上限値とレート制限、履歴の削除の意味を docs/import-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。境界テストは、上限ちょうどと 1 超過 (10 / 11 ファイル、1 ファイル 25MB / 25MB+1 byte、合計 30MB / 30MB+1 byte を Content-Length ありと無しの両方、展開後 60MB / 60MB+1 byte、エントリ数 1,000 / 1,001 件、ファイル追加で検査 ID の累計が 10 / 11 ファイルと 30MB / 30MB+1 byte になる場合)、ファイル数と 1 ファイルの大きさの超過がパースより前に 413 になること、検査 30 / 31 回目 (ファイル追加の要求を含めて数える) と確定 5 / 6 回目 (1 分の時間枠)、一括削除 100 / 101 件、ファイル名 255 / 256 文字、期限ちょうどの検査 ID、他人の検査 ID と別の検査のファイル項目 ID、Origin 不一致、前回データを残すのオンとオフで同じファイルを 2 回取り込んだときの行数、取込済みと同一内容のファイル、一部成功の結果、一括削除後に明細が残ること、夜間保守で期限切れの仮置きと古い時間枠が 1 回 500 件まで消え残りが翌日に回ることを固定する。テストは旧実装で落ちることを確かめる。既存の取込・取り消し・破棄のテストを緑のまま保ち、初期 JS 予算 (CI 実測) と verify:full を通す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "id": "qa-settings-infrastructure-web-004",
+      "question": "web の設定画面の infrastructure で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (infrastructure): cron 式は UTC 評価なので \"0 17 * * *\"。状態・メモ・要約・形式の版は R2 オブジェクトの customMetadata に置く。失敗した回は backups/YYYY-MM-DD.failed.json の小さなマーカー (本文は理由コードのみ) を残す。復元前の自動退避は別プレフィックス backups/pre-restore/ に置き、同じ保持規則で消す。新しいバインディングは足さない。R2 の list は 1000 件ごとに cursor で続きを取る。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:27:38Z",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-infrastructure-web-003",
+      "question": "web の設定画面の infrastructure 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のインフラ要件 (決定 007・C5・U7 に基づく): 夜間バックアップを毎日 JST 2:00 に実行し、各回に 状態 (成功 / 失敗)・メモ・設定部分の要約 を持たせ、失敗した回も一覧に出す (決定 007)。バックアップの中身は従来どおり全データ (決定 007)。cron の変更は wrangler.jsonc の 1 行で、保持 30 日は据え置く (C5・U7 対象外)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
       "required_info_items": [
-        "ops-runbook"
+        "infra-topology"
       ]
     },
     {
-      "id": "qa-imp-frontend-web-005",
-      "question": "web のデータ取込画面のフロントエンド構成と、送信前の上限判定・アップロード進捗の扱いをどうするか (上限判定を core へ寄せた版)。",
-      "answer": "Import.tsx を packages/web/src/pages/import/ 配下へ分割し (ファイル選択・取込ファイル一覧・内容確認・取込結果・取込履歴・履歴詳細・選択中バー)、ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果は core の純関数の結果を描くだけにする。流れは検査 → 確認 → 確定の 2 段階。選んだファイルを 1 つの multipart 要求にまとめて XMLHttpRequest で送り、1 つの検査 ID とファイルごとの項目を受け取る。進捗は upload.onprogress の累計バイトを multipart に積んだ順のファイルへ割り当てて、ファイルごとの % を出す (fetch はアップロード進捗を取れないため)。アップロード中のキャンセルは要求全体を abort し、そのファイルを外した残りを送り直す。送る前の上限判定 (1 ファイル 25MB・10 ファイル・合計 30MB) は、packages/core の import-screen.ts に置く上限値の定数 IMPORT_LIMITS と、ファイルの一覧から超過の理由を返す判定関数を import して行い、超えるものは送らずに取込不可と理由を出す。web に上限の数値リテラルを書かない。取込不可のファイルの再試行と後からの追加は、同じ検査 ID へファイルを足す要求で行い、送る前に検査 ID の既存の項目と合わせた累計 (10 ファイル・30MB) を同じ core の判定関数で判定する。確定は検査 ID と取り込むファイル項目 ID と前回データを残す (既定オン)・強制再取込を送る。取込可能が 0 件のとき取り込むボタンは押せない。.txt はタブ区切りまたはカンマ区切りの CSV として扱う。取得は TanStack Query で履歴一覧と履歴詳細を分け、確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する。選択中の履歴は URL の検索パラメータに持つ。画面は遅延読み込みのまま。413 と 429 は上限と待ち時間 (Retry-After) を文言で出す。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。再評価 3 回目の指摘 (送信前の上限判定が web と api に二重実装されうる) に対し、承認済みの G3/S3 (判定は core の 1 か所・重複実装 0 件) を上限値にも当てはめた。上限の数値そのものは decision-006 と -009 で利用者が選んだ値のままで、新しい具体値は足していない。",
+      "id": "qa-settings-maintenance-ops-web-004",
+      "question": "web の設定画面の maintenance-ops で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (maintenance-ops): docs/settings-screen/ に設計判断 (集計ルールの 2 種別と適用順・現金上書きの意味・設定 JSON の形式と版・バックアップの状態) と画面の証拠を置き、docs/data-schema.md と docs/ui-decisions.md を更新する。migration が途中で止まったときは Deploy の再実行で収束させる既存の手順に従う。設定 JSON の版を上げるときは core に移行関数を置き、古い版の復元を 1 世代まで受ける。設定だけの誤りは設定 JSON の復元か『元に戻す』で直し、D1 Time Travel は障害時の最後の手段に残す。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:40:55Z",
-      "required_info_items": [
-        "frontend-arch"
-      ]
+      "answered_at": "2026-09-22T09:45:25Z"
     },
     {
-      "id": "qa-imp-ui-ux-web-004",
-      "question": "データ取込画面の構成・状態の見せ方・上限超過と追加の扱いをどうするか (追加の累計判定を書き足した版)。",
-      "answer": "見出し『複数の明細ファイルを、安全に取り込みますか？』の下に 3 段のステッパー (ファイル選択 / 内容確認 / 取込結果) を置き、1.ファイルを選択 (ドラッグ&ドロップ、CSV・Excel・txt、freee と マネーフォワードの取得方法の案内、詳細設定の強制再取込と前回データを残す=既定オン、『1 回に 10 ファイル・合計 30MB まで、1 ファイル 25MB まで』の注記)、2.取込ファイル一覧 (# / ファイル名 / 取込元 / 対象期間 / ファイルサイズ / 重複チェック / バリデーション / ステータス / 操作)、3.取込内容の確認 (対象ファイル数と取込可能数、取り込み予定の明細数、対象期間、影響する取込元、重複の可能性、サブスク候補、エラーのファイルは除外される注記)、4.取込結果 (成功 / 失敗 / 重複の可能性 / サブスク候補のカードとエラーのファイルのみ再試行)、5.取込履歴 (1 回の取込 = 1 つの検査 ID = 1 行、詳細ペインに影響の 3 数値) の順に並べる。下部バーに選択中ファイル数・取込可能数・エラー数・選択をキャンセル・N ファイルを取り込むを置く。案内から『銀行』を外す。ステータスは 5 種 (アップロード中 n% / 検査中 / 取込準備完了 / 取込不可 / 取込済み) で、色だけに頼らず文字とアイコンを併記する。重複チェックは『なし / n 件 / 取込済みと同一』、バリデーションは『OK / 警告 n / エラー n』。操作はアップロード中=キャンセル、準備完了=削除、取込不可=再試行と削除。上限を超えるファイルは送る前に取込不可として理由 (25MB 超・10 ファイル超・合計 30MB 超) を出す。取込不可のファイルの再試行と後からの追加は同じ検査 ID (同じ取込 1 回の行) へ足し、送る前に既存の項目と合わせた累計 (10 ファイル・合計 30MB) を判定して、超えるときは追加せずに理由を出す。上限の判定と注記の数値は core の 1 か所 (IMPORT_LIMITS と判定関数) の結果を描くだけで、画面は数値の判定を持たない。結果カードの『重複の可能性』は総収支画面、『サブスク候補』はサブスク画面へのリンクを持つ。狭い画面では段を縦に積み、表は横スクロールにする。共通シェル (ヘッダーの防衛ライン、フッターの文言) は変更しない。束の順位は頻度 × 失敗コストで、取り込む前に何が入るかを確かめる 3.確認を 1.選択の直後に常に見せる。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。再評価 3 回目の指摘 (送信前の上限判定が web と api に二重実装されうる) に対し、承認済みの G3/S3 (判定は core の 1 か所・重複実装 0 件) を上限値にも当てはめた。上限の数値そのものは decision-006 と -009 で利用者が選んだ値のままで、新しい具体値は足していない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:40:55Z",
-      "required_info_items": [
-        "context-of-use",
-        "information-priority",
-        "product-goal"
-      ]
-    },
-    {
-      "id": "qa-imp-backend-web-005",
-      "question": "データ取込の検査・確定・履歴の規則と上限値をどこに置き、どの契約で返すか (上限値を core へ寄せた版)。",
-      "answer": "ファイルの状態、検証の段階、取込可否、内容確認の要約 (対象ファイル数・取込可能数・予定明細数・対象期間・影響する取込元・重複の可能性・サブスク候補)、取込 1 回の結果 (全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗) を packages/core の import-screen.ts の純関数に置く。上限値 (1 ファイル 25MB・10 ファイル・合計 30MB・展開後 1 ファイル 60MB・エントリ数 1,000 件) も同じ import-screen.ts の定数 IMPORT_LIMITS に 1 か所だけ置き、ファイルの大きさと数 (追加では既存の項目を含む) から超過の理由を返す判定関数を core に置く。web の送信前の判定と api の 413 の判定 (hono/body-limit の maxSize を含む) はどちらもこの定数と関数を import し、数値を書き写さない。POST /imports/inspections は 1〜10 ファイルを 1 要求で受け、ファイル数と 1 ファイルの大きさを本文を読んだ直後・パースの前に確かめてから、1 ファイルずつ順にパース・検査して原本を R2 に 24 時間仮置きし、1 つの検査 ID とファイルごとの項目 (ファイル項目 ID・取込元・対象期間・サイズ・重複・バリデーション・明細数) を返す。POST /imports/inspections/:id/files は同じ検査 ID へファイルを足し (再試行と追加)、上限は検査 ID ごとの累計で合わせて 10 ファイル・合計 30MB まで (既にある項目のサイズを import_inspection_files から合計して判定する)。この要求は検査のレート制限に数える。DELETE /imports/inspections/:id/files/:fileId は確定前の項目を外す。POST /imports/runs は検査 ID・取り込むファイル項目 ID・前回データを残す・強制再取込を受けて確定し、ファイルを再送させない。確定は既存の書込の直列化 (import_writer_claims) の内側でファイルを順に書き、先に全ファイルのクエリ予算を合算して上限を超えるなら 1 件も書かずに 409 を返す。前回データを残す=オンは MF 明細は mfStableKey、freee 取引は freeeDealKeys で既にある行を飛ばして新しい行だけを足し、オフは従来の月単位の入れ替え。行単位の追加の対象は MF 明細と freee 取引だけで、MF 資産推移と JSON 復元は従来の動作のまま。『重複の可能性』は既存の duplicateMatchScore による二重計上候補の件数、『サブスク候補』は取込後の subsCandidates の新規件数。取込済みと同一内容 (content_hash が一致) のファイルは取込可能から外し、強制再取込のときだけ含める。GET /imports/runs は取込 1 回を 1 行で返し、GET /imports/runs/:id は影響の 3 数値 (新規追加・重複スキップ・サブスク候補) と含まれるファイルを返す。再取込・取り消し (30 日)・原本の取得は既存の経路を取込単位へ束ねる。一括削除は履歴の記録だけを消す。対象は freee と マネーフォワードの CSV で、銀行・カードは扱わない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。再評価 3 回目の指摘 (送信前の上限判定が web と api に二重実装されうる) に対し、承認済みの G3/S3 (判定は core の 1 か所・重複実装 0 件) を上限値にも当てはめた。上限の数値そのものは decision-006 と -009 で利用者が選んだ値のままで、新しい具体値は足していない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:40:55Z",
-      "required_info_items": [
-        "api-contract",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-imp-maintenance-ops-web-005",
-      "question": "データ取込画面の品質をどう保ち、規則・境界テスト・上限値の一元化をどこで固定するか (数値リテラルの検査を足した版)。",
-      "answer": "ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果の規則、1 回の取込 = 1 つの検査 ID の単位、行単位の追加と月単位の入れ替えの違い、仮置きの期限、上限値とレート制限、履歴の削除の意味を docs/import-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。境界テストは、上限ちょうどと 1 超過 (10 / 11 ファイル、1 ファイル 25MB / 25MB+1 byte、合計 30MB / 30MB+1 byte を Content-Length ありと無しの両方、展開後 60MB / 60MB+1 byte、エントリ数 1,000 / 1,001 件、ファイル追加で検査 ID の累計が 10 / 11 ファイルと 30MB / 30MB+1 byte になる場合)、ファイル数と 1 ファイルの大きさの超過がパースより前に 413 になること、検査 30 / 31 回目 (ファイル追加の要求を含めて数える) と確定 5 / 6 回目 (1 分の時間枠)、一括削除 100 / 101 件、ファイル名 255 / 256 文字、期限ちょうどの検査 ID、他人の検査 ID と別の検査のファイル項目 ID、Origin 不一致、前回データを残すのオンとオフで同じファイルを 2 回取り込んだときの行数、取込済みと同一内容のファイル、一部成功の結果、一括削除後に明細が残ること、夜間保守で期限切れの仮置きと古い時間枠が 1 回 500 件まで消え残りが翌日に回ることを固定する。テストは旧実装で落ちることを確かめる。上限値が core の IMPORT_LIMITS の 1 か所だけにあり、packages/web と packages/api の取込の経路に上限の数値リテラル (25MB・30MB・60MB・10 ファイル・1,000 件) が無いことを、既存の契約ガードと同じ字面の検査で固定する。web の送信前の判定と api の 413 が同じ境界値で同じ結果になることを、共通の境界表を両方のテストから読んで確かめる。既存の取込・取り消し・破棄のテストを緑のまま保ち、初期 JS 予算 (CI 実測) と verify:full を通す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
-      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。再評価 3 回目の指摘 (送信前の上限判定が web と api に二重実装されうる) に対し、承認済みの G3/S3 (判定は core の 1 か所・重複実装 0 件) を上限値にも当てはめた。上限の数値そのものは decision-006 と -009 で利用者が選んだ値のままで、新しい具体値は足していない。",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T22:40:55Z",
+      "id": "qa-settings-maintenance-ops-web-003",
+      "question": "web の設定画面の maintenance-ops 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面の保守運用要件 (決定 007・008・C3・S5・O5 に基づく): 設定の変更は追記のみの変更履歴で、誰がいつ何を変えたかを辿れる (決定 008)。夜間バックアップの失敗は一覧に『失敗』として出て、利用者が気づける (決定 007)。migration は追加のみ (C3)。既存の設定機能のテストは緑のまま保ち、verify:full を緑にする (S5・O5)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
       "required_info_items": [
         "ops-runbook"
       ]
@@ -1015,140 +971,66 @@
   ],
   "approval_log": [
     {
-      "id": "appr-foundation-import-screen-001",
-      "note": "データ取込サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/16-import.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択。先立つ 4 決定 (銀行・カード明細=対象外で freee と MF の CSV のみ / 前回データを残す=行単位の追加で既定オン / 取込の流れ=サーバに仮置きする 2 段階 / 取込履歴=1 回の取込で 1 行・一括削除は記録だけ) を含む。実測時刻 2026-09-21T15:16:46Z。basis=user-decision。"
-    },
-    {
-      "id": "appr-foundation-import-screen-002",
-      "note": "O6 の測り方の再承認。multipart のファイル数は本文を読まないと分からないため、『上限を超える body (合計サイズ) は本文を読む前に、ファイル数と 1 ファイルの大きさは本文を読んだ直後・パースの前に 413』へ直す。選択肢は『O6 を直して再承認 (推奨) / O6 は据え置き』で、利用者は再承認を選択 (qa-imp-decision-011)。O6 以外の U1-U9 は appr-foundation-import-screen-001 のまま。実測時刻 2026-09-21T22:27:38Z。basis=user-decision。"
+      "id": "appr-foundation-settings-001",
+      "note": "設定画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/18-settings.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択 (2026-09-22T08:37:17Z、回答受領直後の実測時刻)。範囲外: 取引データの復元形式の変更・仕分けルール/ベンダー記憶の意味変更・共通シェルの作り直し・外部送信・web 以外の専用アプリ・バックアップ保持30日の変更。basis=user-decision。"
     }
   ],
   "reopen_log": [
     {
       "category": "ui-ux",
       "platform": "web",
-      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-ui-ux-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:41:14Z"
+      "reopened_at": "2026-09-22T09:42:50Z"
     },
     {
       "category": "frontend",
       "platform": "web",
-      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-frontend-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:41:14Z"
+      "reopened_at": "2026-09-22T09:42:50Z"
     },
     {
       "category": "backend",
       "platform": "web",
-      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-backend-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。 加えて medium 指摘: バックアップからの復元の API と範囲が未定義。利用者の決定 qa-settings-decision-010 (設定だけ戻す) を反映する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:41:14Z"
+      "reopened_at": "2026-09-22T09:42:50Z"
     },
     {
       "category": "database",
       "platform": "web",
-      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-database-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:41:14Z"
+      "reopened_at": "2026-09-22T09:42:50Z"
     },
     {
       "category": "auth",
       "platform": "web",
-      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-auth-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。 加えて high 指摘: 『変更系 (PUT screen・restore・restore/preview を除く) は CANONICAL_MUTATION_ROUTES に登録する』は字面上、保存と復元の書込み API 本体をフェンスから外し、承認済みの O5・C4 と矛盾する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:41:14Z"
+      "reopened_at": "2026-09-22T09:42:50Z"
     },
     {
       "category": "security",
       "platform": "web",
-      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-security-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:41:14Z"
+      "reopened_at": "2026-09-22T09:42:50Z"
     },
     {
       "category": "infrastructure",
       "platform": "web",
-      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-infrastructure-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:41:14Z"
+      "reopened_at": "2026-09-22T09:42:50Z"
     },
     {
       "category": "maintenance-ops",
       "platform": "web",
-      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-maintenance-ops-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:41:14Z"
-    },
-    {
-      "category": "security",
-      "platform": "web",
-      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:27:38Z"
-    },
-    {
-      "category": "backend",
-      "platform": "web",
-      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:27:38Z"
-    },
-    {
-      "category": "database",
-      "platform": "web",
-      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:27:38Z"
-    },
-    {
-      "category": "auth",
-      "platform": "web",
-      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:27:38Z"
-    },
-    {
-      "category": "frontend",
-      "platform": "web",
-      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:27:38Z"
-    },
-    {
-      "category": "maintenance-ops",
-      "platform": "web",
-      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:27:38Z"
-    },
-    {
-      "category": "frontend",
-      "platform": "web",
-      "reason": "再評価 3 回目 (FAIL・medium) の指摘による。送信前の上限判定を web で行うとしながら、上限値と判定の置き場所が core に書かれておらず、G3/S3 (api と web に同じ判定の重複実装 0 件) と frontend の設計知識の適用 (web は取込の判定を持たない) に反する。上限値と超過の判定を core の 1 か所に置き、web と api が import する形へ直して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:40:55Z"
-    },
-    {
-      "category": "ui-ux",
-      "platform": "web",
-      "reason": "再評価 3 回目 (FAIL・medium) の指摘による。送信前の上限判定を web で行うとしながら、上限値と判定の置き場所が core に書かれておらず、G3/S3 (api と web に同じ判定の重複実装 0 件) と frontend の設計知識の適用 (web は取込の判定を持たない) に反する。上限値と超過の判定を core の 1 か所に置き、web と api が import する形へ直して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:40:55Z"
-    },
-    {
-      "category": "backend",
-      "platform": "web",
-      "reason": "再評価 3 回目 (FAIL・medium) の指摘による。送信前の上限判定を web で行うとしながら、上限値と判定の置き場所が core に書かれておらず、G3/S3 (api と web に同じ判定の重複実装 0 件) と frontend の設計知識の適用 (web は取込の判定を持たない) に反する。上限値と超過の判定を core の 1 か所に置き、web と api が import する形へ直して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:40:55Z"
-    },
-    {
-      "category": "maintenance-ops",
-      "platform": "web",
-      "reason": "再評価 3 回目 (FAIL・medium) の指摘による。送信前の上限判定を web で行うとしながら、上限値と判定の置き場所が core に書かれておらず、G3/S3 (api と web に同じ判定の重複実装 0 件) と frontend の設計知識の適用 (web は取込の判定を持たない) に反する。上限値と超過の判定を core の 1 か所に置き、web と api が import する形へ直して再確定する。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:40:55Z"
+      "reopened_at": "2026-09-22T09:42:50Z"
     }
   ],
   "category_aggregate": {
@@ -1163,31 +1045,19 @@
   },
   "targets": [
     {
-      "target_id": "wcag22-use-of-color",
+      "target_id": "wcag22-dragging-movements",
       "category": "ui-ux"
     },
     {
-      "target_id": "tanstack-query-invalidation",
-      "category": "frontend"
-    },
-    {
-      "target_id": "react-router-searchparams",
-      "category": "frontend"
-    },
-    {
-      "target_id": "mdn-xhr-upload-progress",
+      "target_id": "mdn-beforeunload",
       "category": "frontend"
     },
     {
       "target_id": "hono-body-limit",
-      "category": "security"
+      "category": "backend"
     },
     {
-      "target_id": "owasp-asvs",
-      "category": "security"
-    },
-    {
-      "target_id": "hono-zod-validator",
+      "target_id": "mdn-string-normalize",
       "category": "backend"
     },
     {
@@ -1195,343 +1065,324 @@
       "category": "database"
     },
     {
-      "target_id": "cloudflare-workers-limits",
+      "target_id": "cloudflare-workers-cron-triggers",
       "category": "infrastructure"
     },
     {
-      "target_id": "cloudflare-cron-triggers",
+      "target_id": "cloudflare-r2-workers-api",
       "category": "infrastructure"
     },
     {
-      "target_id": "cloudflare-r2-object-lifecycles",
-      "category": "infrastructure"
+      "target_id": "owasp-asvs-encoding",
+      "category": "security"
     },
     {
-      "target_id": "vitest-expect",
+      "target_id": "cloudflare-d1-time-travel",
       "category": "maintenance-ops"
     }
   ],
   "requirements_foundation": {
-    "essential_purpose": "データ取込画面を、『複数の明細ファイルを、安全に取り込みますか？』という問いに 1 画面で答え切る場にする。利用者が freee (事業) と マネーフォワード (家計) の CSV / Excel / テキスト明細を複数まとめて選ぶと、確定する前にファイルごとの取込元・対象期間・大きさ・重複・検証の結果を一覧で確かめ、取り込み予定の明細数・影響する取込元・重複の可能性・サブスク候補の要約を見てから、取り込めるファイルだけをまとめて確定でき、結果 (成功 / 失敗 / 重複の可能性 / サブスク候補) からそのまま次の画面へ進め、過去の取込を 1 回ごとに振り返って原本の取得・再取込・取り消しをその場で決着できる状態にする。誤った取込や二重取込で台帳を壊さないこと、取り込んだデータを外部へ送らないことを守る。",
-    "background": "現行の /import (packages/web/src/pages/Import.tsx、897 行の 1 ファイル) は、選んだファイルを送った時点で 1 ファイルずつ確定する。確定前にファイルごとの重複・検証の結果を並べて見る場所が無く、取り込み予定の明細数やサブスク候補の数も確定後にしか分からない。差分プレビューは MF 明細だけが対象で、freee には無い。取込履歴はファイルごとの 1 行で、1 回の取込 (複数ファイル) の結果と影響 (新規追加・重複スキップ・サブスク候補) をまとめて見られず、詳細の表示や原本のダウンロードの導線も弱い。『前回データを残す』に近い設定は『件数が減る月だけ前回の内容を残す』で、画像の『同一期間の既存データを残して新しいデータを追加』とは意味が違う。API (packages/api/src/routes/imports.ts) は 1 ファイル 25MB の上限を formData を読み込んだ後で判定しており、body の大きさの上限・取込専用のレート制限・Origin の検査が無い。design/FINAL-UI/images/16-import.png は、これらを 1 画面 (3 段のステッパー、1.ファイルを選択 / 2.取込ファイル一覧 / 3.取込内容の確認 / 4.取込結果 / 5.取込履歴と履歴の詳細、下部の選択件数バー) に統合した完成形である。概要・総収支・推移・家計収支・サブスク・診断・決算書・明細仕分け・AI分析を同じ流儀で作り直し終えた今、月次クローズの入口である『取込』段階の画面を揃える時期にある。",
+    "essential_purpose": "設定画面を、『集計ルールと復元設定を、安全に管理しますか？』という問いに 1 画面で答え切る場にする。利用者は左の節ナビ (集計ルール・名義・統計・現金上書き・データ・バックアップ、続けてアカウント・その他の管理) で目的の節へ移り、集計ルール (勘定科目と取引先の表記ゆれを 1 つの一覧で正規化後のカテゴリへまとめる) を行ごとに編集・並べ替え・一括削除し、右の『この設定の説明』でそのルールが何に影響し、いつ誰が変えたかを確かめて直前の保存値へ戻せる。名義の表示名・統計の最小月数・現金上書き (空欄と 0 円を区別) を同じ下書きで編集し、下部の保存バーで未保存の件数を見て 1 回で保存する。設定だけを JSON で書き出して別の日に復元でき、毎晩 2:00 の自動バックアップを状態・メモ付きで一覧し、現在の設定と比べてから戻せる。設定の変更で集計・分析・レポートの前提が黙って壊れないこと、戻せない操作が 0 件であることを本質とする。",
+    "background": "現行の /settings (packages/web/src/pages/Settings.tsx、457 行の 1 ファイル) はカードを縦に並べるだけで、節ナビ・説明パネル・保存バーが無く、節ごとに PUT /api/settings を別々に送る。下書き・未保存件数・409 競合の検出が無い。科目正規化マップ (account_norm_map、0000_init.sql) は (user_id, raw, norm) のみで並び順・有効フラグ・更新日時・更新者を持たず、正規化後はテキスト入力である。デザイン (design/FINAL-UI/images/18-settings.png、AUDIT.md『抽象的な分類に寄りすぎ。正規化、名義、最低月数、現金上書き、復元を具体化』) は取引先名の表記ゆれ (スターバックス / スタバ / Starbucks → カフェ・外食) も同じ一覧で扱う。名義の表示名は 4 名義 (事業・配偶者・家族・未設定) の API (GET/PUT /api/settings/owner-labels) があるが編集 UI は家計収支画面にしかない。現金補正 (cash_overrides) は月ごとの入金・支出だけで、空欄は 0 に潰れ、メモ・適用範囲が無く、core のどの集計にも効いていない。JSON 書き出しは取引を含む全データで、復元は HTML 版からの初期移行 (全データ置換、形の検査のみ・サイズ上限なし) しかない。夜間バックアップ (cron 0 18 * * * = JST 3:00、R2 backups/YYYY-MM-DD.json、30 日保持) は状態・メモを持たず失敗はログにしか出ない。設定変更の監査記録は無い。",
     "goals": [
       {
         "id": "G1",
-        "text": "/import を 16-import.png どおりの画面にする。問いの見出し『複数の明細ファイルを、安全に取り込みますか？』と説明文、共通の期間タブ、対象期間 (グローバル) のカード、3 段のステッパー (ファイル選択 / 内容確認 / 取込結果)、1.ファイルを選択 (ドラッグ&ドロップと選択ボタン、対応形式の説明、対応サービス (マネーフォワード・freee) の取得方法の案内、詳細設定の強制再取込と前回データを残す)、2.取込ファイル一覧の表、3.取込内容の確認の要約、4.取込結果の 4 枚のカード、5.取込履歴の表と履歴の詳細ペイン、下部の選択件数バーを、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。"
+        "text": "/settings を 18-settings.png どおりの画面にする。パンくず『管理 / 設定』、期間タブ、見出し『設定』と問い『集計ルールと復元設定を、安全に管理しますか？』と説明文、左の節ナビ (集計ルール・名義・統計・現金上書き・データ・バックアップ、続けてアカウント・その他の管理)、集計ルールの表 (チェックボックス・並べ替えハンドル・元の表記・正規化後のカテゴリ select・削除・+ルールを追加)、右の『この設定の説明』(元の表記・正規化後のカテゴリ・影響するもの・最終更新と更新者・このルールを元に戻す・設定のヒント)、名義・統計・現金上書き・データ (4 種の出力)・復元・バックアップの各節、下部の保存バー (未保存 N 項目・変更をリセット・設定を保存) を描く。375px 幅でも崩れない。"
       },
       {
         "id": "G2",
-        "text": "確定の前に検査する 2 段階の取込にする。選んだファイルを一度だけアップロードしてサーバに期限付き (24 時間) で仮置きし、ファイルごとに取込元・対象期間・明細数・重複 (取込済みと同一の内容 / 重複の可能性)・検証 (問題なし / 警告あり / エラー) を返す。確定は検査 ID を指定するだけでファイルを再送せず、エラーのファイルは確定から自動で外す。未確定の仮置きは期限後に夜間保守で消す。"
+        "text": "設定の意味を core の 1 か所で決める。集計ルールは種別 (勘定科目 / 取引先) を持つ 1 つの一覧で、勘定科目は従来どおり取込時に、取引先は集計時に 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類 の順で適用し、照合は NFKC・大小文字を揃えた完全一致、同じ元表記は並び順で優先する。無効の行は効かない。現金上書きは支払い・受け取りそれぞれ空欄=上書きしない / 0=0 円で上書き を区別し、適用範囲 (全期間 / 月指定) で core の現金集計に実際に効かせる。名義 4 つの表示名と統計の最小月数 (既定 6、範囲 3〜24) を同じ core の規則で検証する。"
       },
       {
         "id": "G3",
-        "text": "ファイルの状態・検証の段階・取り込めるか否か・要約の数え方・取込 1 回の結果 (成功 / 一部成功 / 失敗) を core の純関数 1 か所で導き、api と web はその結果を読むだけにする。"
+        "text": "設定を安全に保存する。全節の編集を 1 つの下書きに集め、未保存の件数を数え、localStorage へ自動保存・復元し、リセットと離脱の前に確認する。保存は baseSavedAt つきの 1 回の PUT で、他所の更新と競合したら 409 で上書きを防ぐ。設定の変更は追記のみの変更履歴表に 変更前・変更後・更新者・日時 を残し、右パネルの最終更新・更新者と『このルールを元に戻す』(直前の保存値を下書きへ戻す) はそこから導く。復元や移行で入った値の更新者は『システム』とする。"
       },
       {
         "id": "G4",
-        "text": "『前回データを残す』を画像の意味 (同一期間の既存明細を残し、まだ無い行だけ追加する。同一の行は重複スキップとして数える) に改め、既定をオンにする。オフのときは従来どおり月単位で入れ替える。強制再取込は同じ内容のファイルでも再適用する。"
+        "text": "設定を持ち出し・戻せるようにする。設定のエクスポートは集計ルール・名義・統計・現金上書きだけを版番号つき JSON で出し、復元は同じ形だけを受ける (厳密な形の検証・サイズ上限・差分プレビューと確認・復元直前に現在の設定を自動退避)。取引は消えない。マトリクス CSV・取引 CSV・レポート HTML は選択中の期間で出す。自動バックアップは毎日 JST 2:00 に実行し、各回に 状態 (成功 / 失敗)・メモ・設定部分の要約 を持たせて失敗も一覧に出し、『比較』でその日の設定と現在の設定の差分を見てから『復元』できる。"
       },
       {
         "id": "G5",
-        "text": "取込履歴を 1 回の取込ごとの 1 行にまとめ、詳細ペインで取込日時・取込元・対象期間・ファイル数・取込明細数・結果とこの取込による影響 (新規追加・重複スキップ・サブスク候補) を示し、原本のダウンロード・再取込・取り消し (30 日以内は元に戻せる) を決着できるようにする。一括削除は取り消し済み・失敗の履歴の記録を片づけるだけで明細は消さない。"
-      },
-      {
-        "id": "G6",
-        "text": "取込の入口を守る。検査・確定・原本取得の経路に body の大きさの上限 (読み込む前に判定)・ファイル数と合計サイズの上限・取込専用のレート制限・同一オリジンの検査を置き、ファイル名や明細の文字列は HTML として解釈せずに描画する。取り込んだデータは外部へ送らない。"
+        "text": "既存のデータと安全性を壊さない。migration は追加のみで既存行の書き換えは 0 件、既存の設定値は初回に同じ意味で引き継ぐ。設定系の変更 API は認証・パスワード変更強制・スキーマ確認・canonicalMutationFence の内側に置き、公開向けの入力検証 (詳細を外に出さない) と本文サイズ上限を掛ける。外部送信は 0 件で、画像に無い既存の設定機能 (パスワード変更・利用者管理・名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・HTML 版からの初期移行) は 1 つも消さない。"
       }
     ],
     "objectives": [
       {
         "id": "O1",
-        "text": "データ取込画面が画像の全構成要素を描画する。",
+        "text": "設定画面が画像の全構成要素を描画する。",
         "serves": [
           "G1"
         ],
         "serves_goals": [
           "G1"
         ],
-        "measure": "DOM テストで、問いの見出し・期間タブ・対象期間カード・ステッパー 3 段・1.ファイルを選択 (ドロップ領域・選択ボタン・対応サービス 2 件・詳細設定 2 項目)・2.一覧の 9 列・3.要約の 6 項目と除外の注記・4.結果の 4 枚のカード・5.履歴の 7 列と詳細ペイン・下部の選択件数バーが描画され、読込・空・失敗の状態テストが緑である。"
+        "measure": "DOM テストで、パンくず・期間タブ・問いの見出し・節ナビ 8 項目・集計ルール表の全列と操作・説明パネルの全欄・名義 4 欄・統計・現金上書き 2 行・出力 4 種・復元・バックアップ表 (日付・サイズ・ステータス・メモ・比較・復元)・保存バーが描画され、読込・空・失敗の状態テストが緑である。375px の画面で横スクロールは表の容器の中だけである。"
       },
       {
         "id": "O2",
-        "text": "検査と確定が分かれ、確定時にファイルを再送しない。",
+        "text": "集計ルールと現金上書きの意味が core の純関数 1 か所で決まり、画面・API・集計が同じ結果を出す。",
         "serves": [
           "G2"
         ],
         "serves_goals": [
           "G2"
         ],
-        "measure": "API テストで、検査が明細を 1 行も書かずに仮置きと検査結果だけを残すこと、確定が検査 ID だけで取り込むこと、期限切れ・他人の・確定済みの検査 ID が拒否されること、エラーのファイルが確定から外れることを確かめる。"
+        "measure": "core の単体テストで、取引先ルールの優先順位 (手動 > 仕分けルール > 集計ルール > 自動)・NFKC 照合・並び順優先・無効行の不適用、現金上書きの 空欄 / 0 / 全期間 / 月指定 の 4 通りが期待値どおりで、既存の勘定科目正規化の結果が変わらない (回帰 0 件)。"
       },
       {
         "id": "O3",
-        "text": "ファイルの状態と要約が記録から一意に決まる。",
+        "text": "保存が 1 回にまとまり、競合と取り消しが安全に扱える。",
         "serves": [
           "G3"
         ],
         "serves_goals": [
           "G3"
         ],
-        "measure": "core の単体テストで、ファイルの状態 (アップロード中 / チェック中 / 取込準備完了 / 取込不可 / 取込済み / 失敗) と検証の段階、要約の件数、取込 1 回の結果 (成功 / 一部成功 / 失敗) が入力の組合せから toBe で導かれ、境界ケースが固定される。"
+        "measure": "API 結合テストで、古い baseSavedAt の PUT が 409 を返して行が変わらず、保存ごとに変更履歴が追記され (更新・削除は 0 件)、『元に戻す』が直前の保存値を返す。DOM テストで未保存件数・下書きの復元・リセットと離脱の確認が動く。"
       },
       {
         "id": "O4",
-        "text": "『前回データを残す』が行単位の追加として効く。",
+        "text": "設定の書き出し・復元・バックアップが安全に往復する。",
         "serves": [
           "G4"
         ],
         "serves_goals": [
           "G4"
         ],
-        "measure": "API テストで、オンでは同一期間の既存明細が残りまだ無い行だけが追加され同一の行が重複スキップに数えられること、オフでは月単位で入れ替わること、強制再取込で同じ内容が再適用されることを確かめる。"
+        "measure": "書き出した JSON を復元すると設定が一致し取引件数は不変、形の違う JSON・上限超過・版違いは 4xx で拒否され何も変わらない。復元前の自動退避が 1 件増える。scheduled のテストで 2:00 の実行が状態つきで保存され、失敗も一覧に出る。比較が差分を返す。"
       },
       {
         "id": "O5",
-        "text": "取込履歴が 1 回ごとにまとまり、影響と操作が詳細で決着する。",
+        "text": "既存データと安全性の回帰が 0 件である。",
         "serves": [
           "G5"
         ],
         "serves_goals": [
           "G5"
         ],
-        "measure": "API と DOM のテストで、履歴が 1 回の取込ごとに 1 行となり、詳細の影響 3 数値 (新規追加・重複スキップ・サブスク候補) が確定時の記録と一致し、取り消しと元に戻す・原本の取得・一括削除 (明細は残る) が規則どおりに効くことを確かめる。"
-      },
-      {
-        "id": "O6",
-        "text": "入口の上限と拒否が効く。",
-        "serves": [
-          "G6"
-        ],
-        "serves_goals": [
-          "G6"
-        ],
-        "measure": "API テストで、上限を超える body (合計サイズ) が本文を読む前に、ファイル数と 1 ファイルの大きさが本文を読んだ直後・パースの前に 413 で拒否され、別オリジンの変更要求が 403、短時間の連続要求が 429 になり、ファイル名に含めた HTML がテキストとして描画されることを確かめる。"
+        "measure": "migration が追加のみで既存行の書き換え 0 件、既存の設定値が初回に引き継がれる。設定系の新 API が CANONICAL_MUTATION_ROUTES に登録され、未認証 401・本文上限超過 413・不正入力で詳細を返さない。外部送信 0 件。既存の設定機能の DOM テストが引き続き緑。"
       }
     ],
     "success_criteria": [
-      "S1 (G1): /import で 16-import.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。期間は usePeriod から来る。",
-      "S2 (G2): 検査の段階で明細・残高・有効取込の表への書き込みが 0 件であり、確定は検査 ID だけで行われ、同じファイルの 2 回目のアップロードが 0 件である。期限を過ぎた仮置きは夜間保守の後に R2 と D1 に残らない。",
-      "S3 (G3): ファイルの状態・取り込めるか否か・要約・取込 1 回の結果は core の関数だけが決め、api と web に同じ判定の重複実装が 0 件である。",
-      "S4 (G4): 『前回データを残す』オンで同じファイルを 2 回確定しても明細数が増えず、2 回目の新規追加が 0 件・重複スキップが全行になる。オフでは従来の月単位の入れ替えと同じ結果になる。",
-      "S5 (G5): 取込履歴の 1 行が 1 回の取込に対応し、詳細の影響の数値が確定時の記録と一致する。一括削除の前後で明細数が変わらない。既存の取り消し・破棄・置換・削除と 30 日の取り消し期限が作り直し後も同じ結果になる。",
-      "S6 (G6): 上限・オリジン・レート制限の拒否がテストで固定され、取込経路から外部ホストへの送信が 0 件である。migration は追加のみで、既存の取込履歴 (ファイル単位の記録) が作り直し後も履歴と詳細で読め、既存の取込テストと初期 JS 予算 (CI 実測) が緑のままである。"
+      "S1 (G1): /settings で 18-settings.png の構成要素がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件である。375px で崩れない。",
+      "S2 (G2): 同じ入力で画面の説明パネルの『影響するもの』・集計結果・エクスポートが同じ core の関数から出る。取引先ルールの優先順位と現金上書きの空欄 / 0 の区別がテストで固定される。既存の勘定科目正規化の結果の回帰が 0 件である。",
+      "S3 (G3): 全節の変更が 1 回の保存で確定し、競合は 409 で検出され、変更履歴は追記のみで、『元に戻す』は直前の保存値に戻る。",
+      "S4 (G4): 設定のみの JSON の書き出し→復元で設定が一致し取引は不変、不正な JSON は何も変えずに拒否される。自動バックアップが JST 2:00 に状態つきで残り、比較と復元ができる。",
+      "S5 (G5): migration は追加のみで既存行の書き換え 0 件、外部送信 0 件、画像外の既存設定機能は 1 つも消えない。verify:full が緑である。"
     ],
     "stakeholders": [
-      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 月次クローズの入口で、freee と マネーフォワードから書き出した複数の明細をまとめて取り込みたい。確定する前に、どのファイルが何件・どの期間で、重複や誤りが無いかを確かめ、誤りのあるファイルだけ外して安心して取り込み、あとから 1 回ごとに振り返って取り消せるようにしたい。",
-      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): ファイルの状態・取り込めるか否か・要約の数え方・『前回データを残す』の規則・仮置きの期限が core の純関数 1 か所と docs・テストで固定されていること。"
+      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 取込のたびに増える取引先の表記ゆれや勘定科目の違いを 1 か所でまとめ、名義の呼び方・分析の最小月数・現金の扱いを決め、その設定を壊しても前日の状態や書き出したファイルから確実に戻したい。どの設定が何に効いているかを変更前に知りたい。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 集計ルールの適用順・現金上書きの意味・設定の書き出し形式が core の純関数と docs・テストで 1 か所に固定され、設定画面・集計・バックアップの解釈がずれないこと。"
     ],
     "scope": {
       "in": [
-        "データ取込画面 (16-import.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと、Import.tsx の pages/import/ 配下への分割",
-        "検査 (仮置きとファイルごとの検査結果) と確定 (検査 ID 指定) の 2 段階の API、アップロードの進捗表示、未確定の仮置きの夜間の片づけ",
-        "core の純関数: ファイルの状態と検証の段階の導出、取り込めるか否か、要約 (対象ファイル・取り込み予定の明細・対象期間・影響する取込元・重複の可能性・サブスク候補) の算出、取込 1 回の結果の導出",
-        "『前回データを残す』の行単位の追加への変更 (既定オン) と、強制再取込の維持",
-        "取込履歴の 1 回の取込ごとのまとめ、詳細ペイン (影響の 3 数値と原本のダウンロード)、再取込・取り消し・記録だけの一括削除",
-        "対応形式の説明とテキスト (.txt) の受け付け、対応サービス (マネーフォワード・freee) の取得方法の案内",
-        "入口の防御: body の上限・ファイル数と合計サイズの上限・取込専用のレート制限・同一オリジンの検査",
-        "追加のみの migration (検査と仮置きの記録、取込 1 回の影響の数値)",
-        "docs への規則の明記と回帰テスト"
+        "設定画面 (18-settings.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと pages/settings/ 配下への分割、節ナビ・説明パネル・保存バー",
+        "集計ルール (勘定科目 / 取引先の種別・並び順・有効・更新日時・更新者) の追加のみの migration と、取引先ルールの集計時適用を core に置くこと",
+        "現金上書き (支払い / 受け取り・空欄と 0 の区別・適用範囲・メモ) の追加のみの migration と core の現金集計への反映",
+        "名義 4 つの表示名を設定画面から編集 (既存 API と core の検証を共有)",
+        "設定画面の下書き・未保存件数・自動保存・リセットと離脱の確認・baseSavedAt による 409",
+        "設定の変更履歴表 (追記のみ) と、説明パネルの最終更新・更新者・元に戻す",
+        "設定のみの版番号つき JSON の書き出し・復元 (厳密な検証・サイズ上限・差分プレビュー・復元前の自動退避)、出力 3 種の期間連動",
+        "夜間バックアップの JST 2:00 への変更、状態・メモ・設定要約の保存、失敗の一覧表示、比較",
+        "画像外の既存設定機能を『アカウント』『その他の管理』の節として残すこと",
+        "system-spec / specs / architecture / features / tasks / docs への反映"
       ],
       "out": [
-        "銀行・クレジットカードの明細ファイルの取り込み: freee と マネーフォワードの CSV だけで足りるという利用者決定。対応サービスの案内からも外す",
-        "共通シェル (ヘッダーの取引ライン・検索・ダウンロード・ヘルプ、サイドバー、フッター) の作り直し: 既存実装をそのまま使う",
-        "外部サービスの API との自動連携 (freee / マネーフォワードからの自動取得): 利用者が書き出したファイルを取り込む方式を保つ",
-        "スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ",
-        "既存の取込形式 (ZIP・HTML 版互換 JSON・MF 資産推移) の廃止: 画像に無いが受け付けは維持する"
+        "取引データそのものの復元形式の変更 (HTML 版からの初期移行は現状のまま『その他の管理』に残す)",
+        "既存の仕分けルール・ベンダー記憶の意味の変更",
+        "共通シェル (サイドバー・ヘッダ・フッタ) の作り直し",
+        "外部 LLM・外部サービスへの送信",
+        "複数テナント化、web 以外の専用アプリ",
+        "バックアップの保持期間 (30 日) の変更"
       ]
     },
     "constraints": [
-      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle と R2、web は React 18 + react-router-dom 7 + TanStack Query 5)。判定と導出は core に置き api/web へ重複実装しない。",
-      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、ボタンは共通 Button、ページは PageShell。表・詳細ペイン・選択件数バーは既存画面 (AI分析・サブスク) の部品と流儀に揃える。",
-      "C3 migration: D1 の migration は追加のみ (新カラム・新表) とし、行を書き換える migration は作らない。本番反映は既存の Deploy / Migrate の手順とゲートに従う。",
-      "C4 D1 の制約: 1 要求あたりのクエリ数の上限があるため、確定はファイル単位の書き込み権と既存のクエリ予算の計画に従う。",
-      "C5 セキュリティ: 利用者向け API は /api/* の authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence の内側に置く。入力は zod で検証し、ファイル名や明細の文字列は React の既定エスケープで描画する。",
-      "C6 データの持ち出し: 取り込んだデータと原本は D1 と R2 の中だけに置き、外部へ送らない。税務上の正本は freee のままとする。"
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle と R2、web は React 18 + react-router-dom 7 + TanStack Query 5)。算出は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、共通部品 (PageHeader・Button・ConfirmDialog・PeriodPicker・SelectionCheckbox・DataTable・CategoryPicker) を使う。",
+      "C3 データ: migration は追加のみで 0050 の次の番号から。既存行の書き換えはしない。schema-guard の EXPECTED_D1_MIGRATION を合わせる。",
+      "C4 安全: 設定系の変更 API は canonicalMutationFence に登録し、公開向け入力検証 (publicJsonValidator) と本文サイズ上限を掛ける。外部送信 0 件。",
+      "C5 運用: 単一テナント (TENANT_ID=default) の前提を変えない。cron の変更は wrangler.jsonc の 1 行で、R2 の保持 30 日は据え置く。"
     ],
     "concrete_intents": [
       {
         "id": "I1",
-        "text": "Import.tsx を pages/import/ 配下へ分割し、問いの見出し・期間タブ・対象期間カード・ステッパー・1〜5 の各節・履歴の詳細ペイン・下部の選択件数バーの構成に作り直す。選択中の履歴を URL に保つ。",
+        "text": "Settings.tsx を pages/settings/ 配下へ分割し、見出し・期間タブ・節ナビ・各節・説明パネル・保存バーの構成に作り直す。画像外の既存機能はアカウント / その他の管理の節へ移す。",
         "serves": [
-          "G1"
+          "G1",
+          "G5"
         ]
       },
       {
         "id": "I2",
-        "text": "検査 API (複数ファイルを一度だけ受け取り R2 に仮置きし、ファイルごとの検査結果と検査 ID を返す) と確定 API (検査 ID と選んだファイルと詳細設定を受け取る) を足し、アップロードの進捗を画面に出す。夜間保守で期限切れの仮置きを消す。",
+        "text": "core に設定画面の算出 (仮称 settingsScreen) と、集計ルールの照合・適用 (勘定科目 / 取引先)・現金上書きの解決・設定 JSON の検証と差分を新設する。",
         "serves": [
           "G2",
-          "G6"
+          "G4"
         ]
       },
       {
         "id": "I3",
-        "text": "core にファイルの状態・検証の段階・取り込めるか否か・要約・取込 1 回の結果を導く純関数を新設し、api の判定と web の表示をこれに寄せる。",
+        "text": "集計ルールと現金上書きの列追加・変更履歴表の追加のみの migration と、GET / PUT の設定 API (baseSavedAt つき・409・変更履歴の追記) を作り、canonicalMutationFence に登録する。",
+        "serves": [
+          "G2",
+          "G3",
+          "G5"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "下書きの localStorage 自動保存・復元・未保存件数・リセットと離脱の確認を予算画面の先例 (draft.ts・BudgetSaveBar) にならって作る。",
         "serves": [
           "G3"
         ]
       },
       {
-        "id": "I4",
-        "text": "『前回データを残す』を行単位の追加にし、既存の行の同一性 (mfStableKey / freeeDealKeys) で重複スキップを数える。オフは従来の月単位の入れ替えとする。",
-        "serves": [
-          "G4"
-        ]
-      },
-      {
         "id": "I5",
-        "text": "取込履歴を import_runs 単位にまとめ、確定時に影響の数値 (新規追加・重複スキップ・サブスク候補) を記録し、詳細ペインと原本のダウンロード・再取込・取り消し・記録だけの一括削除を置く。",
+        "text": "設定のみの JSON 書き出し・復元 API (版番号・厳密検証・サイズ上限・差分プレビュー・復元前退避) と、出力 3 種の期間連動を作る。",
         "serves": [
+          "G4",
           "G5"
         ]
       },
       {
         "id": "I6",
-        "text": "検査・確定・原本取得の経路に body の上限・ファイル数と合計サイズの上限・レート制限・同一オリジンの検査を足す。",
+        "text": "夜間バックアップを JST 2:00 にし、R2 の customMetadata に状態・メモ・設定要約を持たせ、失敗も記録する。一覧 API に状態・メモ、比較 API に差分を足す。",
         "serves": [
-          "G6"
-        ]
-      },
-      {
-        "id": "I7",
-        "text": "取込結果の 4 枚のカードから、重複の可能性は総収支の要確認へ、サブスク候補はサブスク画面へ、エラーのファイルは再試行へ進める導線を置く。",
-        "serves": [
-          "G1",
-          "G5"
+          "G4"
         ]
       }
     ],
     "confirmed": true,
-    "approval_ref": "appr-foundation-import-screen-002"
+    "approval_ref": "appr-foundation-settings-001"
   },
   "decisions": [],
   "knowledge_candidates": [],
   "design_applications": {
-    "backend": {
-      "text": "Clean Architecture card の Dependency Rule を、取込の規則の置き場所に適用した。ファイルの状態・検証の段階・取込可否・内容確認の要約・取込 1 回の結果 (成功 / 一部成功 / 失敗) は packages/core の import-screen.ts の純関数に置き、D1 も R2 も知らない入力 (パース結果・検査の記録・既存の同一性の鍵) だけを受け取る。api は検査 (POST /imports/inspections) と確定 (POST /imports/runs) の 2 経路でこの純関数を呼ぶだけにし、web は返った値を描くだけにする。行単位の追加の判定も mfStableKey / freeeDealKeys という既存の core の鍵に寄せ、api 側に同一性の規則を新しく書かない。",
-      "recorded_at": "2026-09-21T15:24:56Z",
-      "basis": "agent-inference"
-    },
-    "database": {
-      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、検査と取込 1 回の記録の選び方に適用した。ステータスの文言や進捗 % は記録から導けるので保存しない。一方で検査の結果の要約・仮置きの鍵・期限は確定までの間に失うと再送が要るので import_inspections に残し、取込 1 回の影響 (新規追加・重複スキップ・サブスク候補) は後から明細を数え直すと取り消しや再取込で値が変わるので import_runs に確定時の値として残す。一括削除は履歴の非表示の印だけで、明細の行を消さない。",
-      "recorded_at": "2026-09-21T15:24:56Z",
-      "basis": "agent-inference"
-    },
-    "auth": {
-      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、検査 ID と取込 1 回の扱いに適用した。検査・確定・履歴・原本の取得・再取込・取り消し・履歴の削除はすべて /api/* のセッションのフェンスの内側に置き、各経路の入口で利用者 ID による行の絞り込みを 1 回だけ行う。他人の検査 ID や期限切れは存在しないものとして 404 にそろえ、存在の有無を区別させない。新しい認証方式やトークンは足さない。",
-      "recorded_at": "2026-09-21T15:24:56Z",
-      "basis": "agent-inference"
-    },
-    "security": {
-      "text": "Secure by Design card の『入力を許可リストで検証し、大きさを境界で制限する』を、本サイクルで最も大きい外部入力である明細ファイルの受付に適用した。拡張子は CSV・Excel・txt と既存の ZIP・JSON の許可リスト。大きさは 3 段で止める: 合計 30MB は hono/body-limit で本文を読む前 (Content-Length があればその値、無ければ本文を数える)、ファイル数と 1 ファイル 25MB は本文を読んだ直後・パースの前 (ファイル追加では検査 ID の累計で)、xlsx / ZIP のエントリ数 1,000 件と展開後 1 ファイル 60MB は展開の前。取込専用のレート制限 (検査 30 回/分・確定 5 回/分) と同一オリジンの検査を入口に置く。ファイル由来の文字列は React のエスケープで描き、取込データは外部へ送らない。",
-      "recorded_at": "2026-09-21T22:27:38Z",
-      "basis": "agent-inference"
-    },
     "ui-ux": {
-      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付ける』を、データ取込画面の段の順序に適用した。最も頻度が高いのは『ファイルを選んで取り込む』なので 1.選択と 2.一覧を上段に置き、最も失敗コストが高いのは『何が入るかを確かめずに取り込む』なので 3.内容確認 (予定明細数・対象期間・重複の可能性・エラーのファイルの除外) を取り込むボタンの手前に必ず見せる。結果の 4 枚カードは次にすべきこと (重複の確認・サブスクの確認・エラーの再試行) への入口として並べ、履歴は 1 回の取込で 1 行に畳んで詳細ペインで影響の 3 数値を出す。",
-      "recorded_at": "2026-09-21T15:24:56Z",
+      "text": "Information Design card を適用した。文脈先行: 利用者は取込のたびに増える表記ゆれを直し、失敗すると集計が黙って変わる。優先順位の明示化: task 頻度 × 失敗コストで、保存バーの未保存件数 > 集計ルールの表 > 復元・バックアップ > 他の節と順位を置いた。グループ化と近接: 画像の 6 節を節ナビで束ね、画像外の既存機能は『アカウント』『その他の管理』へ下げて束を崩さない。加工: 現金上書きの空欄と 0 を凡例の文で言い分け、バックアップの状態を色だけでなく文字のバッジで示す。削減は行わず、画像外の機能を消さない理由 (決定 004) を残した。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "frontend": {
-      "text": "Clean Architecture card の依存方向を、web が取込の判定を持たない構成に適用した。現行 Import.tsx は 897 行の 1 ファイルで、状態の文言や取込可否を画面側で組んでいるが、新しい構成では api が返す core の導出結果を描くだけにし、pages/import/ 配下の部品に分ける。送る前の上限判定も web に書かず、core の import-screen.ts の上限値の定数 IMPORT_LIMITS と超過の理由を返す判定関数を import して呼ぶだけにする (api の 413 も同じものを使う)。サーバーの状態 (履歴一覧・履歴詳細・検査結果) は TanStack Query に、選択中の履歴は URL に、選択中のファイルとアップロード進捗は画面の状態に置き分ける。",
-      "recorded_at": "2026-09-21T22:40:55Z",
+      "text": "Clean Architecture card と Information Design card を適用した。Dependency Rule: 未保存件数・影響するもの・空欄 / 0 の表記は core の純関数が決め、web はその結果を描くだけにして数え方を持たない。Boundary data: 画面へ渡す値は API の応答 (画面用の単純な形) に閉じ、D1 の行の形を持ち込まない。Information Design の加工: 保存値 (null と 0) と表示値 (空欄と『0 円』) を分け、形式の比較選定では集計ルールを表 (その場編集・並べ替え) にした。",
+      "recorded_at": "2026-09-22T09:45:25Z",
+      "basis": "agent-inference"
+    },
+    "backend": {
+      "text": "API Design Patterns・Clean Architecture・DDD の 3 card を適用した。Concurrency and consistency: 全節の保存は baseSavedAt を版として受け、古ければ 409 で何も書かない。Resource and operation semantics: 差分プレビューは読むだけ、復元は書込みと分ける。Dependency Rule: 取引先ルールの照合と現金上書きの解決は入出力を持たないので core に置き、route は D1/R2 から組んだ入力を渡して結果を書くだけにする。DDD の Ubiquitous Language: 『集計ルール』『現金上書き』『元に戻す』を画面・API・テストで同じ語と意味に揃える。",
+      "recorded_at": "2026-09-22T09:45:25Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "DDD card を適用した。Aggregate: 利用者 1 人の設定 (集計ルール・名義・統計・現金上書き) を 1 回の保存で守る整合性の単位とし、変更と変更履歴の追記を同じ batch に入れる。Domain Event: 変更履歴は『設定が変わった』という過去の事実を追記だけで残し、元に戻すはその事実を読むだけで行を消さない。Entity / Value Object: 集計ルールの行は識別子で追い (元に戻す・更新者)、現金上書きの値は空欄と 0 を区別する値として扱う。",
+      "recorded_at": "2026-09-22T09:45:25Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card を適用した。Least privilege / deny by default: 新しい書込み API はすべて明示登録し、登録漏れが素通りにならないよう『書込みは登録・読むだけは除外』の規則で分けた。Threat modeling: 資産は設定と取引、境界は認証の内側、悪用は他者の更新を上書きすることで、baseSavedAt の 409 がこれを防ぐ。Defense in depth: 認証・パスワード変更強制・スキーマ確認・書込みフェンスの 4 層の内側に置き、1 層の漏れを全体の漏れにしない。",
+      "recorded_at": "2026-09-22T09:45:25Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design card を適用した。Secure defaults: 復元は何も変えずに拒否する側へ倒し、1 つでも不正なら全体を捨てる。Data lifecycle: 設定の書き出しは取引を含めない最小の形にし、復元直前の退避は同じ保持 30 日で消す。Assurance: 形の違う JSON・上限超過・版違いを 4xx で拒否し何も変わらないことを、悪用ケースのテストで確かめる。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "infrastructure": {
-      "text": "本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1・R2) と binding を変えない判断を記録する。仮置きは既存の R2 (FILES) の専用の接頭辞に置き、片づけは既存の夜間保守 (cron) に載せるので、新しい基盤資源・キュー・外部サービスは生じない。基盤の変更は D1 の表の追加だけで、0 件は収集漏れではない。",
-      "recorded_at": "2026-09-21T15:24:56Z",
+      "text": "本章に引かれる deep knowledge card は無い (resource-map の read_when に infrastructure を含む card が無い)。そのため card の適用は主張せず、上流指針 (Google SRE の operations・reliability) の反映を doctrine の節にだけ記録した。本章の確定内容 (JST 2:00・状態とメモ・失敗の一覧化・保持 30 日据え置き) は決定 007 と C5 から直接来ている。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "maintenance-ops": {
-      "text": "Clean Code card の『規則は名前と境界値テストで読めるようにする』を、取込の規則の保守に適用した。ファイルの状態の優先順位・取込可否・結果の 3 区分は core の名前付きの関数 1 か所に置き、上限ちょうどと 1 超過・期限ちょうど・前回データを残すのオンとオフの行数・取込済みと同一内容を境界値テストで固定する。規則の説明は docs/import-screen/ に残し、テストは旧実装で落ちることを確かめる。",
-      "recorded_at": "2026-09-21T15:24:56Z",
+      "text": "Clean Code card を適用した。Intention-revealing names: 変更履歴・元に戻す・失敗の状態を、画面・API・docs で同じ語にする。Executable examples: 集計ルールの適用順と現金上書きの 4 通り、復元の拒否を、内部構造ではなく観測できる結果としてテストに置く。Continuous refactoring: 457 行の Settings.tsx を節ごとに分け、既存機能のテストを緑のまま小さく移す。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     }
   },
   "hearing_progress": {
-    "loop_count": 5,
+    "loop_count": 1,
     "next_question": null,
     "complete": true
   },
   "doctrine_applications": {
+    "ui-ux": {
+      "presentation": {
+        "text": "設定画面では、画像の並べ替えハンドルに上下移動ボタンを併設してドラッグ無しでも順序を変えられる形へ反映した (WCAG 2.2 SC 2.5.7)。ステータスの『成功』『失敗』『最新』は色だけでなく文字のバッジで示し、空欄と 0 の違いは凡例の文で説明する。",
+        "recorded_at": "2026-09-22T08:44:53Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "application-architecture": {
+        "text": "設定画面のフロントエンドでは、全節の編集を 1 つの下書きに集めて 1 回の保存で送る container と、節ごとの表示部品を分ける形へ反映した。下書きは端末の localStorage に利用者単位で閉じ、ログアウトで消し、サーバの状態 (問い合わせのキャッシュ) とは混ぜない。",
+        "recorded_at": "2026-09-22T08:44:53Z",
+        "basis": "agent-inference"
+      },
+      "presentation": {
+        "text": "設定画面のフロントエンドでは、未保存があるときだけ beforeunload で離脱確認を出し (独自文言はブラウザが出さないので画面内の保存バーで件数を先に見せる)、アプリ内リンクでは確認ダイアログで同じ判断を求める形へ反映した。",
+        "recorded_at": "2026-09-22T08:44:53Z",
+        "basis": "agent-inference"
+      }
+    },
     "backend": {
       "application-architecture": {
-        "text": "依存方向を core (状態・検証の段階・取込可否・要約・結果の導出と、上限値 IMPORT_LIMITS と超過の判定) ← api (検査と確定の imports route) ← web (データ取込画面) の一方向へ反映した。api は core の純関数の結果を契約に載せて返すだけで、web は判定を持たない。送信前の上限判定と 413 の判定はどちらも core の同じ定数と関数を import する。",
-        "recorded_at": "2026-09-21T22:40:55Z",
+        "text": "設定画面のバックエンドでは、取引先ルールの適用を保存済み明細の書換えではなく集計時の純関数へ置く形へ反映した。ルールを消せば次の集計から元に戻るので、recomputeFromDeals は勘定科目ルールが変わった保存に限る。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       },
       "data-access": {
-        "text": "データアクセスを route 側に閉じ、core の純関数は D1 と R2 を知らないパース結果と記録だけを受け取る形へ反映した。確定は検査 ID から仮置きを読み、既存の書込の直列化 (import_writer_claims) の内側で行う。",
-        "recorded_at": "2026-09-21T15:24:56Z",
+        "text": "設定画面のバックエンドでは、全節の変更・変更履歴の追記・JSON snapshot の無効化を 1 つの D1 batch にまとめ、baseSavedAt が古ければ 409 で何も書かない形へ反映した。復元は差分プレビューと本適用を分け、本適用の直前に現在の設定を R2 へ退避する。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "database": {
       "data-access": {
-        "text": "import_inspections と import_inspection_files の書き込みを検査の経路に、import_runs の書き込みを確定の経路に、import_rate_limits の書き込みを入口のレート制限の 1 か所にだけ置く形へ反映した。履歴の非表示は削除の経路だけが書き、明細の行には触れない。",
-        "recorded_at": "2026-09-21T15:41:14Z",
+        "text": "設定画面のデータベースでは、集計ルール・現金上書き・変更履歴の 3 表の主キー先頭を利用者にし、読み手は必ず利用者で絞る形へ反映した。既存の account_norm_map と cash_overrides は初回の写しの元として読むだけで、行を消さない。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "migration を表と列の追加だけにして、既存の imports と明細を 1 行も書き換えない形へ反映した。巻き戻しは新しい表を読まないことだけで済み、取り消し (30 日) の判定は既存の表のまま動く。",
-        "recorded_at": "2026-09-21T15:24:56Z",
+        "text": "設定画面のデータベースでは、migration を追加のみにして d1_migrations で二重適用を防ぎ、schema-guard の期待番号を上げる形へ反映した。写しの migration が途中で止まっても旧表は残るので、Deploy の再実行で収束する。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "auth": {
       "authentication": {
-        "text": "検査・確定・履歴・原本・再取込・取り消し・履歴の削除の全経路に、既存のセッション cookie による認証をそのまま効かせる形へ反映した。新しい認証経路やトークンは足さない。",
-        "recorded_at": "2026-09-21T15:24:56Z",
+        "text": "設定画面の認証では、新しい設定 API をすべて既存のセッション検証とパスワード変更強制の内側に置き、未認証は 401 にする形へ反映した。変更履歴の更新者はセッションの actor から決め、要求本文の値を使わない。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       },
       "security": {
-        "text": "利用者単位でデータを閉じる規則を、検査 ID・取込 1 回・原本の全経路に反映した。どれも利用者 ID で自分の行だけを扱い、他の利用者や期限切れの ID は 404 にそろえる。",
-        "recorded_at": "2026-09-21T15:24:56Z",
+        "text": "設定画面の認可では、設定の保存と復元を書込みフェンスへ登録して取込の洗替えと重ならないようにし、復元の権限は既存の /restore と同じに留める形へ反映した (ASVS V8 認可)。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "security": {
       "security": {
-        "text": "OWASP ASVS 5.0 V5 の 5.2.1 (処理できる大きさだけを受ける) と 5.2.3 (圧縮ファイルは展開前に展開後の最大サイズと最大ファイル数を検査する) を、合計 30MB・1 ファイル 25MB・エントリ数 1,000 件・展開後 60MB の上限と判定の順序へ反映した。あわせてレート制限・同一オリジン・出力の無害化・外部送信なしを取込の入口に置く。",
-        "recorded_at": "2026-09-21T22:27:38Z",
-        "basis": "agent-inference"
-      }
-    },
-    "ui-ux": {
-      "presentation": {
-        "text": "状態を色だけで伝えない規則を、取込ファイル一覧のステータス・重複チェック・バリデーションと結果の 4 枚カードに反映した。どれも文字と件数とアイコンを添え、進捗は数値の % で出す。",
-        "recorded_at": "2026-09-21T15:24:56Z",
-        "basis": "agent-inference"
-      }
-    },
-    "frontend": {
-      "presentation": {
-        "text": "表示の共通部品を使う規則を、取込ファイル一覧の表・ステッパー・結果カード・履歴の詳細ペイン・選択中バーに反映した。ボタンは共通 Button、色はトークンだけにし、ページは PageShell に載せる。",
-        "recorded_at": "2026-09-21T15:24:56Z",
-        "basis": "agent-inference"
-      },
-      "application-architecture": {
-        "text": "サーバー状態と画面状態を分ける規則を、履歴一覧・履歴詳細・検査結果の取得と、選択中の履歴 (URL)・選択中のファイルとアップロード進捗 (画面の状態) の分離に反映した。確定・取り消し・削除の後は該当キーを無効化する。",
-        "recorded_at": "2026-09-21T15:24:56Z",
+        "text": "設定画面では、復元 JSON の厳密な検証 (未知キー拒否・件数と長さの上限・全か無か) と本文上限 413 を入れ、CSV 出力を RFC 4180 のエスケープとセル先頭の式文字の無害化で守る形へ反映した (ASVS 5.0 V1.2.10・V2 入力検証)。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "infrastructure": {
-      "reliability": {
-        "text": "反映の順序を Migrate → Deploy に固定し、Worker のメモリ 128MB を超えないよう検査を 1 ファイルずつ順に処理する形へ反映した。migration は表の追加だけなので、適用後に旧 Worker が動いていても新しい表を読まないだけで壊れない。仮置きが確定前に消えても検査のやり直しで回復できる。",
-        "recorded_at": "2026-09-21T15:41:14Z",
+      "operations": {
+        "text": "設定画面のインフラでは、夜間バックアップを JST 2:00 (UTC 17:00) の cron へ移し、各回の成否・メモ・要約を R2 の customMetadata に残して、ログを見なくても画面から運用状態を確かめられる形へ反映した。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       },
-      "operations": {
-        "text": "基盤の変更が D1 の表の追加と R2 の接頭辞の追加だけであることを、既存の deploy と migrate のワークフローと夜間保守の cron をそのまま使う形へ反映した。新しい secret・キュー・外部サービスの登録は発生しない。",
-        "recorded_at": "2026-09-21T15:24:56Z",
+      "reliability": {
+        "text": "設定画面のインフラでは、失敗した回も失敗マーカーとして残し、復元前の自動退避を別プレフィックスへ置いて保持 30 日で消す形へ反映した。R2 の list は 1000 件ごとに cursor で続きを取る前提で書く。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "maintenance-ops": {
       "operations": {
-        "text": "検証の入口を verify:full と CI に一本化する形へ反映した。取込画面の core・API・DOM テストを既存の test に載せ、既存の取込・取り消し・破棄のテストと初期 JS 予算を緑のまま保つ。",
-        "recorded_at": "2026-09-21T15:24:56Z",
+        "text": "設定画面の保守運用では、設定の変更を追記のみの履歴で辿れ、バックアップの失敗を画面で知らせ、設定の誤りは D1 全体を上書きせずに設定 JSON の復元か直前値へ戻す手順で直す形へ反映した (障害時の最後の手段として D1 Time Travel を残す)。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     }
