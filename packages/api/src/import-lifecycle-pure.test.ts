@@ -804,6 +804,8 @@ describe('canonical mutation lease predicate', () => {
       // アーカイブは表示の出し分けだけを変え、記帳の正本には触れない。
       ['PUT', '/api/ai/reports/1/archive'],
       ['POST', '/api/tradeoff'],
+      // 候補ごとの必要度とメモの上書き。tradeoff_candidate_notes の自分の行だけを触る。
+      ['PUT', '/api/tradeoff/candidates/1'],
       // コピー記録は「いつ操作したか」だけで、記帳の正本に触れない。
       ['POST', '/api/ai/tasks/1/copied'],
       // 依頼の取り消し・再実行も ai_tasks の自分の行だけを触り、記帳の正本には触れない。
@@ -856,6 +858,7 @@ describe('canonical mutation lease predicate', () => {
       'routes/backups.ts',
       'routes/subs.ts',
       'routes/total-cashflow.ts',
+      'routes/tradeoff.ts',
       'routes/vendor-memory.ts',
     ];
     const discovered = routeSources.flatMap((filename) => {
@@ -926,6 +929,7 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/reconciliation/actions/:id/undo',
       'POST /api/restore',
       'POST /api/tradeoff',
+      'PUT /api/tradeoff/candidates/:key',
       'POST /api/ai/tasks',
       'POST /api/ai/tasks/:id/copied',
       'POST /api/ai/tasks/:id/cancel',

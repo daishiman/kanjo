@@ -1,0 +1,151 @@
+{
+ "feature": {
+  "graph_node_id": "feat-tradeoff-screen",
+  "title": "トレードオフ画面 (15-tradeoff) の作り直しと候補・必要度・試算・推奨の導出の core 単一化",
+  "description": "dev-graph feature projection (features/feat-tradeoff-screen.md)",
+  "bd_issue_id": "kanjo-4ib"
+ },
+ "children": [
+  {
+   "graph_node_id": "SYS-TRADEOFF-P01",
+   "phase_ref": "P01",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P01 要件ベースライン確定と持ち越し事項の解決担当の割り当て",
+   "description": "dev-graph P01 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p01.md)",
+   "depends_on": [],
+   "bd_issue_id": "kanjo-4ib.1"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P02",
+   "phase_ref": "P02",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P02 tradeoff-screen 純関数・3 経路 API・migration 0050・画面分割のワークストリーム設計決定記録",
+   "description": "dev-graph P02 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p02.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P01"
+   ],
+   "bd_issue_id": "kanjo-4ib.2"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P03",
+   "phase_ref": "P03",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P03 試算契約・API 契約・候補キー・データ保存範囲の独立レビュー",
+   "description": "dev-graph P03 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p03.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P02"
+   ],
+   "bd_issue_id": "kanjo-4ib.3"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P04",
+   "phase_ref": "P04",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P04 core 境界値・API 契約・migration・DOM の失敗テスト先行作成",
+   "description": "dev-graph P04 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p04.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P03"
+   ],
+   "bd_issue_id": "kanjo-4ib.4"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P05",
+   "phase_ref": "P05",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P05 tradeoff-screen 純関数・3 経路 API・migration 0050・トレードオフ画面の分割の最終実装",
+   "description": "dev-graph P05 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p05.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P04"
+   ],
+   "bd_issue_id": "kanjo-4ib.5"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P06",
+   "phase_ref": "P06",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P06 全テストと型検査と lint と verify:full の実行記録",
+   "description": "dev-graph P06 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p06.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P05"
+   ],
+   "bd_issue_id": "kanjo-4ib.6"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P07",
+   "phase_ref": "P07",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P07 受入基準 S1 から S6 の検証",
+   "description": "dev-graph P07 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p07.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P06"
+   ],
+   "bd_issue_id": "kanjo-4ib.7"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P08",
+   "phase_ref": "P08",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P08 試算の式の重複・旧参照・migration の読取専用監査",
+   "description": "dev-graph P08 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p08.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P07"
+   ],
+   "bd_issue_id": "kanjo-4ib.8"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P09",
+   "phase_ref": "P09",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P09 アクセシビリティ・入力検証・利用者分離・JS バンドル予算の保証確認",
+   "description": "dev-graph P09 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p09.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P08"
+   ],
+   "bd_issue_id": "kanjo-4ib.9"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P10",
+   "phase_ref": "P10",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P10 独立最終レビュー",
+   "description": "dev-graph P10 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p10.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P09"
+   ],
+   "bd_issue_id": "kanjo-4ib.10"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P11",
+   "phase_ref": "P11",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P11 再現可能な証跡索引の作成",
+   "description": "dev-graph P11 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p11.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P10"
+   ],
+   "bd_issue_id": "kanjo-4ib.11"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P12",
+   "phase_ref": "P12",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P12 候補・推移・必要度・理由・推奨の順位・防衛ラインへの影響の規則表の docs 最終同期",
+   "description": "dev-graph P12 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p12.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P11"
+   ],
+   "bd_issue_id": "kanjo-4ib.12"
+  },
+  {
+   "graph_node_id": "SYS-TRADEOFF-P13",
+   "phase_ref": "P13",
+   "parent_feature": "feat-tradeoff-screen",
+   "title": "P13 単一 PR での配信と migration 0050 の適用とクローズアウト",
+   "description": "dev-graph P13 projection (tasks/feat-tradeoff-screen/sys-tradeoff-p13.md)",
+   "depends_on": [
+    "SYS-TRADEOFF-P12"
+   ],
+   "bd_issue_id": "kanjo-4ib.13"
+  }
+ ]
+}

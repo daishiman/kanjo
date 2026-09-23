@@ -96,7 +96,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5"]
 - データ出力 3 種（集計マトリクス CSV・取引 CSV・レポート HTML）を選択中の期間で出す（G4）。CSV のセル先頭の式注入を無害化する。
 - 夜間バックアップを JST 2:00 にし、状態（成功 / 失敗）・メモ・設定部分の要約を残し、失敗も一覧に出す。『比較』と、バックアップからの設定だけの復元（qa-settings-decision-007・010）。
 - core に設定画面の算出 `settingsScreen`（I2 の仮称をそのまま採る）と、集計ルールの照合と適用・現金上書きの解決・設定 JSON の検証と差分を新設する。
-- 追加のみの migration（0051〜）と、`schema-guard.ts` の `EXPECTED_D1_MIGRATION` の更新。
+- 追加のみの migration（0052〜）と、`schema-guard.ts` の `EXPECTED_D1_MIGRATION` の更新。
 - `routeMetadata.ts` の設定の `task` / `taskDetail` の文言更新（旧記述が新しい画面を説明しなくなるため）。
 - 画面仕様・設計判断・証跡の文書（本書、`architecture/settings-*.md`、`docs/settings-screen/`、`docs/data-schema.md`、`docs/ui-decisions.md`）と回帰テスト。
 
@@ -1394,15 +1394,15 @@ path の `date` だけ。本文は空（`{}`）。
 
 ## データモデル
 
-### migration `0051`〜`0053`
+### migration `0052`〜`0054`
 
-- 追加のみの 3 本とする: `0051_settings_norm_rules.sql`（集計ルール）・`0052_settings_cash_overrides.sql`（現金上書き）・`0053_settings_change_log.sql`（変更履歴）（番号の割り方は agent 推定・利用者未確認。根拠 qa-settings-database-web-002。1 本にまとめる案も同じ根拠にある）。
+- 追加のみの 3 本とする: `0052_settings_norm_rules.sql`（集計ルール）・`0053_settings_cash_overrides.sql`（現金上書き）・`0054_settings_change_log.sql`（変更履歴）（番号の割り方は agent 推定・利用者未確認。根拠 qa-settings-database-web-002。1 本にまとめる案も同じ根拠にある）。
 - 3 表の新設・主キーの先頭を利用者にすること・変更履歴に由来を持たせることは agent 推定・利用者未確認（根拠 qa-settings-database-web-004）。列の集合は qa-settings-database-web-001・003 に従う。
-- 番号 0051 は予定番号。現時点の最新は `0050_budget_plans.sql`。実装時に `origin/main` を fetch し直して確かめ、main が進んで埋まっていたら次の空き番号へ繰り上げ、`packages/api/src/schema-guard.ts` の `EXPECTED_D1_MIGRATION` と本書の参照を同じ番号に揃える（C3）。3 本なら `EXPECTED_D1_MIGRATION = '0053_settings_change_log.sql'`。
+- 番号 0051 は予定番号。現時点の最新は `0050_budget_plans.sql`。実装時に `origin/main` を fetch し直して確かめ、main が進んで埋まっていたら次の空き番号へ繰り上げ、`packages/api/src/schema-guard.ts` の `EXPECTED_D1_MIGRATION` と本書の参照を同じ番号に揃える（C3）。3 本なら `EXPECTED_D1_MIGRATION = '0054_settings_change_log.sql'`。
 - 既存の行を書き換える文（UPDATE・DELETE・表の作り直し）は入れない。既存 `account_norm_map`・`cash_overrides` は残す（C3）。
 
 ```sql
--- 0051_settings_norm_rules.sql
+-- 0052_settings_norm_rules.sql
 CREATE TABLE IF NOT EXISTS settings_norm_rules (
   user_id    TEXT NOT NULL,
   rule_id    TEXT NOT NULL,
@@ -1434,7 +1434,7 @@ WHERE user_id IS NOT NULL AND raw IS NOT NULL AND norm IS NOT NULL;
 ```
 
 ```sql
--- 0052_settings_cash_overrides.sql
+-- 0053_settings_cash_overrides.sql
 CREATE TABLE IF NOT EXISTS settings_cash_overrides (
   user_id     TEXT NOT NULL,
   override_id TEXT NOT NULL,
@@ -1463,7 +1463,7 @@ FROM cash_overrides WHERE user_id IS NOT NULL AND month IS NOT NULL;
 ```
 
 ```sql
--- 0053_settings_change_log.sql
+-- 0054_settings_change_log.sql
 CREATE TABLE IF NOT EXISTS settings_change_log (
   user_id    TEXT NOT NULL,
   seq        INTEGER NOT NULL,
@@ -1690,7 +1690,7 @@ localStorage に次の形で保存する（§7.12）。
 
 ## 互換性・移行・リリース
 
-- DB: 0051〜0053 は追加のみ。
+- DB: 0052〜0054 は追加のみ。
   - 既存 `account_norm_map`・`cash_overrides` は残し、1 行も書き換えない。初回の写しで同じ意味の行を新表に作る（G5・C3）。
   - 行の書き換えは 0 件で、migration 検査（適用前後の既存表の行数と内容の一致）で確かめる。
 - 既存の読み手の互換。
@@ -1707,7 +1707,7 @@ localStorage に次の形で保存する（§7.12）。
   - 指紋（fingerprint）に新しい集合が入るので、設定を保存すると JSON snapshot の指紋が変わる。保存時に snapshot を無効化する（`invalidateJsonSnapshotQuery`）。
 - 画面: `/settings` の URL は変えない。`/settings#vendor-memory` は保つ。`pages/Settings.tsx` は re-export だけを残すので、`AuthenticatedApp.tsx` の lazy import と既存テスト（`settings-restore.dom.test.tsx`・`backup-restore.dom.test.tsx`）の import は変わらない。`backup-restore.dom.test.tsx` の全データ上書きの判定は、バックアップからの設定の復元の判定へ書き換える（契約は緩めない。Q-6）。
 - 設定 JSON の版を上げるときは core に移行関数を置き、古い版の復元を 1 世代まで受ける（agent 推定・利用者未確認。根拠 qa-settings-maintenance-ops-web-002）。
-- リリース順: Migrate（0051〜0053）→ Deploy（cron の変更を含む）。
+- リリース順: Migrate（0052〜0054）→ Deploy（cron の変更を含む）。
   - 既存の Deploy / Migrate の手順とゲートに従う。migration が途中で止まったら Deploy の再実行で収束させる（agent 推定・利用者未確認。根拠 qa-settings-maintenance-ops-web-004）。
   - 未適用のまま新しい Worker が動いても、runtimeSchemaGuard が 503 を返し、壊れた書込みは起きない。
 - 巻き戻し。
@@ -1785,7 +1785,7 @@ localStorage に次の形で保存する（§7.12）。
 | Q-9 | 古いバックアップ・古い全データ JSON（新表なし）の設定部分の読み方（BR-29）。 | migration の写しと同じ意味で直す。 | 30 日の保持で古い形式は自然に消える。 |
 | Q-10 | 夜間バックアップのファイル名の日付を JST とする点。既存は UTC の `today`（`index.ts` 182 行）で、cron が JST 2:00 = UTC 17:00 になると前日の UTC 日付になる。 | JST の日付にそろえる（画面の『2026/09/10 02:00』と一致させるため）。切替の日だけ同じ日付が 2 回にならないよう、既存のキーがあれば上書きする。 | 既存どおり UTC の日付のままにする案もある（画面の日付と 1 日ずれる）。（R-3 も参照） |
 | Q-11 | 変更履歴の表示場所。右パネルは集計ルールだけで、名義・統計・現金上書きの変更履歴は画面に出ない。 | API（`/api/settings/history`）と表には残す。画面は集計ルールだけ。 | 他の節にも最終更新を出したいなら、画像に無い表示の決定が要る。 |
-| Q-12 | 本書の agent 推定・利用者未確認の値と、本書で具体化した値の一覧。 | 値は次のとおり。 ・節ナビ 7〜8rem・説明パネル 16〜18rem・フィールド単位の未保存件数・行の追加削除は 1 行 1 項目・メモ n/100・バッジ 最新 / 成功 / 失敗・ヒント文は画像どおり（ui-ux-web-002） ・375px の配置・削除とバックアップ復元の確認ダイアログ・情報の優先順位（ui-ux-web-004） ・下書きのキー・v1・30 日・800ms・ドラッグと上下ボタンの併用・ライブラリを足さない・IntersectionObserver（frontend-web-002） ・`useSettingsDraft`・ログアウトで下書きを消す・409 の文言と再取得・`withPeriod`・既存部品をそのまま移す（frontend-web-004） ・設定 JSON の形・照合キー・`recomputeFromDeals` を勘定科目ルールの変更に限る（backend-web-002） ・API のパス 10 本・バックアップ本文から設定部分を取り出す・`settingsScreen`・customMetadata（backend-web-004） ・migration 0051〜0053 の 3 本・変更履歴の無期限保持（database-web-002） ・3 表の新設・主キーの先頭・由来・取込時の正規化の読み手・バックアップと snapshot の対象（database-web-004） ・更新者はメールのローカル部・lease の直列化（auth-web-002） ・actor から取る・権限は /restore と同じ・プレビューをフェンスから外す（auth-web-004） ・64KB / 256KB / 500 行（security-web-002） ・未知キーの拒否・core が正本・CSV の無害化・ログに値を出さない（security-web-004） ・失敗マーカー・要約の項目（infrastructure-web-002） ・`0 17 * * *`・customMetadata・`backups/pre-restore/`・バインディングを足さない・list の cursor（infrastructure-web-004） ・版の移行関数と 1 世代（maintenance-ops-web-002） ・docs の置き場所・Deploy の再実行・D1 Time Travel は最後の手段・テストの置き場所（maintenance-ops-web-004） ・本書で具体化したもの: 説明パネルの sticky と選択なしで閉じる点、routeMetadata の task / taskDetail の文言、CategoryPicker の既定のタブ、0 件・500 行・空・失敗・一括削除・リセット・離脱・比較・復元の各文言、一括の有効 / 無効の操作、元に戻すに確認を挟まない点と『これより前の保存値はありません。』、勘定科目の行の影響するものの 5 項目目、統計の範囲外の文言、月指定の追加の並び、全データ JSON の置き場所、サイズの KB 切り上げ、失敗の回のメモ、未保存なしの保存バー、並び順の変更の数え方、`ruleId` の発行と `m-` 接頭辞、`catSrc` の『集計ルール』、同じ照合キーの注記、現金上書きの上限額、差分の突き合わせの鍵、節ごとの全件置換、error code 名（`settings_conflict`・`invalid_settings_file`・`unsupported_settings_version`・`pre_restore_backup_failed`・`backup_settings_unreadable`）、バックアップからの復元の本文上限 1KB、Query key、書き出しのファイル名、ファイル構成と core の関数名・型の形、`settings-screen.ts` の route 分割、通知の秒数、巻き戻し時の差分報告の手順、画像の括弧の全角への統一 | 実装はこの値で進める。 |
+| Q-12 | 本書の agent 推定・利用者未確認の値と、本書で具体化した値の一覧。 | 値は次のとおり。 ・節ナビ 7〜8rem・説明パネル 16〜18rem・フィールド単位の未保存件数・行の追加削除は 1 行 1 項目・メモ n/100・バッジ 最新 / 成功 / 失敗・ヒント文は画像どおり（ui-ux-web-002） ・375px の配置・削除とバックアップ復元の確認ダイアログ・情報の優先順位（ui-ux-web-004） ・下書きのキー・v1・30 日・800ms・ドラッグと上下ボタンの併用・ライブラリを足さない・IntersectionObserver（frontend-web-002） ・`useSettingsDraft`・ログアウトで下書きを消す・409 の文言と再取得・`withPeriod`・既存部品をそのまま移す（frontend-web-004） ・設定 JSON の形・照合キー・`recomputeFromDeals` を勘定科目ルールの変更に限る（backend-web-002） ・API のパス 10 本・バックアップ本文から設定部分を取り出す・`settingsScreen`・customMetadata（backend-web-004） ・migration 0052〜0054 の 3 本・変更履歴の無期限保持（database-web-002） ・3 表の新設・主キーの先頭・由来・取込時の正規化の読み手・バックアップと snapshot の対象（database-web-004） ・更新者はメールのローカル部・lease の直列化（auth-web-002） ・actor から取る・権限は /restore と同じ・プレビューをフェンスから外す（auth-web-004） ・64KB / 256KB / 500 行（security-web-002） ・未知キーの拒否・core が正本・CSV の無害化・ログに値を出さない（security-web-004） ・失敗マーカー・要約の項目（infrastructure-web-002） ・`0 17 * * *`・customMetadata・`backups/pre-restore/`・バインディングを足さない・list の cursor（infrastructure-web-004） ・版の移行関数と 1 世代（maintenance-ops-web-002） ・docs の置き場所・Deploy の再実行・D1 Time Travel は最後の手段・テストの置き場所（maintenance-ops-web-004） ・本書で具体化したもの: 説明パネルの sticky と選択なしで閉じる点、routeMetadata の task / taskDetail の文言、CategoryPicker の既定のタブ、0 件・500 行・空・失敗・一括削除・リセット・離脱・比較・復元の各文言、一括の有効 / 無効の操作、元に戻すに確認を挟まない点と『これより前の保存値はありません。』、勘定科目の行の影響するものの 5 項目目、統計の範囲外の文言、月指定の追加の並び、全データ JSON の置き場所、サイズの KB 切り上げ、失敗の回のメモ、未保存なしの保存バー、並び順の変更の数え方、`ruleId` の発行と `m-` 接頭辞、`catSrc` の『集計ルール』、同じ照合キーの注記、現金上書きの上限額、差分の突き合わせの鍵、節ごとの全件置換、error code 名（`settings_conflict`・`invalid_settings_file`・`unsupported_settings_version`・`pre_restore_backup_failed`・`backup_settings_unreadable`）、バックアップからの復元の本文上限 1KB、Query key、書き出しのファイル名、ファイル構成と core の関数名・型の形、`settings-screen.ts` の route 分割、通知の秒数、巻き戻し時の差分報告の手順、画像の括弧の全角への統一 | 実装はこの値で進める。 |
 
 ### 実装時に要確認（既存コードとの食い違い）
 
@@ -1793,7 +1793,7 @@ architecture 担当が既存コードを読んで見つけた食い違いであ�
 
 | ID | 食い違い | 影響 | 本書で関わる箇所 |
 |---|---|---|---|
-| R-1 | 既存 `cash_overrides` は、画面の空欄が 0 に潰れて保存されている（`PUT /api/settings` の `cashOverrides` は非負整数か null で、空欄は 0 として送られてきた）。 | そのまま『月指定の 0 円』へ写すと、利用者が空欄のつもりだった月の現金集計を 0 円で上書きする。 | §データモデル の 0052 の写し、BR-12・BR-14、Q-4 |
+| R-1 | 既存 `cash_overrides` は、画面の空欄が 0 に潰れて保存されている（`PUT /api/settings` の `cashOverrides` は非負整数か null で、空欄は 0 として送られてきた）。 | そのまま『月指定の 0 円』へ写すと、利用者が空欄のつもりだった月の現金集計を 0 円で上書きする。 | §データモデル の 0053 の写し、BR-12・BR-14、Q-4 |
 | R-2 | 旧 `PUT /api/settings` が `account_norm_map` を書き続けると、新表 `settings_norm_rules` と科目正規化の正本が 2 つになる。 | 取込時の正規化の読み手と、旧経路で書いた値がずれうる。 | BR-22、§互換性・移行・リリース、Q-2 |
 | R-3 | バックアップのキーの日付は UTC（`new Date().toISOString().slice(0, 10)`）なので、JST 2:00 の実行では JST の日付と 1 日ずれる（現行の JST 3:00 の実行でも同じ）。 | 一覧の日付と実行日の表示がずれる。日付の付け方を変える日に、同じ日付のキーが重なりうる。 | §イベント・非同期処理、Q-10 |
 | R-4 | 夜間バックアップの削除処理は、キーの `backups/` の後ろの先頭 10 文字を日付として比べる。 | `backups/pre-restore/` の退避は先頭 10 文字が日付にならないので、30 日を過ぎても消えない。既存の一覧にも日付でない行として出る。 | §イベント・非同期処理 の保持、GET /api/backups |

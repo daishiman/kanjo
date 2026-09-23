@@ -17,7 +17,6 @@ import {
   applyReviewSnoozes,
   availableYears,
   benchmarks,
-  budgetTable,
   buildExpenseProjection,
   buildReportHtml,
   buildReviewQueue,
@@ -57,14 +56,12 @@ import {
   subscriptionsScreen,
   toCsv,
   totalCashflowReport,
-  tradeoffCandidates,
-  tradeoffReview,
   transactionExportRows,
   trendsReport,
   trendsScreen,
   unsettledReport,
 } from '@kanjo/core';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import type { Context } from 'hono';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -752,73 +749,6 @@ analyticsRoute.get('/statements', async (c) => {
 analyticsRoute.get('/defense-line', async (c) => {
   const { data } = await loadScoped(c);
   return c.json({ ...defenseLine(data), forecast: defenseForecast(data) });
-});
-
-/* -------- FR-09 やりくり試算 -------- */
-
-analyticsRoute.get('/tradeoff', async (c) => {
-  const userId = c.get('userId');
-  const db = getDb(c.env.DB);
-  const { data } = await loadScoped(c);
-  const plans = await db
-    .select()
-    .from(s.tradeoffPlans)
-    .where(eq(s.tradeoffPlans.userId, userId))
-    .orderBy(desc(s.tradeoffPlans.id))
-    .limit(50);
-  return c.json({
-    candidates: tradeoffCandidates(data),
-    budgets: budgetTable(data),
-    plans: plans.map((p) => ({
-      id: p.id,
-      title: p.title,
-      amount: p.amount,
-      recurring: p.recurring === 1,
-      selected: p.selected ? (JSON.parse(p.selected) as unknown) : [],
-      covered: p.covered,
-      verdict: p.verdict,
-      createdAt: p.createdAt,
-    })),
-    // 立てた計画が翌月に効いたかの突合。見込みを出しただけで終わらせない
-    review: tradeoffReview(
-      data,
-      plans.map((p) => ({
-        id: p.id,
-        title: p.title,
-        amount: p.amount,
-        covered: p.covered,
-        createdAt: p.createdAt,
-      })),
-    ),
-  });
-});
-
-const tradeoffSchema = z.object({
-  title: z.string().max(200).optional(),
-  amount: z.number().int().positive(),
-  recurring: z.boolean(),
-  selected: z.array(z.object({ label: z.string().max(200), value: z.number().int() })).max(50),
-  covered: z.number().int(),
-  verdict: z.enum(['covered', 'insufficient']),
-});
-
-analyticsRoute.post('/tradeoff', zValidator('json', tradeoffSchema), async (c) => {
-  const userId = c.get('userId');
-  const db = getDb(c.env.DB);
-  const b = c.req.valid('json');
-  const [rec] = await db
-    .insert(s.tradeoffPlans)
-    .values({
-      userId,
-      title: b.title ?? null,
-      amount: b.amount,
-      recurring: b.recurring ? 1 : 0,
-      selected: JSON.stringify(b.selected),
-      covered: b.covered,
-      verdict: b.verdict,
-    })
-    .returning({ id: s.tradeoffPlans.id });
-  return c.json({ ok: true, id: rec.id }, 201);
 });
 
 /* -------- エクスポート(FR-05) -------- */

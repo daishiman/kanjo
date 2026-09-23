@@ -1,6 +1,6 @@
--- Migration number: 0051  集計ルール (勘定科目・取引先) の表 (追加のみ)
+-- Migration number: 0052  集計ルール (勘定科目・取引先) の表 (追加のみ)
 --
--- 0051_settings_norm_rules.sql : 設定画面 (spec-settings-screen) の集計ルールの保存先。
+-- 0052_settings_norm_rules.sql : 設定画面 (spec-settings-screen) の集計ルールの保存先。
 -- 既存の account_norm_map は書き換えずに残し、その行を種別『勘定科目』として同じ意味で写す。
 -- 本 migration は既存の行を書き換える文 (UPDATE・DELETE・表の作り直し) を含まない。
 -- rule_id の 'm-' || lower(hex(raw)) は core の migratedNormRuleId (UTF-8 の16進) と同じ値になる。

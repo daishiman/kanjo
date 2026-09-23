@@ -1,6 +1,6 @@
--- Migration number: 0052  現金上書きの表 (追加のみ)
+-- Migration number: 0053  現金上書きの表 (追加のみ)
 --
--- 0052_settings_cash_overrides.sql : 設定画面の現金上書き (支払い・受け取り × 全期間・月指定) の保存先。
+-- 0053_settings_cash_overrides.sql : 設定画面の現金上書き (支払い・受け取り × 全期間・月指定) の保存先。
 -- 既存の cash_overrides は書き換えずに残し、月ごとの値を『月指定』の行として写す (支出 → 支払い、入金 → 受け取り)。
 -- 本 migration は既存の行を書き換える文 (UPDATE・DELETE・表の作り直し) を含まない。
 --
