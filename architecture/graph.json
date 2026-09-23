@@ -1696,7 +1696,7 @@
         "source_plugin": null,
         "source_path": "docs/spec-v1.1.md",
         "source_version": "1.1",
-        "source_digest": "ca1a7d4ebc7c4a05a480ce8604fbab86d9eeb13738395bcf4aefaee4124e2579",
+        "source_digest": "2a71bc09587c695730d50099652871dcb24540464fab518e9a40c081774ea5a7",
         "imported_at": "2026-09-18T00:00:00Z"
       },
       "referenced_by": [
@@ -3440,6 +3440,358 @@
       "referenced_by": [
         "feat-import-screen"
       ]
+    },
+    {
+      "id": "arch-tradeoff-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トレードオフ — 画像の構成要素を 1 画面に並べ、差額と防衛ラインを文字で伝える",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2682e1d737675bd52781e250e8d536b0b04dc4c1189477e902a9778332afe050",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トレードオフ — pages/tradeoff/ へ分割し、数字は core の試算関数の結果だけを読む",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8b1f93d9cb74bac83fab5cc5db7d9f5f3320b4b55152f486e05b2939ecf2a386",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "トレードオフ — 候補・必要度・試算・推奨を core の純関数に置き、POST はサーバで再計算する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "bea33a5eda7582bf617c4e922dede268af508d3701b261f70dc7f23961f01164",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "トレードオフ — 追加のみの migration で試算条件の列と候補ごとの上書きの表を足す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f83a4e3de0ac081a8399e78ef1a668a510a56fa1757973a401ed8834ddae0c26",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トレードオフ — 既存の /api/* フェンスの内側に置き、全経路を user_id で絞る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "cca5fd48cb1d938da9b371d40412023e78e6017563c1b9768f077aa650609ea8",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トレードオフ — zod の上限とサーバ再計算でクライアントの計算値を信用しない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8da2d2e7da29edfc641f8cf35d24f685165fe0f323749a7b78a769ac70d5274e",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トレードオフ — 構成を変えず、EXPECTED_D1_MIGRATION と Migrate → Deploy に従う",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "ecbe51bb97c8d67d6a6bf138061ee63143b09d1c24a47b8f6542a5e1d8c4fd04",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トレードオフ — 規則を FR-09 の表と core の契約テストの期待値に 1 対 1 で置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e10c770f84aef936d92cf9a5beace59448148b1a1df69e7b5dc2bfdaa928614a",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-cash-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "現金入力 — 入力 2 枚と一覧を 17-cash.png の順に並べ、削除は行内確認と『元に戻す』で取り返せるようにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "5818a2ca9eda2ad5eca982405969af14a8ecb9211416f162b7aecc1a967d2e47",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "現金入力 — Cash.tsx を pages/cash/ に分け、表示条件を URL・下書きを localStorage に置き、数字は view-model 経由で core から受け取る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0f4a8db2cf8cf65afdf35b35472b1e08b63e067eb0b68c11e1f7722805e324ac",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "現金入力 — DELETE を論理削除にし、復元と一括の経路を足して、削除中の行を読む全経路から外す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c3b9b94a0b805e19f69d52b6fe19b4513b5f1a77956b42807fdd01f42f5c6305",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "現金入力 — 追加のみの migration 0050 で owner・transit_purpose・deleted_at を足し、既存行を書き換えずに論理削除と名義を持つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a956740a1c4085f5d7bff8b9f49d6a114c452b20336491a6ce713bca62b63c1d",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "現金入力 — 既存のセッションのまま、新しい削除・復元・一括の経路も userId で絞り、他人の行を 404 にする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "4f3863710e7af200fe3cbc217fefc99570d6c56266d26e5ead16c5358161d73d",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "現金入力 — zod で候補と長さを限り、領収書ファイルと下書きをサーバーへ受け取らず、削除中の行を混ぜない不変条件を API テストで固定する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "7a260e661c2e48f4d802219de5c52e287612c9173f56eab3a28231ee69788688",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "現金入力 — 完全消去を既存の夜間 cron に独立 job で相乗りさせ、新しい binding・cron・外部サービスを足さない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "11a259426013adb293cb3c3d9e2ac948aa5394cdc30fd8fd4641747d444774a3",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "現金入力 — 削除中の行を出さない規則を経路ごとの API テストと 29 日 / 31 日の境界で固定し、check:cash-screen を verify:full に組み込む",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "6101bc7549cfb1cd1f2fc96915120a6dd9aa17678c0d23eb631c8e06ca8d6827",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
     }
   ]
 }

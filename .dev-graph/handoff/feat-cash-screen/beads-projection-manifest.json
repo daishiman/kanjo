@@ -1,0 +1,151 @@
+{
+ "feature": {
+  "graph_node_id": "feat-cash-screen",
+  "title": "現金入力画面 (17-cash) の作り直しと合計・絞り込み・入力経路の導出の core 単一化、論理削除と元に戻す",
+  "description": "dev-graph feature projection (features/feat-cash-screen.md)",
+  "bd_issue_id": "kanjo-tf6"
+ },
+ "children": [
+  {
+   "graph_node_id": "SYS-CASH-P01",
+   "phase_ref": "P01",
+   "parent_feature": "feat-cash-screen",
+   "title": "P01 要件ベースライン確定と持ち越し事項の解決担当の割り当て",
+   "description": "dev-graph P01 projection (tasks/feat-cash-screen/sys-cash-p01.md)",
+   "depends_on": [],
+   "bd_issue_id": "kanjo-tf6.1"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P02",
+   "phase_ref": "P02",
+   "parent_feature": "feat-cash-screen",
+   "title": "P02 cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間消去・画面分割のワークストリーム設計決定記録",
+   "description": "dev-graph P02 projection (tasks/feat-cash-screen/sys-cash-p02.md)",
+   "depends_on": [
+    "SYS-CASH-P01"
+   ],
+   "bd_issue_id": "kanjo-tf6.2"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P03",
+   "phase_ref": "P03",
+   "parent_feature": "feat-cash-screen",
+   "title": "P03 削除と復元の契約・読取経路・入力検証・URL 契約の独立レビュー",
+   "description": "dev-graph P03 projection (tasks/feat-cash-screen/sys-cash-p03.md)",
+   "depends_on": [
+    "SYS-CASH-P02"
+   ],
+   "bd_issue_id": "kanjo-tf6.3"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P04",
+   "phase_ref": "P04",
+   "parent_feature": "feat-cash-screen",
+   "title": "P04 core 境界値・API 契約・migration 0050・夜間予算・DOM の失敗テスト先行作成",
+   "description": "dev-graph P04 projection (tasks/feat-cash-screen/sys-cash-p04.md)",
+   "depends_on": [
+    "SYS-CASH-P03"
+   ],
+   "bd_issue_id": "kanjo-tf6.4"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P05",
+   "phase_ref": "P05",
+   "parent_feature": "feat-cash-screen",
+   "title": "P05 cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間の完全消去・現金入力画面の分割と旧操作の移設の最終実装",
+   "description": "dev-graph P05 projection (tasks/feat-cash-screen/sys-cash-p05.md)",
+   "depends_on": [
+    "SYS-CASH-P04"
+   ],
+   "bd_issue_id": "kanjo-tf6.5"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P06",
+   "phase_ref": "P06",
+   "parent_feature": "feat-cash-screen",
+   "title": "P06 全テストと型検査と lint と skill テストの実行記録",
+   "description": "dev-graph P06 projection (tasks/feat-cash-screen/sys-cash-p06.md)",
+   "depends_on": [
+    "SYS-CASH-P05"
+   ],
+   "bd_issue_id": "kanjo-tf6.6"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P07",
+   "phase_ref": "P07",
+   "parent_feature": "feat-cash-screen",
+   "title": "P07 受入基準 S1 から S5 の検証",
+   "description": "dev-graph P07 projection (tasks/feat-cash-screen/sys-cash-p07.md)",
+   "depends_on": [
+    "SYS-CASH-P06"
+   ],
+   "bd_issue_id": "kanjo-tf6.7"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P08",
+   "phase_ref": "P08",
+   "parent_feature": "feat-cash-screen",
+   "title": "P08 合計と経路の計算の重複・削除中の行の読取漏れ・旧参照の読取専用監査",
+   "description": "dev-graph P08 projection (tasks/feat-cash-screen/sys-cash-p08.md)",
+   "depends_on": [
+    "SYS-CASH-P07"
+   ],
+   "bd_issue_id": "kanjo-tf6.8"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P09",
+   "phase_ref": "P09",
+   "parent_feature": "feat-cash-screen",
+   "title": "P09 アクセシビリティ・入力検証・他人の行の拒否・下書きの扱い・JS バンドル予算の保証確認",
+   "description": "dev-graph P09 projection (tasks/feat-cash-screen/sys-cash-p09.md)",
+   "depends_on": [
+    "SYS-CASH-P08"
+   ],
+   "bd_issue_id": "kanjo-tf6.9"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P10",
+   "phase_ref": "P10",
+   "parent_feature": "feat-cash-screen",
+   "title": "P10 独立最終レビュー",
+   "description": "dev-graph P10 projection (tasks/feat-cash-screen/sys-cash-p10.md)",
+   "depends_on": [
+    "SYS-CASH-P09"
+   ],
+   "bd_issue_id": "kanjo-tf6.10"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P11",
+   "phase_ref": "P11",
+   "parent_feature": "feat-cash-screen",
+   "title": "P11 再現可能な証跡索引の作成",
+   "description": "dev-graph P11 projection (tasks/feat-cash-screen/sys-cash-p11.md)",
+   "depends_on": [
+    "SYS-CASH-P10"
+   ],
+   "bd_issue_id": "kanjo-tf6.11"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P12",
+   "phase_ref": "P12",
+   "parent_feature": "feat-cash-screen",
+   "title": "P12 合計・絞り込み・入力経路・入力検証・削除と復元・夜間消去の規則表の docs 最終同期",
+   "description": "dev-graph P12 projection (tasks/feat-cash-screen/sys-cash-p12.md)",
+   "depends_on": [
+    "SYS-CASH-P11"
+   ],
+   "bd_issue_id": "kanjo-tf6.12"
+  },
+  {
+   "graph_node_id": "SYS-CASH-P13",
+   "phase_ref": "P13",
+   "parent_feature": "feat-cash-screen",
+   "title": "P13 単一 PR での配信と migration 0050 の適用とクローズアウト",
+   "description": "dev-graph P13 projection (tasks/feat-cash-screen/sys-cash-p13.md)",
+   "depends_on": [
+    "SYS-CASH-P12"
+   ],
+   "bd_issue_id": "kanjo-tf6.13"
+  }
+ ]
+}

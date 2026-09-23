@@ -41,8 +41,7 @@ import type {
   SuggestionBasis,
   TotalCashflowMonth,
   TotalCashflowSeriesRow,
-  TradeoffCandidate,
-  TradeoffReviewRow,
+  TradeoffScreenResponse,
   TrendsScreen,
   UnsettledDeal,
   UnsettledReport,
@@ -1084,6 +1083,10 @@ export interface CashEntry {
   transitRound: boolean;
   /** 領収書が構造上出ない支出(電車代など) */
   receiptWaived: boolean;
+  /** 担当者(名義)。0052 より前の行は null(画面は「未設定」) */
+  owner: Owner | null;
+  /** 業務の目的(保存形)。交通費以外は null */
+  transitPurpose: string | null;
 }
 
 export interface CashEntryBody {
@@ -1099,6 +1102,24 @@ export interface CashEntryBody {
   transitTo: string | null;
   transitRound: boolean;
   receiptWaived: boolean;
+  owner: Owner;
+  /** 業務の目的。区間があるときだけ必須 */
+  transitPurpose: string | null;
+  /** 目的が「その他」のときの記述 */
+  transitPurposeNote: string | null;
+}
+
+/** 削除の応答。deletedAt から30日は restore で戻せる */
+export interface CashDeleteResponse {
+  ok: true;
+  id: number;
+  deletedAt: string;
+}
+
+export interface CashBulkDeleteResponse {
+  ok: true;
+  ids: number[];
+  deletedAt: string;
 }
 
 /** 現金の記帳と freee 仕訳が同じ支払いを指している疑い(候補のみ。消し込みはしない) */
@@ -1134,22 +1155,8 @@ export interface BackupItem {
   uploaded: string | null;
 }
 
-export interface TradeoffResponse {
-  candidates: TradeoffCandidate[];
-  budgets: BudgetRow[];
-  plans: {
-    id: number;
-    title: string | null;
-    amount: number;
-    recurring: boolean;
-    selected: { label: string; value: number }[];
-    covered: number | null;
-    verdict: string | null;
-    createdAt: string | null;
-  }[];
-  /** 立てた計画が翌月に効いたかの突合(plans と同じ id で対応する) */
-  review: TradeoffReviewRow[];
-}
+/** トレードオフ画面の応答。候補・防衛ラインの月の余裕・最新の試算条件の形は core が持つ */
+export type TradeoffResponse = TradeoffScreenResponse;
 
 /* -------- 決算書(PL・キャッシュフロー・BSの取込元) -------- */
 
@@ -1202,8 +1209,6 @@ export type {
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
-  TradeoffCandidate,
-  TradeoffReviewRow,
 };
 
 export interface SubVendorRow extends SubVendor {

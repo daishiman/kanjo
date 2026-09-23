@@ -66,7 +66,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 
 ## 目的
 
-docs/import-screen/ の規則表を実装と一致させ、データスキーマと UI 決定の文書へ 0051 の表と列、画面の決定を反映する。
+docs/import-screen/ の規則表を実装と一致させ、データスキーマと UI 決定の文書へ 0053 の表と列、画面の決定を反映する。
 
 ## 背景
 
@@ -139,7 +139,7 @@ docs/import-screen/ の規則表を実装と一致させ、データスキーマ
 
 - Acceptance:
 - 規則表の各行が core の実装とテストに対応している。
-- docs/data-schema.md に 0051 の表と列が載っている。
+- docs/data-schema.md に 0053 の表と列が載っている。
 - Automated commands:
 - pnpm lint
 - pnpm test

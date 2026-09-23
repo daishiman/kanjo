@@ -1,6 +1,6 @@
 /**
- * migration 0051 (データ取込画面) は追加だけで、既存の行を 1 件も書き換えない (SYS-IMPORT-P04)。
- * 0008 の import_runs に既存の行を置いてから 0051 を当て、文ごとの changes の合計が 0 であることと、
+ * migration 0053 (データ取込画面) は追加だけで、既存の行を 1 件も書き換えない (SYS-IMPORT-P04)。
+ * 0008 の import_runs に既存の行を置いてから 0053 を当て、文ごとの changes の合計が 0 であることと、
  * 新しい表・列・制約・索引が仕様どおりにあることを確かめる。
  */
 import { readFileSync } from 'node:fs';
@@ -11,7 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { splitMigrationStatements } from './migration-test-support.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../../');
-const sql = readFileSync(resolve(root, 'migrations/0051_import_inspections.sql'), 'utf8');
+const sql = readFileSync(resolve(root, 'migrations/0053_import_inspections.sql'), 'utf8');
 const statements = splitMigrationStatements(sql);
 
 let mf: Miniflare;
@@ -58,7 +58,7 @@ afterAll(async () => mf?.dispose());
 const columns = async (table: string) =>
   (await d1.prepare(`PRAGMA table_info(${table})`).all<{ name: string }>()).results.map((c) => c.name);
 
-describe('0051 データ取込画面', () => {
+describe('0053 データ取込画面', () => {
   it('既存の行の更新は 0 件で、既存の列の値は変わらない', async () => {
     expect(changes).toBe(0);
     const after = (

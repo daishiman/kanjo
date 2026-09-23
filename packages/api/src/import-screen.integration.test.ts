@@ -21,7 +21,11 @@ import { zipSync } from 'fflate';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { loginForTest } from './auth.test-support.js';
-import { IMPORT_STAGING_PREFIX, runImportStagingCleanup } from './import-rate-limit.js';
+import {
+  IMPORT_STAGING_PREFIX,
+  purgeExpiredImportRows,
+  runImportStagingCleanup,
+} from './import-rate-limit.js';
 import { app } from './index.js';
 import { splitMigrationStatements } from './migration-test-support.js';
 import { sanitizeImportFilename } from './routes/imports.js';
@@ -1096,8 +1100,8 @@ describe('403 と 429', () => {
   });
 });
 
-describe('夜間保守の片づけ', () => {
-  it('期限切れの検査・置いてから 24 時間を過ぎた仮置き・古い時間枠を消し、期限内は残す', async () => {
+describe('期限切れの行の片づけ', () => {
+  it('期限切れの検査と古い時間枠を消し、期限内は残す', async () => {
     const kept = await inspect([{ name: 'keep.csv', body: freeeCsv(1) }]);
     const expired = await inspect([{ name: 'old.csv', body: freeeCsv(2) }]);
     await d1
@@ -1109,12 +1113,9 @@ describe('夜間保守の片づけ', () => {
       .bind('usr_test_admin', 'inspection', Date.now() - 2 * 24 * 60 * 60 * 1000, 3)
       .run();
 
-    const now = Date.now();
-    const first = await runImportStagingCleanup({ DB: d1, FILES: files }, now);
-    expect(first.inspections).toBe(1);
-    expect(first.rateWindows).toBe(1);
-    // 仮置きはまだ 24 時間経っていないので残す
-    expect(first.staged).toBe(0);
+    const purged = await purgeExpiredImportRows(d1, Date.now());
+    expect(purged.inspections).toBe(1);
+    expect(purged.rateWindows).toBe(1);
     const files0 = await d1
       .prepare('SELECT COUNT(*) AS n FROM import_inspection_files WHERE inspection_id=?')
       .bind(expired.inspection.id)
@@ -1122,11 +1123,33 @@ describe('夜間保守の片づけ', () => {
     expect(files0?.n).toBe(0);
     const remaining = await d1.prepare('SELECT id FROM import_inspections').all<{ id: string }>();
     expect(remaining.results.map((row) => row.id)).toEqual([kept.inspection.id]);
+  });
 
-    const later = await runImportStagingCleanup(
-      { DB: d1, FILES: files },
-      now + IMPORT_LIMITS.stagingTtlMs + 60_000,
-    );
+  it('検査を新しく作る要求が、期限切れの検査をついでに消す(夜間保守に頼らない)', async () => {
+    const expired = await inspect([{ name: 'old.csv', body: freeeCsv(1) }]);
+    await d1
+      .prepare('UPDATE import_inspections SET expires_at=? WHERE id=?')
+      .bind(new Date(Date.now() - 1000).toISOString(), expired.inspection.id)
+      .run();
+
+    const fresh = await inspect([{ name: 'new.csv', body: freeeCsv(2) }]);
+
+    const remaining = await d1.prepare('SELECT id FROM import_inspections').all<{ id: string }>();
+    expect(remaining.results.map((row) => row.id)).toEqual([fresh.inspection.id]);
+  });
+});
+
+describe('夜間保守の片づけ', () => {
+  it('置いてから 24 時間を過ぎた仮置きだけを消す(D1 は読まない)', async () => {
+    await inspect([{ name: 'a.csv', body: freeeCsv(1) }]);
+    await inspect([{ name: 'b.csv', body: freeeCsv(2) }]);
+
+    const now = Date.now();
+    const first = await runImportStagingCleanup({ FILES: files }, now);
+    // 仮置きはまだ 24 時間経っていないので残す
+    expect(first.staged).toBe(0);
+
+    const later = await runImportStagingCleanup({ FILES: files }, now + IMPORT_LIMITS.stagingTtlMs + 60_000);
     expect(later.staged).toBe(2);
     expect(await stagedKeys()).toEqual([]);
   });

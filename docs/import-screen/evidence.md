@@ -49,7 +49,7 @@ feature `feat-import-screen`(Beads epic `kanjo-y7q`)の検査記録。受入の�
 | S5-c 既存の取り消し・破棄・置換・削除と 30 日の期限 | PASS | E1・E2 の統合テスト「取り消しは確認した指紋で…」「置換は保存した原本で…」、既存の `Import.*.test.tsx`、`import-reimport.dom.test.tsx` |
 | S6-a 新旧の取込経路の上限・Origin・レート制限の拒否 | PASS | E1・E2 の統合テスト「413」「403」「429」、共通境界表(core・web・api が同じ表を読む)、互換 `POST /imports` の 5 回許可・6 回目 429 |
 | S6-b 取込経路から外部ホストへの送信が 0 件 | PASS | E1・E2 の統合テスト「検査から確定・履歴まで、localhost 以外への要求は 0 件」 |
-| S6-c migration は追加だけで、既存の取込履歴が読める | PASS | E1・E2 の `import-migration-0051.test.ts` |
+| S6-c migration は追加だけで、既存の取込履歴が読める | PASS | E1・E2 の `import-migration-0053.test.ts` |
 
 ## 3. P08 重複の監査(E3)
 
@@ -73,7 +73,7 @@ feature `feat-import-screen`(Beads epic `kanjo-y7q`)の検査記録。受入の�
 
 ## 6. P13 配信
 
-**未実施(保留)**。commit・push・PR の作成・merge と、本番の Migrate / Deploy は、この作業では行っていない。`migrations/0051_import_inspections.sql` も本番には適用していない。配信は Migrate → Deploy の順(rules R30)。
+**未実施(保留)**。commit・push・PR の作成・merge と、本番の Migrate / Deploy は、この作業では行っていない。`migrations/0053_import_inspections.sql` も本番には適用していない。配信は Migrate → Deploy の順(rules R30)。
 
 ## 7. 範囲外で見つけたこと
 
@@ -152,3 +152,18 @@ PR 前に `origin/main` (0ed2d8c、#67 予算画面まで) を本ブランチへ
 | E18 | `pnpm typecheck` | PASS (全 package) |
 | E19 | `pnpm test` | PASS。core 1070 (skip 6)、api 913、web 932、test:aux EXIT 0 |
 | E20 | render 再生成 | `.dev-graph/render/index.html` の output_sha256 `50e791e8…` が既存 receipt と一致 |
+
+## 12. main 取込後の検証（2026-09-23）
+
+PR 前に `origin/main` (237d2a2、#68 トレードオフ画面と #70 現金入力画面まで) をもう一度マージした。衝突 26 ファイルの解き方と結果を残す。
+
+| # | 実行 | 結果 |
+|---|---|---|
+| E21 | 衝突の解消 | migration を `0053_import_inspections.sql` へ繰り上げ (main の `0051_tradeoff_notes.sql` #68 と `0052_cash_entry_owner_soft_delete.sql` #70 が先着)。裸の「0051」を行指定で 30 箇所置換。経緯を述べた行 (OI-01・spec の番号の由来・E14) は当時の事実なので対象から外し、個別に書き直した |
+| E22 | 夜間保守の D1 予算 | 51 本 (取込 2 + 現金 2) が Free の 1 起動 50 本・安全枠 49 本を超えた。git は数値の衝突として見せず、`planScheduledMaintenanceD1Queries()` が module 初期化時に throw して表に出た。利用者の判断で取込を夜間の D1 枠から外し、`purgeExpiredImportRows` を検査要求へ相乗りさせた (OI-08)。予算表は 8 job・49 本 |
+| E23 | 仕様の世代交代 | 直下は取込サイクルを現行世代とし、main の現金入力サイクル 14 ファイルをバイト同一で `system-spec/archive/2026-09-23-cash-entry-screen/` へ退避。`architecture/graph.json` は 166 ノードの和集合、`arch-cash-*` 8 件の lineage を退避先へ付け替え (内容同一なので digest は打ち直さない)。166 ノード全件で source_path 実在と digest 一致を確認 |
+| E24 | main 側テストの前提の修正 | `cash-migration-0052.test.ts` が `names.at(-1)` で「自分が最後の migration」を前提にしており、0053 の追加で落ちた。`indexOf(TARGET)` に直し、他の画面が番号を足しても対象だけを見るようにした。衝突としては現れない種類の壊れ方 |
+| E25 | `pnpm lint` | PASS。biome 683 files、check-graph-lineage 166 ノード一致・孤児0、デザイントークン直書き0、公開文書の実データ参照OK |
+| E26 | `pnpm typecheck` | PASS (全 package) |
+| E27 | テスト | PASS。core 63 files / 1156 (skip 6)、api 70 files / 1008 (skip 6)、web 89 files / 1019、`test:aux` 43 / 43。api は E24 の修正前に 1 件だけ失敗し、修正後に該当 3 file を再実行して PASS |
+| E28 | render 再生成 | `.dev-graph/state/graph.json` (23 ノード・git 管理外) を入力に描き直し、`output_sha256` が既存 receipt の `50e791e8…` とバイト一致。`architecture/graph.json` (166 ノード) は render の入力ではない |

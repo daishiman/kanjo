@@ -115,7 +115,7 @@ web や route に上限の数値や状態の条件分岐が残ると、送信前
 - packages/api/src/db/schema.ts
 - packages/api/src/schema-guard.ts
 - packages/api/src/index.ts
-- migrations/0051_import_inspections.sql
+- migrations/0053_import_inspections.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/Import.tsx
 - packages/web/src/pages/import/

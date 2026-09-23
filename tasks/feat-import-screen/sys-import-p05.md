@@ -2,7 +2,7 @@
 graph_node_id: "SYS-IMPORT-P05"
 artifact_kind: "task"
 artifact_subtypes: []
-title: "import-screen 純関数・検査と確定の API・migration 0051・データ取込画面の分割と旧操作の移設の最終実装"
+title: "import-screen 純関数・検査と確定の API・migration 0053・データ取込画面の分割と旧操作の移設の最終実装"
 project_id: "feature-package-feat-import-screen"
 domain: "frontend"
 status: "active"
@@ -23,7 +23,7 @@ created_at: "2026-09-21T23:18:31Z"
 updated_at: "2026-09-21T23:18:31Z"
 depends_on: ["SYS-IMPORT-P04"]
 related_nodes: ["arch-import-screen-auth", "arch-import-screen-backend", "arch-import-screen-database", "arch-import-screen-frontend", "arch-import-screen-infrastructure", "arch-import-screen-maintenance-ops", "arch-import-screen-security", "arch-import-screen-ui-ux", "spec-import-screen"]
-resource_scope: ["packages/core/src/import-screen.ts", "packages/core/src/index.ts", "packages/api/src/routes/imports.ts", "packages/api/src/import-pipeline.ts", "packages/api/src/import-lifecycle.ts", "packages/api/src/import-active.ts", "packages/api/src/import-diff.ts", "packages/api/src/import-history-discard.ts", "packages/api/src/import-rate-limit.ts", "packages/api/src/scheduled-maintenance-budget.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/index.ts", "migrations/0051_import_inspections.sql", "packages/web/src/api.ts", "packages/web/src/pages/Import.tsx", "packages/web/src/pages/import/", "packages/web/src/components/ImportDiff.tsx", "packages/web/src/components/ImportDeletion.tsx", "packages/web/src/import-retry.ts", "packages/web/src/pages/Import.dom.test.tsx", "packages/web/src/pages/Import.diff.test.tsx", "packages/web/src/pages/Import.discard.test.tsx", "packages/web/src/pages/Import.deletion.test.tsx"]
+resource_scope: ["packages/core/src/import-screen.ts", "packages/core/src/index.ts", "packages/api/src/routes/imports.ts", "packages/api/src/import-pipeline.ts", "packages/api/src/import-lifecycle.ts", "packages/api/src/import-active.ts", "packages/api/src/import-diff.ts", "packages/api/src/import-history-discard.ts", "packages/api/src/import-rate-limit.ts", "packages/api/src/scheduled-maintenance-budget.ts", "packages/api/src/db/schema.ts", "packages/api/src/schema-guard.ts", "packages/api/src/index.ts", "migrations/0053_import_inspections.sql", "packages/web/src/api.ts", "packages/web/src/pages/Import.tsx", "packages/web/src/pages/import/", "packages/web/src/components/ImportDiff.tsx", "packages/web/src/components/ImportDeletion.tsx", "packages/web/src/import-retry.ts", "packages/web/src/pages/Import.dom.test.tsx", "packages/web/src/pages/Import.diff.test.tsx", "packages/web/src/pages/Import.discard.test.tsx", "packages/web/src/pages/Import.deletion.test.tsx"]
 purpose: null
 goal: null
 scope_in: null
@@ -47,7 +47,7 @@ completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "link
 implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sections": [], "status": "complete"}
 ---
 
-# import-screen 純関数・検査と確定の API・migration 0051・データ取込画面の分割と旧操作の移設の最終実装
+# import-screen 純関数・検査と確定の API・migration 0053・データ取込画面の分割と旧操作の移設の最終実装
 
 ## Machine-readable registration fields
 
@@ -84,17 +84,17 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Frontend: applicable: 16-import.png の全構成要素・ステッパー 3 段・一覧 9 列・要約 6 項目・結果 4 枚・履歴 7 列と詳細ペイン・選択件数バーを実装する
 - Backend: applicable: import-screen 純関数と IMPORT_LIMITS を実装する
 - API: applicable: 検査・ファイル追加と除外・確定・履歴の経路を実装する
-- Data: applicable: migration 0051 と schema.ts と runtimeSchemaGuard を揃える
+- Data: applicable: migration 0053 と schema.ts と runtimeSchemaGuard を揃える
 - Infrastructure: N/A: binding と配信構成は据え置き
 - Security: applicable: body の上限 413・Origin 検査 403・レート制限 429 を実装する
 - Quality: applicable: P04 の失敗テストがすべて緑になる
 - Documentation: N/A: docs の最終同期は P12
-- Operations: applicable: 夜間保守で期限切れの仮置きと古い時間枠を 1 回 500 件まで消す
+- Operations: applicable: 夜間保守で R2 の期限切れの仮置きを 1 回 500 件まで消す(D1 は使わない)。期限切れの検査行と古い時間枠は検査要求のついでに消す
 
 ## Architecture and deploy unit
 
 - Architecture decisions: arch-import-screen-auth, arch-import-screen-backend, arch-import-screen-database, arch-import-screen-frontend, arch-import-screen-infrastructure, arch-import-screen-maintenance-ops, arch-import-screen-security, arch-import-screen-ui-ux, spec-import-screen
-- Deploy unit/environment: web ビルドと Worker と D1 migration (0051 の表と列の追加のみ)
+- Deploy unit/environment: web ビルドと Worker と D1 migration (0053 の表と列の追加のみ)
 - Compatibility/migration/backfill: 新表 3 件と import_runs への列追加のみ。既存行の書き換えと backfill は 0 件。番号は着手時に origin/main を fetch して確定する
 
 ## 成果物
@@ -102,13 +102,13 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Produced artifacts:
 - packages/core/src/import-screen.ts
 - packages/api/src/routes/imports.ts
-- migrations/0051_import_inspections.sql
+- migrations/0053_import_inspections.sql
 - packages/web/src/pages/import/
 - Consumed artifacts:
 - docs/import-screen/design-decisions.md
 - packages/core/test/import-screen.test.ts
 - packages/api/src/import-screen.integration.test.ts
-- packages/api/src/import-migration-0051.test.ts
+- packages/api/src/import-migration-0053.test.ts
 - packages/web/src/pages/import/import-screen.dom.test.tsx
 - packages/api/src/import-limits-literal.test.ts
 - Write scope/touches:
@@ -125,7 +125,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - packages/api/src/db/schema.ts
 - packages/api/src/schema-guard.ts
 - packages/api/src/index.ts
-- migrations/0051_import_inspections.sql
+- migrations/0053_import_inspections.sql
 - packages/web/src/api.ts
 - packages/web/src/pages/Import.tsx
 - packages/web/src/pages/import/
@@ -166,7 +166,7 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - import-screen 純関数と IMPORT_LIMITS が境界をすべて満たし、P04 の core テストが緑である。
 - 検査が明細を 1 行も書かず、確定が本人の未期限の検査 ID だけを受ける。
 - body の上限を超える要求が本文を読む前に 413 で止まり、Origin 不一致が 403、上限回数を超えると 429 になる。
-- migration 0051 が追加のみで runtimeSchemaGuard の必須列に含まれる。
+- migration 0053 が追加のみで runtimeSchemaGuard の必須列に含まれる。
 - データ取込画面が参照画像の構成要素をすべて描画し、選択中の履歴が URL から復元される。
 - 旧 Import.tsx の操作 (差分プレビュー・取り消し・破棄・置換・再試行) がすべて新しい構成から実行できる。
 - Automated commands:
@@ -177,13 +177,13 @@ P04 の失敗テストがすべて緑になるまで、core / API / migration / 
 - Required evidence:
 - packages/core/src/import-screen.ts
 - packages/api/src/routes/imports.ts
-- migrations/0051_import_inspections.sql
+- migrations/0053_import_inspections.sql
 - packages/web/src/pages/import/
 
 ## Rollout and rollback
 
 - Rollout: 単一の PR で配信し、default branch への merge をもって反映する
-- Rollback trigger and steps: 本 task のコミットを revert する。0051 は表と列の追加のみで既存行を書き換えないため、表と列が残っても旧画面は動く。配信済みなら直前のビルドへ戻し、表と列の削除は行わない。
+- Rollback trigger and steps: 本 task のコミットを revert する。0053 は表と列の追加のみで既存行を書き換えないため、表と列が残っても旧画面は動く。配信済みなら直前のビルドへ戻し、表と列の削除は行わない。
 
 ## Handoff
 

@@ -1,0 +1,191 @@
+{
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "spec_dir": "system-spec",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "前回まで持ち越していた medium (U1-U9 の承認時に O/S の本文を見せていない) は、qa-tradeoff-decision-012 で解消した。O1〜O5 と S1〜S6 の本文 (O2 の第 3 例『毎月 80,000・削減 85,000/月 で差額 −60,000』を含む) を示したうえで、利用者が承認している。I (施策) の本文は再提示していないが、I は O/S を満たす手段なので low に下げる。--require-foundation と validate-spec-doc-sync はどちらも exit 0。G3・G4・O3・S3・S4 は、必要度を 010 の規則と利用者の上書きだけで決める 011 と食い違わない。",
+      "evidence": [
+        "validate-coverage-matrix --require-foundation exit0",
+        "validate-spec-doc-sync exit0",
+        "qa-tradeoff-decision-012 (user-decision, 2026-09-21T22:24:40Z)"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "decisions[] は 0 件で、決定 001〜012 はどれも利用者が明示選択した user-decision である。010 と 011 は 3 案と推奨を問いの本文に書いており、退けた案 (b)(c) も記録に残っている。-004 と -005 は agent-inference で、利用者確認済みを名乗ってはいない。001〜009 の退けた案が未記録である件 (low) は残っている。",
+      "evidence": [
+        "qa-tradeoff-decision-001〜012 basis=user-decision",
+        "decision-010/011 の question に (a)(b)(c) を併記"
+      ]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "C07 は PASS。loop / --require-complete / --require-basis / --require-foundation がすべて exit 0。未収集は 0/48、対象外 40 件は理由が固有、dangling は 0、集約 8/8 が一致、6 platform 行がすべてある。required-info の block item 6 件はすべて接地している。新しい qa 5 件は、該当セル (backend に 010/011/b005、maintenance-ops に 012、security に s005) の qa_refs に登録されている。sub-input の C06 も 4 軸すべて PASS で、前回 FAIL だったトレーサビリティの F1/F2 は 010 の追補で解消した。C05 がコードと照合した差し戻しの本題も解消している。011 で検知器による 1 段下げを取り消したので、月 3 万円を超える固定費 (fixed_cost_review に当たるもの) も、横ばいか増加なら『高』のまま残る。G4 のリスク (必要度 高 を含むほど高い) も、利用者の選択どおりに効く。",
+      "evidence": [
+        "C07 PASS (validate-coverage-matrix 4 モード exit0, required-info --state ungrounded=[])",
+        "C06 PASS (4 軸、F1/F2 resolved)",
+        "qa-tradeoff-decision-010/011",
+        "packages/core/src/analysis.ts:57-75 catProfile (cv<0.6 固定費 / <1.5 準変動)"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "前回の low (b) は backend-web-005 で解消した。中身は、verdict を年間差額 0 以下なら covered にすること、claimPart と同じ正規化 (trim→NFKC→小文字化) を core から export して 1 か所にすること、差額・判定・covered を導出値にすることの 3 点で、どれも既存コードと一致する (diagnosis-detectors.ts:112、analytics.ts:802 の verdict enum)。security-web-005 では、POST の zod から covered・verdict・selected.value を外し、範囲を保存前の不変条件へ移した。ただし security 章の doctrine 行 (security.md:31) と『本章での適用』(security.md:130)、章の要約 (security.md:49、要件定義 146 行) は、まだ『zod で covered と selected.value に範囲を課す』と書いており、005 と食い違う (low)。8 章が本章での適用と doctrine に具体的に接地していることは、前回と同じく確認した。",
+      "evidence": [
+        "backend.md:114-124 / security.md:89-99",
+        "security.md:31,49,130 (古い記述)",
+        "validate-knowledge-graph 4 profile exit0"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "C08 は PASS。validate-source-citation は exit 0 で、targets 9 件と references 9 件が一致した。9 件すべてを WebFetch で公式ページに照合し、現行版と一致した。hono の body-limit の公開日は、WebFetch の要約が一度誤っていたため WebSearch で裏を取り、2026-09-15 であることを確かめた。前回から、出典の中身の変更は無い。",
+      "evidence": [
+        "validate-source-citation exit0",
+        "9/9 公式照合一致"
+      ]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "installPath (0.1.14) の prompt 18 本すべてに、prompt-creator 2.1.7 の validate-prompt.py --input と verify-completeness.py --input を実行し直し、18/18 で exit 0 だった。前回の評価から prompt は変わっていない (mtime で確認)。",
+      "evidence": [
+        "validate-prompt + verify-completeness 18/18 exit0"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "G-matrix",
+      "name": "validate-coverage-matrix",
+      "conditions": [
+        "matrix_coverage",
+        "foundation_trace",
+        "decision_guidance"
+      ],
+      "command": [
+        "python3",
+        "scripts/validate-coverage-matrix.py",
+        "--matrix",
+        "system-spec/spec-state.json",
+        "--require-complete",
+        "--require-basis",
+        "--require-foundation"
+      ],
+      "exit_code": 0,
+      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"
+    },
+    {
+      "id": "G-doc-sync",
+      "name": "validate-spec-doc-sync",
+      "conditions": [
+        "foundation_trace"
+      ],
+      "command": [
+        "python3",
+        "scripts/validate-spec-doc-sync.py",
+        "--matrix",
+        "system-spec/spec-state.json",
+        "--references",
+        "system-spec/fetched-references.json",
+        "--spec-root",
+        "system-spec"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "G-knowledge-graph",
+      "name": "validate-knowledge-graph (knowledge/doctrine/required-info/cross)",
+      "conditions": [
+        "design_knowledge_reflection",
+        "matrix_coverage"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "G-required-info-state",
+      "name": "validate-knowledge-graph --profile required-info --state",
+      "conditions": [
+        "matrix_coverage"
+      ],
+      "exit_code": 0,
+      "stdout": "ungrounded_blocking_items=[]"
+    },
+    {
+      "id": "G-source-citation",
+      "name": "validate-source-citation (C08 実行)",
+      "conditions": [
+        "doc_freshness"
+      ],
+      "exit_code": 0
+    },
+    {
+      "id": "G-prompt",
+      "name": "validate-prompt --input + verify-completeness --input (18 prompts, prompt-creator 2.1.7)",
+      "conditions": [
+        "prompt_quality"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection (章内の古い記述)",
+      "observation": "security 章の doctrine 行 (security.md:31)、『本章での適用』(security.md:130)、章の要約 (security.md:49、00-requirements-definition.md:146) は、まだ『zod で covered と selected.value に範囲を課す』『候補キーは…受け付ける前提』と書いている。これは security-web-005 (POST から covered・verdict・selected.value を外し、範囲は保存前の不変条件にする) と食い違う。要約の 49 行は security-web-001 の本文なので書き換えられないが、31 行と 130 行は compile が生成する章の文である。",
+      "suggested_fix": "compile で security 章の doctrine 行と『本章での適用』を 005 に合わせる (入力の検査は支出名・金額・開始月・メモ・候補キーだけにし、covered の範囲は保存前の不変条件として core のテストで守る)。"
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage / traceability (C06 N1・C07 info)",
+      "observation": "backend-web-003/004 の本文には、011 で取り消された『検知器の改善案に当たる候補は 1 段下げる』が残っている。backend-web-001 (user-decision) も『具体の規則は -003 を参照』とだけ書いている。qa_log は追記のみなので想定の範囲内だが、今効いている規則を知るには 003→004→010→011→005 を順に辿る必要がある。",
+      "suggested_fix": "compile で backend 章に『現在の規則 (統合)』を 1 段落置くか、実装時に FR-09 の仕様書 (docs) へ統合した規則だけを書く。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace (持ち越しの縮小)",
+      "observation": "012 で再提示したのは O1〜O5 と S1〜S6 で、I (施策) の本文は再提示していない。012 は O と S の 11 項目を 1 問で一括承認している (C06 N2。appr-foundation-tradeoff-001 と同じ形)。",
+      "suggested_fix": "次のサイクルでは、承認の質問に foundation 全文のファイルの場所を添える。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace / decision_guidance (持ち越し)",
+      "observation": "次の 3 点は変わっていない。answered_at が一括の定数である (新しい 5 件は 22:24:40Z で揃っているが、未来日付ではない)。開始月が計算に効かないことを明記していない。001〜009 の退けた案を provenance に残していない。",
+      "suggested_fix": "前回までの suggested_fix のとおり。"
+    },
+    {
+      "severity": "low",
+      "bucket": "evaluator_io",
+      "observation": "仕様ディレクトリの completeness-findings.json は、前サイクル (AI分析) のレポートのままである。本評価は read-only の制約に従い、scratchpad に出力した。前回 (2 回目) のレポートは completeness-findings-tradeoff-r2.json、初回は -r1.json として残した。",
+      "suggested_fix": "呼び出し元が本 PASS 版を completeness-findings.json として採用する。"
+    },
+    {
+      "severity": "info",
+      "bucket": "matrix_coverage",
+      "observation": "確認した観点: 差し戻しの本題 2 件 (必要度の規則と検知器の効き方、C06 のトレーサビリティ F1/F2) は、user-decision の 010 と 011 で解消した。コードと照合しても、月 3 万円を超える固定費で横ばいか増加のものは『高』のまま残り、利用者の選択どおりに効く。C07 と C06 はどちらも PASS である。"
+    },
+    {
+      "severity": "info",
+      "bucket": "design_knowledge_reflection / doc_freshness / prompt_quality",
+      "observation": "確認した観点: backend-web-005 の verdict 条件・正規化・導出値は、既存コード (claimPart、verdict enum、catProfile) と一致する。C08 は 9/9 を公式ページで照合した。prompt は 18/18 がゲートを通った。"
+    }
+  ],
+  "gaps": []
+}

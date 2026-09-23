@@ -325,6 +325,46 @@ Q-1 は system-spec の承認済み契約と一貫する `done` に確定した�
 - `packages/web/src/pages/budget/budget.dom.test.tsx` が AT-01〜12・AT-14・AT-20・AT-22 を固定する。範囲は、構成要素、下書きでの組み替え、保存・リセット・離脱の確認、`?account=` の絞り込み、外部送信 0 件。`packages/web/src/budget-outlook.dom.test.tsx` が来期見通しと過不足の組み替えを固定する。
 - `packages/api/src/budget-screen.integration.test.ts` が認証とフェンス、上限いっぱいの保存、snapshot の無効化、書き出しと復元を固定する。`packages/api/src/budget-migration-0050.test.ts` が、0050 で既存の `budgets` が書き換わらないことを固定する。
 
+## 決定の更新(2026-09-22 / トレードオフ画面)
+
+`/tradeoff`(トレードオフ)を `design/FINAL-UI/images/15-tradeoff.png` に合わせて作り直した。判断の正本は `specs/spec-tradeoff-screen.md` と `architecture/tradeoff-*.md`、規則の一覧は `docs/spec-v1.1.md` の FR-09、判断の経緯は [`tradeoff-screen/design-decisions.md`](tradeoff-screen/design-decisions.md)。
+
+| 更新した判断 | これまで | 2026-09-22の決定 | 変更した理由 / 却下案 |
+|---|---|---|---|
+| 画面の名前 | やりくり試算 | **トレードオフ**。見出しの問いは「新しい支出を増やすなら、何を見直しますか？」 | 画面の役目は「何かを増やすなら何かを減らす」選択で、試算はその道具にすぎない |
+| 候補の出所 | 検知器が出した削減候補を効果額の順に並べる | **直近 3 か月の事業経費を 科目×取引先 で集計した、月額 1,000 円以上の上位 50 件**。検知器は理由の文と関連ページにだけ使う | 検知が出ない月は候補が空になり、何も選べなかった |
+| 必要度 | 無し | **低 / 中 / 高 を core が catProfile の type と推移から推定**し、利用者が上書きできる(『手動』の印)。検知器に当たっても下げない | 金額だけで並べると、削れない固定費が上に来る。却下: 固定費で横ばいのときだけ高、推移を見ない写像、検知器で 1 段下げる(いずれも利用者が退けた) |
+| 試算 | 選んだ候補の合計と予定の支出を比べ、「捻出できる / 不足」だけを出す | **年額で 新しい支出 − 削減 = 差額 を出し、防衛ラインの余裕が維持されるか割れるかまで出す**。式は core の `tradeoffSimulation` だけが持つ | 毎月の支出と単発の支出を同じ物差しで比べられなかった |
+| 推奨 | 無し | **月額上位 12 件から 2〜4 件の組み合わせを、リスク → 実行のしやすさ → 超過額の順に上位 4 件**(core の `tradeoffCombos`) | 候補が多いと、どれを組めば足りるかを手で探すしかなかった |
+| 記録 | 保存した試算を一覧し、翌月の実績と突き合わせる | **最新の 1 件だけを復元する**。充足額と判定はサーバーが現在の候補から計算し直す。一覧と突き合わせは出さない | 一覧は見返されず、候補の出所が変わると突き合わせの意味が揃わない。却下: 本文の covered を信じる(書き換えられる) |
+
+### この決定を古びさせないために
+
+- `packages/core/test/tradeoff-screen-contract.test.ts` が候補の集計と並び、推移の境界、必要度の表、試算の 3 例、推奨の並べ順(5 段)と上位 4 件を固定する。
+- `packages/web/src/pages/tradeoff/tradeoff-screen.dom.test.tsx` が画面の骨格、開始月の既定、一覧と突き合わせを出さないこと、取得中・失敗・候補が空の状態を固定する。
+- `packages/api/src/tradeoff-screen.integration.test.ts` が入力の上限と 400、現在の候補に無いキーの 422、利用者の分離、covered の再計算を固定する。`packages/api/src/tradeoff-migration-0051.test.ts` が 0051 で既存行が書き換わらないことを固定する。
+
+## 決定の更新(2026-09-22 / 現金入力画面)
+
+`/cash`(現金入力)を `design/FINAL-UI/images/17-cash.png` に合わせて作り直した。判断の正本は `specs/spec-cash-screen.md` と `architecture/cash-*.md`、規則の一覧は [`cash-screen/rules.md`](cash-screen/rules.md)、判断の経緯は [`cash-screen/design-decisions.md`](cash-screen/design-decisions.md)、列の定義は [`data-schema.md`](data-schema.md) の「現金明細の担当者・業務の目的・論理削除(0052)」。
+
+| 更新した判断 | これまで | 2026-09-22の決定 | 変更した理由 / 却下案 |
+|---|---|---|---|
+| 画面の組み立て | 1 枚のフォーム(通常と交通費の切替)と月で絞る表が縦に並ぶ | **通常入力 / 交通費入力の 2 タブ → 一覧(絞り込み・合計・20 件ずつのページ) → 下部固定バーで追加**。計算は core の `cash-screen.ts` の 1 か所から | 入力と確認を同じ画面で往復する作業なのに、交通費の区間と通常の明細が 1 枚のフォームに混ざっていた。却下: 交通費を別画面にする(同じ月の合計が 2 画面に分かれる) |
+| 削除 | ダイアログで確認して**行と手動の仕分けを完全に消す** | **行の中で確認して論理削除し、トーストの「元に戻す」で同じ id のまま戻す**。一括削除も同じ。30 日後に夜間 job が完全に消す | 現金の記帳は取込で作り直せない一点物で、押し間違いを戻す手段が無かった。却下: 削除を無くしてアーカイブにする(集計から外す操作が別に要る) |
+| 担当者 | 無し | **名義の 3 値(`business` / `spouse` / `family`)を必須**。表示は家計収支の名義ラベルと同じ名前。0052 より前の行は「未設定」と出し、編集で選ばせる | 家計収支の名義と同じ軸で現金も分けるため。既存行を推測で埋めない(backfill 0 件) |
+| 交通費の業務の目的 | 無し | **固定 4 つ + その他(40 字)を必須**。1 列に表示語で保存 | 経費として説明できる形で残す。却下: 自由記述だけ(集計の軸にならない) |
+| 入力途中の内容 | 画面を離れると消える | **利用者ごとのキーで 500 ms 後に localStorage へ下書き保存**。編集中は保存しない。ログアウトで全利用者分を消す | 領収書を見ながらの入力は中断されやすい。明細仕分けの Q-4(利用者で区切らない)と違い、キーに利用者 id を含めて共用端末で他人の下書きが出ないようにした |
+| 画面状態の URL | 無し(月は state) | **`tab` / `month` / `q` / `io` / `category` / `owner` / `route` / `min` / `max` / `from` / `to` / `page`**。不正な値は既定へ戻し、既定値は書かない | 再読み込みや共有で同じ絞り込みに戻れるように |
+| 領収書 | — | **欄を置かない**。「領収書は freee に保管してください」と出す | 2026-09-08 の税申告・証憑機能の廃止に合わせる |
+
+### この決定を古びさせないために
+
+- `packages/core/test/cash-screen.test.ts` が合計・絞り込み・ページング・交通費の合計・業務の目的・入力検証の上限・月・URL・一括の id・下書きを固定する。
+- `packages/web/src/pages/cash/cash-screen.dom.test.tsx` が見出し・タブ・領収書欄の不在・読込 / 空 / 失敗 / 0 件の状態・交通費の入替と往復・追加・変更・削除と元に戻す・下書き・色のトークン化を固定する。キーボード操作(削除の確認を開くと「キャンセル」へ、削除の後は「元に戻す」へフォーカスが移り、Escape で確認を閉じる)もここで固定する。
+- `pnpm --filter @kanjo/web run check:cash-screen`(`verify:full` に含む)が 360・390・768・1024・1280px と 200% 拡大で、横スクロール無し・タブの高さ 44px 相当・20 行とページ送り・下部固定バーと削除確認が画面に収まること・確認を開いたときのフォーカスを実描画で確かめる。
+- `packages/api/src/cash-screen.integration.test.ts` が論理削除と restore、一括、他の利用者の id の 6 経路 404、不正入力の 400、削除中の行を読まない 7 経路、完全消去の 30 日の境界と 1 晩 500 行を固定する。`packages/api/src/cash-migration-0052.test.ts` が 0052 で既存行が書き換わらないことを固定する。
+
 ## 決定の更新(2026-09-22 / データ取込画面)
 
 `/import`(データ取込)を `design/FINAL-UI/images/16-import.png` に合わせて作り直した。判断の正本は `specs/spec-import-screen.md` と `architecture/import-screen-*.md`、規則の一覧は [`import-screen/rules.md`](import-screen/rules.md)、判断の経緯は [`import-screen/design-decisions.md`](import-screen/design-decisions.md)。
@@ -343,4 +383,4 @@ Q-1 は system-spec の承認済み契約と一貫する `done` に確定した�
 
 - `packages/core/test/import-screen.test.ts` が上限の境界、状態の優先順、操作、要約の数え方、結果、履歴の操作を固定する。境界 12 件は `IMPORT_LIMIT_BOUNDARY_CASES` として web と api のテストも読む。
 - `packages/web/src/pages/import/import-screen.dom.test.tsx` が画面の構成(節・列・ステッパー・下段グリッド)、`?run=<id>` の復元、検査 ID だけでの確定、選択解除、確定後の要約保持、「前回データを残す」の既定値と説明、ファイル名が HTML にならないことを固定する。
-- `packages/api/src/import-screen.integration.test.ts` が、検査で明細を書かないこと、他人・期限切れの検査 ID が同じ 404 になること、413・403・429、外部への送信 0 件、夜間保守の片づけを固定する。`packages/api/src/import-limits-literal.test.ts` が上限の数値の書き写しを、`import-migration-0051.test.ts` が 0051 で既存の行が書き換わらないことを固定する。
+- `packages/api/src/import-screen.integration.test.ts` が、検査で明細を書かないこと、他人・期限切れの検査 ID が同じ 404 になること、413・403・429、外部への送信 0 件、期限切れの行と夜間保守の片づけを固定する。`packages/api/src/import-limits-literal.test.ts` が上限の数値の書き写しを、`import-migration-0053.test.ts` が 0053 で既存の行が書き換わらないことを固定する。

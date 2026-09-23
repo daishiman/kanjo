@@ -179,7 +179,7 @@ describe('scheduled maintenance D1 plan', () => {
       deletion_undo_retention: 12,
       audit_header_retention: 3,
       audit_detail_retention: 6,
-      import_staging_cleanup: 2,
+      cash_soft_delete_purge: 2,
     });
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBe(SCHEDULED_D1_QUERY_PLAN_MAX);
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBeLessThanOrEqual(SCHEDULED_D1_QUERY_ACCEPTED_MAX);
@@ -198,7 +198,7 @@ describe('scheduled maintenance D1 plan', () => {
     );
   });
 
-  it('backupを先に確定後、R2期限enqueue・資格情報cleanup・両undo sweep・取込の片づけでもactual=planned=49', async () => {
+  it('backupを先に確定後、R2期限enqueue・資格情報cleanup・両undo sweep・現金の完全消去でもactual=planned=49', async () => {
     const chronology: string[] = [];
     const database = worstPathDatabase(chronology);
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);

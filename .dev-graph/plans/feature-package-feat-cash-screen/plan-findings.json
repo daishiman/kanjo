@@ -1,0 +1,208 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/plan-feat-cash-screen-20260921T2307Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "feature-package.json の acceptance/scope_in/scope_out と goal-spec.json (staging 内、manifest 非対象) の同項目、task-specs 各 phase の『スコープ外』節が全 13 phase で同一文言を反復しており、後続 phase が前段の決定と食い違う記述を持たない。今回の差分 (P04/P05/P08 への import-lifecycle.ts/import-lifecycle.test.ts の追加) は既存の I3・qa-cash-decision-009 の記述と矛盾せず、他 phase の acceptance/write_scope とも整合する。migration 0050 が追加のみで既存行の書き換え 0 件であること、SCHEDULED_D1_QUERY_PLAN_MAX を 47→49 に上げること、OI-01〜OI-05 の扱いは P01〜P13 を通じて一貫している。write_scope の大半の phase が共有する docs/cash-screen/design-decisions.md への書込みは、task-graph.json の depends_on が P01→P02→...→P13 の単鎖であり並行 lease が発生しないため矛盾ではない (前例 .dev-graph/plans/feature-package-feat-ai-analysis-screen でも同型)。",
+      "evidence": [
+        "feature-package.json",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-13-release-deploy.md",
+        "workstream-inventory.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "第1周 finding-001/005 (packages/api/src/import-lifecycle.ts の restoreCashEntryStatements と既存テスト import-lifecycle.test.ts が write_scope に無い) は、P04 (task-specs/phase-04-test-design.md) の write_scope/acceptance に import-lifecycle.test.ts が、P05 (task-specs/phase-05-implementation.md) の write_scope/acceptance に import-lifecycle.ts が、P08 (task-specs/phase-08-refactoring-migration.md) の consumed/acceptance に import-lifecycle.ts への参照が、それぞれ workstream-inventory.json と task-specs の両方で一致した形で追加され解消を確認した。specs/spec-cash-screen.md 全体から現物ファイル名 (拡張子 .ts/.tsx/.sql/.json/.mjs) を再抽出し、write_scope 全13 phase と再突合した結果、他に write_scope から漏れている現物ファイルは無い。spec が明示的に『変えない経路』と宣言する import-active.ts (JSON pointer 宣言のみ、読取条件でない) と deletion-lifecycle.ts:248 loadManualRecords (現金明細を対象に入れない) は、前者が write_scope に含まれず (正しい)、後者は deletion-lifecycle.ts 自体が P05 の write_scope に含まれるが夜間完全消去 job (cash_soft_delete_purge、index.ts:196 scheduledMaintenance が呼ぶ) の新規追加箇所として妥当であり、loadManualRecords 自体の書換えを意味しない。exact-13 の phase_ref/task_id は feature-package.json/task-graph.json/workstream-inventory.json/system-build-handoff.json の4箇所で一致し、受入 S1〜S5・OI-01〜OI-05 の担当 phase 割当てにも漏れがない。",
+      "evidence": [
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "workstream-inventory.json",
+        "feature-package.json",
+        "task-graph.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "staging-manifest.json の files 17件 (feature-package.json, system-build-handoff.json, task-graph.json, task-specs/phase-01〜13, workstream-inventory.json) の実測 sha256 と、staging-manifest.json 自身の実測 sha256 が記録値と全件一致することを shasum -a 256 で再計算して確認した。validate-system-plan.py を再実行し validated_digest=sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d、status=pass、violations=[] を得て、staging-manifest.json#canonical_digest と一致することを確認した。system-build-handoff.json#identity.source_feature_digest と features/feat-cash-screen.context.json の実測 sha256 (第1周と不変) が一致し、repository_id=github:daishiman/kanjo も caller と一致する。staging 外の正本 (manifest 非対象) は今回変更されていないため第1周の実測結果を再確認のみに留め、evidence には gate 結果のみ計上する。registration_request の promotion_receipt / registration_receipt はいずれも status=not-emitted。",
+      "evidence": [
+        "staging-manifest.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の depends_on は P01→P02→...→P13 の単鎖であり、前方参照や循環がない (task-graph.json 自体は第1周からハッシュ不変)。task-specs 各ファイルの『前提条件』節の依存記述も一致する。write_scope はコード実装 (P05 のみ packages/core・packages/api・packages/web・migrations に書込み、他 phase は docs/cash-screen 配下または P04 のテストファイルのみ) で分離されており、今回追加された import-lifecycle.ts (P05) と import-lifecycle.test.ts (P04) もこの分離規則 (テストは P04、実装は P05) に従っている。",
+      "evidence": [
+        "task-graph.json",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${CLAUDE_PLUGIN_CACHE}/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--staging",
+        ".dev-graph/staging/plan-feat-cash-screen-20260921T2307Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d\",\n  \"feature_package_id\": \"feature-package/feat-cash-screen\",\n  \"parent_feature\": \"feat-cash-screen\",\n  \"phase_refs\": [\"P01\",\"P02\",\"P03\",\"P04\",\"P05\",\"P06\",\"P07\",\"P08\",\"P09\",\"P10\",\"P11\",\"P12\",\"P13\"],\n  \"violations\": []\n}",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "staging-manifest.json",
+      "sha256": "1ae09a04b6cf9f90a9d7ac3387b8e07b3fd943d845338e2022f3480cf6c40e44"
+    },
+    {
+      "path": "feature-package.json",
+      "sha256": "6a1314136e7d6836441cb30cffaa6df5dad3e6218fb88caa9cb3fccf6e93473c"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "7c89b3beba7b13b62a66bbef699a2c4c1ba1de0059a48ae970eba9465d8f2996"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "01254c9163a2d0c0f6358c1bf55b1729daa866adf1639ecef5ca6b24c1e4eae4"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "a972a69bb409c5f9066589658a3092d859246538a05f37c72577546255f0bf33"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "d4f1c2a25f4f957f4d4545bf14fea7d8f8d52e3f959a81676eef6f76976023f1"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "f8ccbcdb7a5c917b0c36b8c1f2a2c900c95d414c786eea9c8bb435b819f3fe14"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "20e0f17e809ff8d5d0d5345364288c8c2845f075fd5c4e7de6fb0eeaa3e39788"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "fae599cde0c8f5477ed72d214c5823467b1d49bf3c1ae6a894c4e8f8d2b48b16"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "35058b36f4cf2793c931e9452fab9f3a6a67b1447966e0c77108a8b437b1daf7"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "5e7290962b3950880202b30d9cfaddecdc932e5541f785734ce505767a68cd04"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "ea91306c05dd1fcbd4a44f0f5362ac16d40d39efc939302ea4b56123dfdf9fbf"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "326479adfde19556b1a382e471be98dd080a13aaf7fa45cdbfa7bf8ecfe64042"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "18d604e2302e5b4abf389a4198dcbcbe5e11ebec430dd628640eb323a3570bda"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "3b8256e3ac6f9d30dae03ad9d44ce1046241b323dbef847d2bc224de506882b5"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "fe07a8a885baadfd5d5db8073b0a818671f56b6c8398a94bd92eb4d7e8afef1c"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "7fead63ee633a872ee4098844ec5b3155a68fd6c93b04717e57bb5955cfce23c"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "77affb4ba247ad536d36237075a4ca97f80936c615cda48141e1887fc9ddbb39"
+    }
+  ],
+  "staleness_rule": "本 findings は evaluated_digest (staging-manifest.json#canonical_digest = sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d) に束縛される。staging-manifest.json の canonical_digest、files 配下いずれかの sha256、または staging-manifest.json 自身の sha256 が再生成等で変化した場合、本 findings は無効 (stale) であり、C11 promotion gate は evaluated_digest と promotion 対象 digest の完全一致、および evaluated_inputs (manifest files 全件 + staging-manifest.json 自身) の exact-set 一致を要求し、不一致時は本 findings を採用してはならない。別 run_id/別 digest に対する verdict は本 findings の根拠として再利用できない。第1周 (evaluated_digest=sha256:890b3ba55c48aafef5acbd31f04fbf6cf3b02498afbd65df407252c10031ed93) の verdict は本 findings の根拠として再利用していない。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "completeness",
+      "observation": "finding-001 (第1周の high finding: packages/api/src/import-lifecycle.ts の restoreCashEntryStatements と既存テスト import-lifecycle.test.ts が write_scope に無い) は、P04 の write_scope/acceptance に import-lifecycle.test.ts、P05 の write_scope/acceptance に import-lifecycle.ts、P08 の consumed/acceptance に import-lifecycle.ts への参照がそれぞれ追加されたことで解消を確認した (workstream-inventory.json と task-specs の両方で一致)。",
+      "evidence": [
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "workstream-inventory.json"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "completeness",
+      "observation": "finding-002: specs/spec-cash-screen.md 本文から現物ファイル名 (.ts/.tsx/.sql/.json/.mjs 拡張子) を再抽出し write_scope 全13 phase と再突合した。他に write_scope から漏れている現物ファイルは無い。import-active.ts は spec が明示的に『変えない経路』と宣言しており write_scope に含まれない (正しい)。",
+      "evidence": [
+        "specs/spec-cash-screen.md#削除中の行を読まない条件",
+        "task-specs/phase-05-implementation.md"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "digest-integrity",
+      "observation": "finding-003: staging-manifest.json の files 17件および staging-manifest.json 自身の sha256 を実ファイルから再計算し、記録値と完全一致することを確認した。canonical_digest は validate-system-plan.py の validated_digest (sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d) と一致する。",
+      "evidence": [
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "source-lineage",
+      "observation": "finding-004: staging 外の正本 (manifest 非対象、goal-spec.json#source_lineage 記載の features/architecture/specs/system-spec 計13件) は今回の staging 再生成で変更されておらず、system-build-handoff.json#identity.source_feature_digest と features/feat-cash-screen.context.json の実測 sha256 が第1周と同じ値で一致することを再確認した。",
+      "evidence": [
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "repository-boundary",
+      "observation": "finding-005: system-build-handoff.json#identity.repository_id = github:daishiman/kanjo が caller repository_id と一致し、registration_request の promotion_receipt / registration_receipt はいずれも status=not-emitted で先行発行がなく、owner 境界の越境がない。",
+      "evidence": [
+        "system-build-handoff.json"
+      ]
+    }
+  ]
+}

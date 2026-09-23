@@ -23,7 +23,7 @@ created_at: "2026-09-21T23:18:31Z"
 updated_at: "2026-09-21T23:18:31Z"
 depends_on: ["SYS-IMPORT-P03"]
 related_nodes: ["arch-import-screen-auth", "arch-import-screen-backend", "arch-import-screen-database", "arch-import-screen-frontend", "arch-import-screen-infrastructure", "arch-import-screen-maintenance-ops", "arch-import-screen-security", "arch-import-screen-ui-ux", "spec-import-screen"]
-resource_scope: ["packages/core/test/import-screen.test.ts", "packages/api/src/import-screen.integration.test.ts", "packages/api/src/import-migration-0051.test.ts", "packages/web/src/pages/import/import-screen.dom.test.tsx", "packages/api/src/import-limits-literal.test.ts"]
+resource_scope: ["packages/core/test/import-screen.test.ts", "packages/api/src/import-screen.integration.test.ts", "packages/api/src/import-migration-0053.test.ts", "packages/web/src/pages/import/import-screen.dom.test.tsx", "packages/api/src/import-limits-literal.test.ts"]
 purpose: null
 goal: null
 scope_in: null
@@ -102,7 +102,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 - Produced artifacts:
 - packages/core/test/import-screen.test.ts
 - packages/api/src/import-screen.integration.test.ts
-- packages/api/src/import-migration-0051.test.ts
+- packages/api/src/import-migration-0053.test.ts
 - packages/web/src/pages/import/import-screen.dom.test.tsx
 - packages/api/src/import-limits-literal.test.ts
 - Consumed artifacts:
@@ -111,7 +111,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 - Write scope/touches:
 - packages/core/test/import-screen.test.ts
 - packages/api/src/import-screen.integration.test.ts
-- packages/api/src/import-migration-0051.test.ts
+- packages/api/src/import-migration-0053.test.ts
 - packages/web/src/pages/import/import-screen.dom.test.tsx
 - packages/api/src/import-limits-literal.test.ts
 
@@ -144,7 +144,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 - 上限の境界がすべて toBe で書かれ、実装前は失敗する。
 - 合計 30MB+1 byte が Content-Length ありと無しの両方で本文を読む前に 413 になるテストがある。
 - 検査 31 回目と確定 6 回目が 429、Origin 不一致が 403 になるテストがある。
-- migration 0051 の適用で既存行の更新が 0 件であるテストがある。
+- migration 0053 の適用で既存行の更新が 0 件であるテストがある。
 - web と api の取込の経路に上限の数値リテラルが無いことを字面で検査するテストがあり、検査の前の実装で落ちる。
 - Automated commands:
 - pnpm --filter @kanjo/core test
@@ -153,7 +153,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 - Required evidence:
 - packages/core/test/import-screen.test.ts
 - packages/api/src/import-screen.integration.test.ts
-- packages/api/src/import-migration-0051.test.ts
+- packages/api/src/import-migration-0053.test.ts
 - packages/web/src/pages/import/import-screen.dom.test.tsx
 - packages/api/src/import-limits-literal.test.ts
 

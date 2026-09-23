@@ -12,6 +12,7 @@ import { secureHeaders } from 'hono/secure-headers';
 import { runAuditDetailRetention, runAuditHeaderRetention } from './audit-log.js';
 import { type AuthEnv, type AuthVariables, authGuard, mustChangePasswordFence } from './auth.js';
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
+import { cashPurgeLogLine, runCashSoftDeletePurge } from './cash-purge.js';
 import { runDeletionRetention } from './deletion-retention.js';
 import { importOriginGuard, runImportStagingCleanup } from './import-rate-limit.js';
 import { cleanupStalePasswordLoginRateLimits } from './login-rate-limit.js';
@@ -35,6 +36,7 @@ import { savedFiltersRoute } from './routes/saved-filters.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
 import { totalCashflowRoute } from './routes/total-cashflow.js';
+import { tradeoffRoute } from './routes/tradeoff.js';
 import { vendorMemoryRoute } from './routes/vendor-memory.js';
 import {
   SCHEDULED_MAINTENANCE_D1_PLAN,
@@ -119,6 +121,7 @@ app.route('/api', importsRoute);
 app.route('/api', deletionsRoute);
 app.route('/api', cashRoute);
 app.route('/api', analyticsRoute);
+app.route('/api', tradeoffRoute);
 app.route('/api', classifyRoute);
 app.route('/api', classifyBulkRoute);
 app.route('/api', savedFiltersRoute);
@@ -216,8 +219,10 @@ export async function scheduledMaintenance(
     deletion_undo_retention: runDeletionRetention(env),
     audit_header_retention: runAuditHeaderRetention(env),
     audit_detail_retention: runAuditDetailRetention(env),
-    import_staging_cleanup: runImportStagingCleanup(env),
+    cash_soft_delete_purge: runCashSoftDeletePurge(env),
   } satisfies Record<ConcurrentJobName, Promise<unknown>>;
+  // D1 を 1 本も使わない job は query 予算の表に載せない (載せると使わない枠を他から奪う)。
+  const importStagingCleanup = runImportStagingCleanup(env);
   const [
     r2Cleanup,
     loginRateLimit,
@@ -225,6 +230,7 @@ export async function scheduledMaintenance(
     deletionRetention,
     auditHeaderRetention,
     auditDetailRetention,
+    cashPurge,
     importStaging,
   ] = await Promise.allSettled([
     concurrentJobs.r2_cleanup,
@@ -233,7 +239,8 @@ export async function scheduledMaintenance(
     concurrentJobs.deletion_undo_retention,
     concurrentJobs.audit_header_retention,
     concurrentJobs.audit_detail_retention,
-    concurrentJobs.import_staging_cleanup,
+    concurrentJobs.cash_soft_delete_purge,
+    importStagingCleanup,
   ]);
   console.log(
     JSON.stringify({
@@ -380,9 +387,7 @@ export async function scheduledMaintenance(
       JSON.stringify({
         level: 'info',
         job: 'import_staging_cleanup',
-        inspections: importStaging.value.inspections,
         staged: importStaging.value.staged,
-        rateWindows: importStaging.value.rateWindows,
       }),
     );
   } else {
@@ -392,6 +397,15 @@ export async function scheduledMaintenance(
         job: 'import_staging_cleanup',
         name: errorName(importStaging.reason),
       }),
+    );
+  }
+  if (cashPurge.status === 'fulfilled') {
+    const line = cashPurgeLogLine(cashPurge.value);
+    if (cashPurge.value.limitReached) console.warn(JSON.stringify(line));
+    else console.log(JSON.stringify(line));
+  } else {
+    console.error(
+      JSON.stringify({ level: 'error', job: 'cash_soft_delete_purge', name: errorName(cashPurge.reason) }),
     );
   }
   // 全jobを完走・個別記録してからCronへ失敗を返す。飲み込むとPast Eventsが成功になり、
@@ -406,6 +420,7 @@ export async function scheduledMaintenance(
       auditHeaderRetention,
       auditDetailRetention,
       importStaging,
+      cashPurge,
     ].some((result) => result.status === 'rejected')
   ) {
     throw new Error('scheduled_maintenance_failed');

@@ -1,22 +1,21 @@
 // @vitest-environment jsdom
 
 /**
- * やりくり計画の翌月実績突合(FR-09)の表示契約。
+ * トレードオフ画面に翌月実績の突合を出さないことの契約 (FR-14、qa-tradeoff-decision-004)。
  *
- * 「捻出できる見込み」を出しただけで終わらせないための列なので、
- * 結論(達成/一部/未達)と、その根拠になる対象月・実績・基準が
- * 同じ行に揃っていることを固定する。
+ * このファイルは元々「突合の結論 (達成/一部/未達) と根拠が同じ行に揃う」ことを固定していた。
+ * 作り直しで突合は画面から外すと利用者が決めたため、消さずに意図を置き換える:
+ * 旧 API の形 (plans / review) を返されても、画面が保存一覧と突合を描かないことを確かめる。
+ * 突合の数字そのものの契約は core の `tradeoffReview` のテストが持ち続ける。
  */
+import type { TradeoffReviewRow } from '@kanjo/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { TradeoffResponse } from './api.js';
 import { TradeoffPage } from './pages/Tradeoff.js';
 
-type ReviewRow = TradeoffResponse['review'][number];
-
-const review = (over: Partial<ReviewRow> = {}): ReviewRow => ({
+const review = (over: Partial<TradeoffReviewRow> = {}): TradeoffReviewRow => ({
   id: 1,
   title: '来月の資金繰り',
   amount: 100000,
@@ -31,26 +30,27 @@ const review = (over: Partial<ReviewRow> = {}): ReviewRow => ({
   ...over,
 });
 
-const payload = (r: ReviewRow): TradeoffResponse =>
-  ({
-    candidates: [],
-    budgets: [],
-    plans: [
-      {
-        id: 1,
-        title: '来月の資金繰り',
-        amount: 100000,
-        recurring: false,
-        selected: [{ label: '広告宣伝費 を予算内に戻す', value: 100000 }],
-        covered: 100000,
-        verdict: 'covered',
-        createdAt: '2026-03-15T00:00:00.000Z',
-      },
-    ],
-    review: [r],
-  }) as unknown as TradeoffResponse;
+/** 新しい応答に、旧応答の plans / review が紛れ込んだ場合 */
+const payload = (r: TradeoffReviewRow) => ({
+  candidates: [],
+  defense: { monthlyMargin: null, status: 'nodata' },
+  latest: null,
+  plans: [
+    {
+      id: 1,
+      title: '来月の資金繰り',
+      amount: 100000,
+      recurring: false,
+      selected: [{ label: '広告宣伝費 を予算内に戻す', value: 100000 }],
+      covered: 100000,
+      verdict: 'covered',
+      createdAt: '2026-03-15T00:00:00.000Z',
+    },
+  ],
+  review: [r],
+});
 
-function renderWith(r: ReviewRow) {
+function renderWith(r: TradeoffReviewRow) {
   vi.stubGlobal(
     'fetch',
     vi.fn(
@@ -75,31 +75,23 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('やりくり計画の翌月実績突合', () => {
-  it('達成なら削減額と、その根拠(対象月の実績と基準)が並ぶ', async () => {
+describe('翌月実績の突合を画面に出さない', () => {
+  it.each([
+    ['達成', review()],
+    ['一部', review({ actual: 250000, reduced: 50000, rate: 0.5, status: 'partial' })],
+    ['未達', review({ actual: 320000, reduced: -20000, rate: 0, status: 'missed' })],
+    ['記帳待ち', review({ actual: null, reduced: null, rate: null, status: 'pending' })],
+  ])('%s の突合行があっても結論と根拠を描かない', async (_label, r) => {
+    renderWith(r);
+    await screen.findByRole('heading', { name: /見直し候補の選択/ });
+    expect(screen.queryByText(/達成|一部達成|未達|記帳待ち/)).toBeNull();
+    expect(screen.queryByText(/2026-04|2026年4月/)).toBeNull();
+  });
+
+  it('保存済み試算の一覧 (旧 plans) を描かない', async () => {
     renderWith(review());
-    const cell = (await screen.findByText('達成')).closest('td') as HTMLElement;
-    // yenS は減った側に符号を付けない(増えた月だけ − が付く)
-    expect(cell.textContent).toContain('¥100,000');
-    expect(cell.textContent).toContain('2026-04');
-    expect(cell.textContent).toContain('¥200,000');
-    expect(cell.textContent).toContain('基準 ¥300,000');
-  });
-
-  it('一部達成と未達は別の見え方にする', async () => {
-    renderWith(review({ status: 'partial', reduced: 50000, rate: 0.5 }));
-    expect((await screen.findByText('一部')).className).toContain('warn');
-    cleanup();
-    vi.unstubAllGlobals();
-    renderWith(review({ status: 'missed', reduced: -80000, rate: -0.8 }));
-    const cell = (await screen.findByText('未達')).closest('td') as HTMLElement;
-    // 増えた月も符号つきでそのまま見せる
-    expect(cell.textContent).toContain('−¥80,000');
-  });
-
-  it('対象月がまだ記帳されていなければ、判定せず待っていることを見せる', async () => {
-    renderWith(review({ status: 'pending', actual: null, reduced: null, rate: null }));
-    expect(await screen.findByText('2026-04 の記帳待ち')).toBeTruthy();
-    expect(screen.queryByText('達成')).toBeNull();
+    await screen.findByRole('heading', { name: /見直し候補の選択/ });
+    expect(screen.queryByText('来月の資金繰り')).toBeNull();
+    expect(screen.queryByText('広告宣伝費 を予算内に戻す')).toBeNull();
   });
 });

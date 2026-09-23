@@ -62,6 +62,6 @@
 
 | # | 規則 | 根拠 | 実装 | テスト |
 |---|---|---|---|---|
-| R28 | migration 0051 は追加だけ。既存の表の UPDATE・DELETE・DROP を含まず、`import_runs` の新しい列は NULL を許す | 利用者 | `migrations/0051_import_inspections.sql` | `packages/api/src/import-migration-0051.test.ts` |
-| R29 | 夜間保守が、期限切れの検査・24 時間を過ぎた仮置き・古いレート制限の枠を、1 回 500 行まで消す | 利用者 | `import-rate-limit.ts` `runImportStagingCleanup`、`packages/api/src/scheduled-maintenance-budget.ts` | 統合「夜間保守の片づけ」、`scheduled-maintenance-budget.test.ts` |
-| R30 | 配信は Migrate → Deploy の順。0051 を適用する前の Worker は新しい表を読めない | 利用者(運用) | `.github/workflows` の手順 | — (運用の注意。[`design-decisions.md`](design-decisions.md) §9) |
+| R28 | migration 0053 は追加だけ。既存の表の UPDATE・DELETE・DROP を含まず、`import_runs` の新しい列は NULL を許す | 利用者 | `migrations/0053_import_inspections.sql` | `packages/api/src/import-migration-0053.test.ts` |
+| R29 | 24 時間を過ぎた仮置きは夜間保守が 1 回 500 件まで R2 から消す(D1 は 1 本も使わない)。期限切れの検査と古いレート制限の枠は、検査を新しく作る要求のついでに消す | 利用者(片づけの置き場所は OI-08 の判断) | `import-rate-limit.ts` `runImportStagingCleanup` / `purgeExpiredImportRows`、`packages/api/src/scheduled-maintenance-budget.ts` | 統合「夜間保守の片づけ」「期限切れの行の片づけ」、`scheduled-maintenance-budget.test.ts` |
+| R30 | 配信は Migrate → Deploy の順。0053 を適用する前の Worker は新しい表を読めない | 利用者(運用) | `.github/workflows` の手順 | — (運用の注意。[`design-decisions.md`](design-decisions.md) §9) |

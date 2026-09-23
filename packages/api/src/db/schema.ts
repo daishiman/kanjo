@@ -537,10 +537,20 @@ export const cashEntries = sqliteTable(
     transitRound: integer('transit_round').notNull().default(0),
     /** 0010: 1 = 証憑不要(電車代など領収書が出ない支出) */
     receiptWaived: integer('receipt_waived').notNull().default(0),
+    /** 0052: 名義。NULL = 未設定(旧画面で記帳した行) */
+    owner: text('owner', { enum: ['business', 'spouse', 'family'] }),
+    /** 0052: 交通費の業務の目的。固定候補か「その他:<記述>」。区間の無い行は NULL */
+    transitPurpose: text('transit_purpose'),
+    /** 0052: 論理削除の時刻。NULL = 有効。30日を過ぎた行は夜間 job が完全に消す */
+    deletedAt: text('deleted_at'),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
     updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
   },
-  (t) => [index('idx_cash_month').on(t.userId, t.month)],
+  (t) => [
+    index('idx_cash_month').on(t.userId, t.month),
+    index('idx_cash_user_deleted').on(t.userId, t.deletedAt),
+    index('idx_cash_deleted_purge').on(t.deletedAt, t.id),
+  ],
 );
 
 /**
@@ -697,7 +707,23 @@ export const tradeoffPlans = sqliteTable('tradeoff_plans', {
   covered: integer('covered'),
   verdict: text('verdict'),
   createdAt: text('created_at').$defaultFn(nowIso),
+  /* 0051。試算に使う新しい支出の開始月 (YYYY-MM) とメモ。既存行は NULL */
+  startMonth: text('start_month'),
+  memo: text('memo'),
 });
+
+/** 見直し候補ごとの必要度とメモの上書き (0051)。need が NULL なら必要度は推定のまま */
+export const tradeoffCandidateNotes = sqliteTable(
+  'tradeoff_candidate_notes',
+  {
+    userId: text('user_id').notNull(),
+    candidateKey: text('candidate_key').notNull(),
+    need: text('need', { enum: ['low', 'mid', 'high'] }),
+    memo: text('memo'),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [uniqueIndex('tradeoff_candidate_notes_user_key').on(t.userId, t.candidateKey)],
+);
 
 /** AI分析の依頼(期間 + 使い捨てトークンのハッシュ)。原文トークンは保存しない */
 export const aiTasks = sqliteTable(

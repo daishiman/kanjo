@@ -2,7 +2,7 @@
 graph_node_id: "SYS-IMPORT-P02"
 artifact_kind: "task"
 artifact_subtypes: []
-title: "取込規則純関数と IMPORT_LIMITS・検査と確定の API・migration 0051・画面分割のワークストリーム設計決定記録"
+title: "取込規則純関数と IMPORT_LIMITS・検査と確定の API・migration 0053・画面分割のワークストリーム設計決定記録"
 project_id: "feature-package-feat-import-screen"
 domain: "documentation"
 status: "active"
@@ -47,7 +47,7 @@ completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "link
 implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sections": [], "status": "complete"}
 ---
 
-# 取込規則純関数と IMPORT_LIMITS・検査と確定の API・migration 0051・画面分割のワークストリーム設計決定記録
+# 取込規則純関数と IMPORT_LIMITS・検査と確定の API・migration 0053・画面分割のワークストリーム設計決定記録
 
 ## Machine-readable registration fields
 
@@ -66,7 +66,7 @@ implementation_readiness: {"checked_at": "2026-09-21T23:14:02Z", "missing_sectio
 
 ## 目的
 
-core の import-screen 純関数と IMPORT_LIMITS、検査・ファイル追加と除外・確定・履歴の経路、migration 0051 の新表と列追加、pages/import/ への分割、URL の検索パラメータの設計決定を 1 か所に記録し、実装の分担と境界を確定する。
+core の import-screen 純関数と IMPORT_LIMITS、検査・ファイル追加と除外・確定・履歴の経路、migration 0053 の新表と列追加、pages/import/ への分割、URL の検索パラメータの設計決定を 1 か所に記録し、実装の分担と境界を確定する。
 
 ## 背景
 
@@ -84,7 +84,7 @@ core の import-screen 純関数と IMPORT_LIMITS、検査・ファイル追加�
 - Frontend: applicable: pages/import/ の部品分割と URL の検索パラメータを設計する
 - Backend: applicable: import-screen 純関数と IMPORT_LIMITS の入出力を設計する
 - API: applicable: 検査・確定・履歴の経路と既存経路の扱いを設計する
-- Data: applicable: migration 0051 の新表 3 件と import_runs の列追加を設計する
+- Data: applicable: migration 0053 の新表 3 件と import_runs の列追加を設計する
 - Infrastructure: N/A: binding は既存の R2 と D1 のまま
 - Security: N/A: セキュリティ設計は P03 で独立レビューする
 - Quality: N/A: テスト設計は P04
@@ -142,7 +142,7 @@ core の import-screen 純関数と IMPORT_LIMITS、検査・ファイル追加�
 - Acceptance:
 - ファイルの状態 6 種・取込可否・要約 6 項目・取込 1 回の結果・上限の判定の関数の入出力が決定記録にある。
 - 検査 ID と import_runs.id の関係、keepOnShrink と POST /imports の扱い、IMPORT_LIMITS に含める範囲の結論が決定記録にある。
-- migration 0051 が表と列の追加のみで既存行の更新 0 件であることが設計として明記されている。
+- migration 0053 が表と列の追加のみで既存行の更新 0 件であることが設計として明記されている。
 - Automated commands:
 - pnpm lint
 - Required evidence:

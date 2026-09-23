@@ -7,7 +7,8 @@
  * レート制限はログイン用 (password_login_rate_limits) と表を分ける。取込は認証済みの
  * 利用者に掛けるので鍵は user_id で、IP は使わない。
  *
- *   runImportStagingCleanup … 夜間保守で、期限切れの検査・R2 の仮置き・古い時間枠を 500 件ずつ消す
+ *   purgeExpiredImportRows  … 検査を作る要求のついでに、期限切れの検査と古い時間枠を 500 件ずつ消す
+ *   runImportStagingCleanup … 夜間保守で、R2 の仮置きを 500 件ずつ消す (D1 は使わない)
  */
 import { IMPORT_LIMITS } from '@kanjo/core';
 import type { Context, MiddlewareHandler } from 'hono';
@@ -109,43 +110,67 @@ export const IMPORT_STAGING_PREFIX = 'import-staging/';
 const COMMITTING_GRACE_MS = 60 * 60 * 1000;
 
 export interface ImportStagingCleanupSummary {
-  inspections: number;
   staged: number;
+}
+
+export interface ImportExpiredRowsSummary {
+  inspections: number;
   rateWindows: number;
 }
 
 /**
- * 夜間保守の 1 job (D1 は 2 本)。
+ * 期限切れの行の片づけ (D1 は 2 本)。夜間保守ではなく、検査を新しく作る要求のついでに実行する。
+ *
+ * 夜間保守は 1 invocation 50 query の枠を 8 job で使い切っており、後から来たこの機能が
+ * 枠を取ると既存 job の枠を削ることになる。掃除が要る量は検査を作った回数に比例するので、
+ * 作った本人の要求へ相乗りさせれば量に見合った頻度で片づく。
+ * 検査の行を消すとファイルの行は外部キー (ON DELETE CASCADE) で一緒に消える。
+ */
+export async function purgeExpiredImportRows(
+  database: D1Database,
+  now: number = Date.now(),
+): Promise<ImportExpiredRowsSummary> {
+  const batch = IMPORT_LIMITS.cleanupBatch;
+  const expiredBefore = new Date(now).toISOString();
+  const committingBefore = new Date(now - COMMITTING_GRACE_MS).toISOString();
+  const inspections = await database
+    .prepare(
+      `DELETE FROM import_inspections WHERE id IN (
+       SELECT id FROM import_inspections
+        WHERE expires_at < ? AND (status = 'open' OR expires_at < ?)
+        ORDER BY expires_at LIMIT ?)
+     RETURNING id`,
+    )
+    .bind(expiredBefore, committingBefore, batch)
+    .all<{ id: string }>();
+  const rateWindows = await database
+    .prepare(
+      `DELETE FROM import_rate_limits WHERE rowid IN (
+       SELECT rowid FROM import_rate_limits WHERE window_start < ? LIMIT ?)`,
+    )
+    .bind(now - IMPORT_RATE_STALE_MS, batch)
+    .run();
+
+  return {
+    // meta.changes は外部キーで一緒に消えたファイルの行も数えるので、消した検査の行は RETURNING で数える
+    inspections: inspections.results.length,
+    rateWindows: rateWindows.meta.changes ?? 0,
+  };
+}
+
+/**
+ * 夜間保守の 1 job。D1 を 1 本も使わないので夜間の query 予算の表には載せない。
  *
  * R2 の仮置きは D1 の行ではなく置いた時刻で選ぶ。検査の期限は最初の検査から 24 時間で、
  * 追加したファイルもその期限より前に置かれるため、置いてから 24 時間を過ぎた仮置きは
  * 必ず期限切れの検査のものである。行を消した後に R2 の削除が失敗しても、
  * 確定の途中で落ちて行だけ消えても、翌日以降に同じ規則で拾える。
- * 検査の行を消すとファイルの行は外部キー (ON DELETE CASCADE) で一緒に消える。
  */
 export async function runImportStagingCleanup(
-  env: { DB: D1Database; FILES: R2Bucket },
+  env: { FILES: R2Bucket },
   now: number = Date.now(),
 ): Promise<ImportStagingCleanupSummary> {
   const batch = IMPORT_LIMITS.cleanupBatch;
-  const expiredBefore = new Date(now).toISOString();
-  const committingBefore = new Date(now - COMMITTING_GRACE_MS).toISOString();
-  const inspections = await env.DB.prepare(
-    `DELETE FROM import_inspections WHERE id IN (
-       SELECT id FROM import_inspections
-        WHERE expires_at < ? AND (status = 'open' OR expires_at < ?)
-        ORDER BY expires_at LIMIT ?)
-     RETURNING id`,
-  )
-    .bind(expiredBefore, committingBefore, batch)
-    .all<{ id: string }>();
-  const rateWindows = await env.DB.prepare(
-    `DELETE FROM import_rate_limits WHERE rowid IN (
-       SELECT rowid FROM import_rate_limits WHERE window_start < ? LIMIT ?)`,
-  )
-    .bind(now - IMPORT_RATE_STALE_MS, batch)
-    .run();
-
   const listed = await env.FILES.list({ prefix: IMPORT_STAGING_PREFIX, limit: batch * 2 });
   const staleBefore = now - IMPORT_LIMITS.stagingTtlMs;
   const staleKeys = listed.objects
@@ -154,10 +179,5 @@ export async function runImportStagingCleanup(
     .map((object) => object.key);
   if (staleKeys.length) await env.FILES.delete(staleKeys);
 
-  return {
-    // meta.changes は外部キーで一緒に消えたファイルの行も数えるので、消した検査の行は RETURNING で数える
-    inspections: inspections.results.length,
-    staged: staleKeys.length,
-    rateWindows: rateWindows.meta.changes ?? 0,
-  };
+  return { staged: staleKeys.length };
 }
