@@ -1,84 +1,94 @@
 {
   "references": [
     {
-      "target_id": "wcag22-use-of-color",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
+      "target_id": "wcag22-dragging-movements",
+      "retrieved_at": "2026-09-22T08:43:18Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html",
       "official_publisher": "W3C Web Accessibility Initiative (WAI)",
-      "official_host": "w3.org",
-      "last_updated": "2025-09-16",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "SC 1.4.1: 色を情報伝達の唯一の視覚的手段にしない。予算画面の差額の符号・過不足・グラフ系列を文字と形で併記する根拠。"
+      "official_host": "www.w3.org",
+      "last_updated": "2026-08-10",
+      "latest_checked_at": "2026-09-22T08:43:18Z",
+      "summary": "SC 2.5.7: ドラッグで行う機能には、ドラッグせずに単一ポインタで行える代替を用意する。集計ルールの並べ替えハンドルに上下移動ボタンを併設する根拠。"
     },
     {
-      "target_id": "tanstack-query-invalidation",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation",
-      "official_publisher": "TanStack",
-      "official_host": "tanstack.com",
-      "version": "6.2.3",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "queryClient.invalidateQueries はクエリを stale にし、描画中のものを背景で再取得する。予算の保存成功で画面と分析派生の問い合わせを無効化する根拠。version は公式 GitHub の最新リリース (https://github.com/TanStack/query/releases/latest) のタグ 6.2.3 で、このガイドのページ自体には版の記載が無い。リポジトリは TanStack Query 5 を使い、invalidateQueries の使い方は 5 と同じ前提で書く。"
+      "target_id": "mdn-beforeunload",
+      "retrieved_at": "2026-09-22T08:43:18Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event",
+      "official_publisher": "MDN Web Docs (Mozilla)",
+      "official_host": "developer.mozilla.org",
+      "last_updated": "2026-08-21",
+      "latest_checked_at": "2026-09-22T08:43:18Z",
+      "summary": "beforeunload で event.preventDefault() (旧来の互換に returnValue) を呼ぶと離脱確認が出る。ブラウザは利用者の操作 (sticky activation) 後にだけ出し、独自文言は表示しない。未保存の設定があるときの離脱確認の根拠。"
     },
     {
-      "target_id": "react-router-searchparams",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
-      "official_publisher": "React Router (Remix / Shopify)",
-      "official_host": "reactrouter.com",
-      "version": "8.4.0",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "useSearchParams は URLSearchParams と更新関数を返し、更新はナビゲーションを起こす。予算対象の ?start= と ?account= を URL に持つ根拠。リポジトリは react-router-dom 7 を使う。"
-    },
-    {
-      "target_id": "hono-zod-validator",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md",
-      "official_publisher": "Hono",
+      "target_id": "hono-body-limit",
+      "retrieved_at": "2026-09-22T08:43:18Z",
+      "source_url": "https://github.com/honojs/hono/blob/main/src/middleware/body-limit/index.ts",
+      "official_publisher": "Hono (honojs)",
       "official_host": "github.com",
-      "version": "0.9.1",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "zValidator は Zod スキーマで query / json などの要求データを検証する Hono ミドルウェア。予算の保存 API の入力検証に使う。"
+      "version": "4.13.8",
+      "latest_checked_at": "2026-09-22T08:43:18Z",
+      "summary": "bodyLimit は Content-Length だけなら値を信じ、Transfer-Encoding があれば本文を読みながら数える。超えると既定で 413 Payload Too Large、onError で応答を差し替えられる。設定の保存・復元 API の本文上限の根拠 (版は main の package.json)。"
+    },
+    {
+      "target_id": "mdn-string-normalize",
+      "retrieved_at": "2026-09-22T08:43:18Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize",
+      "official_publisher": "MDN Web Docs (Mozilla)",
+      "official_host": "developer.mozilla.org",
+      "last_updated": "2025-07-10",
+      "latest_checked_at": "2026-09-22T08:43:18Z",
+      "summary": "normalize() は NFC/NFD/NFKC/NFKD の 4 形式。NFKC は互換等価 (合字や全角など) を畳むので照合には向くが表示には向かない。取引先ルールの照合キーを NFKC で作り、表示は元の表記のままにする根拠。"
     },
     {
       "target_id": "cloudflare-d1-migrations",
-      "retrieved_at": "2026-09-21T13:39:51Z",
+      "retrieved_at": "2026-09-22T08:43:18Z",
       "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-06-08",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "D1 の migration は migrations フォルダの .sql として保存し、適用済みは d1_migrations 表に記録される。予算対象の表を追加のみの migration 1 本で足す根拠。"
+      "latest_checked_at": "2026-09-22T08:43:18Z",
+      "summary": "D1 の migration は migrations/ の番号付き .sql で、適用済みは d1_migrations 表に記録され二重適用されない。集計ルール・現金上書き・変更履歴の追加のみの migration の根拠。"
     },
     {
-      "target_id": "cloudflare-workers-limits",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "target_id": "cloudflare-workers-cron-triggers",
+      "retrieved_at": "2026-09-22T08:43:18Z",
+      "source_url": "https://developers.cloudflare.com/workers/configuration/cron-triggers/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-09-05",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "Workers Free は HTTP 要求あたり CPU 10 ms、1 呼出しあたりサブリクエスト 50。予算の算出を 1 要求で完結させ保存を D1 batch 1 回に収める根拠。"
+      "last_updated": "2026-09-04",
+      "latest_checked_at": "2026-09-22T08:43:18Z",
+      "summary": "Cron Triggers は UTC で評価され、wrangler 設定の triggers.crons に書き、scheduled(controller, env, ctx) が呼ばれる。JST 2:00 は UTC 17:00 なので \"0 17 * * *\" にする根拠。"
     },
     {
-      "target_id": "owasp-asvs",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://github.com/OWASP/ASVS/blob/master/README.md",
+      "target_id": "cloudflare-r2-workers-api",
+      "retrieved_at": "2026-09-22T08:43:18Z",
+      "source_url": "https://developers.cloudflare.com/r2/api/workers/workers-api-reference/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-07-31",
+      "latest_checked_at": "2026-09-22T08:43:18Z",
+      "summary": "put の customMetadata はオブジェクトと一緒に保存される利用者定義の map。list() は既定・最大 1000 件で cursor で続きを取り、include に customMetadata を渡すと一覧でメタデータが返る。バックアップの状態・メモ・要約を customMetadata に持たせる根拠。"
+    },
+    {
+      "target_id": "owasp-asvs-encoding",
+      "retrieved_at": "2026-09-22T08:43:18Z",
+      "source_url": "https://github.com/OWASP/ASVS/blob/master/5.0/en/0x10-V1-Encoding-and-Sanitization.md",
       "official_publisher": "OWASP Foundation",
       "official_host": "github.com",
       "version": "5.0.0",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "ASVS 5.0.0 (2025 年 5 月) は web アプリの設計・開発・試験のセキュリティ要件を定める。予算の入力検証と業務ロジック (フェンス) の根拠。"
+      "latest_checked_at": "2026-09-22T08:43:18Z",
+      "summary": "ASVS 5.0 V1: 1.2.10 CSV と式の注入から守り、CSV 出力は RFC 4180 の 2.6/2.7 のエスケープに従う。1.2.1 HTML などの出力は文脈に合わせて符号化する。取引先名・メモを含む CSV 出力と画面表示の根拠 (最新の安定版は 5.0.0、README で確認)。"
     },
     {
-      "target_id": "vitest-expect",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://vitest.dev/api/expect.html",
-      "official_publisher": "Vitest",
-      "official_host": "vitest.dev",
-      "version": "5.0.1",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "expect は Chai / Jest 形式のアサーションを作る。KPI の式と合計の一致を core の単体テストで固定する根拠。"
+      "target_id": "cloudflare-d1-time-travel",
+      "retrieved_at": "2026-09-22T08:43:18Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/time-travel/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-09-22T08:43:18Z",
+      "summary": "D1 Time Travel は有料プラン 30 日・無料 7 日の時点へ戻せるが、DB 全体をその場で上書きする破壊的操作。設定だけの復元はアプリの設定 JSON で行い、Time Travel は障害時の最後の手段に残す運用の根拠。"
     }
   ]
 }

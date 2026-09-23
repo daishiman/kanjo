@@ -19,6 +19,14 @@ export const JSON_SNAPSHOT_MUTATION_CONSUMERS = [
   'account_norm_map',
   'unrecorded_months',
   'cash_overrides',
+  /*
+   * 0051〜0053: 設定画面の集計ルール・現金上書き・変更履歴。変えると復元後の集計 (科目の正規化・
+   * 取引先のまとめ・現金の月の合計) が変わる。変更履歴を一緒に戻すのは、ルールだけ戻して履歴を残すと
+   * 『元に戻す』が復元前の値を指すため (total_cashflow_operations と同じ理由)。
+   */
+  'settings_norm_rules',
+  'settings_cash_overrides',
+  'settings_change_log',
   'sub_vendors',
   'sub_vendor_review_decisions',
   'sub_vendor_exclusions',

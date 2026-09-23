@@ -5,6 +5,8 @@
 import {
   type BalanceRow,
   type CashEntry,
+  type CashOverrideRule,
+  DEFAULT_OWNER_LABELS,
   type Dataset,
   FINGERPRINT_VERSION,
   type FreeeDeal,
@@ -17,6 +19,8 @@ import {
   freeePersistedRow,
   isCashTxId,
   mfPersistedIdentityRow,
+  settingsChangeEntries,
+  sortCashOverrides,
 } from '@kanjo/core';
 import {
   type AuditAttribute,
@@ -619,6 +623,54 @@ export const insertJsonRows = (
   );
 };
 
+/** 設定の変更履歴 1 行: [target, targetKey, before, after] */
+export type SettingsChangeLogRow = readonly [string, string, string | null, string | null];
+
+/**
+ * 設定の変更履歴の changed_at。revision (MAX(changed_at)) を必ず進めるため、
+ * 時計が直前の revision 以前を指していても『直前 + 1ms』より前にはしない。
+ */
+export function settingsChangedAt(now: string, revision: string | null | undefined): string {
+  if (!revision) return now;
+  const next = new Date(Date.parse(revision) + 1).toISOString();
+  return next > now ? next : now;
+}
+
+/**
+ * 設定の変更履歴を追記する。seq は利用者ごとの連番で、文ごとに MAX(seq) を読み直すので
+ * payload を分けても番号は続く (同じ batch の中で直列に評価される)。
+ */
+export function settingsChangeLogStatements(
+  database: D1Database,
+  userId: string,
+  rows: ReadonlyArray<SettingsChangeLogRow>,
+  meta: { changedAt: string; changedBy: string; origin: 'screen' | 'restore' | 'migration' },
+): D1PreparedStatement[] {
+  return chunkJsonRowsByBytes(rows).map((payload) =>
+    database
+      .prepare(
+        `INSERT INTO settings_change_log
+           (user_id,seq,target,target_key,before,after,changed_by,changed_at,origin)
+         SELECT ?,
+                (SELECT ifnull(MAX(seq),0) FROM settings_change_log WHERE user_id=?) + item.key + 1,
+                json_extract(item.value,'$[0]'), json_extract(item.value,'$[1]'),
+                json_extract(item.value,'$[2]'), json_extract(item.value,'$[3]'), ?, ?, ?
+         FROM json_each(?) AS item`,
+      )
+      .bind(userId, userId, meta.changedBy, meta.changedAt, meta.origin, payload),
+  );
+}
+
+/** settings_cash_overrides の 1 行: [override_id, kind, amount, scope, month, memo] */
+export const settingsCashOverrideRow = (rule: CashOverrideRule): unknown[] => [
+  rule.overrideId,
+  rule.kind,
+  rule.amount,
+  rule.scope,
+  rule.month,
+  rule.memo,
+];
+
 const deleteJsonValues = (
   database: D1Database,
   table: string,
@@ -995,6 +1047,17 @@ export interface RestoreWriteSet {
   budgetsDestinationEmpty: boolean;
   budgetPlansDestinationEmpty: boolean;
   cashOverridesDestinationEmpty: boolean;
+  /**
+   * 0052: 設定画面の現金上書き。復元後の最終の集合 (変わらないときは復元先の集合)。
+   * 指紋はこの最終行だけを使い、書くかどうか (Changed) と履歴・revision は含めない。
+   */
+  settingsCashOverrideRows: unknown[][];
+  settingsCashOverridesChanged: boolean;
+  settingsCashOverridesDestinationEmpty: boolean;
+  /** 0053: 復元で変わった設定の履歴 (origin migration・system)。 */
+  settingsChangeLogRows: SettingsChangeLogRow[];
+  /** 復元前の revision。changed_at をこれより後にする */
+  settingsRevision: string | null;
 }
 
 /** サブスク登録本体のJSON形状には無い、D1 canonicalの補助属性 */
@@ -1082,6 +1145,11 @@ export function prepareRestoreWriteSet(args: {
   duplicateVerdicts?: ReadonlyArray<RestoreDuplicateVerdict> | null;
   freeeDealExclusions?: ReadonlyArray<RestoreFreeeDealExclusion> | null;
   totalCashflowOperations?: ReadonlyArray<RestoreTotalCashflowOperation> | null;
+  /**
+   * 0052: 復元後の設定画面の現金上書き。null/未指定は復元先の集合を保つ。
+   * 復元先の集合は existingDestinationRowCounts.settingsCashOverrideRules から読む。
+   */
+  settingsCashOverrides?: ReadonlyArray<CashOverrideRule> | null;
   /** 移行先の既存件数。未指定は「行があるかもしれない」として DELETE を残す */
   existingDestinationRowCounts?: {
     subVendorReviewDecisions: number;
@@ -1096,8 +1164,37 @@ export function prepareRestoreWriteSet(args: {
     budgets: number;
     budgetPlans?: number;
     cashOverrides: number;
+    settingsCashOverrides?: number;
+    settingsRevision?: string | null;
+    settingsCashOverrideRules?: ReadonlyArray<CashOverrideRule>;
   };
 }): RestoreWriteSet {
+  const existingCashOverrides = sortCashOverrides(
+    args.existingDestinationRowCounts?.settingsCashOverrideRules ?? [],
+  );
+  const nextCashOverrides = args.settingsCashOverrides
+    ? sortCashOverrides(args.settingsCashOverrides)
+    : existingCashOverrides;
+  const settingsCashOverrideRows = nextCashOverrides.map(settingsCashOverrideRow);
+  const settingsCashOverridesChanged =
+    canonicalEncode(settingsCashOverrideRows) !==
+    canonicalEncode(existingCashOverrides.map(settingsCashOverrideRow));
+  const existingStatMinMonths = args.existingStatMinMonths ?? 6;
+  // 名義・集計ルールは全データ復元では書かないので、両側に同じ値を置いて差分から外す
+  const settingsChangeLogRows = settingsChangeEntries(
+    {
+      normRules: [],
+      ownerLabels: DEFAULT_OWNER_LABELS,
+      statMinMonths: existingStatMinMonths,
+      cashOverrides: existingCashOverrides,
+    },
+    {
+      normRules: [],
+      ownerLabels: DEFAULT_OWNER_LABELS,
+      statMinMonths: args.statMinMonths ?? 6,
+      cashOverrides: nextCashOverrides,
+    },
+  ).map((entry): SettingsChangeLogRow => [entry.target, entry.targetKey, entry.before, entry.after]);
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));
   const subVendorMetadata = new Map((args.subVendorMetadata ?? []).map((row) => [row.name, row]));
   return {
@@ -1262,6 +1359,11 @@ export function prepareRestoreWriteSet(args: {
     budgetsDestinationEmpty: args.existingDestinationRowCounts?.budgets === 0,
     budgetPlansDestinationEmpty: args.existingDestinationRowCounts?.budgetPlans === 0,
     cashOverridesDestinationEmpty: args.existingDestinationRowCounts?.cashOverrides === 0,
+    settingsCashOverrideRows,
+    settingsCashOverridesChanged,
+    settingsCashOverridesDestinationEmpty: args.existingDestinationRowCounts?.settingsCashOverrides === 0,
+    settingsChangeLogRows,
+    settingsRevision: args.existingDestinationRowCounts?.settingsRevision ?? null,
   };
 }
 
@@ -1282,6 +1384,10 @@ export async function restoreWriteSetFingerprint(writeSet: RestoreWriteSet): Pro
     budgetsDestinationEmpty: _budgetsEmpty,
     budgetPlansDestinationEmpty: _budgetPlansEmpty,
     cashOverridesDestinationEmpty: _overridesEmpty,
+    settingsCashOverridesChanged: _settingsOverridesChanged,
+    settingsCashOverridesDestinationEmpty: _settingsOverridesEmpty,
+    settingsChangeLogRows: _settingsLog,
+    settingsRevision: _settingsRevision,
     ...rows
   } = writeSet;
   return fingerprintCanonical(`v${FINGERPRINT_VERSION}:json-write-set:${canonicalEncode(rows)}`);
@@ -1551,6 +1657,30 @@ export function restoreCommitStatements(args: {
       writeSet.cashOverrideRows,
       [{ column: 'user_id', value: userId }],
     ),
+    // 0052: 変わったときだけ置き換える。変わらない復元で DELETE+INSERT を撃つと、上限 50 本を無駄に使う
+    ...(writeSet.settingsCashOverridesChanged
+      ? [
+          ...(writeSet.settingsCashOverridesDestinationEmpty
+            ? []
+            : [database.prepare('DELETE FROM settings_cash_overrides WHERE user_id=?').bind(userId)]),
+          ...insertJsonRows(
+            database,
+            'settings_cash_overrides',
+            ['override_id', 'kind', 'amount', 'scope', 'month', 'memo'],
+            writeSet.settingsCashOverrideRows,
+            [
+              { column: 'user_id', value: userId },
+              { column: 'updated_at', value: settingsChangedAt(now, writeSet.settingsRevision) },
+              { column: 'updated_by', value: 'system' },
+            ],
+          ),
+        ]
+      : []),
+    ...settingsChangeLogStatements(database, userId, writeSet.settingsChangeLogRows, {
+      changedAt: settingsChangedAt(now, writeSet.settingsRevision),
+      changedBy: 'system',
+      origin: 'migration',
+    }),
     database.prepare('DELETE FROM restored_monthly_agg WHERE user_id=?').bind(userId),
     ...insertJsonRows(
       database,

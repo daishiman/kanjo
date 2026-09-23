@@ -27,8 +27,8 @@
     }
   ],
   "triggers": {
-    // JST 03:00 = UTC 18:00 前日。夜間バックアップ(D1→R2, 30日保持)
-    "crons": ["0 18 * * *"]
+    // JST 02:00 = UTC 17:00 前日。夜間バックアップ(D1→R2, 30日保持)
+    "crons": ["0 17 * * *"]
   },
   "observability": {
     "enabled": true,

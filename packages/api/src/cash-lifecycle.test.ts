@@ -523,6 +523,12 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
       d1.prepare(
         "INSERT INTO account_norm_map (user_id, raw, norm) VALUES ('default', '架空通信原', 'サブスク・通信')",
       ),
+      // 0051: 集計ルールの正本は settings_norm_rules。旧表は互換の写しとして同じ行を持つ
+      d1.prepare(
+        `INSERT INTO settings_norm_rules (user_id, rule_id, kind, raw, norm, sort_order, enabled, updated_at, updated_by)
+           VALUES ('default', 'n-kaku', 'account', '架空原科目', '架空確定科目', 1, 1, '2026-06-01T00:00:00.000Z', 'system'),
+                  ('default', 'n-tsu', 'account', '架空通信原', 'サブスク・通信', 2, 1, '2026-06-01T00:00:00.000Z', 'system')`,
+      ),
       d1.prepare(
         `INSERT INTO sub_vendors (user_id,name,aliases,sort_order,created_at)
            VALUES ('default','架空SaaS','[]',1,'2026-06-01T00:00:00.000Z')`,
@@ -677,6 +683,12 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
         "INSERT INTO account_norm_map (user_id, raw, norm) VALUES ('default', '架空原科目', '架空旧科目')",
       )
       .run();
+    // 0051: 集計ルールの正本は settings_norm_rules。旧表は互換の写しとして同じ行を持つ
+    await d1
+      .prepare(
+        "INSERT INTO settings_norm_rules (user_id, rule_id, kind, raw, norm, sort_order, enabled, updated_at, updated_by) VALUES ('default', 'n-kaku', 'account', '架空原科目', '架空旧科目', 1, 1, '2026-09-01T00:00:00.000Z', 'system')",
+      )
+      .run();
     const created = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-09-01',
       side: 'biz',
@@ -714,6 +726,9 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
     await d1.batch([
       d1.prepare(
         "UPDATE account_norm_map SET norm='架空新科目' WHERE user_id='default' AND raw='架空原科目'",
+      ),
+      d1.prepare(
+        "UPDATE settings_norm_rules SET norm='架空新科目' WHERE user_id='default' AND raw='架空原科目'",
       ),
       d1.prepare(
         `INSERT INTO sub_vendors (user_id,name,aliases,sort_order,created_at)

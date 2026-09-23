@@ -46,369 +46,560 @@
     "database": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-budget-database-web-001",
+        "qa_ref": "qa-settings-database-web-003",
         "serves_goals": [
+          "G2",
           "G3",
           "G5"
+        ],
+        "qa_refs": [
+          "qa-settings-database-web-evidence-001",
+          "qa-settings-database-web-002",
+          "qa-settings-database-web-004",
+          "qa-settings-decision-001",
+          "qa-settings-decision-003",
+          "qa-settings-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、データベースでは端末内のデータベースへ予算を複製し、サーバとどう同期するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、database ではスマートフォン向け専用アプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、データベースでは端末内のデータベースへ予算を複製し、サーバとどう同期するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、database ではタブレット向け専用アプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、データベースではWindows のローカル保存先に予算をどう置き、暗号化するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、database ではWindows 向けデスクトップアプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、データベースではLinux のローカル保存先に予算をどう置き、暗号化するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、database ではLinux 向けデスクトップアプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、データベースではmacOS のローカル保存先に予算をどう置き、暗号化するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、database ではmacOS 向けデスクトップアプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "auth": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-budget-auth-web-001",
+        "qa_ref": "qa-settings-auth-web-003",
         "serves_goals": [
-          "G3"
+          "G3",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-settings-auth-web-evidence-001",
+          "qa-settings-auth-web-002",
+          "qa-settings-auth-web-004"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、認証・認可ではスマートフォンの生体認証やトークン保管をどう組み込むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、auth ではスマートフォン向け専用アプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、認証・認可では共有されがちなタブレットで利用者の切替えをどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、auth ではタブレット向け専用アプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、認証・認可ではWindows の資格情報マネージャにセッションをどう保存するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth ではWindows 向けデスクトップアプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、認証・認可ではLinux のキーリングにセッションをどう保存するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth ではLinux 向けデスクトップアプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、認証・認可ではmacOS のキーチェーンにセッションをどう保存するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではmacOS 向けデスクトップアプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "ui-ux": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-budget-ui-ux-web-001",
+        "qa_ref": "qa-settings-ui-ux-web-003",
         "serves_goals": [
           "G1",
-          "G2",
+          "G3",
           "G4"
+        ],
+        "qa_refs": [
+          "qa-settings-ui-ux-web-evidence-001",
+          "qa-settings-ui-ux-web-002",
+          "qa-settings-ui-ux-web-004",
+          "qa-settings-decision-001",
+          "qa-settings-decision-002",
+          "qa-settings-decision-003",
+          "qa-settings-decision-004",
+          "qa-settings-decision-006",
+          "qa-settings-decision-007",
+          "qa-settings-decision-008",
+          "qa-settings-decision-009",
+          "qa-settings-decision-010",
+          "qa-settings-target-platforms-001"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、UI-UXでは片手操作で 12 か月×科目の入力表と右の科目パネルをどう畳むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux ではスマートフォン向け専用アプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、UI-UXでは横置きで予算一覧と科目パネルとグラフの 3 つをどう並べるかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux ではタブレット向け専用アプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、UI-UXではWindows の高コントラストモードで差額の符号とグラフの系列をどう保つかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux ではWindows 向けデスクトップアプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、UI-UXではLinux のデスクトップ環境ごとのフォントで予算一覧の金額の桁揃えをどう保つかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux ではLinux 向けデスクトップアプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、UI-UXではmacOS のメニューとショートカットに予算の保存とリセットをどう割り当てるかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux ではmacOS 向けデスクトップアプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "security": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-budget-security-web-001",
+        "qa_ref": "qa-settings-security-web-003",
         "serves_goals": [
-          "G2",
-          "G3",
-          "G4"
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-settings-security-web-evidence-001",
+          "qa-settings-security-web-002",
+          "qa-settings-security-web-004",
+          "qa-settings-decision-010"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、セキュリティではスマートフォンの端末紛失時に端末内の予算と下書きをどう守るかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、security ではスマートフォン向け専用アプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、セキュリティではタブレットの端末紛失時に端末内の予算と下書きをどう守るかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、security ではタブレット向け専用アプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、セキュリティではWindows のアプリ配布の署名と自動更新の改ざん対策をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、security ではWindows 向けデスクトップアプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、セキュリティではLinux のパッケージ配布の署名と改ざん対策をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、security ではLinux 向けデスクトップアプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、セキュリティではmacOS の公証とサンドボックスの権限をどう設計するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、security ではmacOS 向けデスクトップアプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "infrastructure": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-budget-infrastructure-web-001",
+        "qa_ref": "qa-settings-infrastructure-web-003",
         "serves_goals": [
-          "G3"
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-settings-infrastructure-web-evidence-001",
+          "qa-settings-infrastructure-web-002",
+          "qa-settings-infrastructure-web-004",
+          "qa-settings-decision-007"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、インフラではスマートフォンのアプリストア配布とプッシュ通知の基盤をどう用意するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではスマートフォン向け専用アプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、インフラではタブレットのアプリストア配布の基盤をどう用意するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向け専用アプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、インフラではWindows のインストーラと更新配信の基盤をどう用意するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではWindows 向けデスクトップアプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、インフラではLinux の配布形式 (パッケージ) と更新配信の基盤をどう用意するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではLinux 向けデスクトップアプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、インフラではmacOS のインストーラと更新配信の基盤をどう用意するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure ではmacOS 向けデスクトップアプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "backend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-budget-backend-web-001",
+        "qa_ref": "qa-settings-backend-web-003",
         "serves_goals": [
           "G2",
           "G3",
+          "G4",
           "G5"
+        ],
+        "qa_refs": [
+          "qa-settings-backend-web-evidence-001",
+          "qa-settings-backend-web-002",
+          "qa-settings-backend-web-004",
+          "qa-settings-decision-001",
+          "qa-settings-decision-003",
+          "qa-settings-decision-005",
+          "qa-settings-decision-006",
+          "qa-settings-decision-007",
+          "qa-settings-decision-008",
+          "qa-settings-decision-010"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、バックエンドではスマートフォンの専用アプリ向けに予算の差分同期の API をどう切るかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、backend ではスマートフォン向け専用アプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、バックエンドではタブレットの専用アプリ向けにオフライン入力の衝突解決の API をどう切るかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、backend ではタブレット向け専用アプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、バックエンドではWindows のデスクトップアプリが直接ファイルへ予算を書き出す経路をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend ではWindows 向けデスクトップアプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、バックエンドではLinux のデスクトップアプリが直接ファイルへ予算を書き出す経路をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend ではLinux 向けデスクトップアプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、バックエンドではmacOS のデスクトップアプリが直接ファイルへ予算を書き出す経路をどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではmacOS 向けデスクトップアプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "frontend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-budget-frontend-web-001",
+        "qa_ref": "qa-settings-frontend-web-003",
         "serves_goals": [
           "G1",
-          "G4"
+          "G3"
+        ],
+        "qa_refs": [
+          "qa-settings-frontend-web-evidence-001",
+          "qa-settings-frontend-web-002",
+          "qa-settings-frontend-web-004",
+          "qa-settings-decision-004",
+          "qa-settings-decision-006"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、フロントエンドではスマートフォンのブラウザ外で下書きと問い合わせのキャッシュをどう持つかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend ではスマートフォン向け専用アプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、フロントエンドではタブレットの専用アプリで入力表のフォーカス移動とソフトキーボードをどう扱うかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、frontend ではタブレット向け専用アプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、フロントエンドではWindows 向けのネイティブ UI 部品でグラフと入力表をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend ではWindows 向けデスクトップアプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、フロントエンドではLinux 向けのネイティブ UI 部品でグラフと入力表をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend ではLinux 向けデスクトップアプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、フロントエンドではmacOS 向けのネイティブ UI 部品でグラフと入力表をどう組むかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend ではmacOS 向けデスクトップアプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     },
     "maintenance-ops": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-budget-maintenance-ops-web-001",
+        "qa_ref": "qa-settings-maintenance-ops-web-003",
         "serves_goals": [
-          "G2",
+          "G3",
           "G4",
           "G5"
+        ],
+        "qa_refs": [
+          "qa-settings-maintenance-ops-web-evidence-001",
+          "qa-settings-maintenance-ops-web-002",
+          "qa-settings-maintenance-ops-web-004",
+          "qa-settings-decision-007",
+          "qa-settings-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、保守運用ではスマートフォンの OS 更新ごとの実機検証と配布審査をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops ではスマートフォン向け専用アプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、保守運用ではタブレットの画面サイズごとの実機検証をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops ではタブレット向け専用アプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、保守運用ではWindows の版ごとの動作検証と障害報告の収集をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops ではWindows 向けデスクトップアプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、保守運用ではLinux のディストリビューションごとの動作検証をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops ではLinux 向けデスクトップアプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、保守運用ではmacOS の版ごとの動作検証と公証の更新をどう回すかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-budget-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops ではmacOS 向けデスクトップアプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-settings-target-platforms-001"
       }
     }
   },
   "qa_log": [
     {
-      "id": "qa-budget-decision-001",
-      "question": "予算の保存単位をどうするか。現状は D1 の budgets 表に科目ごとの月額 1 つだけで期間を持たない。画像は『予算対象 2026年9月-2027年8月』の 12 か月ぶんを科目ごとの年額で入力する。デザイン監査 (design/FINAL-UI/spec/AUDIT.md) では版管理を除く。",
-      "answer": "期間別の年額表を追加する (推奨)。予算対象の 12 か月 (開始月) ごとに科目別の年額を保存する新しい表を追加のみの migration で作る。既存の月額は初回だけ ×12 で引き継ぐ。同じ期間は上書きで、版は持たない。",
+      "id": "qa-settings-decision-001",
+      "question": "『集計ルール (カテゴリの正規化マップ)』は何を正規化するか。既存の正規化マップは freee 勘定科目の表記 → 集計用の科目名 (取込時に適用) だが、画像の例はスターバックス / スタバ / Starbucks → カフェ・外食 という取引先名 → カテゴリで、既存の仕分けルールやベンダー記憶と役割が近い。",
+      "answer": "両方を 1 つの一覧で扱う。種別列 (勘定科目 / 取引先) を足し、両方の正規化を同じ表で管理する (利用者は推奨の『既存の意味を保つ』ではなくこちらを選択)。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (推奨外を選択)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:24:29Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[0]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「集計ルール（カテゴリの正規化マップ）」は何を正規化しますか？ 既存の正規化マップは『freee 勘定科目の表記 → 集計用の科目名』(取込時に適用)ですが、画像の例は『スターバックス / スタバ / Starbucks → カフェ・外食』という取引先名 → カテゴリです（既存の仕分けルールやベンダー記憶と役割が近い）。 【選択肢】(1)『既存の意味を保つ (推奨)』— account_norm_map を『元の表記 → 正規化後のカテゴリ』として画像の見た目にする。正規化後は select（既存の科目・カテゴリ候補から選ぶ）、並び順・有効/無効・更新日時・更新者の列を追加のみの migration で足す。取引先名の表記ゆれは既存の仕分けルールが担当のまま。 (2)『取引先名→カテゴリに変える』— 画像の例どおり、取引先名の表記ゆれをカテゴリへまとめる新しいルール表を作る。既存の仕分けルール・ベンダー記憶と役割が重なるため、優先順位の整理と移行が必要になり範囲が大きい。 (3)『両方を1つの一覧で扱う』— 種類列（勘定科目 / 取引先）を足して、両方の正規化を同じ表で管理する。UI は画像に近いが、適用箇所が2系統になり検証が重い。"
+        }
+      ]
+    },
+    {
+      "id": "qa-settings-decision-002",
+      "question": "『名義』の表示名は、画像の 2 項目 (個人 / 事業) に対し既存は 4 名義 (事業・配偶者・家族・未設定)。設定画面でどう扱うか。",
+      "answer": "4 名義すべて出す (推奨)。画像の 2 欄の並びと部品で 4 名義を編集でき、家計収支画面の OwnerLabelsCard と同じ API・core の validateOwnerLabels を共有する。",
       "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:26:07Z",
+      "answered_at": "2026-09-22T08:24:29Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[1]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「名義」の表示名は、画像の2項目（個人 / 事業）に対し既存は4名義（事業・配偶者・家族・未設定）です。設定画面でどう扱いますか？ 【選択肢】(1)『4名義すべて出す (推奨)』— 画像の2欄の並びと部品を使い、既存の4名義（事業・配偶者・家族・未設定）をすべて設定画面で編集できるようにする。家計収支画面の OwnerLabelsCard と同じ API・検証（core の validateOwnerLabels）を共有する。 (2)『画像どおり2欄だけ』— 『個人』= 家族（または未設定）、『事業』= 事業 の2つだけを設定画面に出す。配偶者などは家計収支画面で編集する。"
+        }
+      ]
+    },
+    {
+      "id": "qa-settings-decision-003",
+      "question": "『現金上書き』をどう作るか。既存は月ごとの入金・支出の値で、どの集計にも効いていない。画像は現金の支払い / 受け取りそれぞれに上書き値・適用範囲 (全期間)・メモ (100 字)、空欄 = 上書きしない / 0 = 0 円で上書き。",
+      "answer": "画像どおり＋集計へ反映 (推奨)。支払い・受け取りの 2 行に上書き値 (空欄と 0 を区別)・適用範囲 (全期間 / 月指定)・メモを持たせ、core の現金集計に実際に効かせる。既存の月ごとの値は『月指定』の行として追加のみの migration で引き継ぐ。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:24:29Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[2]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「現金上書き」をどう作りますか？ 既存は月ごとの入金・支出の値で、しかも現状どの集計にも効いていません（保存・出力のみ）。画像は『現金の支払い / 受け取り』それぞれに上書き値・適用範囲（全期間）・メモ(100字)、空欄=上書きしない / 0=0円で上書き。 【選択肢】(1)『画像どおり＋集計へ反映 (推奨)』— 支払い・受け取りの2行に上書き値（空欄と0を区別）・適用範囲（全期間 / 月指定）・メモを持たせ、core の現金集計に実際に効かせる。既存の月ごとの値は『月指定』の行として引き継ぐ（追加のみの migration）。 (2)『画像どおり、集計反映は別件』— 見た目・保存・空欄と0の区別までは作るが、集計への反映は今回は行わず後続の課題にする。 (3)『月ごとのまま見た目だけ』— 既存の月ごとの入金・支出の仕組みを保ち、画像の表の見た目に寄せるだけにする。"
+        }
       ]
     },
     {
-      "id": "qa-budget-decision-002",
-      "question": "収入も予算の対象にするか。画像の一覧には『売上高』『その他収入』があり、KPI に年間収入予算と予算純収支がある。現状の予算は経費科目だけ。",
-      "answer": "収入も予算にする (推奨)。事業の売上高・その他収入も予算の行にし、予算純収支 = 収入予算 − 支出予算 とする。",
+      "id": "qa-settings-decision-004",
+      "question": "画像に無い既存の設定機能 (パスワード変更・利用者管理・金融機関の名義割当・仕分けルール・科目の候補・手動編集した明細・ベンダー記憶・未記帳月・HTML 版からの初期移行) はどこに置くか。",
+      "answer": "節ナビに節を足して残す (推奨)。画像の 6 節の後ろに『アカウント』(パスワード・利用者管理) と『その他の管理』(名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・初期移行) を足し、機能は 1 つも消さない。画像の 6 節は画像どおりに作る。",
       "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:26:07Z",
+      "answered_at": "2026-09-22T08:24:29Z",
       "required_info_items": [
-        "domain-model",
+        "information-priority",
         "product-goal"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[3]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】画像に無い既存の設定機能（パスワード変更・利用者管理・金融機関の名義割当・仕分けルール・科目の候補・手動編集した明細・ベンダー記憶・未記帳月・HTML版からの初期移行）はどこに置きますか？ 【選択肢】(1)『節ナビに節を足して残す (推奨)』— 画像の6節の後ろに『アカウント』（パスワード・利用者管理）と『その他の管理』（名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・初期移行）を足し、機能は1つも消さない。画像の6節は画像どおりに作る。 (2)『画像の6節だけにして他画面へ移す』— 設定画面は画像どおり6節のみ。残りは明細仕分け画面・アカウントメニュー等へ移す。移動先ごとの改修が必要で範囲が広がる。"
+        }
       ]
     },
     {
-      "id": "qa-budget-decision-003",
-      "question": "『AI・統計推奨』の値をどう出すか。フッタは『取込データは外部送信しません』。画像の根拠には『事業計画による増加』『従業員数 +2名予定』など、今の取込データには無い情報も出ている。",
-      "answer": "決定論＋計画調整の入力。前期実績 × (1 + 過去 12 か月の増減率) + 季節性補正 を千円に丸める決定論の推奨に加え、科目ごとに『計画による調整額と理由』を利用者が入力でき、推奨値に足して根拠にも出す。外部 LLM は呼ばない。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (利用者は推奨ではなく計画調整の入力ありを選択)",
+      "id": "qa-settings-decision-005",
+      "question": "集計ルールの『取引先』種別の行 (例: スタバ → カフェ・外食) は、いつ・どの優先順位で効かせるか。",
+      "answer": "集計時に適用・手動と仕分けルールの次 (推奨)。保存済みの明細は書き換えず集計時に適用する。優先順位は 手動編集 > 仕分けルール > 集計ルール (取引先) > 自動分類。照合は NFKC・大小文字を揃えた完全一致。行の並び順は同じ元表記が重なった時の優先度。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:26:07Z",
+      "answered_at": "2026-09-22T08:26:39Z",
       "required_info_items": [
+        "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[0]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】集計ルールの『取引先』種別の行（例: スタバ → カフェ・外食）は、いつ・どの優先順位で効かせますか？ 【選択肢】(1)『集計時に適用・手動と仕分けルールの次 (推奨)』— 保存済みの明細は書き換えず、集計時に適用するので『元に戻す』が安全。優先順位は 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類。照合は NFKC・大小文字を揃えた完全一致。行の並び順は同じ元表記が重なった時の優先度。 (2)『取込時にカテゴリを書き込む』— 勘定科目の正規化と同じく取込時に適用し、明細のカテゴリを確定させる。変更したら過去分の再計算が要る。 (3)『仕分けルールより優先』— 集計時に適用し、手動編集以外では最優先にする。既存の仕分けルールの結果が変わる可能性がある。"
+        }
+      ]
+    },
+    {
+      "id": "qa-settings-decision-006",
+      "question": "『復元』と『設定のエクスポート (JSON)』の範囲は。現在の JSON 出力は取引を含む全データで、復元は HTML 版からの初期移行 (全データ置換) だけ。",
+      "answer": "設定だけを出力・復元 (推奨)。集計ルール・名義・統計・現金上書きだけを版番号つき JSON で出し、同じ形だけを復元で受ける (厳密な形の検証・サイズ上限・復元前に現在の設定を自動バックアップ・差分プレビューと確認)。取引は消えない。全データの初期移行は『その他の管理』に残す。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:26:39Z",
+      "required_info_items": [
+        "api-contract",
         "domain-model",
         "security-posture"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[1]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「復元」と「設定のエクスポート(JSON)」の範囲は？ 現在の JSON 出力は設定だけでなく取引を含む全データで、復元は HTML 版からの初期移行（全データを置き換え）だけです。 【選択肢】(1)『設定だけを出力・復元 (推奨)』— 集計ルール・名義・統計・現金上書きだけを版番号つき JSON で出力し、同じ形だけを復元で受ける（厳密な形の検証・サイズ上限・復元前に現在の設定を自動でバックアップ・差分プレビューと確認）。取引は消えない。全データの初期移行は『その他の管理』に残す。 (2)『全データを出力・復元』— 取引を含む全データを出力・復元する。復元で取引も置き換わるため影響が大きい。"
+        }
       ]
     },
     {
-      "id": "qa-budget-decision-004",
-      "question": "KPI の『防衛ライン余裕』は何を数えるか。防衛ラインは既存 core の定義『個人生活費の直近 3 か月平均 + 事業固定費の直近 3 か月平均』の月額で、ヘッダと概要画面で使っている。",
-      "answer": "収入予算 − 防衛ライン × 12 (推奨)。年間収入予算から防衛ラインの月額 × 12 を引いた額。ヘッダと同じ core の defenseLine を使う。",
+      "id": "qa-settings-decision-007",
+      "question": "自動バックアップをどうするか。画像は『毎日 午前2:00』・ステータス (最新 / 成功)・メモ・比較・復元。現状は毎日 3:00 (JST) に全データを R2 へ保存、30 日保持、失敗はログのみ。",
+      "answer": "2:00 に変更＋状態・メモ・比較を足す (推奨)。cron を JST 2:00 に変え、各バックアップに状態 (成功 / 失敗)・メモ・設定部分の要約を持たせ、失敗も一覧に出す。『比較』はその日の設定と現在の設定の差分を表示する。中身は従来どおり全データ。",
       "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:26:07Z",
+      "answered_at": "2026-09-22T08:26:39Z",
       "required_info_items": [
-        "domain-model",
-        "product-goal"
+        "infra-topology",
+        "ops-runbook"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[2]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】自動バックアップをどうしますか？ 画像は『毎日 午前2:00』・ステータス（最新/成功）・メモ・比較・復元。現状は毎日 3:00(JST) に全データを R2 へ保存、30日保持、失敗はログのみです。 【選択肢】(1)『2:00に変更＋状態・メモ・比較を足す (推奨)』— cron を JST 2:00 に変え、各バックアップに状態（成功/失敗）・メモ・設定部分の要約を持たせる。失敗も一覧に出す。『比較』はその日の設定と現在の設定の差分を表示。中身は従来どおり全データ。 (2)『3:00のまま、表示を実際に合わせる』— 実行時刻は変えず、説明文を『午前3:00』にする。状態・メモ・比較は足す。"
+        }
       ]
     },
     {
-      "id": "qa-budget-target-platforms-001",
-      "question": "予算画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
-      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『web 以外の専用アプリ (対象は web のみ)』を置いた U1-U9 要約を、利用者が『この内容で承認』で承認した。",
-      "provenance": "AskUserQuestion / U1-U9 承認 (scope.out に web 以外を明記)",
+      "id": "qa-settings-decision-008",
+      "question": "右パネルの『最終更新 (更新者)』と『このルールを元に戻す』は何を基準にするか。",
+      "answer": "変更履歴表で直前の保存値へ (推奨)。設定の変更を追記のみの履歴表 (変更前・後・更新者・日時) に残し、『元に戻す』はそのルールの直前の保存値を下書きへ戻す (保存で確定)。更新者は利用者名、復元や移行で入った値は『システム』。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:32:28Z",
+      "answered_at": "2026-09-22T08:26:39Z",
+      "required_info_items": [
+        "data-persistence",
+        "security-posture"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[3]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】右パネルの『最終更新（更新者）』と『このルールを元に戻す』は何を基準にしますか？ 【選択肢】(1)『変更履歴表で直前の保存値へ (推奨)』— 設定の変更を追記のみの履歴表に（変更前・後・更新者・日時）残し、『元に戻す』はそのルールの直前の保存値を下書きへ戻す（保存で確定）。更新者は利用者名、復元や移行で入った値は『システム』。 (2)『未保存の編集だけを戻す』— 履歴は持たず、行に更新日時・更新者の列だけ足す。『元に戻す』は最後に保存した値への取消しになる。"
+        }
+      ]
+    },
+    {
+      "id": "qa-settings-target-platforms-001",
+      "question": "設定画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
+      "answer": "対象にしない (web のみ、推奨)。専用アプリは作らず、設定画面は 375px 幅でも節ナビと表が崩れないようにする。U1-U9 の scope.out にも『web 以外の専用アプリ』を置き、利用者が承認した (appr-foundation-settings-001)。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:31:09Z",
       "required_info_items": [
         "target-platforms"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01CAGSHVBkmvg3jtokPUQJQW の questions[0]、提示 2026-09-22T08:26:59Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】対象プラットフォームはこれまでの画面と同じく web（レスポンシブ、スマホ幅でも崩れない）のみでよいですか？ 【選択肢】(1)『web のみ (推奨)』— スマホ・タブレット・デスクトップの専用アプリは作らない。設定画面は 375px 幅でも節ナビと表が崩れないようにする。 (2)『専用アプリも検討する』— web 以外のプラットフォームも仕様の対象にする。"
+        },
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "回答文中の『U1-U9 承認』への言及は、回答受領 (08:31:09Z) より後の承認 appr-foundation-settings-001 (08:37:17Z) を先取りした記述で誤り。回答そのものは『web のみ (推奨)』の選択であり、承認とは独立に成立する。"
+        }
       ]
     },
     {
-      "id": "qa-budget-ui-ux-web-evidence-001",
-      "question": "UI-UX 章の裏付けとして、14-budget.png と現行実装の差分として何を観測したか。",
-      "answer": "14-budget.png は上から (1) パンくず『計画 / 予算』、期間タブ 1年 / 2年 / 3年 / 任意 と期間送り ‹ 2025年9月 - 2026年8月 ›、(2) 見出し『予算』・問い『実績に合う予算へ、どこを調整しますか？』・説明 2 行、右に予算対象 (2026年9月 - 2027年8月 と『来期の12か月の予算を編集できます。』)、(3) KPI 4 枚 (年間収入予算・年間支出予算・予算純収支・防衛ライン余裕と ?)、(4) 月次の実績・予算・見通し (棒 4 系列と見通し (収支) の折れ線、4 月の境目の縦線、実績 (2025年9月 - 2026年3月) と見通し (2026年4月 - 2027年8月) の注記) と右の今後の見通し (累計・来期) と見通しコメント、(5) 予算一覧 (カテゴリ名で検索 (Ctrl + K)・実績から提案・すべてリセット・選択・#・カテゴリ・前期実績・来期予算・AI・統計推奨・差額・見通し・来期予算 (入力)、10 行) と右の科目パネル (提案の根拠 / 関連データ、推奨値と前期差、この値を適用、推奨の根拠、計算の詳細 (前期実績・増減率 (過去12か月の平均)・事業計画による増加・季節性補正 (4-6月)・推奨値)、月別の実績推移 (過去12か月)、主な根拠データ、適用前の値、この行を元に戻す、×)、(6) 予算の過不足カテゴリ (来期見通し) の 2 タブと表、調整によるインパクト、(7) 下部の保存バー (未保存 4項目・最終保存と『下書きを自動保存』・リセット・予算を保存) である。現行 packages/web/src/pages/Budget.tsx (317 行・1 ファイル) は PageHeader・KPI 3 枚 (予算を設定した科目・月次予算の合計・直近3ヶ月平均の合計)・差異・『推奨値をセット』ボタン・科目別の月次予算の表 (aria-label『科目別の月次予算』)・AnnualOutlook (年間の着地見込み) だけで、usePeriod・PeriodPicker・ConfirmDialog を使わず、下書きは React の state のみで localStorage に残らない。診断からの ?account= を受けて 1 科目に絞る (diagnosis-next-action-receivers.dom.test.tsx 196 行目)。",
-      "provenance": "リポジトリの現行実装 (main 8f72ff0) と画像 14-budget.png の読取りによる観測。",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-21T13:35:48Z"
-    },
-    {
-      "id": "qa-budget-ui-ux-web-002",
-      "question": "web の予算画面で、UI-UX について利用者が決めていない具体値を何にするか。",
-      "answer": "予算対象の既定は実績期間の終了月の翌月から始まる 12 か月とし、開始月は月の選択で変えられる。月次グラフの横軸は予算対象の 12 か月で、実績のある月は実績、無い月は見通しを描き、境目の縦線はその境に引く。一覧の既定の並びは収入の行 (売上高・その他収入) を先頭に、続けて支出の行を前期実績の降順とする。行を押すと右の科目パネルにその行を開き、チェックは『実績から提案』『すべてリセット』の対象を選ぶことに使い、未選択なら全行が対象になる。予算の過不足カテゴリは各タブで |差額| の上位 5 件を出す。すべてリセット・リセットはConfirmDialog で確かめてから保存済みの値へ戻す。Ctrl+K (macOS では ⌘K) でカテゴリ検索に移る。画面幅 1024px 未満では右パネルを一覧の下に積む。差額の符号は + を赤系・− を緑系にし、色だけでなく符号の文字で区別する。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent の推定 (利用者未確認)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-21T13:35:48Z"
-    },
-    {
-      "id": "qa-budget-ui-ux-web-001",
-      "question": "web の予算画面 (/budget) の UI-UX 要件は何か。画面の構成要素・文言・選択・編集・通知・状態・アクセシビリティをどうするか。",
-      "answer": "上から (1) パンくず『計画 / 予算』、期間タブ 1年 / 2年 / 3年 / 任意 と期間送り (usePeriod と PeriodPicker)。(2) 見出し『予算』と問い『実績に合う予算へ、どこを調整しますか？』、説明文『過去の実績をもとに、来期の予算を計画しましょう。』と、自動提案を参考に事業の優先順位で調整できる旨の 2 文目、右に予算対象 (12 か月の開始月の選択と『来期の12か月の予算を編集できます。』)。(3) KPI 4 枚: 年間収入予算・年間支出予算・予算純収支 (収入予算 − 支出予算) ・防衛ライン余裕 (年間収入予算 − 防衛ライン × 12、? で定義を示す) (qa-budget-decision-002, 004)。(4) 月次の実績・予算・見通しのグラフ (収入 実績・収入 予算・支出 実績・支出 予算の棒と見通し (収支) の折れ線、実績と見通しの境目の縦線と期間の注記) と、右に今後の見通し (累計収入・累計支出・累計純収支) と見通しコメント (数値から決定論で組む文)。(5) 予算一覧: カテゴリ名で検索 (Ctrl + K)・実績から提案・すべてリセット、列は選択・#・カテゴリ・前期実績・来期予算 (保存済み)・自動提案・差額 (来期予算 − 前期実績)・見通し・来期予算 (入力)。収入の行 (売上高・その他収入) と支出の行 (事業の経費科目) を 1 表に置く (qa-budget-decision-002)。(6) 右の科目パネル: 提案の根拠 / 関連データのタブ、自動提案の値と前期差、この値を適用、推奨の根拠の文、計算の詳細 (前期実績・増減率・計画による調整・季節性補正・推奨値)、計画による調整額と理由の入力 (qa-budget-decision-003)、月別の実績推移 (過去 12 か月の棒)、主な根拠データ、適用前の値、この行を元に戻す、閉じる。(7) 予算の過不足カテゴリ (来期見通し) の 支出の増加が見込まれる / 支出の減少が見込まれる のタブと件数、表 (#・カテゴリ・見通し・差額・要因)。(8) 調整によるインパクト: 入力内容を自動提案と比べた年間の支出差と予算純収支、差の大きい科目名、注意書き。(9) 下部の保存バー: 未保存 N 項目・最終保存の時刻と下書きを自動保存した旨・リセット・予算を保存。未保存のまま離れるときは確認する。画像の『AI・統計推奨』『AI提案と比較』は外部推論をしないため『自動提案』と表示する (qa-budget-decision-003)。見出し帯の『取引ライン』は既存ヘッダの『防衛ライン』のままとし、共通シェルは作り直さない。診断からの ?account= はその行を選んで科目パネルを開く。読込・空 (実績 0 か月)・失敗の各状態を持つ。差額と過不足は色だけで区別せず符号と文言を併記する。数値は画像のモックではなく実データから core で算出したものを出し、『従業員数 +2名予定』のような取込データに無い根拠は、利用者が入力した計画による調整の理由としてだけ出す。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-settings-decision-009",
+      "question": "『AI分析の対象月数 (最小)』の既定値は画像では 12 か月、実装では 6 か月 (範囲 3〜24)。どうするか。",
+      "answer": "既定は 6 のまま (推奨)。保存済みの値が無い利用者の挙動を変えない。画像の 12 は入力例として扱い、説明文 (満たない期間では傾向分析が実行されない・長いと精度が上がる) は画像どおりにする。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:35:48Z",
+      "answered_at": "2026-09-22T08:31:09Z",
+      "required_info_items": [
+        "domain-model"
+      ],
+      "corrections": [
+        {
+          "corrected_at": "2026-09-22T09:56:07Z",
+          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01CAGSHVBkmvg3jtokPUQJQW の questions[1]、提示 2026-09-22T08:26:59Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「AI分析の対象月数（最小）」の既定値は画像では 12 か月、実装では 6 か月（範囲 3〜24）です。どうしますか？ 【選択肢】(1)『既定は 6 のまま (推奨)』— 保存済みの値が無い利用者の挙動を変えない。画像の 12 は入力例として扱い、説明文（満たない期間では傾向分析が実行されない・長いと精度が上がる）は画像どおりにする。 (2)『既定を 12 に変える』— 画像に合わせる。値を保存していない利用者は、取引が 6〜11 か月しか無いと傾向分析が止まる。"
+        }
+      ]
+    },
+    {
+      "id": "qa-settings-ui-ux-web-evidence-001",
+      "question": "web の設定画面の ui-ux について、既存コードで何が観測できるか。",
+      "answer": "現行 /settings (packages/web/src/pages/Settings.tsx) は .card を縦に並べるだけで、節ナビ・説明パネル・下部の保存バー・未保存件数が無い。ルートは routeMetadata.ts:140-151 (ナビ群『管理』)。共通ヘッダ (Layout.tsx:415-488) に期間タブ (PeriodPicker)・最終更新・検索・ダウンロード・ヘルプがあり、バッジの文言は『防衛ライン』。フッタ (Layout.tsx:492-519) は既存。予算画面に保存バー (BudgetSaveBar)・下書き・離脱確認の先例がある。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-ui-ux-web-002",
+      "question": "web の設定画面の ui-ux で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 節ナビは sticky で幅 7〜8rem、説明パネルは 16〜18rem。『未保存』は変更したフィールド単位で数える (行の追加・削除は 1 行 1 項目)。メモの上限 100 字は数えて『n/100』と出す。バックアップ表は最新 1 件に『最新』、成功に『成功』、失敗に『失敗』のバッジ。ヒント文は画像の文言を使う。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T08:39:27Z"
+    },
+    {
+      "id": "qa-settings-ui-ux-web-001",
+      "question": "web の設定画面の ui-ux 要件は何か。",
+      "answer": "web の設定画面の UI/UX 要件: パンくず『管理 / 設定』、期間タブ、見出し『設定』と問い『集計ルールと復元設定を、安全に管理しますか？』と説明文 2 行。左に節ナビ (集計ルール・名義・統計・現金上書き・データ・バックアップ、続けてアカウント・その他の管理) を置き、選択中の節を強調し、クリックでその節へ移る。集計ルールの表は チェックボックス・並べ替えハンドル・種別 (勘定科目 / 取引先)・元の表記 (入力値)・正規化後のカテゴリ select・削除 の列と『+ ルールを追加』。行を選ぶと右の『この設定の説明』に 元の表記・正規化後のカテゴリ・このルールが影響するもの・最終更新 (日時と更新者)・『このルールを元に戻す』・設定のヒント を出す (閉じられる)。名義 4 欄 (例文つき)、統計の月数入力と説明、現金上書きの 2 行 (上書き値・適用範囲・メモ 0/100) と 空欄 / 0 の凡例、データの 4 ボタン (設定 JSON・集計マトリクス CSV・取引 CSV・レポート HTML、各説明つき)、復元 (ファイル選択・警告・『設定を復元』は選ぶまで無効)、バックアップ表 (日付・サイズ・ステータス・メモ・比較・復元) と自動バックアップの説明。下部固定の保存バーに『未保存 N 項目』『変更をリセット』『設定を保存』。破壊的操作 (削除・リセット・復元・バックアップから戻す) は必ず確認ダイアログを経る。375px 幅では節ナビを上部の横並びにし、説明パネルは表の下へ回し、横スクロールは表の容器の中だけにする。情報の優先: 未保存件数と保存 > 集計ルール > 復元・バックアップ > 他の節。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "context-of-use",
         "information-priority",
@@ -417,192 +608,362 @@
       ]
     },
     {
-      "id": "qa-budget-frontend-web-evidence-001",
-      "question": "フロントエンド 章の裏付けとして、14-budget.png と現行実装の差分として何を観測したか。",
-      "answer": "packages/web は React 18・react-router-dom 7・TanStack Query 5。Budget.tsx は useQuery(['budgets']) で GET /api/budgets を、useMutation で PUT /api/budgets と POST /api/budgets/suggest を呼び、保存後に invalidateAnalysisDerived で分析系を無効化する。routeMetadata.ts の 116〜127 行目で /budget は navGroup『計画』。作り直し済みの画面は pages/<画面>/ に分割し pages/<画面>.tsx は re-export 1 行を残し、表示規則は view-model.ts に置く (pages/classify/, pages/statements/)。下書きの前例は pages/classify/draft.ts (キー kanjo:classify:draft:<id>・30 日・try/catch) と pages/statements/liability-draft.ts (800ms・ログアウトで消去・beforeunload)。共通部品 PageHeader・KpiCard・PageState・Button・ConfirmDialog・PeriodPicker・usePeriod と design-tokens.ts がある。グラフは既存の SVG 実装 (推移・家計収支) があり、外部のグラフライブラリは入っていない。",
-      "provenance": "リポジトリの現行実装 (main 8f72ff0) と画像 14-budget.png の読取りによる観測。",
+      "id": "qa-settings-frontend-web-evidence-001",
+      "question": "web の設定画面の frontend について、既存コードで何が観測できるか。",
+      "answer": "Settings.tsx は 457 行の 1 ファイルで、各節が PUT /api/settings を個別に送る (:58-67)。予算画面は pages/budget/ 配下に分割され、draft.ts (useBudgetDraft、localStorage キー kanjo:budget:draft:{userId}:{start}、v1、TTL 30 日、800ms debounce、pagehide flush)、BudgetSaveBar、view-model.ts の文言関数、409 時の再取得 (BudgetPage.tsx:194-237)、離脱確認 (:250-280) を持つ。共通部品 SelectionCheckbox・ConfirmDialog/usePendingConfirm・CategoryPicker・DataTable・AccessibleTabs・PageHeader がある。ログアウト時の下書き消去は Layout.tsx:151-152。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-frontend-web-002",
-      "question": "web の予算画面で、フロントエンドについて利用者が決めていない具体値を何にするか。",
-      "answer": "部品は pages/budget/ に BudgetPage.tsx (container)・BudgetKpis・BudgetMonthlyChart・BudgetOutlookCard・BudgetTable・BudgetAccountPanel・BudgetGapCategories・BudgetImpactCard・BudgetSaveBar・view-model.ts・draft.ts を置き、pages/Budget.tsx は re-export 1 行にする。問い合わせの鍵は ['budget-screen', period, start] とし、保存成功で budget-screen と analysis 派生を無効化する。下書きのキーは kanjo:budget:draft:<userId>:<start>、入力の 800ms 後に書き、30 日で捨てる。URL は ?start=YYYY-MM と ?account= を持ち、期間は usePeriod の既存の URL 規則に従う。グラフは既存と同じ SVG の自前描画にする。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent の推定 (利用者未確認)",
+      "id": "qa-settings-frontend-web-002",
+      "question": "web の設定画面の frontend で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 下書きキーは kanjo:settings:draft:{userId}、v1、TTL 30 日、debounce 800ms (予算と同値)。並べ替えはドラッグと上下ボタンの併用で、ドラッグ用ライブラリは足さない (HTML の drag and drop とボタン)。節ナビは IntersectionObserver で現在節を追う。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-frontend-web-001",
-      "question": "web の予算画面のフロントエンド要件は何か。構成・状態・取得と更新・下書き・URL をどうするか。",
-      "answer": "Budget.tsx を pages/budget/ 配下の container と画面専用の部品に分け、pages/Budget.tsx は互換の re-export だけを残す。数値の算出は core の予算画面の関数に任せ、web の view-model.ts は書式 (円・万円・符号・率) と文言の組立てだけを持ち、core の計算を書き直さない。取得は TanStack Query で実績期間 (usePeriod) と予算対象の開始月を鍵に 1 本の画面用 API から受け、保存は PUT で予算対象の全行をまとめて送り、成功で画面と分析派生の問い合わせを無効化する。入力・この値を適用・実績から提案・計画による調整は下書きとして localStorage に予算対象ごとに自動保存し、保存成功とログアウトで消し、次回に復元する。未保存の項目数は保存済みの値との差分から数え、未保存のまま画面を離れる (ルート遷移・再読込) ときは確認する。色は design-tokens.ts のトークンだけを使い、共通部品 (PageHeader・KpiCard・PageState・Button・ConfirmDialog・PeriodPicker) を使う。グラフは新しいライブラリを足さず既存の描画方式に揃え、初期 JS 予算を超えない。予算対象の開始月と選んだ科目は URL に持ち、診断からの ?account= を受け付ける (qa-budget-decision-001, 003)。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-settings-frontend-web-001",
+      "question": "web の設定画面の frontend 要件は何か。",
+      "answer": "web の設定画面のフロントエンド要件: pages/settings/ 配下へ分割 (ページ本体・節ナビ・節ごとの部品・説明パネル・保存バー・draft・view-model)。全節の編集を 1 つの下書き (useSettingsDraft) に集め、未保存件数を数え、localStorage へ自動保存・復元し、ログアウトで消す。保存は 1 回の PUT (baseSavedAt つき) で、409 は『他の画面で更新されました』を出して再取得する。変更をリセットと離脱 (beforeunload・アプリ内リンク) の前に確認する。表示用の値 (影響するもの・未保存件数の数え方・空欄 / 0 の表記) は core の settingsScreen から受け、web で計算し直さない。チェックボックスは SelectionCheckbox、カテゴリ select は既存のカテゴリ候補、並べ替えはキーボードでも行える (上下移動ボタン)。データの出力 3 種は選択中の期間を付ける (ExportMenu の withPeriod と同じ)。画像外の既存部品 (PasswordChangeForm・UserAdmin・ClassificationSettings・VendorMemorySettings・未記帳月・初期移行) はアカウント / その他の管理の節へそのまま移す。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:35:48Z",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "frontend-arch"
       ]
     },
     {
-      "id": "qa-budget-backend-web-evidence-001",
-      "question": "バックエンド 章の裏付けとして、14-budget.png と現行実装の差分として何を観測したか。",
-      "answer": "packages/api/src/routes/settings.ts に GET /api/budgets (52 行目: budgets・budgetTable・budgetOutlook を返す)・PUT /api/budgets (57〜80 行目: zod で科目名 60 字・非負整数、delete+insert を db.batch、json snapshot の無効化)・POST /api/budgets/suggest (82 行目) がある。core の analysis.ts に suggestBudgets (910 行目: 固定費は直近 3 か月平均 × 95%、他は全期間平均)・budgetTable (937)・budgetSummary (983)・budgetOutlook (1027)・defenseLine (1090: 個人生活費の直近 3 か月平均 + 事業固定費の直近 3 か月平均) があり、根拠の内訳・前期実績・見通しの月次・過不足・インパクトを返す関数は無い。Dataset は biz.revenue (売上高の月次)・biz.categories・biz.expense と budgets (科目→月額) を持ち、その他収入の系列は無い。budgets は diagnosis-screen.ts 371 行目・diagnosis-detectors.ts 283 / 724 行目 (予算カバー率)・import-lifecycle.ts (JSON 復元で budgets 表を書く)・dataset.ts 190 / 253 行目 (JSON の読み書き)・fingerprint.ts 123 行目が読む。GET /api/analytics の 771 行目も budgetTable を返す。",
-      "provenance": "リポジトリの現行実装 (main 8f72ff0) と画像 14-budget.png の読取りによる観測。",
+      "id": "qa-settings-backend-web-evidence-001",
+      "question": "web の設定画面の backend について、既存コードで何が観測できるか。",
+      "answer": "routes/settings.ts: GET /settings (:89-111) は statMinMonths・normMap・unrecordedExpMonths・cashOverrides を返し、PUT /settings (:113-264、素の zValidator) は normMap を全件置換して recomputeFromDeals を伴い、cashOverrides は月単位の upsert/削除。GET/PUT /settings/owner-labels (:735-800) は 4 名義必須で core の validateOwnerLabels を使う。GET /backups・/backups/:date (:703-725)。出力は routes/analytics.ts:826-886、復元は routes/imports.ts:1924 POST /restore (形だけ検査、import writer lease)。予算の PUT /api/budget-plans は revisionOf (MAX(updated_at)) と baseSavedAt で 409、publicJsonValidator を使う。core の cashOverride はどの集計にも効いていない。normalizeAccount は core/normalize.ts:23。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-backend-web-002",
-      "question": "web の予算画面で、バックエンドについて利用者が決めていない具体値を何にするか。",
-      "answer": "増減率は直近 12 か月の合計 ÷ その前の 12 か月の合計 − 1 とし、±30% で頭打ちにする。前の 12 か月が 0 か 24 か月に満たないときは増減率 0 とする。季節性補正は 24 か月以上の実績があるときだけ、月ごとの平均からの偏りを見通しの月割に使い、年額の推奨値には偏りの和 (0) ではなく予算対象に掛かる月の偏りの差額を足す。前期実績は実績期間の合計 × 12 ÷ 月数とする。丸めは千円単位の四捨五入。画面用 API は GET /api/budget-screen?period=<usePeriod の値>&start=YYYY-MM、保存は PUT /api/budget-plans (本文 {start, rows:[{account, kind, annualAmount, planAdjustment, planReason}]})。過不足の要因は、計画による調整の理由があればそれを、無ければ増減率・季節性のうち寄与の大きい項を文にする。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent の推定 (利用者未確認)",
+      "id": "qa-settings-backend-web-002",
+      "question": "web の設定画面の backend で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 設定 JSON は {format:'kanjo-settings', version:1, exportedAt, normRules[], ownerLabels, statMinMonths, cashOverrides[]}。取引先ルールの照合キーは NFKC → 大文字小文字の畳み込み → 前後空白除去。recomputeFromDeals は勘定科目ルールが変わった保存のときだけ走らせる。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-backend-web-001",
-      "question": "web の予算画面のバックエンド要件は何か。算出・API・既存の読み手との整合をどうするか。",
-      "answer": "core に予算画面の算出を純関数として新設し、Dataset・実績期間・予算対象・保存済みの予算・計画による調整から、前期実績・自動提案 (前期実績 × (1 + 増減率) + 季節性補正 + 計画による調整 を千円に丸めた額) とその各項・見通し (実績のある月は実績、無い月は自動提案の月割)・月次の実績と予算・今後の見通しの累計・KPI (年間収入予算・年間支出予算・予算純収支・防衛ライン余裕 = 年間収入予算 − defenseLine の月額 × 12)・過不足カテゴリ (見通し − 来期予算) ・調整によるインパクト (Σ(来期予算 − 自動提案)) を 1 回で返す (qa-budget-decision-002〜004)。行は収入 (売上高・その他収入) と支出 (事業の経費科目) で、その他収入は現行の集計に系列が無いため実績 0 の手入力行とする。api は画面用の取得 1 本と、予算対象の全行をまとめて上書きする保存 1 本を設け、zod で検証し、保存は canonicalMutationFence に登録する。保存行の無い期間は既存 budgets の月額 × 12 を初期値として返す (qa-budget-decision-001)。既存の budgets の読み手 (診断の予算カバー率・予算の着地見込み・analytics) は、今月を含む予算対象の年額 ÷ 12 を返すcore の読み出し関数を経由し、同じ値を 2 か所で計算しない。旧 GET/PUT /api/budgets と POST /api/budgets/suggest は互換のため残すが、画面は使わない。外部の LLM は呼ばない。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-settings-backend-web-001",
+      "question": "web の設定画面の backend 要件は何か。",
+      "answer": "web の設定画面のバックエンド要件: core に settingsScreen (画面の表示値・影響するもの・未保存件数の基準)、集計ルールの照合と適用 (勘定科目は取込時の normalizeAccount と同じ意味、取引先は集計時に 手動 > 仕分けルール > 集計ルール > 自動、NFKC・大小文字を揃えた完全一致、並び順優先、無効行は不適用)、現金上書きの解決 (空欄 = 不適用 / 0 = 0 円 / 全期間 / 月指定)、設定 JSON の検証と差分 (版番号つき) を純関数で置く。API: GET /api/settings/screen (画面の全値と savedAt)、PUT /api/settings/screen (全節の変更を baseSavedAt つきで 1 回に受け、古ければ 409、変更履歴を同じ batch で追記)、GET /api/settings/history?ruleId= (元に戻す用の直前値)、GET /api/settings/export (設定のみ JSON)、POST /api/settings/restore/preview (差分) と POST /api/settings/restore (復元前に現在の設定を R2 へ退避して置換、更新者はシステム)、GET /api/backups に状態・メモ・要約、GET /api/backups/:date/compare (現在の設定との差分)。既存 API (PUT /settings・owner-labels・/restore) は互換のため残す。scheduled は JST 2:00 に実行し、成否を R2 の customMetadata に残す。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:35:48Z",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-budget-database-web-evidence-001",
-      "question": "データベース 章の裏付けとして、14-budget.png と現行実装の差分として何を観測したか。",
-      "answer": "migrations/0000_init.sql 55 行目の budgets は (user_id TEXT, account TEXT, monthly_amount INTEGER, PRIMARY KEY(user_id, account)) で期間と収入・支出の区別を持たない。packages/api/src/db/schema.ts 345〜349 行目が同じ定義。migrations の最新は 0047_classify_workbench.sql。行書き換えの migration で Deploy が止まった過去があり、追加のみを原則にしている。import-active.ts の JSON_SNAPSHOT_MUTATION_CONSUMERS に budgets があり、変更時に JSON snapshot を無効化する。import-lifecycle.ts 1511〜1514 行目は JSON の復元で budgets を消して入れ直す。",
-      "provenance": "リポジトリの現行実装 (main 8f72ff0) と画像 14-budget.png の読取りによる観測。",
+      "id": "qa-settings-database-web-evidence-001",
+      "question": "web の設定画面の database について、既存コードで何が観測できるか。",
+      "answer": "account_norm_map (0000_init.sql:58) は (user_id, raw, norm) のみ。cash_overrides (0000_init.sql:56) は (user_id, month, revenue, expense)。analysis_settings (0019) は stat_min_months (既定 6)。owner_labels (0045)。rules (0000→0001) は sort_order を持つ。最新 migration は 0050_budget_plans.sql で、schema-guard.ts:4 の EXPECTED_D1_MIGRATION と一致 (0016・0017 は欠番)。監査表 audit_log (0033) の action は delete/undo/import_resolution のみ。夜間バックアップ (store.ts:1382 loadBackupPayload) は owner_labels を含まない。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-database-web-002",
-      "question": "web の予算画面で、データベースについて利用者が決めていない具体値を何にするか。",
-      "answer": "表は budget_plans (user_id TEXT NOT NULL, period_start TEXT NOT NULL ('YYYY-MM'), account TEXT NOT NULL, kind TEXT NOT NULL ('income' | 'expense'), annual_amount INTEGER NOT NULL, plan_adjustment INTEGER NOT NULL DEFAULT 0, plan_reason TEXT, updated_at TEXT NOT NULL, PRIMARY KEY (user_id, period_start, account)) とし、migration 番号は 0048 を予定する。計画による調整の理由は 100 字以内。保存は予算対象の行を DELETE してから INSERT する 1 回の batch とする。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent の推定 (利用者未確認)",
+      "id": "qa-settings-database-web-002",
+      "question": "web の設定画面の database で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: migration 番号は 0051 (集計ルール)・0052 (現金上書き)・0053 (変更履歴) の 3 本、または 0051 の 1 本。変更履歴の保持は無期限 (件数は少ない)。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-database-web-001",
-      "question": "web の予算画面のデータベース要件は何か。保存単位・移行・既存表との関係・復元をどうするか。",
-      "answer": "予算を予算対象の 12 か月 (開始月) ×科目の単位で、年額・収入 / 支出の区別・計画による調整額・調整の理由・更新時刻とともに保存する新しい表を、追加のみの migration 1 本で設ける (qa-budget-decision-001〜003)。同じ期間は上書きで、版は持たない。主キーの先頭は利用者とし、利用者で区切る。既存の budgets 表は残し、1 行も書き換えない。保存行の無い期間を開いたときの初期値は既存 budgets の月額 × 12 を読み出して示すだけで、表へは書かない。新しい表は JSON の書き出しと復元 (Dataset・import-lifecycle) と JSON snapshot の無効化の対象に加え、毎晩のバックアップから予算が戻るようにする。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-settings-database-web-001",
+      "question": "web の設定画面の database 要件は何か。",
+      "answer": "web の設定画面のデータベース要件: 追加のみの migration で、(1) 集計ルールの新表 (種別 勘定科目 / 取引先・元の表記・正規化後・並び順・有効・更新時刻・更新者) を設け、既存 account_norm_map の行は初回に種別『勘定科目』として同じ意味で写し、既存表は 1 行も書き換えない (取込時の正規化の読み手は新表の勘定科目行を読む)、(2) 現金上書きの新表 (種別 支払い / 受け取り・上書き値 NULL 可・適用範囲 全期間 / 月・対象月・メモ 100 字・更新時刻・更新者) を設け、既存 cash_overrides の月ごとの値は『月指定』の行として写す、(3) 設定の変更履歴表 (追記のみ: 対象・キー・変更前・変更後・更新者・日時・由来 画面 / 復元 / 移行) を設ける。どの表も主キーの先頭は利用者とし利用者で区切る。新表は設定 JSON の書き出しと復元、夜間バックアップ、JSON snapshot の無効化の対象に加え、owner_labels もバックアップに含める。schema-guard の期待番号を上げる。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:35:48Z",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
       ]
     },
     {
-      "id": "qa-budget-auth-web-evidence-001",
-      "question": "認証・認可 章の裏付けとして、14-budget.png と現行実装の差分として何を観測したか。",
-      "answer": "packages/api/src/index.ts の 104〜108 行目で /api/* に authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence が順に掛かる。セッションは kanjo_session Cookie で、users 表の session_generation で無効化される。既存の予算 route は c.get('userId') で利用者を取り、SQL を user_id で絞る。テナントは単一。",
-      "provenance": "リポジトリの現行実装 (main 8f72ff0) と画像 14-budget.png の読取りによる観測。",
+      "id": "qa-settings-auth-web-evidence-001",
+      "question": "web の設定画面の auth について、既存コードで何が観測できるか。",
+      "answer": "ミドルウェア順は authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence (index.ts:105-109)。authGuard (auth.ts:245) は Access JWT かセッション Cookie を検証し userId=TENANT_ID('default') と actor を set する。adminGuard (auth.ts:319-) がある。/api/settings は CANONICAL_MUTATION_ROUTES (canonical-mutation-fence.ts:159-163) に登録済み。POST /restore は admin 限定ではない。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-auth-web-002",
-      "question": "web の予算画面で、認証・認可について利用者が決めていない具体値を何にするか。",
-      "answer": "他の利用者の予算は存在しないものとして扱い、読取りは空の予算 (初期値) を返し、書込みは自分の行だけを置き換える。ログアウト時に kanjo:budget:draft: で始まる下書きを消す。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent の推定 (利用者未確認)",
+      "id": "qa-settings-auth-web-002",
+      "question": "web の設定画面の auth で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 更新者の表示名は actor のメールアドレスのローカル部。restore 系は import writer lease と同じ直列化を取る。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-auth-web-001",
-      "question": "web の予算画面の認証・認可要件は何か。",
-      "answer": "新しい認証方式は作らない。予算画面の取得と保存の API は /api/* の authGuard と mustChangePasswordFence の内側に置き、利用者 id はセッションから取り、要求の本文や URL からは受け取らない。予算の表は利用者で区切り、他の利用者の予算を読み書きできない。下書きは端末の localStorage に置くため、保存成功とログアウトで消す (qa-budget-decision-001)。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-settings-auth-web-001",
+      "question": "web の設定画面の auth 要件は何か。",
+      "answer": "web の設定画面の認証要件: 新しい設定 API はすべて既存の authGuard・パスワード変更強制・スキーマ確認・canonicalMutationFence の内側に置き、未認証は 401。変更系 (PUT screen・restore・restore/preview を除く) は CANONICAL_MUTATION_ROUTES に登録する。変更履歴の更新者は authGuard が set する actor から取り、クライアントから受けない。設定の復元とバックアップからの復元は現行の /restore と同じ権限とし、権限を広げない。アカウント節 (パスワード変更・利用者管理) の権限判定は既存のまま (利用者管理は admin のみ描画)。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:35:48Z",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "auth-model"
       ]
     },
     {
-      "id": "qa-budget-security-web-evidence-001",
-      "question": "セキュリティ 章の裏付けとして、14-budget.png と現行実装の差分として何を観測したか。",
-      "answer": "canonical-mutation-fence.ts 157 行目に PUT /api/budgets が consumers ['budgets'] で登録されている。登録の無い変更系は取込の洗替えと直列化されない。packages/api/src/ai は外部の LLM を呼んでいない。CSP は packages/web/public/_headers (default-src 'self'・connect-src 'self'・script-src 'self' など) にある。フッタは『取込データは外部送信しません』。",
-      "provenance": "リポジトリの現行実装 (main 8f72ff0) と画像 14-budget.png の読取りによる観測。",
+      "id": "qa-settings-security-web-evidence-001",
+      "question": "web の設定画面の security について、既存コードで何が観測できるか。",
+      "answer": "CSRF 専用ミドルウェアは無く、SameSite=Strict の Cookie (auth.ts:131)・fetch の Content-Type: application/json 固定 (api-client.ts:42-47)・secureHeaders の CSP (form-action 'self'、frame-ancestors 'none') に頼る。bodyLimit は /api/auth/*・balances・ai にだけある。publicJsonValidator (public-validation.ts) は zod の詳細を外に出さない。エラー応答は {error:{code,message}}、onError は requestId を付け明細内容をログに出さない。/restore の body は形の検査のみで上限なし。フッタに『取込データは外部送信しません』。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-security-web-002",
-      "question": "web の予算画面で、セキュリティについて利用者が決めていない具体値を何にするか。",
-      "answer": "上限は 1 回の保存 200 行、科目名 60 字、計画による調整の理由 100 字、年額と調整額は ±10,000,000,000 円以内の整数、開始月は YYYY-MM で 2000-01〜2100-12 とする。フェンスの登録は PUT /api/budget-plans (consumers: budget_plans) とする。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent の推定 (利用者未確認)",
+      "id": "qa-settings-security-web-002",
+      "question": "web の設定画面の security で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 本文上限は画面の PUT 64KB、復元 256KB、集計ルールは 500 行まで。CSV の式注入対策は既存の CSV 出力に既にあるかを実装時に確かめる。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-security-web-001",
-      "question": "web の予算画面のセキュリティ要件は何か。",
-      "answer": "入力はすべて zod で検証し、年額・調整額は整数で範囲を制限し、科目名と計画による調整の理由は長さを制限して React の既定のエスケープで描画する。予算の保存は canonicalMutationFence に登録し、取込の洗替えと直列化する。取込データと予算を外部へ送信せず、自動提案は外部の LLM を呼ばずに決定論で出す (qa-budget-decision-003)。下書きには調整の理由が入るため、保存成功とログアウトで消し、サーバへは保存操作でだけ送る。CSP (packages/web/public/_headers) は緩めない。1 回の保存の行数に上限を置く。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-settings-security-web-001",
+      "question": "web の設定画面の security 要件は何か。",
+      "answer": "web の設定画面のセキュリティ要件: 設定系の新 API は publicJsonValidator で形を検査し、値の規則は core を正本にする (zod は形だけ)。本文サイズ上限を掛ける (画面の PUT と復元)。復元は版番号・形式名・全フィールドの型と範囲・件数上限を厳密に検査し、未知のキーは拒否し、1 つでも不正なら何も変えない。取引先・元の表記・メモは表示時にエスケープされる (React の既定) ことを保ち、CSV 出力はセルの先頭が = + - @ のときに式注入を防ぐ。エラーは詳細を返さずログにも設定値を出さない。外部送信は 0 件。バックアップ・変更履歴に秘密情報を入れない。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:35:48Z",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "security-posture"
       ]
     },
     {
-      "id": "qa-budget-infrastructure-web-evidence-001",
-      "question": "インフラ 章の裏付けとして、14-budget.png と現行実装の差分として何を観測したか。",
-      "answer": "api は Hono の Cloudflare Worker で D1 を使う (wrangler 設定)。D1 Free は rows read 5 million / day・rows written 100,000 / day・5 GB (https://developers.cloudflare.com/d1/platform/pricing/)。migration の本番反映は既存の Deploy / Migrate の手順で、行書き換えの migration で Deploy が止まった過去がある。",
-      "provenance": "リポジトリの現行実装 (main 8f72ff0) と画像 14-budget.png の読取りによる観測。",
+      "id": "qa-settings-infrastructure-web-evidence-001",
+      "question": "web の設定画面の infrastructure について、既存コードで何が観測できるか。",
+      "answer": "packages/api/wrangler.jsonc: R2 は FILES → kanjo-files、D1 は DB、cron は \"0 18 * * *\" (JST 03:00)。nightlyBackup (index.ts:171-196) は loadBackupPayload を R2 backups/YYYY-MM-DD.json に put し 30 日より古いものを削除。scheduled は :390-393。失敗はログのみ (:239-249)。R2 list は 1000 件のページングを考慮していない (30 件保持なので実害なし)。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-infrastructure-web-002",
-      "question": "web の予算画面で、インフラについて利用者が決めていない具体値を何にするか。",
-      "answer": "予算の保存は D1 の batch 1 回 (DELETE 1 文 + 行数ぶんの INSERT) とし、200 行を上限にして 1 回の書込みを 201 文以内に収める。画面用の取得は Dataset の読込み 1 回と予算の表の読取り 1 回とする。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent の推定 (利用者未確認)",
+      "id": "qa-settings-infrastructure-web-002",
+      "question": "web の設定画面の infrastructure で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 失敗マーカーは backups/YYYY-MM-DD.failed.json (本文は理由コードのみ)。要約は集計ルール件数・名義の設定有無・統計の月数・現金上書きの件数。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-infrastructure-web-001",
-      "question": "web の予算画面のインフラ要件は何か。",
-      "answer": "構成は変えない。既存の Cloudflare Worker と D1 の上に載せ、R2・キュー・新しいバインディング・外部サービスを足さない (qa-budget-decision-003)。無料枠 (Workers の CPU 時間・D1 の読み書き) の範囲で動くよう、予算の保存は行数に上限を置いて D1 の batch でまとめて書き、算出は 1 回の要求で完結させる。追加のみの migration 1 本を既存の Deploy / Migrate の手順で反映する (qa-budget-decision-001)。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-settings-infrastructure-web-001",
+      "question": "web の設定画面の infrastructure 要件は何か。",
+      "answer": "web の設定画面のインフラ要件: cron を JST 2:00 (\"0 17 * * *\") に変える (wrangler.jsonc の 1 行)。バックアップの R2 オブジェクトに customMetadata として 状態・メモ・設定部分の要約・形式の版 を持たせ、失敗した回も状態『失敗』の小さなマーカーを残して一覧に出す。保持 30 日は据え置く。復元前の自動退避は同じ R2 の別プレフィックス (backups/pre-restore/) に置き、同じ保持規則で消す。新しいバインディングは足さない。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:35:48Z",
+      "answered_at": "2026-09-22T08:39:27Z",
       "required_info_items": [
         "infra-topology"
       ]
     },
     {
-      "id": "qa-budget-maintenance-ops-web-evidence-001",
-      "question": "保守運用 章の裏付けとして、14-budget.png と現行実装の差分として何を観測したか。",
-      "answer": "最近の作り直しは specs/spec-<screen>-screen.md・architecture/<screen>-{8 カテゴリ}.md・features/feat-<screen>.md・tasks/feat-<screen>/・docs/<screen>-screen/design-decisions.md・docs/evidence/ に成果物を残している。予算の既存テストは packages/core/test/budget-outlook-contract.test.ts と packages/web/src/budget-outlook.dom.test.tsx、診断の受け口は diagnosis-next-action-receivers.dom.test.tsx。verify:full は 4175 の vite を前提にし、初期 JS 予算は build:bundle 直後に測る。CI の headless Chrome は pointer:none である。e2e は無く check-financial-visuals.mjs と pnpm check:financial-routes がある。",
-      "provenance": "リポジトリの現行実装 (main 8f72ff0) と画像 14-budget.png の読取りによる観測。",
+      "id": "qa-settings-maintenance-ops-web-evidence-001",
+      "question": "web の設定画面の maintenance-ops について、既存コードで何が観測できるか。",
+      "answer": "設定変更の監査記録は無い (audit-log.ts:248 の action は delete/undo/import_resolution に限る)。夜間バックアップの失敗は画面に出る経路が無い。既存テストに settings-restore.dom.test.tsx・backup-restore.dom.test.tsx・owner-labels.integration.test.ts がある。前例 (予算) は docs/budget-screen/ に設計判断と証拠、spec-reflection-receipt を置く。verify:full は 4175 の vite を前提とする。",
+      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-maintenance-ops-web-002",
-      "question": "web の予算画面で、保守運用について利用者が決めていない具体値を何にするか。",
-      "answer": "テストは packages/core/test/budget-screen.test.ts・packages/api/src/routes/budget-plans.test.ts・packages/web/src/pages/budget/budget.dom.test.tsx を新設し、既存の budget-outlook の 2 本は新しい画面に合わせて書き換える (契約は緩めない)。文書は specs/spec-budget-screen.md・architecture/budget-*.md・docs/budget-screen/design-decisions.md に置く。旧実装で落ちること (収入の行が無い・防衛ライン余裕が無い) を検算してからテストを確定する。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
-      "provenance": "agent の推定 (利用者未確認)",
+      "id": "qa-settings-maintenance-ops-web-002",
+      "question": "web の設定画面の maintenance-ops で、利用者が決めていない具体値は何か。",
+      "answer": "具体値の推定: 設定 JSON の版を上げるときは core に移行関数を置き、古い版の復元を 1 世代まで受ける。",
+      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T13:35:48Z"
+      "answered_at": "2026-09-22T08:39:27Z"
     },
     {
-      "id": "qa-budget-maintenance-ops-web-001",
-      "question": "web の予算画面の保守運用要件は何か。テスト・文書・反映手順をどうするか。",
-      "answer": "core の単体テストで、KPI の各式 (年間収入予算・年間支出予算・予算純収支・防衛ライン余裕 = 年間収入予算 − defenseLine の月額 × 12) ・一覧の合計と KPI とグラフの年合計の一致・自動提案の各項と千円丸め・見通しの月次と累計・過不足の差額・調整によるインパクト・保存行の無い期間の初期値 (既存月額 × 12) を固定する (qa-budget-decision-001, 004)。api のテストで期間ごとの保存と上書き・未認証・フェンス・不正値・利用者の区切り・migration が既存行を書き換えないことを、web の DOM テストで画像の構成要素・下書きの復元と消去・未保存件数・元に戻す・リセットの確認・離脱確認・診断からの ?account= を確かめる。既存の診断・概要・家計収支・総収支・決算書・明細仕分けの数値テストを緑のまま保ち、pnpm lint・typecheck・初期 JS 予算を CI で通す。画面仕様・設計・設計判断・証跡を既存の作り直しと同じ場所に残す。migration は既存の Migrate の手順書に従って反映する。既知の逸脱・未実施・一部適合は受入 PASS に数えない。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-settings-maintenance-ops-web-001",
+      "question": "web の設定画面の maintenance-ops 要件は何か。",
+      "answer": "web の設定画面の保守運用要件: 設定の変更は変更履歴表に残り、誰がいつ何を変えたかを画面と API で辿れる。バックアップの失敗は一覧に『失敗』として出て、利用者が気づける。migration は追加のみで、失敗時は Deploy の再実行で戻せる手順 (既存の運用) に従う。docs/settings-screen/ に設計判断 (集計ルールの 2 種別と適用順・現金上書きの意味・設定 JSON の形式と版・バックアップの状態) と画面の証拠を残し、docs/data-schema.md と docs/ui-decisions.md を更新する。既存テストは緑のまま保ち、新しい core・API・DOM のテストを足す。",
+      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T13:35:48Z",
+      "answered_at": "2026-09-22T08:39:27Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-settings-decision-010",
+      "question": "設定画面の『バックアップ』節で、ある日のバックアップを『復元』したとき、何を戻しますか？ 【提示した選択肢 (逐語)】(1)『設定だけ戻す (Recommended)』— 集計ルール・名義・統計・現金上書きだけをその日の値へ戻し、取引は消さない。『比較』の差分と同じ範囲で、設定 JSON の復元と同じ経路 (差分プレビュー→確認→直前に現在の設定を退避) を通す。U3 G4『取引は消えない』と一致する。 (2)『全データを戻す』— 取引も含めてその日の状態へ置き換える (既存 /api/restore と同じ意味)。取引が消えうるので、G4『取引は消えない』の書き換えと強い確認が必要になる。",
+      "answer": "設定だけ戻す (推奨)。",
+      "provenance": "AskUserQuestion / 選択肢 2 件の文面を question に逐語で保存 (推奨案を選択)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:40:36Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-settings-ui-ux-web-004",
+      "question": "web の設定画面の ui-ux で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (UI/UX): 375px 幅では節ナビを上部の横並びにし、説明パネルは表の下へ回し、横スクロールは表の容器の中だけにする。行の削除とバックアップからの復元にも確認ダイアログを挟む。情報の優先順位は 未保存件数と保存 > 集計ルール > 復元・バックアップ > 他の節 (task 頻度 × 失敗コストによる推定)。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-ui-ux-web-003",
+      "question": "web の設定画面の ui-ux 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面の UI/UX 要件 (画像・G1・決定 001〜004・006〜010 に基づく): パンくず『管理 / 設定』、期間タブ、見出し『設定』と問い『集計ルールと復元設定を、安全に管理しますか？』と説明文。左の節ナビは画像の 6 節 (集計ルール・名義・統計・現金上書き・データ・バックアップ) の後ろに『アカウント』『その他の管理』を足し、画像外の既存機能を 1 つも消さない (決定 004)。集計ルールは勘定科目と取引先を 1 つの一覧で扱い、種別の列を持つ (決定 001)。表は チェックボックス・並べ替えハンドル・元の表記・正規化後のカテゴリ・削除 と『+ ルールを追加』。右の『この設定の説明』は 元の表記・正規化後のカテゴリ・影響するもの・最終更新と更新者・『このルールを元に戻す』(直前の保存値へ、決定 008)・設定のヒント。名義は 4 名義すべて (決定 002)。統計は最小月数の入力と説明で既定 6 (決定 009)。現金上書きは支払い・受け取りの 2 行に 上書き値 (空欄と 0 を区別)・適用範囲・メモ (決定 003)。データは 設定 JSON・集計マトリクス CSV・取引 CSV・レポート HTML の 4 種 (決定 006)。復元は設定だけ (決定 006)。バックアップ表は 日付・サイズ・ステータス・メモ・比較・復元 で、復元は設定だけを戻す (決定 007・010)。下部の保存バーに 未保存 N 項目・変更をリセット・設定を保存。リセット・復元・離脱の前に確認する (G3・G4)。375px 幅でも崩れない (G1)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-settings-frontend-web-004",
+      "question": "web の設定画面の frontend で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (frontend): 下書きの hook 名は useSettingsDraft。ログアウトで下書きを消す (Layout.tsx の先例)。409 のときは『他の画面で更新されました』を出して再取得する。並べ替えはキーボードでも行える上下移動ボタンを併設する。期間の付け方は ExportMenu の withPeriod と同じにする。既存部品 (PasswordChangeForm・UserAdmin・ClassificationSettings・VendorMemorySettings・未記帳月・初期移行) はそのまま移す。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-frontend-web-003",
+      "question": "web の設定画面の frontend 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のフロントエンド要件 (I1・I4・G3・C2・決定 004・006 に基づく): Settings.tsx を pages/settings/ 配下へ分割し、見出し・期間タブ・節ナビ・各節・説明パネル・保存バーの構成にする (I1)。全節の編集を 1 つの下書きに集め、未保存件数を数え、localStorage へ自動保存・復元し、リセットと離脱の前に確認する。予算画面の先例 (draft.ts・BudgetSaveBar) にならう (I4)。保存は baseSavedAt つきの 1 回の PUT で、競合は 409 で検出する (G3)。表示用の値は core の算出から受ける (I2)。色はトークンだけ、部品は共通部品 (PageHeader・Button・ConfirmDialog・PeriodPicker・SelectionCheckbox・DataTable・CategoryPicker) を使う (C2)。出力 3 種は選択中の期間で出す (G4)。画像外の既存機能はアカウント / その他の管理の節へ移して残す (決定 004)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-settings-backend-web-004",
+      "question": "web の設定画面の backend で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (backend): パスは GET /api/settings/screen、PUT /api/settings/screen、GET /api/settings/history?ruleId=、GET /api/settings/export、POST /api/settings/restore/preview、POST /api/settings/restore、GET /api/backups (状態・メモ・要約を追加)、GET /api/backups/:date/compare、POST /api/backups/:date/restore/preview、POST /api/backups/:date/restore。バックアップ本文から設定部分を取り出して設定 JSON と同じ検証と置換に渡す。算出の名前は settingsScreen。recomputeFromDeals は勘定科目ルールが変わった保存に限る。成否は R2 の customMetadata に残す。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-backend-web-003",
+      "question": "web の設定画面の backend 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のバックエンド要件 (G2〜G5・I2・I3・I5・I6・決定 001・003・005〜008・010 に基づく): core に設定画面の算出、集計ルールの照合と適用、現金上書きの解決、設定 JSON の検証と差分を純関数で置く (I2)。集計ルールは勘定科目を従来どおり取込時に、取引先を集計時に 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類 の順で適用し、照合は NFKC・大小文字を揃えた完全一致、同じ元表記は並び順で優先、無効の行は効かない (決定 005・G2)。現金上書きは 空欄 = 上書きしない / 0 = 0 円 と 全期間 / 月指定 を区別し、core の現金集計に効かせる (決定 003)。API は 画面の取得、全節の変更を baseSavedAt つきで 1 回に受けて古ければ 409 にし変更履歴を追記する保存 (G3・決定 008)、元に戻す用の直前値、設定のみ JSON の書き出し、差分プレビューと確認を経て復元直前に現在の設定を退避する設定の復元 (決定 006)、状態・メモ・要約つきのバックアップ一覧と現在の設定との比較 (決定 007)、バックアップからの設定だけの復元 (設定の復元と同じ経路、取引は消さない、決定 010) を持つ。夜間バックアップは JST 2:00 に実行し、成否を残す (決定 007)。既存の API と機能は消さない (G5)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-settings-database-web-004",
+      "question": "web の設定画面の database で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (database): 集計ルール・現金上書き・変更履歴の 3 表を新設し、主キーの先頭を利用者にする。変更履歴には由来 (画面 / 復元 / 移行) を持たせる。取込時の正規化の読み手を新表の勘定科目行へ寄せる。新表を設定 JSON・夜間バックアップ・JSON snapshot の無効化の対象に加え、owner_labels もバックアップに含める。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-database-web-003",
+      "question": "web の設定画面の database 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のデータベース要件 (C3・G2・G3・G5・決定 001・003・008 に基づく): migration は追加のみで 0050 の次の番号から、既存行の書き換えは 0 件、schema-guard の期待番号を合わせる (C3)。集計ルールは種別 (勘定科目 / 取引先) を持つ 1 つの一覧で、元の表記・正規化後・並び順・有効・更新日時・更新者を持つ (決定 001・G2・決定 008)。既存の科目正規化マップの値は初回に種別『勘定科目』として同じ意味で引き継ぐ (G5)。現金上書きは 支払い / 受け取り・上書き値 (空欄と 0 を区別)・適用範囲 (全期間 / 月指定)・メモを持ち、既存の月ごとの値は『月指定』として追加のみで引き継ぐ (決定 003)。設定の変更は追記のみの変更履歴に 変更前・変更後・更新者・日時 を残し、復元や移行で入った値の更新者は『システム』とする (決定 008・G3)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-settings-auth-web-004",
+      "question": "web の設定画面の auth で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (auth): 変更履歴の更新者は authGuard が set する actor から取り、要求本文の値を使わない。表示名は actor のメールアドレスのローカル部。設定の復元とバックアップからの復元の権限は既存 /restore と同じに留める。復元系は取込の洗替えと重ならないよう既存の直列化に揃える。差分プレビューは POST だが読むだけなのでフェンス対象から外す。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-auth-web-003",
+      "question": "web の設定画面の auth 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面の認証・認可要件 (G5・C4・O5 に基づく): 設定系の新 API はすべて既存の認証・パスワード変更強制・スキーマ確認・canonicalMutationFence の内側に置き、未認証は 401 にする (G5・O5)。書込み API (全節の保存・設定の復元・バックアップからの設定の復元) はすべて CANONICAL_MUTATION_ROUTES に登録する。読むだけの API (画面の取得・元に戻す用の直前値・書き出し・差分プレビュー・比較・一覧) は登録しない (C4・O5)。画像外の既存機能 (パスワード変更・利用者管理) の権限は変えない (G5)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-settings-security-web-004",
+      "question": "web の設定画面の security で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (security): 本文上限は画面の PUT 64KB、復元 256KB、集計ルールは 500 行まで。未知のキーを拒否する。値の規則は core を正本にし zod は形だけを見る。取引先名・メモは React の既定のエスケープで表示し、CSV 出力はセル先頭の = + - @ を無害化する (ASVS V1.2.10)。エラー応答とログに設定値を出さない。バックアップ・変更履歴に秘密情報を入れない。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-security-web-003",
+      "question": "web の設定画面の security 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のセキュリティ要件 (G4・G5・C4・S4 に基づく): 設定系の新 API は公開向けの入力検証で詳細を外に出さず、本文サイズ上限を掛ける (G5・C4)。設定の復元は同じ形の版番号つき JSON だけを受け、厳密に形を検証し、サイズ上限を掛け、差分プレビューと確認を経て、復元直前に現在の設定を退避する (G4)。不正な JSON は何も変えずに拒否する (S4)。バックアップからの復元も同じ検証を通し、取引は消えない (決定 010)。外部送信は 0 件 (G5)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-settings-infrastructure-web-004",
+      "question": "web の設定画面の infrastructure で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (infrastructure): cron 式は UTC 評価なので \"0 17 * * *\"。状態・メモ・要約・形式の版は R2 オブジェクトの customMetadata に置く。失敗した回は backups/YYYY-MM-DD.failed.json の小さなマーカー (本文は理由コードのみ) を残す。復元前の自動退避は別プレフィックス backups/pre-restore/ に置き、同じ保持規則で消す。新しいバインディングは足さない。R2 の list は 1000 件ごとに cursor で続きを取る。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-infrastructure-web-003",
+      "question": "web の設定画面の infrastructure 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面のインフラ要件 (決定 007・C5・U7 に基づく): 夜間バックアップを毎日 JST 2:00 に実行し、各回に 状態 (成功 / 失敗)・メモ・設定部分の要約 を持たせ、失敗した回も一覧に出す (決定 007)。バックアップの中身は従来どおり全データ (決定 007)。cron の変更は wrangler.jsonc の 1 行で、保持 30 日は据え置く (C5・U7 対象外)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-settings-maintenance-ops-web-004",
+      "question": "web の設定画面の maintenance-ops で、利用者が選んでいない仕組みの選択は何か。",
+      "answer": "仕組みの選択の推定 (maintenance-ops): docs/settings-screen/ に設計判断 (集計ルールの 2 種別と適用順・現金上書きの意味・設定 JSON の形式と版・バックアップの状態) と画面の証拠を置き、docs/data-schema.md と docs/ui-decisions.md を更新する。migration が途中で止まったときは Deploy の再実行で収束させる既存の手順に従う。設定 JSON の版を上げるときは core に移行関数を置き、古い版の復元を 1 世代まで受ける。設定だけの誤りは設定 JSON の復元か『元に戻す』で直し、D1 Time Travel は障害時の最後の手段に残す。",
+      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-22T09:45:25Z"
+    },
+    {
+      "id": "qa-settings-maintenance-ops-web-003",
+      "question": "web の設定画面の maintenance-ops 要件のうち、利用者の決定・承認に遡れるものは何か。",
+      "answer": "web の設定画面の保守運用要件 (決定 007・008・C3・S5・O5 に基づく): 設定の変更は追記のみの変更履歴で、誰がいつ何を変えたかを辿れる (決定 008)。夜間バックアップの失敗は一覧に『失敗』として出て、利用者が気づける (決定 007)。migration は追加のみ (C3)。既存の設定機能のテストは緑のまま保ち、verify:full を緑にする (S5・O5)。",
+      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-22T09:45:25Z",
       "required_info_items": [
         "ops-runbook"
       ]
@@ -610,11 +971,68 @@
   ],
   "approval_log": [
     {
-      "id": "appr-foundation-budget-001",
-      "note": "予算画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/14-budget.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択 (2026-09-21T13:32:28Z、回答受領直後の実測時刻)。範囲外: 版管理・担当・外部LLMと外部データ・個人(家計)の予算・共通シェルの作り直し・トレードオフ画面・web 以外の専用アプリ。basis=user-decision。"
+      "id": "appr-foundation-settings-001",
+      "note": "設定画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/18-settings.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択 (2026-09-22T08:37:17Z、回答受領直後の実測時刻)。範囲外: 取引データの復元形式の変更・仕分けルール/ベンダー記憶の意味変更・共通シェルの作り直し・外部送信・web 以外の専用アプリ・バックアップ保持30日の変更。basis=user-decision。"
     }
   ],
-  "reopen_log": [],
+  "reopen_log": [
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-ui-ux-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
+      "from": "確定",
+      "reopened_at": "2026-09-22T09:42:50Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-frontend-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
+      "from": "確定",
+      "reopened_at": "2026-09-22T09:42:50Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-backend-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。 加えて medium 指摘: バックアップからの復元の API と範囲が未定義。利用者の決定 qa-settings-decision-010 (設定だけ戻す) を反映する。",
+      "from": "確定",
+      "reopened_at": "2026-09-22T09:42:50Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-database-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
+      "from": "確定",
+      "reopened_at": "2026-09-22T09:42:50Z"
+    },
+    {
+      "category": "auth",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-auth-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。 加えて high 指摘: 『変更系 (PUT screen・restore・restore/preview を除く) は CANONICAL_MUTATION_ROUTES に登録する』は字面上、保存と復元の書込み API 本体をフェンスから外し、承認済みの O5・C4 と矛盾する。",
+      "from": "確定",
+      "reopened_at": "2026-09-22T09:42:50Z"
+    },
+    {
+      "category": "security",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-security-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
+      "from": "確定",
+      "reopened_at": "2026-09-22T09:42:50Z"
+    },
+    {
+      "category": "infrastructure",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-infrastructure-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
+      "from": "確定",
+      "reopened_at": "2026-09-22T09:42:50Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-maintenance-ops-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
+      "from": "確定",
+      "reopened_at": "2026-09-22T09:42:50Z"
+    }
+  ],
   "category_aggregate": {
     "database": "確定",
     "auth": "確定",
@@ -627,19 +1045,19 @@
   },
   "targets": [
     {
-      "target_id": "wcag22-use-of-color",
+      "target_id": "wcag22-dragging-movements",
       "category": "ui-ux"
     },
     {
-      "target_id": "tanstack-query-invalidation",
+      "target_id": "mdn-beforeunload",
       "category": "frontend"
     },
     {
-      "target_id": "react-router-searchparams",
-      "category": "frontend"
+      "target_id": "hono-body-limit",
+      "category": "backend"
     },
     {
-      "target_id": "hono-zod-validator",
+      "target_id": "mdn-string-normalize",
       "category": "backend"
     },
     {
@@ -647,652 +1065,237 @@
       "category": "database"
     },
     {
-      "target_id": "cloudflare-workers-limits",
+      "target_id": "cloudflare-workers-cron-triggers",
       "category": "infrastructure"
     },
     {
-      "target_id": "owasp-asvs",
+      "target_id": "cloudflare-r2-workers-api",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "owasp-asvs-encoding",
       "category": "security"
     },
     {
-      "target_id": "vitest-expect",
+      "target_id": "cloudflare-d1-time-travel",
       "category": "maintenance-ops"
     }
   ],
   "requirements_foundation": {
-    "essential_purpose": "予算画面を、『実績に合う予算へ、どこを調整しますか？』という問いに 1 画面で答え切る場にする。利用者が実績の期間 (1年 / 2年 / 3年 / 任意) と予算対象の 12 か月を選ぶと、年間収入予算・年間支出予算・予算純収支・防衛ライン余裕を最初に掴み、月次の実績・予算・見通しのグラフと今後の見通し (累計) で来期の姿を確かめ、予算一覧で科目ごとに前期実績・来期予算・自動提案・差額・見通しを見比べ、右のパネルで自動提案の根拠 (前期実績・増減率・季節性補正・計画による調整) と月別の実績推移を読んだうえで来期予算を入力できる。過不足が見込まれる科目と、入力内容が自動提案に比べて年間の収支をどう動かすかをその場で示し、入力中の下書きは画面を離れても失われず、未保存の項目数を見ながらまとめて保存できる。予算は予算対象の 12 か月ごとに科目別の年額で保存し、他の画面 (診断の予算カバー率・予算の着地見込み) も同じ core の 1 か所から導く。取込データは外部へ送信しない。",
-    "background": "現行の /budget (packages/web/src/pages/Budget.tsx、317 行の 1 ファイル) は、事業の経費科目ごとに月額を 1 つ入力して直近 3 か月平均と比べる表と、年間の着地見込み表だけで、期間 (usePeriod) に連動しない。D1 の budgets 表 (migrations/0000_init.sql) は (user_id, account, monthly_amount) で期間を持たず、収入の予算・予算対象の 12 か月・前期実績・月次の見通しグラフ・自動提案の根拠の内訳・過不足科目・調整のインパクト・下書きの自動保存と離脱確認がどの層にも無い。推奨値は core の suggestBudgets (固定費は直近 3 か月平均 × 95%、他は全期間平均) だけで根拠を返さない。design/FINAL-UI/images/14-budget.png はこれらを 1 画面に統合した完成形で、design/FINAL-UI/spec/AUDIT.md は『未実装の版管理/担当表現を除去。推奨、リセット、実績差、見通しへ整理』と指摘している。総収支・推移・マトリックス・サブスク・家計収支・決算書・明細仕分けを同じ流儀で作り直し終えた今、『計画』段階の入口である予算画面を揃える時期にある。画像の見出し帯の『取引ライン』は既存ヘッダの『防衛ライン』の誤記と見なし、共通シェル (サイドバー・ヘッダ・月次クローズの進捗・フッタ) は作り直さない。",
+    "essential_purpose": "設定画面を、『集計ルールと復元設定を、安全に管理しますか？』という問いに 1 画面で答え切る場にする。利用者は左の節ナビ (集計ルール・名義・統計・現金上書き・データ・バックアップ、続けてアカウント・その他の管理) で目的の節へ移り、集計ルール (勘定科目と取引先の表記ゆれを 1 つの一覧で正規化後のカテゴリへまとめる) を行ごとに編集・並べ替え・一括削除し、右の『この設定の説明』でそのルールが何に影響し、いつ誰が変えたかを確かめて直前の保存値へ戻せる。名義の表示名・統計の最小月数・現金上書き (空欄と 0 円を区別) を同じ下書きで編集し、下部の保存バーで未保存の件数を見て 1 回で保存する。設定だけを JSON で書き出して別の日に復元でき、毎晩 2:00 の自動バックアップを状態・メモ付きで一覧し、現在の設定と比べてから戻せる。設定の変更で集計・分析・レポートの前提が黙って壊れないこと、戻せない操作が 0 件であることを本質とする。",
+    "background": "現行の /settings (packages/web/src/pages/Settings.tsx、457 行の 1 ファイル) はカードを縦に並べるだけで、節ナビ・説明パネル・保存バーが無く、節ごとに PUT /api/settings を別々に送る。下書き・未保存件数・409 競合の検出が無い。科目正規化マップ (account_norm_map、0000_init.sql) は (user_id, raw, norm) のみで並び順・有効フラグ・更新日時・更新者を持たず、正規化後はテキスト入力である。デザイン (design/FINAL-UI/images/18-settings.png、AUDIT.md『抽象的な分類に寄りすぎ。正規化、名義、最低月数、現金上書き、復元を具体化』) は取引先名の表記ゆれ (スターバックス / スタバ / Starbucks → カフェ・外食) も同じ一覧で扱う。名義の表示名は 4 名義 (事業・配偶者・家族・未設定) の API (GET/PUT /api/settings/owner-labels) があるが編集 UI は家計収支画面にしかない。現金補正 (cash_overrides) は月ごとの入金・支出だけで、空欄は 0 に潰れ、メモ・適用範囲が無く、core のどの集計にも効いていない。JSON 書き出しは取引を含む全データで、復元は HTML 版からの初期移行 (全データ置換、形の検査のみ・サイズ上限なし) しかない。夜間バックアップ (cron 0 18 * * * = JST 3:00、R2 backups/YYYY-MM-DD.json、30 日保持) は状態・メモを持たず失敗はログにしか出ない。設定変更の監査記録は無い。",
     "goals": [
       {
         "id": "G1",
-        "text": "/budget を 14-budget.png どおりの画面にする。パンくず『計画 / 予算』、期間タブ (usePeriod の 1年 / 2年 / 3年 / 任意と期間送り)、見出し『予算』と問い『実績に合う予算へ、どこを調整しますか？』と説明文、予算対象 (12 か月の開始月の選択と『来期の12か月の予算を編集できます。』)、KPI 4 枚 (年間収入予算・年間支出予算・予算純収支・防衛ライン余裕と説明の ? )、月次の実績・予算・見通しのグラフ (収入 実績 / 収入 予算 / 支出 実績 / 支出 予算の棒と見通し (収支) の折れ線、実績と見通しの境目の縦線と期間の注記)、今後の見通し (累計収入・累計支出・累計純収支と見通しコメント)、予算一覧 (カテゴリ検索 Ctrl+K・実績から提案・すべてリセット・選択チェック・# ・カテゴリ・前期実績・来期予算・自動提案・差額・見通し・来期予算 (入力))、右の科目パネル (提案の根拠 / 関連データのタブ、自動提案の値と前期差、この値を適用、推奨の根拠、計算の詳細 (前期実績・増減率・計画による調整・季節性補正・推奨値)、月別の実績推移 (過去 12 か月)、主な根拠データ、適用前の値、この行を元に戻す、閉じる)、予算の過不足カテゴリ (支出の増加が見込まれる / 支出の減少が見込まれる のタブと件数、# ・カテゴリ・見通し・差額・要因)、調整によるインパクト (自動提案と比べた年間の支出差・予算純収支・増加要因の科目と注意書き)、下部の保存バー (未保存 N 項目・最終保存時刻と下書きの自動保存・リセット・予算を保存) を、既存のデザイントークン・共通部品 (PageHeader・KpiCard・Button・ConfirmDialog・PeriodPicker) の上に組み、画面専用の部品は pages/budget/ に置く。画像の『AI・統計推奨』は外部推論をしないため『自動提案』と表示する。読込・空 (実績 0 か月)・失敗の各状態を持つ。"
+        "text": "/settings を 18-settings.png どおりの画面にする。パンくず『管理 / 設定』、期間タブ、見出し『設定』と問い『集計ルールと復元設定を、安全に管理しますか？』と説明文、左の節ナビ (集計ルール・名義・統計・現金上書き・データ・バックアップ、続けてアカウント・その他の管理)、集計ルールの表 (チェックボックス・並べ替えハンドル・元の表記・正規化後のカテゴリ select・削除・+ルールを追加)、右の『この設定の説明』(元の表記・正規化後のカテゴリ・影響するもの・最終更新と更新者・このルールを元に戻す・設定のヒント)、名義・統計・現金上書き・データ (4 種の出力)・復元・バックアップの各節、下部の保存バー (未保存 N 項目・変更をリセット・設定を保存) を描く。375px 幅でも崩れない。"
       },
       {
         "id": "G2",
-        "text": "予算画面の数値を core の純関数 1 か所 (budget-screen) から導く。前期実績は選択した実績期間の科目別合計を 12 か月あたりに換算した額、自動提案は 前期実績 × (1 + 過去 12 か月の増減率) + 季節性補正 + 計画による調整 を千円に丸めた額で、各項を根拠として返す。見通しは実績のある月は実績、無い月は自動提案の月割 (季節性を反映) とし、今後の見通しの累計・過不足カテゴリ (見通し − 来期予算) ・調整によるインパクト (来期予算 − 自動提案) を同じ関数から出す。KPI は 年間収入予算 = 収入行の来期予算の和、年間支出予算 = 支出行の来期予算の和、予算純収支 = 収入予算 − 支出予算、防衛ライン余裕 = 年間収入予算 − 防衛ライン (既存 core の defenseLine の月額) × 12 とし、一覧の合計・KPI・グラフの年合計が一致することをテストで固定する。収入の行は取込データにある『売上高』と、現行の集計に系列が無いため実績 0 の手入力行として置く『その他収入』、支出の行は事業の経費科目 (data.biz.categories) とする。外部の LLM は呼ばない。"
+        "text": "設定の意味を core の 1 か所で決める。集計ルールは種別 (勘定科目 / 取引先) を持つ 1 つの一覧で、勘定科目は従来どおり取込時に、取引先は集計時に 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類 の順で適用し、照合は NFKC・大小文字を揃えた完全一致、同じ元表記は並び順で優先する。無効の行は効かない。現金上書きは支払い・受け取りそれぞれ空欄=上書きしない / 0=0 円で上書き を区別し、適用範囲 (全期間 / 月指定) で core の現金集計に実際に効かせる。名義 4 つの表示名と統計の最小月数 (既定 6、範囲 3〜24) を同じ core の規則で検証する。"
       },
       {
         "id": "G3",
-        "text": "予算を予算対象の 12 か月 (開始月 YYYY-MM) ごとに科目別の年額・計画による調整額・調整の理由で保存する表を D1 に追加のみの migration で設け、同じ期間は上書きし版は持たない。保存済みの行が無い期間を開いたときは既存 budgets の月額 × 12 を初期値として示す (既存行は書き換えない)。GET /api/budget-plans?start=YYYY-MM と PUT /api/budget-plans を設け、PUT は canonicalMutationFence に登録する。診断の予算カバー率と予算の着地見込みなど既存の budgets の読み手は、今月を含む予算対象の年額 ÷ 12 を返す core の関数を経由して同じ値を読む。"
+        "text": "設定を安全に保存する。全節の編集を 1 つの下書きに集め、未保存の件数を数え、localStorage へ自動保存・復元し、リセットと離脱の前に確認する。保存は baseSavedAt つきの 1 回の PUT で、他所の更新と競合したら 409 で上書きを防ぐ。設定の変更は追記のみの変更履歴表に 変更前・変更後・更新者・日時 を残し、右パネルの最終更新・更新者と『このルールを元に戻す』(直前の保存値を下書きへ戻す) はそこから導く。復元や移行で入った値の更新者は『システム』とする。"
       },
       {
         "id": "G4",
-        "text": "予算の編集作業を失わない。来期予算の入力・この値を適用・実績から提案 (全行に自動提案を入れる)・計画による調整の入力は下書きとして端末の localStorage に予算対象の期間単位で自動保存し、下書きを自動保存した時刻と最終保存時刻を示し、保存に成功したら消し、次回に復元できる。未保存の項目数を保存バーに出し、この行を元に戻す (保存済みの値へ) ・すべてリセット / リセット (全行を保存済みの値へ、確認つき) を持ち、未保存のまま離れるときは確認する。"
+        "text": "設定を持ち出し・戻せるようにする。設定のエクスポートは集計ルール・名義・統計・現金上書きだけを版番号つき JSON で出し、復元は同じ形だけを受ける (厳密な形の検証・サイズ上限・差分プレビューと確認・復元直前に現在の設定を自動退避)。取引は消えない。マトリクス CSV・取引 CSV・レポート HTML は選択中の期間で出す。自動バックアップは毎日 JST 2:00 に実行し、各回に 状態 (成功 / 失敗)・メモ・設定部分の要約 を持たせて失敗も一覧に出し、『比較』でその日の設定と現在の設定の差分を見てから『復元』できる。"
       },
       {
         "id": "G5",
-        "text": "予算の数値が他画面とずれない。ヘッダの防衛ラインと防衛ライン余裕は同じ defenseLine、診断の予算カバー率と予算画面の設定済み科目は同じ予算の読み出し関数から導き、既存の診断・概要・家計収支・総収支・決算書の数値テストが緑のままである。"
+        "text": "既存のデータと安全性を壊さない。migration は追加のみで既存行の書き換えは 0 件、既存の設定値は初回に同じ意味で引き継ぐ。設定系の変更 API は認証・パスワード変更強制・スキーマ確認・canonicalMutationFence の内側に置き、公開向けの入力検証 (詳細を外に出さない) と本文サイズ上限を掛ける。外部送信は 0 件で、画像に無い既存の設定機能 (パスワード変更・利用者管理・名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・HTML 版からの初期移行) は 1 つも消さない。"
       }
     ],
     "objectives": [
       {
         "id": "O1",
-        "text": "予算画面が画像の全構成要素を描画する。",
+        "text": "設定画面が画像の全構成要素を描画する。",
         "serves": [
           "G1"
         ],
         "serves_goals": [
           "G1"
         ],
-        "measure": "DOM テストで、パンくず・期間タブ・問いの見出し・予算対象・KPI 4 枚・月次グラフ (凡例 5 種と境目)・今後の見通し・予算一覧の全列と操作・科目パネルの 2 タブと全欄・過不足カテゴリの 2 タブ・調整によるインパクト・保存バーが描画され、『AI』の語が無く『自動提案』がある。読込・空・失敗の状態テストが緑である。"
+        "measure": "DOM テストで、パンくず・期間タブ・問いの見出し・節ナビ 8 項目・集計ルール表の全列と操作・説明パネルの全欄・名義 4 欄・統計・現金上書き 2 行・出力 4 種・復元・バックアップ表 (日付・サイズ・ステータス・メモ・比較・復元)・保存バーが描画され、読込・空・失敗の状態テストが緑である。375px の画面で横スクロールは表の容器の中だけである。"
       },
       {
         "id": "O2",
-        "text": "KPI・一覧・グラフ・見通しの数値が core の 1 か所から出て互いに一致する。",
+        "text": "集計ルールと現金上書きの意味が core の純関数 1 か所で決まり、画面・API・集計が同じ結果を出す。",
         "serves": [
-          "G2",
-          "G5"
+          "G2"
         ],
         "serves_goals": [
-          "G2",
-          "G5"
+          "G2"
         ],
-        "measure": "core の単体テストで、同じ Dataset・実績期間・予算対象に対し 年間収入予算 + (−年間支出予算) = 予算純収支、一覧の来期予算の和 = KPI、グラフの月次予算の年合計 = KPI、防衛ライン余裕 = 年間収入予算 − defenseLine().line × 12、自動提案 = 千円丸め(前期実績 × (1 + 増減率) + 季節性補正 + 計画による調整) の各項、過不足カテゴリの差額 = 見通し − 来期予算、調整によるインパクト = Σ(来期予算 − 自動提案) が固定される。"
+        "measure": "core の単体テストで、取引先ルールの優先順位 (手動 > 仕分けルール > 集計ルール > 自動)・NFKC 照合・並び順優先・無効行の不適用、現金上書きの 空欄 / 0 / 全期間 / 月指定 の 4 通りが期待値どおりで、既存の勘定科目正規化の結果が変わらない (回帰 0 件)。"
       },
       {
         "id": "O3",
-        "text": "予算が期間ごとに保存され、既存の読み手が同じ値を読む。",
+        "text": "保存が 1 回にまとまり、競合と取り消しが安全に扱える。",
         "serves": [
-          "G3",
-          "G5"
+          "G3"
         ],
         "serves_goals": [
-          "G3",
-          "G5"
+          "G3"
         ],
-        "measure": "API 統合テストで、PUT が期間ごとに保存し同じ期間は上書きされ、未認証 401・フェンス違反の拒否・不正値の 400 を確かめる。migration が既存行を 1 行も書き換えないことを検査し、保存行の無い期間で既存月額 × 12 が初期値になること、診断の予算カバー率が新しい表の値から出ることを確かめる。"
+        "measure": "API 結合テストで、古い baseSavedAt の PUT が 409 を返して行が変わらず、保存ごとに変更履歴が追記され (更新・削除は 0 件)、『元に戻す』が直前の保存値を返す。DOM テストで未保存件数・下書きの復元・リセットと離脱の確認が動く。"
       },
       {
         "id": "O4",
-        "text": "編集中の作業が失われない。",
+        "text": "設定の書き出し・復元・バックアップが安全に往復する。",
         "serves": [
           "G4"
         ],
         "serves_goals": [
           "G4"
         ],
-        "measure": "DOM テストで下書きの自動保存・復元・保存成功での消去・未保存 N 項目の件数・この行を元に戻す・すべてリセットの確認・離脱確認を確かめる。"
+        "measure": "書き出した JSON を復元すると設定が一致し取引件数は不変、形の違う JSON・上限超過・版違いは 4xx で拒否され何も変わらない。復元前の自動退避が 1 件増える。scheduled のテストで 2:00 の実行が状態つきで保存され、失敗も一覧に出る。比較が差分を返す。"
+      },
+      {
+        "id": "O5",
+        "text": "既存データと安全性の回帰が 0 件である。",
+        "serves": [
+          "G5"
+        ],
+        "serves_goals": [
+          "G5"
+        ],
+        "measure": "migration が追加のみで既存行の書き換え 0 件、既存の設定値が初回に引き継がれる。設定系の新 API が CANONICAL_MUTATION_ROUTES に登録され、未認証 401・本文上限超過 413・不正入力で詳細を返さない。外部送信 0 件。既存の設定機能の DOM テストが引き続き緑。"
       }
     ],
     "success_criteria": [
-      "S1 (G1): /budget で 14-budget.png の構成要素がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件である。実績 0 か月で空状態になる。『AI』の表示が 0 件である。",
-      "S2 (G2): 同じ入力で KPI・一覧の合計・グラフの年合計・見通しの累計が一致し、自動提案の各項 (前期実績・増減率・季節性補正・計画による調整) が根拠として表示される値と一致する。外部送信が 0 件である。",
-      "S3 (G3): 予算が予算対象の期間ごとに D1 に残り、migration は追加のみで既存行の書き換えが 0 件である。保存行の無い期間では既存月額 × 12 が初期値になる。",
-      "S4 (G4): 下書きが画面の再読込後に復元でき、保存成功で消え、未保存のまま離れると確認が出る。",
-      "S5 (G5): 防衛ライン・予算カバー率が他画面と同じ関数から出て、既存の診断・概要・家計収支・総収支・決算書・明細仕分けの数値テストが緑のまま、pnpm lint・typecheck・初期 JS 予算を CI で通す。既知の逸脱・未実施・一部適合は受入 PASS に数えない。"
+      "S1 (G1): /settings で 18-settings.png の構成要素がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件である。375px で崩れない。",
+      "S2 (G2): 同じ入力で画面の説明パネルの『影響するもの』・集計結果・エクスポートが同じ core の関数から出る。取引先ルールの優先順位と現金上書きの空欄 / 0 の区別がテストで固定される。既存の勘定科目正規化の結果の回帰が 0 件である。",
+      "S3 (G3): 全節の変更が 1 回の保存で確定し、競合は 409 で検出され、変更履歴は追記のみで、『元に戻す』は直前の保存値に戻る。",
+      "S4 (G4): 設定のみの JSON の書き出し→復元で設定が一致し取引は不変、不正な JSON は何も変えずに拒否される。自動バックアップが JST 2:00 に状態つきで残り、比較と復元ができる。",
+      "S5 (G5): migration は追加のみで既存行の書き換え 0 件、外部送信 0 件、画像外の既存設定機能は 1 つも消えない。verify:full が緑である。"
     ],
     "stakeholders": [
-      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 月次クローズを終えたあと、過去の実績をもとに来期 12 か月の事業の予算を立て、自動提案の根拠を確かめながら自分の計画 (採用・値上げ・広告など) を加えて調整し、どの科目が予算を超えそうか・その調整で年間の手元がどう変わるかを保存前に知りたい。",
-      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 予算・自動提案・見通し・防衛ライン余裕の定義が core の純関数 1 か所と docs・テストで固定され、予算画面・診断・ヘッダの数値がずれないこと。"
+      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 取込のたびに増える取引先の表記ゆれや勘定科目の違いを 1 か所でまとめ、名義の呼び方・分析の最小月数・現金の扱いを決め、その設定を壊しても前日の状態や書き出したファイルから確実に戻したい。どの設定が何に効いているかを変更前に知りたい。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 集計ルールの適用順・現金上書きの意味・設定の書き出し形式が core の純関数と docs・テストで 1 か所に固定され、設定画面・集計・バックアップの解釈がずれないこと。"
     ],
     "scope": {
       "in": [
-        "予算画面 (14-budget.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと pages/budget/ 配下への分割",
-        "core の予算画面の算出 (前期実績・自動提案と根拠の内訳・見通し・KPI・過不足カテゴリ・調整によるインパクト) の一本化と、既存 budgets の読み手の参照先の統一",
-        "予算対象の期間別の年額表 (計画による調整額と理由を含む) の追加のみの migration と GET / PUT API、canonicalMutationFence への登録",
-        "下書きの localStorage 自動保存・復元・離脱確認・未保存件数・行単位 / 全体のリセット",
-        "docs (予算画面の設計判断・算出規則の正本) とテスト (core 単体・API 統合・DOM・描画確認)"
+        "設定画面 (18-settings.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと pages/settings/ 配下への分割、節ナビ・説明パネル・保存バー",
+        "集計ルール (勘定科目 / 取引先の種別・並び順・有効・更新日時・更新者) の追加のみの migration と、取引先ルールの集計時適用を core に置くこと",
+        "現金上書き (支払い / 受け取り・空欄と 0 の区別・適用範囲・メモ) の追加のみの migration と core の現金集計への反映",
+        "名義 4 つの表示名を設定画面から編集 (既存 API と core の検証を共有)",
+        "設定画面の下書き・未保存件数・自動保存・リセットと離脱の確認・baseSavedAt による 409",
+        "設定の変更履歴表 (追記のみ) と、説明パネルの最終更新・更新者・元に戻す",
+        "設定のみの版番号つき JSON の書き出し・復元 (厳密な検証・サイズ上限・差分プレビュー・復元前の自動退避)、出力 3 種の期間連動",
+        "夜間バックアップの JST 2:00 への変更、状態・メモ・設定要約の保存、失敗の一覧表示、比較",
+        "画像外の既存設定機能を『アカウント』『その他の管理』の節として残すこと",
+        "system-spec / specs / architecture / features / tasks / docs への反映"
       ],
       "out": [
-        "予算の版管理・担当の表現 (AUDIT.md の指摘どおり除く)",
-        "外部 LLM による推奨・画像の『従業員数』『類似企業の業界中央値』など取込データに無い外部データの取得",
-        "個人 (家計) の予算。今回の予算は事業の収入と経費科目を対象とする",
-        "共通シェル (サイドバー・ヘッダ・月次クローズの進捗・フッタ・改善を送る) の作り直し",
-        "トレードオフ画面の変更",
-        "web 以外の専用アプリ (対象は web のみ)"
+        "取引データそのものの復元形式の変更 (HTML 版からの初期移行は現状のまま『その他の管理』に残す)",
+        "既存の仕分けルール・ベンダー記憶の意味の変更",
+        "共通シェル (サイドバー・ヘッダ・フッタ) の作り直し",
+        "外部 LLM・外部サービスへの送信",
+        "複数テナント化、web 以外の専用アプリ",
+        "バックアップの保持期間 (30 日) の変更"
       ]
     },
     "constraints": [
-      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。算出は core に置き api/web へ重複実装しない。",
-      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、共通部品 (PageHeader・KpiCard・Button・ConfirmDialog・PeriodPicker) と usePeriod を使う。画面専用の部品は pages/budget/ に置く。",
-      "C3 データ: D1 の migration は追加のみで既存行を書き換えない。既存 budgets 表は残す。変更系 API は canonicalMutationFence の内側に置く。",
-      "C4 秘匿: 外部 LLM を呼ばず、取込データを外部へ送信しない。",
-      "C5 性能: 初期 JS 予算 (check-initial-js-budget) を超えない。グラフは既存のグラフ実装に揃える。"
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle と R2、web は React 18 + react-router-dom 7 + TanStack Query 5)。算出は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、共通部品 (PageHeader・Button・ConfirmDialog・PeriodPicker・SelectionCheckbox・DataTable・CategoryPicker) を使う。",
+      "C3 データ: migration は追加のみで 0050 の次の番号から。既存行の書き換えはしない。schema-guard の EXPECTED_D1_MIGRATION を合わせる。",
+      "C4 安全: 設定系の変更 API は canonicalMutationFence に登録し、公開向け入力検証 (publicJsonValidator) と本文サイズ上限を掛ける。外部送信 0 件。",
+      "C5 運用: 単一テナント (TENANT_ID=default) の前提を変えない。cron の変更は wrangler.jsonc の 1 行で、R2 の保持 30 日は据え置く。"
     ],
     "concrete_intents": [
       {
         "id": "I1",
-        "text": "Budget.tsx を pages/budget/ 配下へ分割し、見出し・期間タブ・予算対象・KPI 4 枚・月次グラフ・今後の見通し・予算一覧・科目パネル・過不足カテゴリ・調整によるインパクト・保存バーの構成に作り直す。期間タブを 2年 にすると前期実績と自動提案が過去 2 年の実績から計算し直される。",
+        "text": "Settings.tsx を pages/settings/ 配下へ分割し、見出し・期間タブ・節ナビ・各節・説明パネル・保存バーの構成に作り直す。画像外の既存機能はアカウント / その他の管理の節へ移す。",
         "serves": [
           "G1",
-          "G2"
+          "G5"
         ]
       },
       {
         "id": "I2",
-        "text": "core に予算画面の算出 (仮称 budgetScreen) を新設し、前期実績・自動提案と根拠の内訳 (前期実績・増減率・季節性補正・計画による調整)・見通し・KPI・過不足カテゴリ・調整によるインパクトを 1 か所で出す。人件費の行を選ぶと、右のパネルでその内訳から推奨値が組み上がる様子と過去 12 か月の月別実績が見える。",
+        "text": "core に設定画面の算出 (仮称 settingsScreen) と、集計ルールの照合・適用 (勘定科目 / 取引先)・現金上書きの解決・設定 JSON の検証と差分を新設する。",
         "serves": [
-          "G2"
+          "G2",
+          "G4"
         ]
       },
       {
         "id": "I3",
-        "text": "予算対象の期間別の年額表を追加のみの migration で設け、GET / PUT /api/budget-plans と fence 登録を行い、診断の予算カバー率など既存の budgets の読み手を同じ読み出し関数へ寄せる。",
+        "text": "集計ルールと現金上書きの列追加・変更履歴表の追加のみの migration と、GET / PUT の設定 API (baseSavedAt つき・409・変更履歴の追記) を作り、canonicalMutationFence に登録する。",
         "serves": [
+          "G2",
           "G3",
           "G5"
         ]
       },
       {
         "id": "I4",
-        "text": "来期予算を自動提案より下げると、調整によるインパクトに年間の支出抑制額と予算純収支が即座に出る。入力の途中で別画面へ移って戻ると、下書きが復元され未保存の項目数が出る。",
+        "text": "下書きの localStorage 自動保存・復元・未保存件数・リセットと離脱の確認を予算画面の先例 (draft.ts・BudgetSaveBar) にならって作る。",
         "serves": [
-          "G2",
+          "G3"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "設定のみの JSON 書き出し・復元 API (版番号・厳密検証・サイズ上限・差分プレビュー・復元前退避) と、出力 3 種の期間連動を作る。",
+        "serves": [
+          "G4",
+          "G5"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "夜間バックアップを JST 2:00 にし、R2 の customMetadata に状態・メモ・設定要約を持たせ、失敗も記録する。一覧 API に状態・メモ、比較 API に差分を足す。",
+        "serves": [
           "G4"
         ]
       }
     ],
     "confirmed": true,
-    "approval_ref": "appr-foundation-budget-001"
+    "approval_ref": "appr-foundation-settings-001"
   },
-  "decisions": [
-    {
-      "id": "dec-budget-storage-unit",
-      "question": "予算の保存単位をどうするか (期間を持たない科目別の月額 1 つか、予算対象の 12 か月ごとの年額か)。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G3",
-        "G5"
-      ],
-      "options": [
-        {
-          "id": "opt-period-annual-table",
-          "label": "期間別の年額表を追加",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "D1 の新しい表 1 つで無料枠内。追加のみの migration 1 本と読み出し関数の保守費。"
-          },
-          "free_tier_limits": "D1 Free: rows read 5 million / day、rows written 100,000 / day、storage 5 GB。",
-          "goal_fit": "画像の予算対象 12 か月・年額入力と一致し、既存の月額を初期値に引き継げる。",
-          "security_fit": "利用者で区切る主キーと zod 検証で足りる。新しい攻撃面は増えない。",
-          "pros": [
-            "画像と一致する",
-            "既存行を書き換えない"
-          ],
-          "cons": [
-            "既存の読み手を読み出し関数へ寄せる改修が要る"
-          ],
-          "risks": [
-            "読み手の寄せ漏れで値がずれる。テストで固定する"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "低",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/platform/pricing/",
-            "https://developers.cloudflare.com/d1/reference/migrations/"
-          ]
-        },
-        {
-          "id": "opt-keep-monthly",
-          "label": "既存の月額のまま",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "改修が最小で費用は無い。"
-          },
-          "free_tier_limits": "D1 Free: rows read 5 million / day、rows written 100,000 / day、storage 5 GB。",
-          "goal_fit": "期間を持てず、画像の予算対象と年額入力を満たせない。",
-          "security_fit": "変化なし。",
-          "pros": [
-            "改修が小さい"
-          ],
-          "cons": [
-            "画像と一致しない",
-            "収入の予算を持てない"
-          ],
-          "risks": [
-            "来期と今期の予算を区別できない"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "低",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/platform/pricing/"
-          ]
-        },
-        {
-          "id": "opt-versioned-plans",
-          "label": "版つきの予算計画",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "表 2 つで無料枠内。版の比較・復元の UI と運用費が加わる。"
-          },
-          "free_tier_limits": "D1 Free: rows read 5 million / day、rows written 100,000 / day、storage 5 GB。",
-          "goal_fit": "デザイン監査 (AUDIT.md) が除くとした版管理を再導入してしまう。",
-          "security_fit": "版の削除と保持の規則が新たに要る。",
-          "pros": [
-            "過去の計画を辿れる"
-          ],
-          "cons": [
-            "監査の指摘に反する",
-            "画面が複雑になる"
-          ],
-          "risks": [
-            "版の取り違え"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "中",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/platform/pricing/",
-            "https://developers.cloudflare.com/d1/reference/migrations/"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-period-annual-table",
-        "rationale": "画像の予算対象と年額入力を満たし、既存行を書き換えずに月額を引き継げる唯一の案で、監査が除いた版管理も持ち込まない。",
-        "caveats": [
-          "既存の budgets の読み手を 1 つの読み出し関数へ寄せる"
-        ],
-        "confidence": "high",
-        "comparison_basis": {
-          "goal_fit": "期間別の年額表だけが G3 を満たす。",
-          "tco": "3 案とも無料枠内で、版つき案だけが UI と運用の費用を増やす。",
-          "security": "3 案とも利用者で区切れば差は小さい。",
-          "operations": "版つき案だけが保持と削除の運用を要する。",
-          "lock_in": "3 案とも D1 の標準的な表で差が無い。"
-        },
-        "latest_checked_at": "2026-09-21T13:35:48Z"
-      },
-      "user_decision": {
-        "option_id": "opt-period-annual-table",
-        "confirmed_at": "2026-09-21T13:26:07Z",
-        "note": "利用者が推奨案『期間別の年額表を追加』を選択 (qa-budget-decision-001)。confirmed_at は回答の実測時刻。"
-      }
-    },
-    {
-      "id": "dec-budget-income-scope",
-      "question": "収入 (売上高・その他収入) も予算の対象にするか。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G1",
-        "G2"
-      ],
-      "options": [
-        {
-          "id": "opt-include-income",
-          "label": "収入も予算にする",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "行の種別を 1 列足すだけで無料枠内。"
-          },
-          "free_tier_limits": "D1 Free: rows read 5 million / day、rows written 100,000 / day、storage 5 GB。",
-          "goal_fit": "画像の売上高・その他収入の行と、年間収入予算・予算純収支・防衛ライン余裕の KPI を満たす。",
-          "security_fit": "新しい攻撃面は無い。",
-          "pros": [
-            "画像と一致する",
-            "純収支と防衛ライン余裕を出せる"
-          ],
-          "cons": [
-            "その他収入は現行の集計に系列が無く実績 0 の手入力行になる"
-          ],
-          "risks": [
-            "その他収入の実績が 0 と誤解される。注記で補う"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "低",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/platform/pricing/"
-          ]
-        },
-        {
-          "id": "opt-expense-only",
-          "label": "支出だけ",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "改修が小さく費用は無い。"
-          },
-          "free_tier_limits": "D1 Free: rows read 5 million / day、rows written 100,000 / day、storage 5 GB。",
-          "goal_fit": "年間収入予算・予算純収支・防衛ライン余裕の 3 枚を出せない。",
-          "security_fit": "変化なし。",
-          "pros": [
-            "改修が小さい"
-          ],
-          "cons": [
-            "画像の KPI 3 枚を欠く"
-          ],
-          "risks": [
-            "画面の問いに答え切れない"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "低",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/d1/platform/pricing/"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-include-income",
-        "rationale": "KPI 4 枚のうち 3 枚が収入予算に依存し、支出だけでは画面の問いに答え切れない。",
-        "caveats": [
-          "その他収入は実績 0 の手入力行であることを画面に示す"
-        ],
-        "confidence": "high",
-        "comparison_basis": {
-          "goal_fit": "収入を含む案だけが G1・G2 を満たす。",
-          "tco": "どちらも無料枠内。",
-          "security": "差は無い。",
-          "operations": "差は小さい。",
-          "lock_in": "差は無い。"
-        },
-        "latest_checked_at": "2026-09-21T13:35:48Z"
-      },
-      "user_decision": {
-        "option_id": "opt-include-income",
-        "confirmed_at": "2026-09-21T13:26:07Z",
-        "note": "利用者が推奨案『収入も予算にする』を選択 (qa-budget-decision-002)。confirmed_at は回答の実測時刻。"
-      }
-    },
-    {
-      "id": "dec-budget-suggestion-source",
-      "question": "『AI・統計推奨』の値 (自動提案) をどう出すか。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G2"
-      ],
-      "options": [
-        {
-          "id": "opt-deterministic",
-          "label": "決定論のみ",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "Worker 内の計算だけで無料枠内。"
-          },
-          "free_tier_limits": "Workers Free: CPU 10 ms / request。",
-          "goal_fit": "前期実績・増減率・季節性補正の根拠を出せるが、取込データに無い事業計画は反映できない。",
-          "security_fit": "外部送信が無い。",
-          "pros": [
-            "再現できる",
-            "外部送信なし"
-          ],
-          "cons": [
-            "事業計画を反映できない"
-          ],
-          "risks": [
-            "画像の『事業計画による増加』を出せない"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "低",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/workers/platform/limits/"
-          ]
-        },
-        {
-          "id": "opt-deterministic-with-plan",
-          "label": "決定論＋計画調整の入力",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "Worker 内の計算と D1 の列 2 つで無料枠内。"
-          },
-          "free_tier_limits": "D1 Free: rows read 5 million / day、rows written 100,000 / day、storage 5 GB。 Workers Free: CPU 10 ms / request。",
-          "goal_fit": "決定論の根拠に加え、利用者が入力した計画による調整額と理由を推奨値と根拠に出せ、画像の根拠欄を満たす。",
-          "security_fit": "外部送信が無い。理由の文字列は長さを制限してエスケープする。",
-          "pros": [
-            "画像の根拠欄を満たす",
-            "外部送信なし"
-          ],
-          "cons": [
-            "入力欄が増える"
-          ],
-          "risks": [
-            "理由の文字列に機微情報が入る。外部へ送らない"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "低",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/workers/platform/limits/",
-            "https://developers.cloudflare.com/d1/platform/pricing/"
-          ]
-        },
-        {
-          "id": "opt-external-llm",
-          "label": "外部 LLM で提案",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "month",
-            "tco": "API 課金が従量で発生し、無料枠を超える。"
-          },
-          "free_tier_limits": "外部 LLM API の無料枠は用途を満たさない。",
-          "goal_fit": "文章の根拠を作れるが、フッタの『取込データは外部送信しません』に反する。",
-          "security_fit": "取込データの外部送信が発生する。",
-          "pros": [
-            "文章が柔らかい"
-          ],
-          "cons": [
-            "外部送信",
-            "再現できない"
-          ],
-          "risks": [
-            "情報漏えい"
-          ],
-          "lock_in": "高 (特定 API に依存)",
-          "ops_burden": "中",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/workers/platform/limits/"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-deterministic",
-        "rationale": "外部送信をせずに再現できる根拠を出せ、入力欄を増やさずに済む。",
-        "caveats": [
-          "事業計画は根拠に出せないことを画面に示す"
-        ],
-        "confidence": "medium",
-        "comparison_basis": {
-          "goal_fit": "決定論の 2 案が G2 を満たし、計画調整つきは画像の根拠欄にも一致する。",
-          "tco": "決定論の 2 案は無料枠内、外部 LLM は従量課金。",
-          "security": "外部 LLM だけが外部送信を伴う。",
-          "operations": "外部 LLM だけが API の監視を要する。",
-          "lock_in": "外部 LLM だけが特定 API に依存する。"
-        },
-        "latest_checked_at": "2026-09-21T13:35:48Z"
-      },
-      "user_decision": {
-        "option_id": "opt-deterministic-with-plan",
-        "confirmed_at": "2026-09-21T13:26:07Z",
-        "note": "利用者は推奨の『決定論のみ』ではなく『決定論＋計画調整の入力』を選択 (qa-budget-decision-003)。confirmed_at は回答の実測時刻。"
-      }
-    },
-    {
-      "id": "dec-budget-defense-margin",
-      "question": "KPI の『防衛ライン余裕』を何で数えるか。",
-      "status": "confirmed",
-      "serves_goals": [
-        "G2",
-        "G5"
-      ],
-      "options": [
-        {
-          "id": "opt-income-minus-line",
-          "label": "収入予算 − 防衛ライン × 12",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "計算だけで費用は無い。"
-          },
-          "free_tier_limits": "外部資源を使わない。",
-          "goal_fit": "ヘッダと同じ defenseLine を使い、年間収入予算が 1 年の防衛ラインをどれだけ上回るかを示す。",
-          "security_fit": "影響なし。",
-          "pros": [
-            "ヘッダと一致する",
-            "定義が短い"
-          ],
-          "cons": [
-            "支出予算を見ない"
-          ],
-          "risks": [
-            "支出予算が防衛ラインを超えても余裕が正に見える。予算純収支と並べて補う"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "低",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/workers/platform/limits/"
-          ]
-        },
-        {
-          "id": "opt-net-minus-line",
-          "label": "予算純収支 − 防衛ライン × 12",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "計算だけで費用は無い。"
-          },
-          "free_tier_limits": "外部資源を使わない。",
-          "goal_fit": "支出予算を二重に引く形になり、定義が直感とずれる。",
-          "security_fit": "影響なし。",
-          "pros": [
-            "保守的な値になる"
-          ],
-          "cons": [
-            "支出を二重に数える"
-          ],
-          "risks": [
-            "値が常に小さく出て誤解される"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "低",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/workers/platform/limits/"
-          ]
-        },
-        {
-          "id": "opt-income-minus-expense-budget",
-          "label": "収入予算 − 支出予算 (純収支と同じ)",
-          "cost_model": {
-            "category": "free",
-            "amount": 0,
-            "currency": "USD",
-            "billing_period": "none",
-            "tco": "計算だけで費用は無い。"
-          },
-          "free_tier_limits": "外部資源を使わない。",
-          "goal_fit": "予算純収支と同じ値になり、KPI が重複する。",
-          "security_fit": "影響なし。",
-          "pros": [
-            "単純"
-          ],
-          "cons": [
-            "KPI が重複する"
-          ],
-          "risks": [
-            "防衛ラインの意味が失われる"
-          ],
-          "lock_in": "なし",
-          "ops_burden": "低",
-          "evidence_refs": [
-            "https://developers.cloudflare.com/workers/platform/limits/"
-          ]
-        }
-      ],
-      "recommendation": {
-        "option_id": "opt-income-minus-line",
-        "rationale": "ヘッダの防衛ラインと同じ関数を使い、予算純収支と重複しない意味を持つ。",
-        "caveats": [
-          "? の説明に式を示す"
-        ],
-        "confidence": "high",
-        "comparison_basis": {
-          "goal_fit": "収入予算 − 防衛ライン × 12 だけが G5 の同一関数と KPI の非重複を両立する。",
-          "tco": "差は無い。",
-          "security": "差は無い。",
-          "operations": "差は無い。",
-          "lock_in": "差は無い。"
-        },
-        "latest_checked_at": "2026-09-21T13:35:48Z"
-      },
-      "user_decision": {
-        "option_id": "opt-income-minus-line",
-        "confirmed_at": "2026-09-21T13:26:07Z",
-        "note": "利用者が推奨案『収入予算−防衛ライン×12』を選択 (qa-budget-decision-004)。confirmed_at は回答の実測時刻。"
-      }
-    }
-  ],
+  "decisions": [],
   "knowledge_candidates": [],
   "design_applications": {
     "ui-ux": {
-      "text": "Visual hierarchy と情報優先度の card を予算画面に適用した。問い『どこを調整しますか？』への答えは KPI 4 枚と過不足カテゴリなので最上段と一覧の下に置き、最も頻度の高い『1 科目を開いて根拠を読み来期予算を入力する』を予算一覧と右の科目パネルの往復に集めた。失敗コストが高いすべてリセットは確認を挟み、未保存の項目数を保存バーで常に見せる。画像の『AI・統計推奨』は外部推論をしないため『自動提案』へ加工して残した。",
-      "recorded_at": "2026-09-21T13:35:48Z",
+      "text": "Information Design card を適用した。文脈先行: 利用者は取込のたびに増える表記ゆれを直し、失敗すると集計が黙って変わる。優先順位の明示化: task 頻度 × 失敗コストで、保存バーの未保存件数 > 集計ルールの表 > 復元・バックアップ > 他の節と順位を置いた。グループ化と近接: 画像の 6 節を節ナビで束ね、画像外の既存機能は『アカウント』『その他の管理』へ下げて束を崩さない。加工: 現金上書きの空欄と 0 を凡例の文で言い分け、バックアップの状態を色だけでなく文字のバッジで示す。削減は行わず、画像外の機能を消さない理由 (決定 004) を残した。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "frontend": {
-      "text": "Container / Presentational の分離と view-model の card を予算画面に適用した。取得と保存と下書きは pages/budget の container 1 か所に置き、各部品は view-model.ts が作った表示用の値だけを受け取る。こうすると KPI・一覧・グラフの一致を DOM テストなしに core と view-model の純関数テストで固定でき、core の算出を web で書き直す余地が無くなる。",
-      "recorded_at": "2026-09-21T13:35:48Z",
+      "text": "Clean Architecture card と Information Design card を適用した。Dependency Rule: 未保存件数・影響するもの・空欄 / 0 の表記は core の純関数が決め、web はその結果を描くだけにして数え方を持たない。Boundary data: 画面へ渡す値は API の応答 (画面用の単純な形) に閉じ、D1 の行の形を持ち込まない。Information Design の加工: 保存値 (null と 0) と表示値 (空欄と『0 円』) を分け、形式の比較選定では集計ルールを表 (その場編集・並べ替え) にした。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "backend": {
-      "text": "Clean Architecture の Dependency Rule を予算画面に適用した。前期実績・自動提案の各項・見通し・過不足・インパクト・KPI は入出力を持たない計算なので core に置き、api の route は zod で受けて D1 から組んだ入力を純関数へ渡し、結果を返すか書くだけにする。既存の予算の読み手も同じ core の読み出し関数を通すため、S5 の『他画面と同じ値』を単体テストで確かめられる。",
-      "recorded_at": "2026-09-21T13:35:48Z",
+      "text": "API Design Patterns・Clean Architecture・DDD の 3 card を適用した。Concurrency and consistency: 全節の保存は baseSavedAt を版として受け、古ければ 409 で何も書かない。Resource and operation semantics: 差分プレビューは読むだけ、復元は書込みと分ける。Dependency Rule: 取引先ルールの照合と現金上書きの解決は入出力を持たないので core に置き、route は D1/R2 から組んだ入力を渡して結果を書くだけにする。DDD の Ubiquitous Language: 『集計ルール』『現金上書き』『元に戻す』を画面・API・テストで同じ語と意味に揃える。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "database": {
-      "text": "Schema evolution の card (expand のみで contract しない) を予算画面に適用した。予算対象ごとの新しい表を足し、既存の budgets 表は読むだけで書き換えない。保存行の無い期間の初期値も読み出し時に月額 × 12 で作るので、C3 の『既存行の書き換え 0 件』を migration 1 本で守れる。",
-      "recorded_at": "2026-09-21T13:35:48Z",
+      "text": "DDD card を適用した。Aggregate: 利用者 1 人の設定 (集計ルール・名義・統計・現金上書き) を 1 回の保存で守る整合性の単位とし、変更と変更履歴の追記を同じ batch に入れる。Domain Event: 変更履歴は『設定が変わった』という過去の事実を追記だけで残し、元に戻すはその事実を読むだけで行を消さない。Entity / Value Object: 集計ルールの行は識別子で追い (元に戻す・更新者)、現金上書きの値は空欄と 0 を区別する値として扱う。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "auth": {
-      "text": "Least privilege と resource ownership の card を予算画面に適用した。新しい表は利用者を主キーの先頭に持たせ、route は WHERE user_id = ? を必ず付ける。他の利用者の予算は存在しないものとして扱い、保存も自分の予算対象の行だけを置き換える。",
-      "recorded_at": "2026-09-21T13:35:48Z",
+      "text": "Secure by Design card を適用した。Least privilege / deny by default: 新しい書込み API はすべて明示登録し、登録漏れが素通りにならないよう『書込みは登録・読むだけは除外』の規則で分けた。Threat modeling: 資産は設定と取引、境界は認証の内側、悪用は他者の更新を上書きすることで、baseSavedAt の 409 がこれを防ぐ。Defense in depth: 認証・パスワード変更強制・スキーマ確認・書込みフェンスの 4 層の内側に置き、1 層の漏れを全体の漏れにしない。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "security": {
-      "text": "OWASP ASVS の入力検証と業務ロジックの card を予算画面に適用した。年額・調整額・理由・開始月を zod で型と範囲を絞り、1 回の保存の行数に上限を置く。予算の保存はフェンスへ登録して取込の洗替えと重ならないようにし、自動提案は外部送信の無い決定論に限る。",
-      "recorded_at": "2026-09-21T13:35:48Z",
+      "text": "Secure by Design card を適用した。Secure defaults: 復元は何も変えずに拒否する側へ倒し、1 つでも不正なら全体を捨てる。Data lifecycle: 設定の書き出しは取引を含めない最小の形にし、復元直前の退避は同じ保持 30 日で消す。Assurance: 形の違う JSON・上限超過・版違いを 4xx で拒否し何も変わらないことを、悪用ケースのテストで確かめる。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "infrastructure": {
-      "text": "Serverless の制約 card (CPU 時間・書込枠) を予算画面に適用した。1 回の保存を 200 行以内の D1 batch に収め、算出は 1 要求の Dataset 読込みの上で完結させて、無料枠の書込 100,000 行 / 日に対して 1 回の操作が数百行に収まる形にした。",
-      "recorded_at": "2026-09-21T13:35:48Z",
+      "text": "本章に引かれる deep knowledge card は無い (resource-map の read_when に infrastructure を含む card が無い)。そのため card の適用は主張せず、上流指針 (Google SRE の operations・reliability) の反映を doctrine の節にだけ記録した。本章の確定内容 (JST 2:00・状態とメモ・失敗の一覧化・保持 30 日据え置き) は決定 007 と C5 から直接来ている。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     },
     "maintenance-ops": {
-      "text": "Test pyramid の card を予算画面に適用した。KPI の式・合計の一致・自動提案の各項は core の純関数テストで大半を固め、api は期間ごとの保存とフェンスと migration の非破壊、web は構成要素と下書きの DOM テストに絞る。旧実装で落ちるテストだけを受入の根拠に数える。",
-      "recorded_at": "2026-09-21T13:35:48Z",
+      "text": "Clean Code card を適用した。Intention-revealing names: 変更履歴・元に戻す・失敗の状態を、画面・API・docs で同じ語にする。Executable examples: 集計ルールの適用順と現金上書きの 4 通り、復元の拒否を、内部構造ではなく観測できる結果としてテストに置く。Continuous refactoring: 457 行の Settings.tsx を節ごとに分け、既存機能のテストを緑のまま小さく移す。",
+      "recorded_at": "2026-09-22T09:45:25Z",
       "basis": "agent-inference"
     }
   },
@@ -1304,82 +1307,82 @@
   "doctrine_applications": {
     "ui-ux": {
       "presentation": {
-        "text": "予算画面では、差額と過不足を色だけで伝えず + / − の符号と『増加』『減少』の文言を併記する形へ反映した (WCAG 2.2 SC 1.4.1)。月次グラフの 4 系列も凡例の文字と棒の並び順で区別し、実績と見通しの境目は縦線と期間の注記の両方で示す。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面では、画像の並べ替えハンドルに上下移動ボタンを併設してドラッグ無しでも順序を変えられる形へ反映した (WCAG 2.2 SC 2.5.7)。ステータスの『成功』『失敗』『最新』は色だけでなく文字のバッジで示し、空欄と 0 の違いは凡例の文で説明する。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "frontend": {
       "application-architecture": {
-        "text": "予算画面のフロントエンドでは、算出 (KPI・自動提案・見通し) を core に、取得と保存と無効化を container に、整形を view-model.ts に置く三層へ反映した。下書きだけは端末の localStorage に予算対象の期間単位で閉じ、サーバの状態と混ぜないため問い合わせのキャッシュに入れない。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面のフロントエンドでは、全節の編集を 1 つの下書きに集めて 1 回の保存で送る container と、節ごとの表示部品を分ける形へ反映した。下書きは端末の localStorage に利用者単位で閉じ、ログアウトで消し、サーバの状態 (問い合わせのキャッシュ) とは混ぜない。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       },
       "presentation": {
-        "text": "予算画面のフロントエンドでは、部品が色を直書きせず design-tokens.ts のトークンだけを使い、金額・率・符号の文字列は view-model.ts で作ってから描く形へ反映した。グラフは既存と同じ SVG の自前描画に揃え、新しいライブラリで初期 JS を増やさない。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面のフロントエンドでは、未保存があるときだけ beforeunload で離脱確認を出し (独自文言はブラウザが出さないので画面内の保存バーで件数を先に見せる)、アプリ内リンクでは確認ダイアログで同じ判断を求める形へ反映した。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "backend": {
       "application-architecture": {
-        "text": "予算画面では依存方向を core (予算画面の算出・予算の読み出し関数・defenseLine) ← api (画面用の取得・予算の保存) ← web の一方向へ反映した。診断の予算カバー率と着地見込みは予算の読み出し関数を参照し、同じ予算の値を 2 か所で作らない。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面のバックエンドでは、取引先ルールの適用を保存済み明細の書換えではなく集計時の純関数へ置く形へ反映した。ルールを消せば次の集計から元に戻るので、recomputeFromDeals は勘定科目ルールが変わった保存に限る。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       },
       "data-access": {
-        "text": "予算画面の api では、予算の書込みを保存 route に閉じ、core は D1 を知らない予算の行集合と Dataset だけを受け取る形へ反映した。保存と JSON snapshot の無効化を同じ D1 batch に入れ、予算だけ変わってバックアップの指紋が古いままの状態を作らない。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面のバックエンドでは、全節の変更・変更履歴の追記・JSON snapshot の無効化を 1 つの D1 batch にまとめ、baseSavedAt が古ければ 409 で何も書かない形へ反映した。復元は差分プレビューと本適用を分け、本適用の直前に現在の設定を R2 へ退避する。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "database": {
       "data-access": {
-        "text": "予算画面の D1 では、利用者・予算対象の開始月・科目の主キーで、1 期間ぶんの予算を 1 回の読取りで返せる形へ反映した。計画による調整額と理由を同じ行に持たせ、根拠の表示のために別表を結合しない。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面のデータベースでは、集計ルール・現金上書き・変更履歴の 3 表の主キー先頭を利用者にし、読み手は必ず利用者で絞る形へ反映した。既存の account_norm_map と cash_overrides は初回の写しの元として読むだけで、行を消さない。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "予算画面の D1 では、追加のみの migration 1 本に留めて Migrate の失敗時に行の巻き戻しが要らない形へ反映した。新しい表を JSON の書き出しと復元に含め、毎晩のバックアップから予算が戻るようにした。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面のデータベースでは、migration を追加のみにして d1_migrations で二重適用を防ぎ、schema-guard の期待番号を上げる形へ反映した。写しの migration が途中で止まっても旧表は残るので、Deploy の再実行で収束する。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "auth": {
       "authentication": {
-        "text": "予算画面では新しいログイン経路を足さず、既存のセッション Cookie と session_generation による無効化にそのまま乗せる形へ反映した。パスワード変更が必要な利用者は mustChangePasswordFence で予算の保存に届かない。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面の認証では、新しい設定 API をすべて既存のセッション検証とパスワード変更強制の内側に置き、未認証は 401 にする形へ反映した。変更履歴の更新者はセッションの actor から決め、要求本文の値を使わない。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       },
       "security": {
-        "text": "予算画面の認可では、予算の取得と保存の全 SQL を利用者で区切り、利用者 id を要求の本文から受け取らない形へ反映した。ログアウトで端末の予算の下書きも消し、共有端末に他人の入力を残さない。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面の認可では、設定の保存と復元を書込みフェンスへ登録して取込の洗替えと重ならないようにし、復元の権限は既存の /restore と同じに留める形へ反映した (ASVS V8 認可)。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "security": {
       "security": {
-        "text": "予算画面では、予算の保存をフェンスへ登録して取込の洗替えと重ならない形へ反映した (ASVS V11 業務ロジック)。自動提案の算出に外部送信の経路を作らず、端末に残る下書き (計画による調整の理由を含む) は保存成功とログアウトで消す。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面では、復元 JSON の厳密な検証 (未知キー拒否・件数と長さの上限・全か無か) と本文上限 413 を入れ、CSV 出力を RFC 4180 のエスケープとセル先頭の式文字の無害化で守る形へ反映した (ASVS 5.0 V1.2.10・V2 入力検証)。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "infrastructure": {
       "operations": {
-        "text": "予算画面のインフラでは、新しい資源を増やさず既存の Deploy / Migrate の手順 1 本で反映できる形へ反映した。追加のみの migration なので、旧版の Worker が動いている間に新しい表ができても旧画面は影響を受けない。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面のインフラでは、夜間バックアップを JST 2:00 (UTC 17:00) の cron へ移し、各回の成否・メモ・要約を R2 の customMetadata に残して、ログを見なくても画面から運用状態を確かめられる形へ反映した。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "予算画面のインフラでは、予算の保存を 1 期間ぶんの D1 batch 1 回にまとめ、途中で失敗しても前の予算が残る形へ反映した。単独利用のため SLO は定めず、失敗は保存バーの通知と下書きからの再保存で回復させる。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面のインフラでは、失敗した回も失敗マーカーとして残し、復元前の自動退避を別プレフィックスへ置いて保持 30 日で消す形へ反映した。R2 の list は 1000 件ごとに cursor で続きを取る前提で書く。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     },
     "maintenance-ops": {
       "operations": {
-        "text": "予算画面の保守では、画面仕様・設計・設計判断・証跡を既存の作り直しと同じ配置に置き、予算の式 (KPI・自動提案) を変えるときに読む場所を 1 つに絞る形へ反映した。migration の反映は既存の Migrate の手順書に従い、独自の運用手順を足さない。",
-        "recorded_at": "2026-09-21T13:35:48Z",
+        "text": "設定画面の保守運用では、設定の変更を追記のみの履歴で辿れ、バックアップの失敗を画面で知らせ、設定の誤りは D1 全体を上書きせずに設定 JSON の復元か直前値へ戻す手順で直す形へ反映した (障害時の最後の手段として D1 Time Travel を残す)。",
+        "recorded_at": "2026-09-22T08:44:53Z",
         "basis": "agent-inference"
       }
     }

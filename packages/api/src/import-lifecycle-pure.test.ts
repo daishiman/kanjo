@@ -702,6 +702,9 @@ describe('JSON pointer invalidation consumers', () => {
       'account_norm_map',
       'unrecorded_months',
       'cash_overrides',
+      'settings_norm_rules',
+      'settings_cash_overrides',
+      'settings_change_log',
       'sub_vendors',
       'sub_vendor_review_decisions',
       'sub_vendor_exclusions',
@@ -764,6 +767,10 @@ describe('canonical mutation lease predicate', () => {
       // 0050: 予算対象の期間別の年額。復元の write-set に入る
       ['PUT', '/api/budget-plans'],
       ['PUT', '/api/settings'],
+      // 0051〜0053: 設定画面の保存・設定だけの復元 (ファイル/バックアップ)。3 表・名義・統計を 1 回で置き換える
+      ['PUT', '/api/settings/screen'],
+      ['POST', '/api/settings/restore'],
+      ['POST', '/api/backups/2026-09-21/restore'],
       ['POST', '/api/category-options'],
       ['PUT', '/api/category-options'],
       ['DELETE', '/api/category-options'],
@@ -815,6 +822,9 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/imports/diff'],
       // ルールのプレビューも同じく読むだけ。何が変わるかを数えて返す
       ['POST', '/api/rules/preview'],
+      // 設定の復元プレビューは差分を数えて返すだけ。1 件も書き換えない
+      ['POST', '/api/settings/restore/preview'],
+      ['POST', '/api/backups/2026-09-21/restore/preview'],
     ] as const;
     for (const [method, path] of canonical) {
       expect(classifyCanonicalMutation(method, path), `${method} ${path}`).toBe('canonical-mutation');
@@ -842,6 +852,8 @@ describe('canonical mutation lease predicate', () => {
       'routes/reconciliation.ts',
       'routes/saved-filters.ts',
       'routes/settings.ts',
+      'routes/settings-screen.ts',
+      'routes/backups.ts',
       'routes/subs.ts',
       'routes/total-cashflow.ts',
       'routes/vendor-memory.ts',
@@ -878,6 +890,11 @@ describe('canonical mutation lease predicate', () => {
       'DELETE /api/category-options',
       'PUT /api/classification',
       'PUT /api/settings/owner-labels',
+      'PUT /api/settings/screen',
+      'POST /api/settings/restore/preview',
+      'POST /api/settings/restore',
+      'POST /api/backups/:date/restore/preview',
+      'POST /api/backups/:date/restore',
       'POST /api/sub-vendors',
       'PUT /api/sub-vendors/:id',
       'POST /api/sub-vendors/:id/aliases',

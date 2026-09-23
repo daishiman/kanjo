@@ -1,36 +1,202 @@
 {
-  "evaluator": {"name": "assign-system-spec-completeness-evaluator", "version": "0.1.0", "context": "fork"},
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
   "spec_dir": "system-spec",
   "verdict": "PASS",
   "aspects": {
-    "foundation_trace": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "U1-U9 はどれも値で確定し、N/A 埋めは無い (U1 = 予算画面の問い『実績に合う予算へ、どこを調整しますか？』に 1 画面で答え切る)。approval_ref appr-foundation-budget-001 は approval_log に実在する。G1-G5 → O1-O4 → I1-I4 → 8 章の web セルの trace に dangling は無い。validate-coverage-matrix --require-foundation と validate-spec-doc-sync はどちらも exit0 で、前サイクル (明細仕分け) の語は本文に残っていない。ただし C06 の軸 5 (上位概念の遡及性) で medium が 1 件ある。scope.out のうち 3 項目 (個人の予算・共通シェル・トレードオフ画面) と、background の『取引ライン = 防衛ラインの誤記』という解釈は、個別の qa を持たず一括承認だけに接地している。", "evidence": ["validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit0", "validate-spec-doc-sync.py exit0", "approval_log[0].id=appr-foundation-budget-001 (13:32:28Z) で範囲外 7 項目を列挙", "C06 軸5 finding-04 (medium)"]},
-    "decision_guidance": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "decisions 4 件はどれも 2〜3 案と無料案を持つ。goal_fit・tco・security・operations・lock_in の comparison_basis、推奨理由、注意点、公式の evidence が揃い、user_decision は利用者の選択 (qa-budget-decision-001〜004、basis=user-decision) に紐づいている。dec-budget-suggestion-source では利用者が推奨ではない案を選んでおり、AI の推奨だけで confirmed にした決定は無い。ただし medium が 2 件ある。(1) 公式根拠の確認 (13:35:48Z) が利用者の決定 (13:26:07Z) より後で、注記が無い。3 サイクル続けての指摘になる。(2) opt-external-llm の cost_model が free / 0 のままで、tco の『従量課金で無料枠を超える』と矛盾している。", "evidence": ["decisions[] 4 件 / options 2〜3 件", "recommendation.latest_checked_at=13:35:48Z > user_decision.confirmed_at=13:26:07Z", "opt-external-llm cost_model={category: free, amount: 0, billing_period: month}"]},
-    "matrix_coverage": {"verdict": "PASS", "auditor": "system-spec-matrix-auditor", "component": "C07", "summary": "C07 の判定は loop_pass・final_ready ともに PASS。48 セルの内訳は確定 8 (web) / 対象外 40 / 未収集 0。対象外の理由は 40 件とも反実仮想と根拠 qa_ref を持つ具体的な文で、確定セルの qa_ref はすべて実在し dangling は 0。category_aggregate は真理値表と一致し、6 canonical platform も全行にある。C16 required-info の blocking_items 6 件はすべて grounded。時系列は decision → 承認 → 章確定の順で単調に進み、reopen_log は空。sub-input の C06 は、網羅性に関わる 4 軸 (聞き漏れ・誘導質問・早期停止・トレーサビリティ) がすべて PASS。C06 の総合 verdict は FAIL だが、その原因は軸 5 (上位概念の遡及性) だけなので、foundation_trace の medium として扱った。", "evidence": ["validate-coverage-matrix.py (loop) exit0 / --require-complete --require-basis --require-foundation exit0 (C05 と C07 がそれぞれ実行)", "validate-knowledge-graph.py --profile required-info --state exit0 / ungrounded_blocking_items=[]", "C06 hearing-auditor: 軸1-4 PASS / 軸5 FAIL (SSOT R6-audit-hearing.md と照合して再判定した後の結果)"]},
-    "design_knowledge_reflection": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "8 技術章すべてに doctrine anchor 表があり、『本章の確定セルへの反映』列には予算画面に固有の具体的な適用が書かれている。例: database=Clean Architecture の data-access で (利用者・開始月・科目) を主キーにし、1 期間を 1 回の読取りで返す。SRE で追加のみの migration とし、バックアップの対象に含める。ui-ux=HIG と WCAG 1.4.1 で、差額を色だけでなく符号と文言でも示す。『本章での適用』も各章 1 節ずつあり、backend=Dependency Rule で算出を core に置き既存の読み手も同じ関数を通す、security=zod での範囲検証とフェンスへの登録、などが書かれている。汎用ポインタだけで済ませた章は無い。C13〜C15 の knowledge / doctrine / cross ゲートはすべて exit0。low が 2 件ある。適用文が挙げる card 名が、実際に添付した card やカタログと一致していない。infrastructure の『card 0 件』の記述も食い違ったまま残っている。", "evidence": ["aggregate-completeness.py --knowledge-graph exit0 (knowledge/doctrine/required-info/cross)", "各章 ## 上流指針 (doctrine anchors) の反映列 / ### 本章での適用"]},
-    "doc_freshness": {"verdict": "PASS", "auditor": "system-spec-doc-freshness-auditor", "component": "C08", "summary": "C08 は二層とも PASS。validate-source-citation は exit0 (8 target と 8 参照が 1:1)。8 target すべてを WebFetch / WebSearch で公式の現行値と照合し、version・last_updated はすべて一致した (例: TanStack Query 6.2.3、React Router 8.4.0、Workers limits 2026-09-05)。非公式 host・世代落ち・確認時刻の欠落はいずれも 0。info が 2 件ある。記録している版 (ドキュメントの現行版) と、リポジトリが依存する版 (TanStack Query 5 / react-router-dom 7) が異なる。", "evidence": ["validate-source-citation.py exit0", "8/8 target 公式照合一致"]},
-    "prompt_quality": {"verdict": "PASS", "auditor": "assign-system-spec-completeness-evaluator", "component": "C05", "summary": "system-spec-harness 0.1.14 (installPath) の prompts 18 件を、prompt-creator 2.1.7 の validate-prompt.py --input と verify-completeness.py --input にかけ、失敗は 0 件。", "evidence": ["prompts=18 fails=0"]}
+    "foundation_trace": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "--require-foundation は exit0。r2 の時刻の先取り (target-platforms-001 の回答が 08:37:17Z の承認 appr-foundation-settings-001 を参照) は、corrections[1] で訂正された。SSOT は answer を凍結し、corrections[] への追記だけを許すので、answer を書き換えていないのは契約どおりである。compile はこの訂正を entry の直下に投影している (00-requirements-definition.md L101、ui-ux.md L251)。O5 measure の文言 (読むだけの API も登録対象に読める) は low として持ち越す。",
+      "evidence": [
+        "validate-coverage-matrix --require-foundation exit0",
+        "spec-state-contract.md L267-268 (qa_log の question/answer は凍結、corrections は追記のみ)"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "新しい技術選定は無く、needs_guidance のセルは 0。製品判断 10 件と対象プラットフォーム 1 件は、どれも利用者の選択で確定している。decision-001 は利用者が非推奨案『両方を1つの一覧で扱う』を選んでおり、AI 推奨をそのまま受けたのではない。decisions[] が 0 件である点は、SSOT (spec-state-contract.md L169-178) の登録基準と一致する。decisions[] は R5 が候補を組み立て、5 軸で比較した技術選定に限られ、製品判断は qa_log の basis:user-decision に逐語で残す設計である。そのため r2 の medium (decision-linkage) は SSOT と食い違う指摘として撤回する。r2 の是正案 (decisions[] に写す) は、writer が必須項目の欠落として拒否する形でもあった。章見出し『本章に効く確定意思決定: なし』の表示が誤読を招きうる点は、plugin の compile テンプレート側の low として残す。",
+      "evidence": [
+        "spec-state-contract.md L169-178",
+        "decisions=0, needs_guidance=0"
+      ]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "C07 (primary) の r3 再監査は PASS。--require-complete/--require-basis/--require-foundation はいずれも exit0 で、未収集 0、対象外 40 件はどれも具体的な理由を持つ。dangling は 0 で、時刻順序 (reopen 09:42:50Z → 再確定 09:45:25Z → 原文注記 09:56:07Z) は単調である。C07 は初回に high (qa_refs の欠落 7/8 章) と medium (answer 未修正) を返したが、評価者が反証を渡すと自ら誤検出と認め、PASS に訂正した。誤検出の原因は 3 つある。完全形の id しか照合していなかったこと、対象外セルの理由文と共通の出所注記を web セルの本文として数えたこと、範囲表記『001〜010』の左端だけを拾ったこと。評価者の独立照合では、web セル -003 の本文にある『決定 NNN』(範囲の展開を含む) と qa_refs が 8 章すべてで過不足 0 だった。これで r2 の low (qa-refs-linkage) は解消した。sub-input の C06 (呼出し元が再監査) は PASS で high 0。評価者はその前提を独立に検算した。decision-001〜009 と target-platforms-001 の corrections は、セッション履歴の AskUserQuestion の入力 (toolu_01R6CJR4…, toolu_017h7b4…, toolu_01CAGSHV…) と照合し、問いと全選択肢の label・description が 10 件すべてで逐語一致した。提示時刻 (07:52:41 / 08:25:32 / 08:26:59Z) もセッション履歴の記録と一致する。C16 (knowledge-graph required-info) は exit0。",
+      "evidence": [
+        "validate-coverage-matrix exit0 (r3 再実行)",
+        "C07 r3 PASS (反証後に訂正)",
+        "C06 r3 PASS (high 0, medium 2, low 1)",
+        "corrections 逐語照合 10/10 一致",
+        "qa_refs と本文の決定引用 8/8 章で過不足 0"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "r3 での変更は qa_log の corrections 追記、qa_refs 追加、再 compile に限られ、各章の『本章での適用』・出典カード・設計知識ポインタの記述は r2 から変わっていない。r2 の判定 (名指す card が ref-system-design-knowledge/references に実在し、確定セル要件へ具体的に適用されている) を引き継ぐ。knowledge-graph 4 profile を再実行し、すべて exit0 だった。",
+      "evidence": [
+        "aggregate-completeness.py --knowledge-graph exit0 (knowledge/doctrine/required-info/cross)"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "fetched-references.json の mtime は 17:43:54 のままで、r2 の C08 監査以降に変わっていない。targets も 9 件で増えていない。そのため C08 の二層監査 (PASS) を引き継いだ。形式層の validate-source-citation.py は本評価で再実行し、exit0 だった。validate-spec-doc-sync.py も exit0 だった。",
+      "evidence": [
+        "validate-source-citation exit0 (r3 再実行)",
+        "validate-spec-doc-sync exit0",
+        "C08 PASS (r2、入力不変)"
+      ]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "system-spec-harness の prompts/*.md に、r1 レポート以降に更新されたファイルは無い (find -newer で 0 件)。r2 で再実行した verify-completeness.py と validate-prompt.py (18/18 exit0) の結果を引き継ぐ。",
+      "evidence": [
+        "prompts 変更 0 件",
+        "18/18 exit0 (r2)"
+      ]
+    }
   },
   "gate_results": [
-    {"id": "G-matrix", "name": "validate-coverage-matrix (--require-complete --require-basis --require-foundation)", "conditions": ["matrix_coverage", "foundation_trace", "decision_guidance"], "exit_code": 0},
-    {"id": "G-matrix-loop", "name": "validate-coverage-matrix (loop)", "conditions": ["matrix_coverage"], "exit_code": 0},
-    {"id": "G-knowledge-graph", "name": "validate-knowledge-graph (knowledge/doctrine/required-info/cross)", "conditions": ["design_knowledge_reflection", "matrix_coverage"], "exit_code": 0},
-    {"id": "G-required-info-state", "name": "validate-knowledge-graph --profile required-info --state", "conditions": ["matrix_coverage"], "exit_code": 0},
-    {"id": "G-spec-doc-sync", "name": "validate-spec-doc-sync", "conditions": ["foundation_trace"], "exit_code": 0},
-    {"id": "G-source-citation", "name": "validate-source-citation (C08 実行)", "conditions": ["doc_freshness"], "exit_code": 0},
-    {"id": "G-prompt", "name": "validate-prompt + verify-completeness (18 prompts)", "conditions": ["prompt_quality"], "exit_code": 0}
+    {
+      "id": "G-matrix",
+      "name": "validate-coverage-matrix",
+      "conditions": [
+        "matrix_coverage",
+        "foundation_trace",
+        "decision_guidance"
+      ],
+      "command": [
+        "python3",
+        "scripts/validate-coverage-matrix.py",
+        "--matrix",
+        "system-spec/spec-state.json",
+        "--require-complete",
+        "--require-basis",
+        "--require-foundation"
+      ],
+      "exit_code": 0,
+      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"
+    },
+    {
+      "id": "G-knowledge-graph",
+      "name": "validate-knowledge-graph",
+      "conditions": [
+        "design_knowledge_reflection",
+        "matrix_coverage"
+      ],
+      "command": [
+        "python3",
+        "aggregate-completeness.py",
+        "--knowledge-graph"
+      ],
+      "exit_code": 0,
+      "stdout": "knowledge/doctrine/required-info/cross 全 exit0"
+    },
+    {
+      "id": "G-citation",
+      "name": "validate-source-citation",
+      "conditions": [
+        "doc_freshness"
+      ],
+      "command": [
+        "python3",
+        "scripts/validate-source-citation.py",
+        "--targets",
+        "system-spec/spec-state.json",
+        "--references",
+        "system-spec/fetched-references.json",
+        "--state",
+        "system-spec/spec-state.json"
+      ],
+      "exit_code": 0,
+      "stdout": "OK: 出典記録が全件対応・必須フィールド充足・公式 host 一致を満たす"
+    },
+    {
+      "id": "G-doc-sync",
+      "name": "validate-spec-doc-sync",
+      "conditions": [
+        "doc_freshness",
+        "foundation_trace"
+      ],
+      "command": [
+        "python3",
+        "scripts/validate-spec-doc-sync.py",
+        "--matrix",
+        "system-spec/spec-state.json",
+        "--references",
+        "system-spec/fetched-references.json",
+        "--spec-root",
+        "system-spec"
+      ],
+      "exit_code": 0,
+      "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"
+    },
+    {
+      "id": "G-prompt",
+      "name": "verify-completeness+validate-prompt",
+      "conditions": [
+        "prompt_quality"
+      ],
+      "exit_code": 0,
+      "stdout": "18/18 prompts exit0 (r2 実行、以降 prompt 変更 0 件)"
+    }
   ],
   "findings": [
-    {"severity": "medium", "bucket": "foundation_trace (C06 軸5 finding-04)", "observation": "requirements_foundation.scope.out のうち『個人 (家計) の予算』『共通シェルの作り直し』『トレードオフ画面の変更』の 3 項目と、background の『画像の取引ラインは防衛ラインの誤記と見なす』という解釈は、qa_log に個別の往復を持たない。接地しているのは U1-U9 の一括承認 appr-foundation-budget-001 だけである。承認の note には範囲外 7 項目が列挙されているので未承認ではないが、利用者が言ったことなのか、エージェントが提案したことなのかを機械的には判別できない。", "suggested_fix": "C01 R0-foundation: scope.out の各項目と画像の解釈に basis (user-decision / agent-inference) と由来の qa を持たせるか、既定値として提案した項目を個別の確認 qa として残す。"},
-    {"severity": "medium", "bucket": "decision_guidance (前 2 サイクルの medium の継続)", "observation": "decisions 4 件すべてで、recommendation.latest_checked_at (13:35:48Z) が user_decision.confirmed_at (13:26:07Z) より約 10 分後になっている。『根拠は決定後に取得』の注記も無い。選んだ案と根拠は矛盾しない。関連して、decisions の確定 (13:26:07Z) が上位概念の承認 (13:32:28Z) より先に来ている (章の確定 13:35:48Z は承認より後なので、C14 の位相順違反にはならない)。", "suggested_fix": "C01 R5-decision-guide: 公式根拠を取得してから選択肢を提示する順序を writer で担保する。今回の 4 件には『根拠は決定後に再確認・結論は不変』の注記を足す。"},
-    {"severity": "medium", "bucket": "decision_guidance", "observation": "dec-budget-suggestion-source の opt-external-llm は、cost_model が {category: free, amount: 0, billing_period: month} になっている。一方で tco と free 欄は『API 課金が従量で発生し、無料枠を超える』『無料枠は用途を満たさない』と書いており、コスト区分がそれと矛盾している。採らなかった案なので結論は変わらないが、比較表だけを読むと 3 案とも無料に見える。", "suggested_fix": "C01 R5-decision-guide: opt-external-llm の cost_model を usage-based (例: category=paid, 従量課金, 見積り額) に直し、compile で 00 章の意思決定表を再生成する。"},
-    {"severity": "low", "bucket": "decision_guidance (前サイクルの low の継続)", "observation": "00-requirements-definition.md:185-188 の意思決定表で、cost_model が Python の dict 表記 (cost={'category': 'free', ...}) のまま出力されている。", "suggested_fix": "compile R2-render: cost_model を『free / 0 USD / none — tco』のように整形して描画する。"},
-    {"severity": "low", "bucket": "design_knowledge_reflection (前サイクルの low の継続)", "observation": "infrastructure.md の『本章での適用』は『Serverless の制約 card を適用した』と書くが、直後のポインタ行は『本章へ引く card は 0 件』と書いており、食い違っている。", "suggested_fix": "compile: infrastructure へ引く card を決めて添付するか、適用文を card に依らない表現 (Workers / D1 の公式の制約値に基づく) にする。"},
-    {"severity": "low", "bucket": "design_knowledge_reflection", "observation": "『本章での適用』が挙げる card 名 (database=Schema evolution、auth=Least privilege / resource ownership、frontend=Container / Presentational と view-model、maintenance-ops=Test pyramid、ui-ux=Visual hierarchy、security=OWASP ASVS、infrastructure=Serverless の制約) は、ref-system-design-knowledge/references の card ファイルに存在しない。その下に添付した card (database=DDD、maintenance-ops=Clean Code など) とも一致しない。適用自体は具体的で、doctrine anchor の反映列も接地しているので観点の FAIL にはしない。ただし、どの card の原則を適用したのかを辿れない。特に database は、添付した DDD の原則そのものは確定セルに適用されていない。", "suggested_fix": "compile R2: 適用文の原則名を、添付した card (または knowledge-catalog の node id) に合わせる。カタログに無い原則を使うなら、knowledge_candidates へ候補として登録する。"},
-    {"severity": "low", "bucket": "matrix_coverage/hearing (C06, 前サイクル F1 と同型)", "observation": "qa-budget-target-platforms-001 (web のみ) は、scope.out に既定値を入れた U1-U9 の一括承認で確定している。前サイクルで求めた是正 (既定値を含む一括承認であることを provenance に書く) は、今回の answer と provenance で満たされている。質問文そのものは SSOT の誘導の判定観点 (a)(b)(c) のどれにも当たらない。", "suggested_fix": "C01: 追加の是正は不要。範囲の決定を独立した比較つきの決定にするかは C01 の裁量。"},
-    {"severity": "info", "bucket": "matrix_coverage/hearing (C06 finding-03)", "observation": "8 章の web セルの主根拠 -001 は basis=user-decision だが、中身は画像・U1-U9 の承認・decision 001〜004 からの書き起こしである (provenance に明記されている)。今回は利用者が決めていない具体値を -002 (agent-inference) に分けており、前サイクルよりも区別が進んだ。", "suggested_fix": "C01: 承認からの導出を表す basis (例: derived-from-approval) を設けることを検討する。"},
-    {"severity": "info", "bucket": "matrix_coverage", "observation": "前サイクルの medium (reopen より前の answered_at、loop_count が実際の周回を反映しない) の解消を確認した。今回は reopen_log が空で、qa の時刻は decision 13:26:07Z → 承認 13:32:28Z → 章確定 13:35:48Z と単調に進み、loop_count=1 は実際の周回と一致する。"},
-    {"severity": "info", "bucket": "doc_freshness", "observation": "確認した観点: C08 が 8/8 target を公式で照合し、すべて現行版と一致した。tanstack-query-invalidation (記録 6.2.3、リポジトリは 5) と react-router-searchparams (記録 8.4.0、リポジトリは 7) は、記録版と実装が依存する版が異なる。summary にはその旨が書いてある。", "suggested_fix": "C02 R3-record: 実装が依存する版を別フィールド (project_dependency_version など) に記録する。"},
-    {"severity": "info", "bucket": "prompt_quality", "observation": "確認した観点: prompts 18 件で validate-prompt と verify-completeness の失敗は 0 件。"}
+    {
+      "severity": "medium",
+      "bucket": "matrix_coverage/hearing-subinput",
+      "observation": "C06 の指摘を引き継ぐ。推奨の選択肢には利点だけが書かれ、欠点の記載が無い非対称が 6 件ある (001/004/005/006/009/010)。非推奨案には『範囲が大きい』『影響が大きい』などの欠点が書かれている。ただし decision-001 では利用者が非推奨案を選んでおり、回答が歪められた証拠は無い。",
+      "suggested_fix": "[elicit] 今後の AskUserQuestion では、推奨案にも欠点・前提条件を 1 行書く。既存の記録は凍結されているので書き換えない。"
+    },
+    {
+      "severity": "medium",
+      "bucket": "matrix_coverage/hearing-subinput",
+      "observation": "C06 の指摘を引き継ぐ。hearing_progress.loop_count=1 が、実際の往復回数 (AskUserQuestion 5 回: 07:52 / 08:25 / 08:26 / 08:32 / 09:38) と乖離している。",
+      "suggested_fix": "[elicit] 往復のたびに loop_count を writer 経由で加算する。現行値は次の遷移で実測値に揃える。"
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage/provenance-wording",
+      "observation": "8 章の -003 answer の出所注記は、どの章も同じ定型文『決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001』になっている。決定を 1 件も引用しない auth にも付いているため、注記だけを読むと過大に見える。qa_refs 自体は正しい (C07 r3 と評価者の照合で確認)。",
+      "suggested_fix": "[elicit→compile] 次に -003 を差し替えるときに、出所注記を章ごとの実引用範囲へ絞る (answer は凍結されているので、新しい qa entry で行う)。"
+    },
+    {
+      "severity": "low",
+      "bucket": "decision_guidance/compile-heading",
+      "observation": "『本章に効く確定意思決定』の見出しは decisions[] (技術選定) だけを投影する。そのため、basis:user-decision の製品判断を多数引く章でも『確定 decision なし』と表示される。SSOT どおりの挙動だが、読み手には矛盾に見えうる。",
+      "suggested_fix": "[plugin compile テンプレート] 見出しを『本章に効く技術選定 (decisions[])』に改めるか、basis:user-decision の qa_refs を併記する。system-spec 側の修正は不要。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace/objective-wording",
+      "observation": "r2 からの持ち越し。O5 measure の『設定系の新 API が CANONICAL_MUTATION_ROUTES に登録され』は、字面上は読むだけの API も含む。C4 と auth-web-003 は『変更 API だけを登録する』としている。",
+      "suggested_fix": "[elicit] 次に foundation を改訂するとき、O5 を『設定系の変更 API が』に絞る。"
+    },
+    {
+      "severity": "info",
+      "bucket": "auditor-adjudication",
+      "observation": "C07 は初回 FAIL (high 1・medium 1) を返した。評価者が SSOT とデータに基づく反証 (対象外セル行の混同、範囲表記の左端だけの一致、qa_log の answer 凍結の契約) を渡すと、C07 は自ら誤検出と認め、PASS に訂正した。評価者は auditor の判定を書き換えておらず、採用したのは C07 自身が訂正した verdict である。"
+    },
+    {
+      "severity": "info",
+      "bucket": "coverage-confirmation",
+      "observation": "確認した観点: 6 観点すべてと決定論ゲート 5 種 (matrix+basis+foundation / knowledge-graph 4 profile / source-citation / spec-doc-sync / prompt validator)。すべて exit0。r2 の FAIL 原因 (C06 FAIL: 選択肢原文が無い) は解消した。corrections 10 件がセッション履歴の AskUserQuestion の入力と逐語で一致すること、提示時刻が一致することを、評価者が独立に検算した。r2 の medium (decision-linkage) は SSOT (spec-state-contract.md L169-178) と食い違うため撤回した。r2 の low (qa-refs-linkage、時刻の先取り) は解消した。"
+    }
   ],
   "gaps": []
 }

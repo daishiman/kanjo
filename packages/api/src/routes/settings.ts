@@ -16,13 +16,14 @@ import {
   clampStatMinMonths,
   normalizeAccount,
   resolveTx,
+  settingsActorFromEmail,
   suggestBudgets,
   validateOwnerLabels,
 } from '@kanjo/core';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import type { AuthEnv } from '../auth.js';
+import type { AuthEnv, AuthVariables } from '../auth.js';
 import { inClauseChunkSize } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
@@ -42,8 +43,15 @@ import {
   upsertEdit,
 } from '../store.js';
 import { loadCandidates } from './classify.js';
+import { legacySettingsStatements } from './settings-screen.js';
 
-type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
+type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
+
+/** drizzle の query を D1 の statement に直す。新表の statement (D1 直) と同じ batch に並べるため */
+const rawStatement = (database: D1Database, query: { toSQL(): { sql: string; params: unknown[] } }) => {
+  const { sql: text, params } = query.toSQL();
+  return database.prepare(text).bind(...params);
+};
 
 export const settingsRoute = new Hono<Ctx>();
 
@@ -252,12 +260,19 @@ settingsRoute.put('/settings', zValidator('json', settingsSchema), async (c) => 
     consumers.push('analysis_settings');
   }
 
-  if (statements.length && consumers.length)
-    await db.batch([
-      statements[0],
-      ...statements.slice(1),
-      invalidateJsonSnapshotQuery(db, userId, consumers[0], ...consumers.slice(1)),
-    ]);
+  // 新表と変更履歴 (由来 screen) にも同じ意味で書き、revision を進める (BR-22)。旧表と同じ batch に並べる
+  const mirror = await legacySettingsStatements(
+    c.env.DB,
+    userId,
+    { normMap: b.normMap, cashOverrides: b.cashOverrides, statMinMonths: b.statMinMonths },
+    settingsActorFromEmail(c.get('actor').email),
+  );
+  const legacy =
+    statements.length && consumers.length
+      ? [...statements, invalidateJsonSnapshotQuery(db, userId, consumers[0], ...consumers.slice(1))]
+      : [];
+  if (legacy.length || mirror.statements.length)
+    await c.env.DB.batch([...legacy.map((q) => rawStatement(c.env.DB, q)), ...mirror.statements]);
 
   if (needRecompute) await recomputeFromDeals(db, userId);
   return c.json({ ok: true });
@@ -688,41 +703,7 @@ settingsRoute.put('/classification', zValidator('json', classificationSchema), a
  * 原本の無い月(restore由来)は既存の monthly_agg 値が温存される。
  */
 
-/* -------- 夜間バックアップの取り出し(FR-05) -------- */
-
-/** `backups/YYYY-MM-DD.json` の日付部分だけを許す。R2 のキーを外から組み立てさせない */
-const backupDateSchema = z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) });
-
-/**
- * cron が R2 に置いた夜間バックアップの一覧。
- *
- * バックアップは取っていても、画面から取り出せなければ「戻せる」ことにならない。
- * 復元そのものは監査済みの POST /api/restore を通す方針なので、
- * ここは一覧と本文の取り出しだけを担う。
- */
-settingsRoute.get('/backups', async (c) => {
-  const list = await c.env.FILES.list({ prefix: 'backups/' });
-  const items = list.objects
-    .map((o) => ({
-      date: o.key.slice('backups/'.length, 'backups/'.length + 10),
-      size: o.size,
-      uploaded: o.uploaded instanceof Date ? o.uploaded.toISOString() : null,
-    }))
-    .filter((o) => /^\d{4}-\d{2}-\d{2}$/.test(o.date))
-    .sort((a, b) => (a.date < b.date ? 1 : -1));
-  return c.json({ backups: items });
-});
-
-settingsRoute.get('/backups/:date', zValidator('param', backupDateSchema), async (c) => {
-  const { date } = c.req.valid('param');
-  const obj = await c.env.FILES.get(`backups/${date}.json`);
-  if (!obj)
-    return c.json(
-      { error: { code: 'backup_not_found', message: 'そのバックアップは残っていません(保持は30日)' } },
-      404,
-    );
-  return new Response(obj.body, { headers: { 'Content-Type': 'application/json' } });
-});
+/* 夜間バックアップの一覧・取り出し・比較・設定だけの復元は routes/backups.ts */
 
 /* -------- 名義の表示名 (0043) -------- */
 
@@ -784,17 +765,14 @@ settingsRoute.put(
         400,
       );
     }
-    const db = getDb(c.env.DB);
-    const updatedAt = new Date().toISOString();
-    // 4 行を 1 回の batch で差し替える。途中で止まって名義ごとに新旧が混ざる状態を作らない
-    await db.batch([
-      db.delete(s.ownerLabels).where(eq(s.ownerLabels.userId, userId)),
-      db
-        .insert(s.ownerLabels)
-        .values(
-          OWNER_LABEL_KEYS.map((owner) => ({ userId, owner, label: checked.labels[owner], updatedAt })),
-        ),
-    ]);
+    // 名義は変更履歴 (由来 screen) を追記して revision を進める (BR-22)。表の書き方は設定画面の保存と同じ
+    const mirror = await legacySettingsStatements(
+      c.env.DB,
+      userId,
+      { ownerLabels: checked.labels },
+      settingsActorFromEmail(c.get('actor').email),
+    );
+    if (mirror.statements.length) await c.env.DB.batch(mirror.statements);
     return c.json({ labels: checked.labels });
   },
 );

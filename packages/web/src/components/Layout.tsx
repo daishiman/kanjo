@@ -12,6 +12,7 @@ import {
 } from '../api.js';
 import { monthLabel, yen } from '../format.js';
 import { clearAllBudgetDrafts } from '../pages/budget/draft.js';
+import { clearAllSettingsDrafts } from '../pages/settings/draft-storage.js';
 import { clearAllLiabilityDrafts } from '../pages/statements/liability-draft.js';
 import { PeriodPicker, usePeriod } from '../period.js';
 import {
@@ -150,6 +151,7 @@ function UserMenu() {
       // 同じブラウザを次に使う人へ負債の下書きを残さない (spec-statements-screen §4)
       clearAllLiabilityDrafts();
       clearAllBudgetDrafts();
+      clearAllSettingsDrafts();
       window.dispatchEvent(new Event(AUTH_EVENT));
     } catch {
       setError('ログアウトできません。もう一度お試しください。');

@@ -9,20 +9,20 @@
     "nodes": 23,
     "edges": 21,
     "feature_progress": {
-      "feat-budget-screen": {
+      "feat-settings-screen": {
         "done": 0,
         "total": 13
       }
     }
   },
   "registration": {
-    "feature_package_id": "feature-package/feat-budget-screen",
-    "path": ".dev-graph/plans/feature-package-feat-budget-screen/dev-graph-registration-receipt.json",
+    "feature_package_id": "feature-package/feat-settings-screen",
+    "path": ".dev-graph/plans/feature-package-feat-settings-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067"
+    "source_digest": "sha256:77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
   },
-  "input_sha256": "a9d3664bd8ad31888f6721a7fb7b9806b4aea3d25b6b6fab5ed64d66b5cfadcd",
-  "output_sha256": "5dc60435799558ba62a547173654770816df58cc6bddc3f36a2985d6374c0c81",
-  "rendered_at": "2026-09-21T15:00:09Z"
+  "input_sha256": "fe93ba1321016d9e77e7283a042071e4cf4f46b13317763c239ec7635ceaaa4c",
+  "output_sha256": "997ac24fd4565f9692efb0a2d4f6d9f54ec707b2856ebbf7f980385e76940f9a",
+  "rendered_at": "2026-09-22T11:33:56Z"
 }

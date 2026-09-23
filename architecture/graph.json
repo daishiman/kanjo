@@ -3087,7 +3087,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/auth.md",
         "source_version": "0.1.14",
         "source_digest": "8bac5a1830455e332c0527f6ffc5c1aa3d6d49387e3d8b3ec611a14c17fd101f",
         "imported_at": "2026-09-21T13:59:08Z"
@@ -3110,7 +3110,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/backend.md",
         "source_version": "0.1.14",
         "source_digest": "cd68f3959122014af143291a3f5a61039e84bbe13f348a0b7cd3a106585725d1",
         "imported_at": "2026-09-21T13:59:08Z"
@@ -3133,7 +3133,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/database.md",
         "source_version": "0.1.14",
         "source_digest": "a27bde88c9d11399fcacdf470fb1e1a25db503a875d1b5b26b5ee648721353d3",
         "imported_at": "2026-09-21T13:59:08Z"
@@ -3156,7 +3156,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/frontend.md",
         "source_version": "0.1.14",
         "source_digest": "c555b213773f5d2a3bea4d0f51d770d843672c6cf70ba55a1d50827c63badf66",
         "imported_at": "2026-09-21T13:59:08Z"
@@ -3179,7 +3179,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/infrastructure.md",
         "source_version": "0.1.14",
         "source_digest": "d69bafe2c6f37b37fd1c18513b3e15eeb609d7830c50a59b0f9c67adbf1570fb",
         "imported_at": "2026-09-21T13:59:08Z"
@@ -3202,7 +3202,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/maintenance-ops.md",
         "source_version": "0.1.14",
         "source_digest": "8cfbe5fbed898db6065b9c6529a6018d9e1ac7edeb7bbb5c1c7b05306cf48019",
         "imported_at": "2026-09-21T13:59:08Z"
@@ -3225,7 +3225,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/security.md",
         "source_version": "0.1.14",
         "source_digest": "b796b626b18f8470e2c88875dca536473b2a7b53652fc411602769c7900057d2",
         "imported_at": "2026-09-21T13:59:08Z"
@@ -3248,13 +3248,197 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/ui-ux.md",
         "source_version": "0.1.14",
         "source_digest": "cdcb7210699bd4c8fedd6a834ad74b55bed23a17a36441417b285fdbd14665c1",
         "imported_at": "2026-09-21T13:59:08Z"
       },
       "referenced_by": [
         "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "設定 — 既存の認証と 4 層の内側に置き、書込みだけをフェンスへ登録し更新者をセッションから決める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "1968df8fa1eed625d5ba1376decf22c7c0a3e636d0e0ecda927fce14049294ff",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "設定 — core の純関数で照合・現金上書き・設定 JSON を解き 全節の保存と変更履歴を 1 つの D1 batch に閉じ 復元は preview と本適用に分ける",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "8ed202ee635561a574f5fb733a146afe35b10e295340e7e5a49f50d75ec1bb3c",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "設定 — 集計ルール・現金上書き・変更履歴を利用者単位の新表に追加のみで置き 既存行は写しの元として読むだけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "0f71b39eb0d4aef2864a0fb9b5ba913b68a72fb2d69bd08ef7a7792ef470f78f",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "設定 — 画面の入口が 1 本の取得を節ごとの部品へ配り 4 節の編集を 1 つの下書きに集めて 1 回で保存する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "711a2fd0946231628d693ec05f71d6f7013ad9d4d589f3b06dc548264f76f000",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "設定 — 基盤を変えず cron を JST 2:00 へ移し、各回の成否・メモ・要約を R2 に残して失敗も一覧に出す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "6b7af8e430bf9e58190417f42bb9e68c682f79d5c790e70419330e6e5ef75192",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "設定 — 変更は追記のみの履歴で辿り、誤りは D1 全体を上書きせず設定の復元と元に戻すで直す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "55b201ec86e261da7cb5fceb2ba2d639875931c7a72a259401e72e623add4452",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "設定 — 公開向け検証と本文上限・復元は厳密検証で全か無か・取引は消さない・外部送信なし",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "c0d64d31afc54115c07bc73eaa3884d65f3a33205d92327fda0e583c56edb163",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "設定 — 節ナビで 8 節を移り集計ルールの表と説明パネルを往復し保存バーで 1 回に確定する 1 画面",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "376a461e32d6277d040822ed6cd4d4b016c46332dece3f6f8c7c412114b754de",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
       ]
     }
   ]
