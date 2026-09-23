@@ -15,12 +15,12 @@ serves_goals: [G3, G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-budget-database-web-001。資するゴール: G3, G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、データベースでは端末内のデータベースへ予算を複製し、サーバとどう同期するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、データベースでは端末内のデータベースへ予算を複製し、サーバとどう同期するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、データベースではWindows のローカル保存先に予算をどう置き、暗号化するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、データベースではLinux のローカル保存先に予算をどう置き、暗号化するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、データベースではmacOS のローカル保存先に予算をどう置き、暗号化するかを決める必要があった。対象を web のみとする利用者決定 (qa-budget-target-platforms-001) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-tradeoff-database-web-001。裏付け質疑 (`qa_refs`): `qa-tradeoff-database-web-evidence-001`, `qa-tradeoff-database-web-003` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では端末内に試算条件を持つオフライン保存と D1 との同期規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database ではタブレットと web で同じ試算を同時に編集したときの行の競合規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database では端末内データベースへの候補のキャッシュと失効の規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内データベースの版の移行手順を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内データベースと D1 の差分の取り込み規則を決める必要があった。対象を web のみとする利用者決定 (qa-tradeoff-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G3, G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 予算画面の D1 では、利用者・予算対象の開始月・科目の主キーで、1 期間ぶんの予算を 1 回の読取りで返せる形へ反映した。計画による調整額と理由を同じ行に持たせ、根拠の表示のために別表を結合しない。 |
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 予算画面の D1 では、追加のみの migration 1 本に留めて Migrate の失敗時に行の巻き戻しが要らない形へ反映した。新しい表を JSON の書き出しと復元に含め、毎晩のバックアップから予算が戻るようにした。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 上書きの読み書きを (user_id, candidate_key) の一意キー 1 本で行う形へ反映した。GET では利用者の上書きを 1 回で読み、候補に重ねるのは core 側で行う。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration を追加のみ (CREATE TABLE と ADD COLUMN) に限り、既存の tradeoff_plans の行を書き換えない形へ反映した。途中で Deploy が止まっても既存の行と突合の関数は読めるままになる。 |
 
 ## 確定内容 (質疑録)
 
@@ -39,17 +39,41 @@ serves_goals: [G3, G5]
 
 - 資するゴール: G3, G5
 
-#### 主たる接地根拠: `qa-budget-database-web-001`
+#### 主たる接地根拠: `qa-tradeoff-database-web-001`
 
 **問**
 
-web の予算画面のデータベース要件は何か。保存単位・移行・既存表との関係・復元をどうするか。
+web のトレードオフ画面が要する永続化は何か。
 
 **答**
 
-予算を予算対象の 12 か月 (開始月) ×科目の単位で、年額・収入 / 支出の区別・計画による調整額・調整の理由・更新時刻とともに保存する新しい表を、追加のみの migration 1 本で設ける (qa-budget-decision-001〜003)。同じ期間は上書きで、版は持たない。主キーの先頭は利用者とし、利用者で区切る。既存の budgets 表は残し、1 行も書き換えない。保存行の無い期間を開いたときの初期値は既存 budgets の月額 × 12 を読み出して示すだけで、表へは書かない。新しい表は JSON の書き出しと復元 (Dataset・import-lifecycle) と JSON snapshot の無効化の対象に加え、毎晩のバックアップから予算が戻るようにする。
+追加のみの migration (予定番号 0050) で、tradeoff_plans に開始月とメモの列を足し、候補ごとの上書き (必要度とメモ) を置く新表を作る (qa-tradeoff-decision-002, 006, 007)。『この条件で試算』のたびに tradeoff_plans へ 1 行を追加し (qa-tradeoff-decision-008)、最新の 1 件を復元に使う。既存の行と列は書き換えず、保存一覧と突合の表示は外すがデータは残す (qa-tradeoff-decision-004)。全行を user_id で分ける。候補は freee_deals から読み、候補そのものは保存しない。具体の形と上限は qa-tradeoff-database-web-003 (agent 推定) を参照。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/14-budget.png と、利用者承認 (appr-foundation-budget-001) の U1-U9、決定 qa-budget-decision-001〜004 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T13:35:48Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-tradeoff-001) と決定 qa-tradeoff-decision-001〜009 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-21T15:19:22Z)
+
+#### 裏付け質疑: `qa-tradeoff-database-web-evidence-001`
+
+**問**
+
+database 章の裏付けとして、現行のトレードオフ画面まわりについて何を観測したか。
+
+**答**
+
+D1 の tradeoff_plans (migrations/0000_init.sql:85-95、packages/api/src/db/schema.ts:610-620) は id, user_id, title, amount, recurring, selected (JSON 文字列), covered, verdict, created_at を持ち、開始月とメモの列が無い。候補ごとの上書きを置く表は無い。freee_deals (schema.ts:47) は user_id, month, date, io (income / expense), partner, account_raw, account_norm, amount を持ち、科目×取引先の集計に必要な列がそろっている。最新の migration は 0049_ai_report_invariants.sql で、schema-guard.ts の EXPECTED_D1_MIGRATION も 0049 を指す。
+
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測 / 回答時刻: 2026-09-21T15:19:22Z)
+
+#### 裏付け質疑: `qa-tradeoff-database-web-003`
+
+**問**
+
+web のトレードオフ画面で、利用者が決めていない 候補キーと上書きの表の形・文字数の上限 を何にするか。
+
+**答**
+
+候補キーは『account_norm + 区切り文字 + partner (空なら空文字)』の文字列。上書きは新表 tradeoff_candidate_notes (user_id, candidate_key, need は low / mid / high か NULL, memo は NULL 可, updated_at) で (user_id, candidate_key) を一意にし upsert する。need と memo が両方 NULL になったら行を消して自動へ戻す。tradeoff_plans には start_month (YYYY-MM、NULL 可) と memo (NULL 可) を ADD COLUMN で足し、selected の JSON に候補キーを含める。既存行は NULL のまま読む。 これは agent の推定で、利用者は未確認である。画像と決定 001〜009 のどれにも値が無いため、実装で決定論を保つために置いた。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-21T15:19:22Z)
 
 ## To-Be / Delta
 
@@ -57,28 +81,24 @@ web の予算画面のデータベース要件は何か。保存単位・移行�
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: 予算を予算対象の 12 か月 (開始月 YYYY-MM) ごとに科目別の年額・計画による調整額・調整の理由で保存する表を D1 に追加のみの migration で設け、同じ期間は上書きし版は持たない。保存済みの行が無い期間を開いたときは既存 budgets の月額 × 12 を初期値として示す (既存行は書き換えない)。GET /api/budget-plans?start=YYYY-MM と PUT /api/budget-plans を設け、PUT は canonicalMutationFence に登録する。診断の予算カバー率と予算の着地見込みなど既存の budgets の読み手は、今月を含む予算対象の年額 ÷ 12 を返す core の関数を経由して同じ値を読む。
-- **G5**: 予算の数値が他画面とずれない。ヘッダの防衛ラインと防衛ライン余裕は同じ defenseLine、診断の予算カバー率と予算画面の設定済み科目は同じ予算の読み出し関数から導き、既存の診断・概要・家計収支・総収支・決算書の数値テストが緑のままである。
+- **G3**: 見直し候補を事業経費の科目×取引先ごとに直近 3 か月の平均月額で作る。必要度 (低 / 中 / 高) と直近の推移 (過去 3 か月の減少 / 横ばい / 増加) を core が推定し、『損益・メモ』には検知器の改善案や推移から作る自動の理由を出す。利用者は必要度を上書きしメモを書け、それらは D1 に保存して自動の値より優先する。
+- **G5**: 試算条件と候補ごとの上書きを安全に記録する。『この条件で試算』を押すたびに条件 (支出名・金額・単発 / 毎月・開始月・メモ・選んだ候補・差額) を既存 tradeoff_plans へ履歴として追加し、画面は最新の 1 件を復元する。保存一覧と翌月の突合は画面から外すが、既存の行と突合の関数は消さない。列と表は追加のみの migration で足し、入力は zod で検証し文字数に上限を設け、利用者ごとに分離する。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O2 | KPI・一覧・グラフ・見通しの数値が core の 1 か所から出て互いに一致する。 | core の単体テストで、同じ Dataset・実績期間・予算対象に対し 年間収入予算 + (−年間支出予算) = 予算純収支、一覧の来期予算の和 = KPI、グラフの月次予算の年合計 = KPI、防衛ライン余裕 = 年間収入予算 − defenseLine().line × 12、自動提案 = 千円丸め(前期実績 × (1 + 増減率) + 季節性補正 + 計画による調整) の各項、過不足カテゴリの差額 = 見通し − 来期予算、調整によるインパクト = Σ(来期予算 − 自動提案) が固定される。 |
-| O3 | 予算が期間ごとに保存され、既存の読み手が同じ値を読む。 | API 統合テストで、PUT が期間ごとに保存し同じ期間は上書きされ、未認証 401・フェンス違反の拒否・不正値の 400 を確かめる。migration が既存行を 1 行も書き換えないことを検査し、保存行の無い期間で既存月額 × 12 が初期値になること、診断の予算カバー率が新しい表の値から出ることを確かめる。 |
+| O3 | 候補と必要度・推移・理由が決定論で出て、上書きが優先される。 | core の契約テストで、科目×取引先の集計・直近 3 か月平均・推移の 3 区分・必要度の推定・理由の文を固定入力で検査し、api テストで上書きの保存と読み戻し、利用者間の分離を検査する。 |
+| O5 | 試算条件と上書きの記録が追加のみで安全に行われる。 | migration が CREATE TABLE / ALTER TABLE ADD COLUMN だけで、api テストで zod の上限・認証・利用者分離・最新 1 件の復元を検査し、既存の tradeoff_plans の行と tradeoffReview の契約テストが緑のままである。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I3**: 予算対象の期間別の年額表を追加のみの migration で設け、GET / PUT /api/budget-plans と fence 登録を行い、診断の予算カバー率など既存の budgets の読み手を同じ読み出し関数へ寄せる。
+- **I3**: core に科目×取引先の候補集計・推移・必要度・自動の理由を新設し、上書きの新表と保存 API を足す。
+- **I5**: tradeoff_plans に開始月・メモ列を足し、POST で履歴を追加、GET で最新 1 件を返して画面で復元する。保存一覧と突合の表示を外す。
 
 ### 本章に効く確定意思決定
 
-- **dec-budget-storage-unit**: 予算の保存単位をどうするか (期間を持たない科目別の月額 1 つか、予算対象の 12 か月ごとの年額か)。
-  - 採択: 期間別の年額表を追加 (`opt-period-annual-table`)
-  - 目的適合: 画像の予算対象 12 か月・年額入力と一致し、既存の月額を初期値に引き継げる。
-- **dec-budget-defense-margin**: KPI の『防衛ライン余裕』を何で数えるか。
-  - 採択: 収入予算 − 防衛ライン × 12 (`opt-income-minus-line`)
-  - 目的適合: ヘッダと同じ defenseLine を使い、年間収入予算が 1 年の防衛ラインをどれだけ上回るかを示す。
+- (本章ゴールに効く確定 decision なし)
 
 ## 適用された設計知識
 
@@ -86,9 +106,9 @@ web の予算画面のデータベース要件は何か。保存単位・移行�
 
 ### 本章での適用
 
-Schema evolution の card (expand のみで contract しない) を予算画面に適用した。予算対象ごとの新しい表を足し、既存の budgets 表は読むだけで書き換えない。保存行の無い期間の初期値も読み出し時に月額 × 12 で作るので、C3 の『既存行の書き換え 0 件』を migration 1 本で守れる。
+追加のみの schema 進化の原則を、上書きと試算条件の置き場所に適用した。上書きは候補ごとに 1 行の新表とし (user_id, candidate_key) の一意制約で upsert するため、同じ候補に上書きが重複しない。試算条件は tradeoff_plans に ADD COLUMN で開始月とメモを足し、既存行は NULL として読むので、突合の関数 tradeoffReview と既存の行が壊れない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T13:35:48Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T15:19:22Z)
 
 ### Domain-Driven Design — deep knowledge card
 
@@ -135,4 +155,5 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-21T13:39:51Z | 2026-09-21T13:39:51Z |
+| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |
+| sqlite-upsert | 2024-04-11 | SQLite Consortium (sqlite.org) (sqlite.org) | https://sqlite.org/lang_upsert.html | 2026-09-21T15:23:17Z | 2026-09-21T15:23:17Z |

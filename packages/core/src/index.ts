@@ -50,3 +50,4 @@ export * from './diagnosis-screen.js';
 export * from './ai-screen.js';
 export * from './statements-screen.js';
 export * from './budget-screen.js';
+export * from './tradeoff-screen.js';

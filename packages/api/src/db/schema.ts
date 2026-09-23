@@ -633,7 +633,23 @@ export const tradeoffPlans = sqliteTable('tradeoff_plans', {
   covered: integer('covered'),
   verdict: text('verdict'),
   createdAt: text('created_at').$defaultFn(nowIso),
+  /* 0051。試算に使う新しい支出の開始月 (YYYY-MM) とメモ。既存行は NULL */
+  startMonth: text('start_month'),
+  memo: text('memo'),
 });
+
+/** 見直し候補ごとの必要度とメモの上書き (0051)。need が NULL なら必要度は推定のまま */
+export const tradeoffCandidateNotes = sqliteTable(
+  'tradeoff_candidate_notes',
+  {
+    userId: text('user_id').notNull(),
+    candidateKey: text('candidate_key').notNull(),
+    need: text('need', { enum: ['low', 'mid', 'high'] }),
+    memo: text('memo'),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [uniqueIndex('tradeoff_candidate_notes_user_key').on(t.userId, t.candidateKey)],
+);
 
 /** AI分析の依頼(期間 + 使い捨てトークンのハッシュ)。原文トークンは保存しない */
 export const aiTasks = sqliteTable(

@@ -626,3 +626,31 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - Dataset の JSON に `budgetPlans`(行の配列)を足した。指紋(`fingerprint.ts`)にも含める。
 - 復元は `budget_plans` の利用者の行を消してから JSON の行を入れる。`budgetPlans` の無い古いバックアップを復元すると、既存 `budgets` と同じく `budget_plans` を消す。消した後は、既存 budgets の月額 × 12 が初期値に戻る。
 - `budget_plans` は、変更系フェンスの consumer(`canonical-mutation-fence.ts`)と取込中の表の一覧(`import-active.ts`)に入れた。保存の batch では JSON snapshot を無効化する。snapshot の無効化と復元の write-set の片方だけに入れると、snapshot が古い予算を返すため、両方に入れた。
+
+## トレードオフ画面の開始月・メモと必要度の上書き(0051 / feat-tradeoff-screen)
+
+`migrations/0051_tradeoff_notes.sql` が `tradeoff_plans` に 2 列を足し、`tradeoff_candidate_notes` を作る。画面仕様の正本は `specs/spec-tradeoff-screen.md`、規則の一覧は `docs/spec-v1.1.md` の FR-09。仕様とタスク仕様の予定番号は 0050 だったが、先に main へ入った予算画面(#67)が `0050_budget_plans.sql` を使ったため 0051 へ繰り上げた。
+
+`tradeoff_plans` の追加列:
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `start_month` | TEXT | 新しい支出の開始月(`YYYY-MM`)。記録と復元のためだけに持ち、試算の年額には効かない |
+| `memo` | TEXT | 新しい支出のメモ(500 字まで)。空は NULL で保存する |
+
+- 0051 以降の POST は `selected` に `[{key, label, value}]`(候補キー、「科目 / 取引先」の表示名、保存時のサーバの月額)を、`covered` に選んだ候補の月額合計を入れる。covered と verdict は本文を信用せず、サーバーが現在の候補から再計算する。現在の候補に無いキーが 1 つでもあれば 422 で 1 行も増やさない。
+- 画面が読むのは最新の 1 行だけ。旧形式の `selected`(`{label, value}`)の行は `key` が無いので、復元される候補は 0 件になる。
+
+`tradeoff_candidate_notes`:
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT NOT NULL | 利用者 |
+| `candidate_key` | TEXT NOT NULL | 候補キー `v1:` + JSON 配列 `[科目, 取引先]`(科目は正規化後、300 字まで)。区切り文字を使わないので、科目名や取引先名に `\|` を含んでも別の組と同じキーにならない |
+| `need` | TEXT | 利用者が上書きした必要度 `low` / `mid` / `high`。NULL なら core の推定を使う |
+| `memo` | TEXT | 候補のメモ(500 字まで)。あれば理由の欄にメモを出す |
+| `updated_at` | TEXT NOT NULL | 最後に上書きした時刻 |
+
+- 索引: `tradeoff_candidate_notes_user_key`(`user_id`, `candidate_key`)の一意索引。PUT は UPSERT なので、同じ本文を繰り返しても行は増えない。`need` と `memo` の両方が NULL の PUT はその行を消し、自動の推定へ戻す。
+- `need` の値域は既存表の流儀に合わせて CHECK 制約ではなく API の zod で守る。
+- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE TABLE` / `CREATE UNIQUE INDEX` のみ)。`packages/api/src/tradeoff-migration-0051.test.ts` が、当てても既存行の更新が 0 件であることと既存列の値が変わらないことを固定する。

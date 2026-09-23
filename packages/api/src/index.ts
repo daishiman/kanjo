@@ -34,6 +34,7 @@ import { savedFiltersRoute } from './routes/saved-filters.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
 import { totalCashflowRoute } from './routes/total-cashflow.js';
+import { tradeoffRoute } from './routes/tradeoff.js';
 import { vendorMemoryRoute } from './routes/vendor-memory.js';
 import {
   SCHEDULED_MAINTENANCE_D1_PLAN,
@@ -115,6 +116,7 @@ app.route('/api', importsRoute);
 app.route('/api', deletionsRoute);
 app.route('/api', cashRoute);
 app.route('/api', analyticsRoute);
+app.route('/api', tradeoffRoute);
 app.route('/api', classifyRoute);
 app.route('/api', classifyBulkRoute);
 app.route('/api', savedFiltersRoute);

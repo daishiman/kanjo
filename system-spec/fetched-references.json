@@ -2,83 +2,94 @@
   "references": [
     {
       "target_id": "wcag22-use-of-color",
-      "retrieved_at": "2026-09-21T13:39:51Z",
+      "retrieved_at": "2026-09-21T15:23:17Z",
       "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
       "official_publisher": "W3C Web Accessibility Initiative (WAI)",
-      "official_host": "w3.org",
+      "official_host": "www.w3.org",
       "last_updated": "2025-09-16",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "SC 1.4.1: 色を情報伝達の唯一の視覚的手段にしない。予算画面の差額の符号・過不足・グラフ系列を文字と形で併記する根拠。"
+      "latest_checked_at": "2026-09-21T15:23:17Z",
+      "summary": "WCAG 2.2 SC 1.4.1 Use of Color (レベル A)。色を情報伝達の唯一の手段にしない。候補表の必要度 (低 / 中 / 高の文字)、直近の推移 (矢印と 減少 / 横ばい / 増加 の文字)、年間の差額の警告文、防衛ラインの 維持 / 割れる の文字を色に添える根拠。"
     },
     {
       "target_id": "tanstack-query-invalidation",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation",
+      "retrieved_at": "2026-09-21T15:38:54Z",
+      "source_url": "https://github.com/TanStack/query/blob/main/docs/framework/react/guides/invalidations-from-mutations.md",
       "official_publisher": "TanStack",
-      "official_host": "tanstack.com",
-      "version": "6.2.3",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "queryClient.invalidateQueries はクエリを stale にし、描画中のものを背景で再取得する。予算の保存成功で画面と分析派生の問い合わせを無効化する根拠。version は公式 GitHub の最新リリース (https://github.com/TanStack/query/releases/latest) のタグ 6.2.3 で、このガイドのページ自体には版の記載が無い。リポジトリは TanStack Query 5 を使い、invalidateQueries の使い方は 5 と同じ前提で書く。"
-    },
-    {
-      "target_id": "react-router-searchparams",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
-      "official_publisher": "React Router (Remix / Shopify)",
-      "official_host": "reactrouter.com",
-      "version": "8.4.0",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "useSearchParams は URLSearchParams と更新関数を返し、更新はナビゲーションを起こす。予算対象の ?start= と ?account= を URL に持つ根拠。リポジトリは react-router-dom 7 を使う。"
+      "official_host": "github.com",
+      "version": "5.103.2",
+      "last_updated": "2025-12-05",
+      "latest_checked_at": "2026-09-21T15:38:54Z",
+      "summary": "TanStack Query 公式ガイド『Invalidations from Mutations』(公式リポジトリ docs/framework/react/guides/invalidations-from-mutations.md、最終更新コミット 5ad78fc 2025-12-05)。useMutation の onSuccess で queryClient.invalidateQueries({ queryKey }) を呼び、onSuccess で Promise を返すと無効化が終わるまで isPending が true のまま続く。@tanstack/react-query の最新版は 5.103.2 (GitHub releases で 2026-09-21 に確認)。候補の上書きと『この条件で試算』の保存の後に tradeoff の query だけを無効化し、最新条件を取り直す根拠。"
     },
     {
       "target_id": "hono-zod-validator",
-      "retrieved_at": "2026-09-21T13:39:51Z",
+      "retrieved_at": "2026-09-21T15:23:17Z",
       "source_url": "https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md",
-      "official_publisher": "Hono",
+      "official_publisher": "Hono (honojs)",
       "official_host": "github.com",
       "version": "0.9.1",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "zValidator は Zod スキーマで query / json などの要求データを検証する Hono ミドルウェア。予算の保存 API の入力検証に使う。"
+      "latest_checked_at": "2026-09-21T15:23:17Z",
+      "summary": "@hono/zod-validator の最新は 0.9.1 (header schema のメタデータをキャッシュする性能改善)。zValidator(target, schema) で json を検証し c.req.valid(target) で受け取る。POST /api/tradeoff の開始月・メモ・候補キーと、候補の上書きの必要度・メモを zod で検証する根拠。"
     },
     {
-      "target_id": "cloudflare-d1-migrations",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-06-08",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "D1 の migration は migrations フォルダの .sql として保存し、適用済みは d1_migrations 表に記録される。予算対象の表を追加のみの migration 1 本で足す根拠。"
-    },
-    {
-      "target_id": "cloudflare-workers-limits",
-      "retrieved_at": "2026-09-21T13:39:51Z",
-      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-09-05",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "Workers Free は HTTP 要求あたり CPU 10 ms、1 呼出しあたりサブリクエスト 50。予算の算出を 1 要求で完結させ保存を D1 batch 1 回に収める根拠。"
+      "target_id": "hono-body-limit",
+      "retrieved_at": "2026-09-21T15:23:17Z",
+      "source_url": "https://github.com/honojs/hono/releases/latest",
+      "official_publisher": "Hono (honojs)",
+      "official_host": "github.com",
+      "version": "4.13.8",
+      "latest_checked_at": "2026-09-21T15:23:17Z",
+      "summary": "hono の最新は v4.13.8 (2026-09-15)。リリースノートに body-limit の変更は無い。bodyLimit は本文の大きさで 413 を返す組込み middleware で、既存の全体の bodyLimit (index.ts:89) が試算と上書きの保存経路にもそのまま掛かる根拠。"
     },
     {
       "target_id": "owasp-asvs",
-      "retrieved_at": "2026-09-21T13:39:51Z",
+      "retrieved_at": "2026-09-21T15:23:17Z",
       "source_url": "https://github.com/OWASP/ASVS/blob/master/README.md",
       "official_publisher": "OWASP Foundation",
       "official_host": "github.com",
       "version": "5.0.0",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "ASVS 5.0.0 (2025 年 5 月) は web アプリの設計・開発・試験のセキュリティ要件を定める。予算の入力検証と業務ロジック (フェンス) の根拠。"
+      "latest_checked_at": "2026-09-21T15:23:17Z",
+      "summary": "OWASP ASVS の最新安定版は 5.0.0 (2025 年 5 月公開)。検証要件の上流指針。入力の範囲と長さの検証 (支出名・メモ・候補キー・金額・covered の上限) と、利用者ごとのアクセス制御 (user_id による分離) の根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "retrieved_at": "2026-09-21T15:23:17Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-08",
+      "latest_checked_at": "2026-09-21T15:23:17Z",
+      "summary": "D1 の migration は版番号付きの .sql を順に置き、wrangler d1 migrations apply が未適用分を実行して d1_migrations 表に記録する。追加のみの migration 0050 (予定番号。tradeoff_plans への列追加と上書きの新表) を既存の Migrate 手順で適用し、runtimeSchemaGuard が d1_migrations の head を照合する根拠。"
+    },
+    {
+      "target_id": "sqlite-upsert",
+      "retrieved_at": "2026-09-21T15:23:17Z",
+      "source_url": "https://sqlite.org/lang_upsert.html",
+      "official_publisher": "SQLite Consortium (sqlite.org)",
+      "official_host": "sqlite.org",
+      "last_updated": "2024-04-11",
+      "latest_checked_at": "2026-09-21T15:23:17Z",
+      "summary": "UPSERT (INSERT ... ON CONFLICT DO UPDATE) は UNIQUE / PRIMARY KEY / 一意 index の違反時だけ UPDATE に切り替わり、excluded. で挿入しようとした値を参照できる (SQLite 3.24.0 以降)。候補の上書きの新表を (user_id, candidate_key) の一意制約で 1 行に保つ根拠。"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "retrieved_at": "2026-09-21T15:23:17Z",
+      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-05",
+      "latest_checked_at": "2026-09-21T15:23:17Z",
+      "summary": "Workers の CPU 時間は Free 10ms・Paid 既定 30 秒 (最大 5 分) で、D1 などの待ち時間は数えない。推奨の組み合わせの列挙を月額上位 12 件・2〜4 件 (最大 781 通り) に抑え、Free の CPU 時間でも収まるようにする根拠。"
     },
     {
       "target_id": "vitest-expect",
-      "retrieved_at": "2026-09-21T13:39:51Z",
+      "retrieved_at": "2026-09-21T15:23:17Z",
       "source_url": "https://vitest.dev/api/expect.html",
-      "official_publisher": "Vitest",
+      "official_publisher": "Vitest (VoidZero)",
       "official_host": "vitest.dev",
       "version": "5.0.1",
-      "latest_checked_at": "2026-09-21T13:39:51Z",
-      "summary": "expect は Chai / Jest 形式のアサーションを作る。KPI の式と合計の一致を core の単体テストで固定する根拠。"
+      "latest_checked_at": "2026-09-21T15:23:17Z",
+      "summary": "toBe は Object.is による厳密一致、toEqual は構造の再帰比較。文書の表示版は v5.0.1 で、リポジトリは vitest 4 系を使う (同 API)。試算の年額と差額を toBe で、推奨の上位 4 件の並びを toEqual で固定する根拠。"
     }
   ]
 }
