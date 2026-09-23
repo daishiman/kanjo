@@ -1,0 +1,104 @@
+{
+  "receipt_kind": "spec-reflection",
+  "feature_id": "feat-settings-screen",
+  "beads_epic": "kanjo-0l4",
+  "tasks": [
+    "SYS-SETTINGS-P01",
+    "SYS-SETTINGS-P02",
+    "SYS-SETTINGS-P03",
+    "SYS-SETTINGS-P04",
+    "SYS-SETTINGS-P05",
+    "SYS-SETTINGS-P06",
+    "SYS-SETTINGS-P07",
+    "SYS-SETTINGS-P08",
+    "SYS-SETTINGS-P09",
+    "SYS-SETTINGS-P10",
+    "SYS-SETTINGS-P11",
+    "SYS-SETTINGS-P12",
+    "SYS-SETTINGS-P13"
+  ],
+  "recorded_at": "2026-09-23T10:24:07Z",
+  "base": "origin/main 683226b",
+  "impact": "yes",
+  "changes": [
+    {
+      "topic": "migration 番号",
+      "decision": "0051 は main の 0051_tradeoff_notes.sql (#68) が使ったため 0052_settings_norm_rules.sql / 0053_settings_cash_overrides.sql / 0054_settings_change_log.sql へ繰り上げ。EXPECTED_D1_MIGRATION も 0054 へ",
+      "reflected_in": [
+        "migrations/0052_settings_norm_rules.sql",
+        "migrations/0053_settings_cash_overrides.sql",
+        "migrations/0054_settings_change_log.sql",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/deletion-schema.test.ts",
+        "packages/api/test/settings-screen.integration.test.ts",
+        "specs/spec-settings-screen.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md",
+        "docs/settings-screen/design-decisions.md"
+      ]
+    },
+    {
+      "topic": "集計ルール id の長さ",
+      "decision": "移行 id ('m-' || lower(hex(raw))) を許すため NORM_RULE_ID_PATTERN を ^(?:[A-Za-z0-9_-]{1,64}|m-(?:[0-9a-f]{2}){1,180})$ (最大 362 字) とし、画面発行 id は従来どおり 64 字以内に保つ",
+      "reflected_in": [
+        "specs/spec-settings-screen.md",
+        "architecture/settings-database.md",
+        "docs/settings-screen/design-decisions.md"
+      ]
+    },
+    {
+      "topic": "トレードオフ画面サイクルの章の退避",
+      "decision": "system-spec は現行 1 世代運用。main のトレードオフ画面の章を system-spec/archive/2026-09-23-tradeoff-screen/ へ丸ごと退避し、graph の arch-tradeoff-* 8 件の source_lineage.source_path を退避先へ付け替えた (内容同一のため digest は据え置き)",
+      "reflected_in": [
+        "system-spec/archive/2026-09-23-tradeoff-screen/README.md",
+        "architecture/graph.json"
+      ]
+    },
+    {
+      "topic": "設定サイクルの章の確定",
+      "decision": "system-spec 直下の章 (00-requirements-definition.md と 9 カテゴリ章・spec-state.json・fetched-references.json・completeness-findings.json) は設定サイクルの世代を現行とする",
+      "reflected_in": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "system-spec/database.md",
+        "system-spec/backend.md",
+        "system-spec/frontend.md",
+        "system-spec/ui-ux.md",
+        "system-spec/auth.md",
+        "system-spec/security.md",
+        "system-spec/infrastructure.md",
+        "system-spec/maintenance-ops.md"
+      ]
+    }
+  ],
+  "not_changed": [
+    {
+      "path": "features/feat-settings-screen.md",
+      "reason": "本文自身が「migration 番号 (0051 から) は予定番号」と断っており、digest で凍結された計画成果物。lineage に従い据え置く"
+    },
+    {
+      "path": "tasks/feat-settings-screen/*.md と .dev-graph/plans/**",
+      "reason": "promotion 済みで digest 凍結。予定番号のまま残し、追跡下の docs/specs 側だけを実績番号へ揃える"
+    },
+    {
+      "path": "docs/spec-v1.1.md",
+      "reason": "設定画面は既存 FR の画面化で、v1.1 の規則自体に変更が無い。触ると税境界 node の digest が動くため据え置く"
+    }
+  ],
+  "gates": {
+    "lint": "EXIT 0 (biome 681 files / graph-lineage 158 node / security:content OK)",
+    "typecheck": "EXIT 0",
+    "tests": "core 1103 passed + 6 skipped / api 903 passed (67 files) / web passed"
+  },
+  "digests": {
+    "specs/spec-settings-screen.md": "e8a78a32ed3e7be8614be857b8aa478615e37004ca18a8d448a17f2611681548",
+    "architecture/settings-backend.md": "3263d786e3defa673a7ebaa798a11adc359315960dea3065e7cdc90c1c0c5b56",
+    "architecture/settings-database.md": "9b4d222df618c50fecd916be5975642d225c36aee91f037cdd92f531a2ed7e53",
+    "architecture/settings-infrastructure.md": "586cabaa3b27a2a2822d1396b35cbccf39a6319bce35986320a0e5bf5a1c4309",
+    "architecture/settings-maintenance-ops.md": "42e8ef552d951fd73b475314379b88f86b0b8d628c6e76cc1ea1621cab1db7f9",
+    "architecture/graph.json": "cbefef355c109d37997dd18b6e7cee51e784efc078d662e57b076326d860b427",
+    "docs/data-schema.md": "d6813f35a25d65abec17cf0b6a6c7696ed785aac95a88ad351bf9e0ea57ea8fe",
+    "docs/ui-decisions.md": "b189dab2737c23e84a4687c76bb57d3bcac9d012f02f59c6baa96f42d6888011",
+    "docs/settings-screen/design-decisions.md": "919cae2dd9a9209faad4a9805ca654c1f53dad0e9165712e621ee89c6ae1f96e"
+  }
+}

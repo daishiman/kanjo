@@ -5,7 +5,7 @@
  *
  * ## 置換前に落ちる理由
  *
- * 置換前は settings_norm_rules・settings_cash_overrides・settings_change_log (0051〜0053) も
+ * 置換前は settings_norm_rules・settings_cash_overrides・settings_change_log (0052〜0054) も
  * 設定画面の経路も無く、どの要求も 404 になる。旧 PUT /api/settings は旧表にしか書かない。
  *
  * 実データを使わず、専用のインメモリ D1・R2 だけで検証する。
@@ -481,11 +481,11 @@ describe('AT-15 設定ファイルの書き出しと復元', () => {
   });
 });
 
-describe('AT-17 migration 0051〜0053 は追加だけで、旧表の値を同じ意味で写す', () => {
+describe('AT-17 migration 0052〜0054 は追加だけで、旧表の値を同じ意味で写す', () => {
   const names = migrationFiles();
-  const settingsMigrations = names.filter((n) => /^005[1-3]_/.test(n));
+  const settingsMigrations = names.filter((n) => /^005[2-4]_/.test(n));
 
-  it('0051〜0053 は UPDATE・DELETE・DROP・ALTER を含まない', () => {
+  it('0052〜0054 は UPDATE・DELETE・DROP・ALTER を含まない', () => {
     expect(settingsMigrations).toHaveLength(3);
     for (const filename of settingsMigrations) {
       const sql = splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8')).join('\n');
@@ -506,7 +506,7 @@ describe('AT-17 migration 0051〜0053 は追加だけで、旧表の値を同じ
       const db = (await mf.getD1Database('DB')) as D1Database;
       await runMigrations(
         db,
-        names.filter((n) => n < '0051'),
+        names.filter((n) => n < '0052'),
       );
       const longRaw = '長い日本語の勘定科目名を十一字以上';
       await db.batch([

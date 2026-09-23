@@ -1398,7 +1398,7 @@ path の `date` だけ。本文は空（`{}`）。
 
 - 追加のみの 3 本とする: `0052_settings_norm_rules.sql`（集計ルール）・`0053_settings_cash_overrides.sql`（現金上書き）・`0054_settings_change_log.sql`（変更履歴）（番号の割り方は agent 推定・利用者未確認。根拠 qa-settings-database-web-002。1 本にまとめる案も同じ根拠にある）。
 - 3 表の新設・主キーの先頭を利用者にすること・変更履歴に由来を持たせることは agent 推定・利用者未確認（根拠 qa-settings-database-web-004）。列の集合は qa-settings-database-web-001・003 に従う。
-- 番号 0051 は予定番号。現時点の最新は `0050_budget_plans.sql`。実装時に `origin/main` を fetch し直して確かめ、main が進んで埋まっていたら次の空き番号へ繰り上げ、`packages/api/src/schema-guard.ts` の `EXPECTED_D1_MIGRATION` と本書の参照を同じ番号に揃える（C3）。3 本なら `EXPECTED_D1_MIGRATION = '0054_settings_change_log.sql'`。
+- 起案時の予定番号は 0051〜0053 だった。実装の最終段で `origin/main` を fetch し直したところ、トレードオフ画面（#68）が `0051_tradeoff_notes.sql` を使っていたため 0052〜0054 へ繰り上げ、`packages/api/src/schema-guard.ts` の `EXPECTED_D1_MIGRATION = '0054_settings_change_log.sql'` と本書の参照を揃えた（C3）。merge の直前にもう一度 fetch し、0052〜0054 がまだ空いているかを確かめる。
 - 既存の行を書き換える文（UPDATE・DELETE・表の作り直し）は入れない。既存 `account_norm_map`・`cash_overrides` は残す（C3）。
 
 ```sql

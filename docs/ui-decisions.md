@@ -327,7 +327,7 @@ Q-1 は system-spec の承認済み契約と一貫する `done` に確定した�
 
 ## 決定の更新(2026-09-22 / 設定画面)
 
-`/settings`(設定)を `design/FINAL-UI/images/18-settings.png` に合わせて作り直した。判断の正本は `specs/spec-settings-screen.md` と `architecture/settings-*.md`。判断の経緯・仕様との食い違い・未決事項の状態は [`settings-screen/design-decisions.md`](settings-screen/design-decisions.md) に、保存先の表は [`data-schema.md`](data-schema.md) の「設定画面の 3 表(0051〜0053)」にまとめた。画面の文言は `packages/web/src/pages/settings/view-model.ts` を正本にしている。
+`/settings`(設定)を `design/FINAL-UI/images/18-settings.png` に合わせて作り直した。判断の正本は `specs/spec-settings-screen.md` と `architecture/settings-*.md`。判断の経緯・仕様との食い違い・未決事項の状態は [`settings-screen/design-decisions.md`](settings-screen/design-decisions.md) に、保存先の表は [`data-schema.md`](data-schema.md) の「設定画面の 3 表(0052〜0054)」にまとめた。画面の文言は `packages/web/src/pages/settings/view-model.ts` を正本にしている。
 
 | 更新した判断 | これまで | 2026-09-22の決定 | 変更した理由 / 却下案 |
 |---|---|---|---|
