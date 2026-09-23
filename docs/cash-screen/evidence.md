@@ -37,7 +37,7 @@
 | S4-b | PASS | `pnpm test`(api 統合) | 18:13:27–18:48:18 | bulk-delete と bulk-restore に他人の id を 1 件混ぜる 2 件が合格 |
 | S4-c | PASS | `pnpm test`(api 統合、core) | 18:13:27–18:48:18 | 「不正な入力は 400」と、core「allowUnset(API の互換)は…」が合格。後者は、担当者と業務の目的を API で任意にしても値の検査は画面と同じであることを確かめる |
 | S4-d | PASS | `pnpm test`(api 統合) | 18:13:27–18:48:18 | 「PUT: 削除中の行は編集できず 404 で、編集で復活もしない」が合格 |
-| S5-a | PASS | `pnpm test`(api `cash-migration-0051.test.ts`) | 18:13:27–18:48:18 | 既存行の更新 0 件で合格 |
+| S5-a | PASS | `pnpm test`(api `cash-migration-0052.test.ts`) | 18:13:27–18:48:18 | 既存行の更新 0 件で合格 |
 | S5-b | PASS | `pnpm test`(api `scheduled-maintenance-budget.test.ts`) | 18:13:27–18:48:18 | `total === PLAN_MAX (49)` で合格 |
 | S5-c | PASS | `verify:full` の各段、`pnpm skills:test`、`build:bundle` の直後の `check:js-budget` | 17:50:38–18:58:40 | 全段が合格(下の「品質ゲート」)。打ち切られた 2 件は単独で合格 |
 | S5-d | PASS | `pnpm test`(web `cash-duplicate.dom.test.tsx`・`cash-transit-regression.test.ts`・DOM) | 18:13:27–18:48:18 | 重複の確認、交通費の入替と往復、編集の保存が合格 |
@@ -70,11 +70,23 @@ S1〜S5 のすべての項目が PASS で、一部だけ満たした項目は無
 
 | 見つけたこと | 直し方 | 流し直した検査 |
 |---|---|---|
-| migration 0050 を予算(`0050_budget_plans.sql`)が先に使っていた | 現金を `0051_cash_entry_owner_soft_delete.sql` へ繰り上げた(design-decisions OI-01) | `cash-migration-0051.test.ts`・`budget-migration-0050.test.ts`・`deletion-schema.test.ts`・`schema-guard.test.ts` |
+| migration 0050 を予算(`0050_budget_plans.sql`)が先に使っていた | 現金を 0051 へ繰り上げた(design-decisions OI-01) | `cash-migration-*.test.ts`・`budget-migration-0050.test.ts`・`deletion-schema.test.ts`・`schema-guard.test.ts` |
 | 復元 snapshot の束縛数を予算と現金が別々に 20 にし、merge で衝突せず ? 21 個に 20 個を渡していた(取込と復元が 500) | 束縛数を SQL の `?` から数える形にした(design-decisions §5) | `import-lifecycle.test.ts`・`cash-screen.integration.test.ts` 106 件 |
 | main の checkbox 契約(`type="checkbox"` は `SelectionCheckbox.tsx` だけ) | 往復・ページ全選択・行選択を `SelectionCheckbox` へ寄せた | `selection-checkbox-source-contract.test.ts` と `pages/cash`・`components` の 109 件 |
 
 このほか `pnpm typecheck`・`pnpm lint`(graph-lineage 150 ノードを含む)・core 1,046 件・web の予算と Layout の 50 件・api 全件(65 ファイル・907 件)が合格した。
+
+## main との 2 回目の merge 後の再検証(P13)
+
+PR を出す前に `origin/main` を取り直すと、トレードオフ画面(#68、683226b)が入っていた。衝突を解いた箇所へ当たる検査だけを流し直した(MVP のため最小限)。日付は 2026-09-23(JST)。
+
+| 見つけたこと | 直し方 | 流し直した検査 |
+|---|---|---|
+| migration 0051 をトレードオフ(`0051_tradeoff_notes.sql`)が先に使っていた | 現金を `0052_cash_entry_owner_soft_delete.sql` へもう一段繰り上げた(design-decisions OI-01) | `cash-migration-0052.test.ts`・`budget-migration-0050.test.ts`・`deletion-schema.test.ts`・`schema-guard.test.ts`・`import-lifecycle.test.ts` 100 件 |
+| 仕様章の直下がトレードオフのサイクルだった | トレードオフの 14 ファイルを `archive/2026-09-22-tradeoff-screen/` へ退避し、`arch-tradeoff-*` 8 件の `source_path` を付け替えた(内容は同一なので digest は不変) | `pnpm lint`(graph-lineage 158 ノード)・`validate-graph-schema.py` |
+| `docs/data-schema.md`・`docs/ui-decisions.md`・`architecture/graph.json` が末尾に同じ位置で両方の節を足していた | どちらも残して並べた(トレードオフ→現金の順) | `pnpm lint`・`pnpm typecheck` |
+
+現金とトレードオフの統合テスト 80 件、`pages/cash` と `components` の 107 件、core の現金 40 件も合格した。復元 snapshot の束縛数は、1 回目の merge で `?` から数える形にしてあるため今回は手を入れていない。
 
 ## phase ごとの記録の置き場所
 

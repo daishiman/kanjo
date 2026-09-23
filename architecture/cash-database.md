@@ -2,7 +2,7 @@
 graph_node_id: "arch-cash-database"
 artifact_kind: "architecture"
 artifact_subtypes: ["data"]
-title: "現金入力 — 追加のみの migration 0051 で owner・transit_purpose・deleted_at を足し、既存行を書き換えずに論理削除と名義を持つ"
+title: "現金入力 — 追加のみの migration 0052 で owner・transit_purpose・deleted_at を足し、既存行を書き換えずに論理削除と名義を持つ"
 project_id: "kanjo"
 domain: "database"
 status: "active"
@@ -50,13 +50,13 @@ serves_goals: ["G2", "G4"]
 
 # Architecture overview
 
-現金入力 — 追加のみの migration `0051` で `cash_entries` に `owner` (名義)・`transit_purpose` (業務の目的)・`deleted_at` (論理削除) を足し、`(user_id, deleted_at)` の索引を張る。既存行は書き換えない。入力経路は列を持たず `transit_from` の有無から導く。`system-spec/database.md` は承認時入力、本書は列・索引・読取条件・保持期間・移行の制約を持つ。
+現金入力 — 追加のみの migration `0052` で `cash_entries` に `owner` (名義)・`transit_purpose` (業務の目的)・`deleted_at` (論理削除) を足し、`(user_id, deleted_at)` の索引を張る。既存行は書き換えない。入力経路は列を持たず `transit_from` の有無から導く。`system-spec/database.md` は承認時入力、本書は列・索引・読取条件・保持期間・移行の制約を持つ。
 
 ## Context and drivers
 
 - Business/technical context: `cash_entries` は `packages/api/src/db/schema.ts:439-464` にあり、列は id・user_id・date・month・side・io・amount・description・category_major・category_mid・memo・transit_from・transit_to・transit_round・receipt_waived・created_at・updated_at。索引は `idx_cash_month` (user_id, month) だけ。最新 migration は `0049_ai_report_invariants.sql`。`deletion-retention.ts` の tombstone は取込削除の取り消し用で、本件とは別用途 (qa-cash-database-web-evidence-001)。
 - Quality attribute priorities: G2・G4 に資する。DDD の『永続化するのは状態であって表示ではない』を適用し、入力経路や『未設定』の表示を列にしない (agent 推定・利用者未確認、design_applications)。上流指針は data-access と reliability (Google SRE)。
-- Constraints: D1 (SQLite)。SQLite の `ALTER TABLE ... ADD COLUMN` は列の追加だけを行い既存行を書き換えない。migration は 0051 から採番し、既存行と `cashToDeal` / `cashToTx` の結果を変えない (C2)。
+- Constraints: D1 (SQLite)。SQLite の `ALTER TABLE ... ADD COLUMN` は列の追加だけを行い既存行を書き換えない。migration は 0052 から採番し、既存行と `cashToDeal` / `cashToTx` の結果を変えない (C2)。
 
 ## Goals and non-goals
 
@@ -78,7 +78,7 @@ serves_goals: ["G2", "G4"]
 
 | Container/Component | Responsibility | Interface | Data owner | Deployment unit |
 |---|---|---|---|---|
-| `migrations/0051_*.sql` | 列 3 本と索引 1 本の追加 | SQL | D1 | Migrate ワークフロー |
+| `migrations/0052_*.sql` | 列 3 本と索引 1 本の追加 | SQL | D1 | Migrate ワークフロー |
 | `db/schema.ts` の `cashEntries` | Drizzle の型に 3 列と索引を足す | Drizzle | packages/api | Worker |
 | `schema-guard.ts` | Worker が前提とする schema head | `EXPECTED_D1_MIGRATION` | packages/api | Worker |
 | `store.ts` / `routes/settings.ts` の読取 | `deleted_at IS NULL` で絞る | SQL / Drizzle | packages/api | Worker |
@@ -125,11 +125,11 @@ serves_goals: ["G2", "G4"]
 
 #### Migration and recovery
 
-0051 は `ALTER TABLE cash_entries ADD COLUMN` 3 本と `CREATE INDEX` 1 本だけで、UPDATE を含まない。`schema-guard.ts:4` の `EXPECTED_D1_MIGRATION` を 0051 の migration ファイル名へ進める (列の一覧ではなく migration 名で判定する。system-spec と一致)。列の存在は `PRAGMA table_info` で確かめるテスト (前例 `deletion-schema.test.ts:35`) で補う。夜間 cron の完全消去 job は `/api/*` に掛かる `runtimeSchemaGuard` の外で動くため、0051 の適用 (Migrate) を Worker の配備 (Deploy) より先に行う既存の順序で守る。JSON 復元の列リスト (`import-lifecycle.ts:1552` の `restoreCashEntryStatements`) に 3 列を足し、エクスポートと復元で削除中の状態と名義が往復するようにする (qa-cash-database-web-002)。
+0052 は `ALTER TABLE cash_entries ADD COLUMN` 3 本と `CREATE INDEX` 1 本だけで、UPDATE を含まない。`schema-guard.ts:4` の `EXPECTED_D1_MIGRATION` を 0052 の migration ファイル名へ進める (列の一覧ではなく migration 名で判定する。system-spec と一致)。列の存在は `PRAGMA table_info` で確かめるテスト (前例 `deletion-schema.test.ts:35`) で補う。夜間 cron の完全消去 job は `/api/*` に掛かる `runtimeSchemaGuard` の外で動くため、0052 の適用 (Migrate) を Worker の配備 (Deploy) より先に行う既存の順序で守る。JSON 復元の列リスト (`import-lifecycle.ts:1552` の `restoreCashEntryStatements`) に 3 列を足し、エクスポートと復元で削除中の状態と名義が往復するようにする (qa-cash-database-web-002)。
 
 #### Data verification
 
-migration の適用後に `PRAGMA table_info(cash_entries)` で 3 列、`PRAGMA index_list` で索引を確かめる。既存行の `cashToDeal` / `cashToTx` の結果が 0051 の前後で同じであることをテストで確かめる。
+migration の適用後に `PRAGMA table_info(cash_entries)` で 3 列、`PRAGMA index_list` で索引を確かめる。既存行の `cashToDeal` / `cashToTx` の結果が 0052 の前後で同じであることをテストで確かめる。
 
 ## Architecture decisions
 
@@ -143,13 +143,13 @@ migration の適用後に `PRAGMA table_info(cash_entries)` で 3 列、`PRAGMA 
 
 ## Delivery, migration and rollback
 
-- Build/deploy topology: 既存の Migrate ワークフロー (`.github/workflows/migrate.yml`) で 0051 を適用してから Deploy (`deploy.yml`)。
-- Migration sequence: 0051 の SQL → `schema.ts` の型 → `EXPECTED_D1_MIGRATION` → 読取条件 → JSON 復元の列 → 完全消去 job。
-- Rollback trigger/procedure: Worker を戻しても 0051 の列は落とさない (列の削除は行わない)。旧 Worker は `deleted_at` を読まないため、差し戻し中は削除中の行が再び見える。差し戻しの前に削除中の件数を確かめる。
+- Build/deploy topology: 既存の Migrate ワークフロー (`.github/workflows/migrate.yml`) で 0052 を適用してから Deploy (`deploy.yml`)。
+- Migration sequence: 0052 の SQL → `schema.ts` の型 → `EXPECTED_D1_MIGRATION` → 読取条件 → JSON 復元の列 → 完全消去 job。
+- Rollback trigger/procedure: Worker を戻しても 0052 の列は落とさない (列の削除は行わない)。旧 Worker は `deleted_at` を読まないため、差し戻し中は削除中の行が再び見える。差し戻しの前に削除中の件数を確かめる。
 
 ## Risks and verification
 
-- Risk/assumption: 完全消去 job は `runtimeSchemaGuard` の外で動くので、0051 未適用の D1 に新 Worker の cron が当たらないよう Migrate → Deploy の順を崩さない。
-- Risk/assumption: `runtimeSchemaGuard` は列を見ないため、0051 の名前だけ記録されて列が欠ける状態は検出しない。PRAGMA のテストで補う。
-- Architecture fitness test: 0051 に UPDATE / DELETE / DROP が無いこと。`cash_entries` の読取に `deleted_at` 条件の無いものが完全消去 job 以外に無いこと。
+- Risk/assumption: 完全消去 job は `runtimeSchemaGuard` の外で動くので、0052 未適用の D1 に新 Worker の cron が当たらないよう Migrate → Deploy の順を崩さない。
+- Risk/assumption: `runtimeSchemaGuard` は列を見ないため、0052 の名前だけ記録されて列が欠ける状態は検出しない。PRAGMA のテストで補う。
+- Architecture fitness test: 0052 に UPDATE / DELETE / DROP が無いこと。`cash_entries` の読取に `deleted_at` 条件の無いものが完全消去 job 以外に無いこと。
 - Load/failure/security validation: 500 行の完全消去が夜間の D1 予算内に収まることを予算表のテストで確かめる (`architecture/cash-infrastructure.md`)。

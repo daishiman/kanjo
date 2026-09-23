@@ -781,7 +781,7 @@ export interface ImportRestoreSettingsSnapshot {
     budgets: number;
     budgetPlans: number;
     cashOverrides: number;
-    /** 0051: 論理削除中を含む現金明細の件数。JSON 復元で現金明細を入れてよいかの判定に使う */
+    /** 0052: 論理削除中を含む現金明細の件数。JSON 復元で現金明細を入れてよいかの判定に使う */
     cashEntries: number;
   };
 }
@@ -1046,7 +1046,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
         transitTo: row.v11,
         transitRound: row.v12 === 1,
         receiptWaived: row.v13 === 1,
-        // 0051。cash 行で未使用だった v14/v15 に載せ、snapshot の列数を増やさない
+        // 0052。cash 行で未使用だった v14/v15 に載せ、snapshot の列数を増やさない
         owner: normalizeOwner(row.v14 == null ? null : String(row.v14)),
         transitPurpose: row.v15 ?? null,
       }),

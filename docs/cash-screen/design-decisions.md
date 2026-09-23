@@ -27,7 +27,7 @@ feature の受入条件は 1 文に複数の主張を含む。「一部だけ満
 | | S4-b 一括は 1 件でも他人の id を含めば何も変えない | 統合テスト「bulk-delete に他の利用者の id を 1 件混ぜると 404 で、自分の行も変わらない」「bulk-restore に他の利用者の id を 1 件混ぜると 404 で、自分の削除中の行も戻らない」 |
 | | S4-c 不正な入力(実在しない日付・範囲外の金額・候補外の名義 / カテゴリ / 業務の目的・長すぎる文字列)が 400 | 統合テスト「不正な入力は 400」 |
 | | S4-d 削除中の行の PUT が 404 | 統合テスト「PUT: 削除中の行は編集できず 404 で、編集で復活もしない」 |
-| S5 | S5-a migration 0051 の適用で既存行の更新が 0 件 | `cash-migration-0051.test.ts` |
+| S5 | S5-a migration 0052 の適用で既存行の更新が 0 件 | `cash-migration-0052.test.ts` |
 | | S5-b 夜間予算が `total === PLAN_MAX (49)` | `scheduled-maintenance-budget.test.ts` |
 | | S5-c `verify:full`・`skills:test`・初期 JS 予算が緑 | §7 P06・P09 の実行記録 |
 | | S5-d 旧 `Cash.tsx` の操作(通常入力・交通費の入替と往復・重複の確認・編集・削除)が新しい構成から実行できる | `cash-duplicate.dom.test.tsx`、`cash-transit-regression.test.ts`、DOM テスト「保存に成功したら編集をやめ、変更した値が一覧に出る」「入替で出発駅と到着駅を入れ替え、合計は往復 (既定) なら片道の 2 倍、外すと片道を出す」 |
@@ -37,7 +37,7 @@ feature の受入条件は 1 文に複数の主張を含む。「一部だけ満
 
 | ID | 内容 | 担当 | 結論 |
 |---|---|---|---|
-| OI-01 | migration の番号 0051 | P05 | 計画時は予定番号 0050 で作った(`origin/main` f0e5a3b の最新は `0049_ai_report_invariants.sql`)。merge の前に fetch し直すと、予算画面(#67)が `0050_budget_plans.sql` を先に使っていたため 0051 へ繰り上げた。`.dev-graph/plans/` の promotion 記録と確定済みの仕様章は、計画時点の証跡として 0050 のまま残す |
+| OI-01 | migration の番号 0052 | P05 | 計画時は予定番号 0050 で作った(`origin/main` f0e5a3b の最新は `0049_ai_report_invariants.sql`)。merge の前に fetch し直すたびに先着が増え、2 段で繰り上げた。1 段目は予算画面(#67)の `0050_budget_plans.sql` を避けて 0051 へ、2 段目はトレードオフ画面(#68)の `0051_tradeoff_notes.sql` を避けて 0052 へ。番号は main に先に入ったほうが勝つ早い者勝ちなので、PR を出す直前にもう一度 fetch して空きを確かめる。`.dev-graph/plans/` の promotion 記録と確定済みの仕様章は、計画時点の証跡として 0050 のまま残す |
 | OI-02 | core テストの置き場(spec は `src/`、feature は `test/`) | P03 | §6 のとおり `packages/core/test/cash-screen.test.ts` に置く |
 | OI-03 | agent 推定・利用者未確認の値 | P01 | §3 の表に一覧化した。どれも実装を止める値ではないので、既定値で作り、利用者の確認を待つ |
 | OI-04 | 夜間予算の計画上限 49 | P05 | P04 で `total === PLAN_MAX` のテストを先に書き、P05 で `SCHEDULED_D1_QUERY_PLAN_MAX` を 47 → 49 に上げた |
@@ -69,7 +69,7 @@ spec が **agent 推定・利用者未確認** と注記した値。実装は既
 | 下書きのキー・保存の間隔・例外・上限・ログアウト時の消去・編集中 | `kanjo:cash-draft:v1:{userId}`、500 ms、例外は握る、上限で切る、ログアウトで消す、編集中は保存しない | R16 |
 | URL のキー名 | `tab` / `month` / `q` / `io` / `category` / `owner` / `route` / `min` / `max` / `from` / `to` / `page` | R17 |
 | 交通費タブでのバーの文言 | 「この内容で交通費を追加」 | — |
-| migration と索引の名前 | `0051_cash_entry_owner_soft_delete.sql` / `idx_cash_user_deleted` | — |
+| migration と索引の名前 | `0052_cash_entry_owner_soft_delete.sql` / `idx_cash_user_deleted` | — |
 | `check:cash-screen` の渡し方 | `KANJO_VISUAL_SCOPE=cash node scripts/check-financial-visuals.mjs` | — |
 
 ## 4. 関数の入出力(P02)
@@ -102,7 +102,7 @@ spec が **agent 推定・利用者未確認** と注記した値。実装は既
   4. `loadCategoryUsageContext`(科目使用状況と科目の名称変更)
   5. PUT の既存行取得(と UPDATE の条件)
 - **JSON 復元の件数の例外**: `destination_counts` に削除中を含む現金明細の件数を 1 つ足す(束縛数 19 → 20。予算画面の `budgetPlans` と合わせて main との merge 後は 21。両方が「20」と書いて行が一致し、merge で衝突しなかったため、束縛数は SQL の `?` から数える形へ改めた)。`restorableCashEntries` はこの件数で「移行先の現金明細が 0 件か」を判定し、削除中の行が残る間は現金明細を復元せず、その理由を計画に載せる。削除中の行の中身はどの出力にも出さない。
-- **migration 0051 は追加だけ**: `owner`(CHECK で 3 値か NULL)・`transit_purpose`・`deleted_at` の 3 列と索引 `idx_cash_user_deleted (user_id, deleted_at)`。既存行は 1 件も書き換えない。`runtimeSchemaGuard` の `EXPECTED_D1_MIGRATION` を 0051 へ進める。
+- **migration 0052 は追加だけ**: `owner`(CHECK で 3 値か NULL)・`transit_purpose`・`deleted_at` の 3 列と索引 `idx_cash_user_deleted (user_id, deleted_at)`。既存行は 1 件も書き換えない。`runtimeSchemaGuard` の `EXPECTED_D1_MIGRATION` を 0052 へ進める。
 - **夜間の完全消去**: 独立 job `cash_soft_delete_purge` を `scheduledMaintenance` の `Promise.allSettled` に足す。1 つの D1 batch で「対象の `cash:<id>` を指す `tx_edits` の削除」と「`deleted_at < now − 30日` を `deleted_at, id` の古い順に最大 500 行の削除」を行う。2 文は同じ副問い合わせで対象を選ぶ。予算は 2 本で、計画上限を 47 → 49 に上げる。
 - **画面の分割**: `pages/Cash.tsx` は `pages/cash/CashPage.tsx` を再 export するだけの入口にする(遅延読み込みと既存テストの mock を保つため)。本体は `pages/cash/` に、URL と一覧の状態・下書き・通常入力・交通費入力・一覧・削除確認とトースト・空状態・下部固定バーに分ける。
 
@@ -208,18 +208,18 @@ P06〜P09 の記録と差分を読み直し、配信してよいかを判断し�
 
 ### 確かめたこと
 
-- **Migrate と Deploy の順序**: `.github/workflows/deploy.yml` では、D1 migration の適用(`db:migrate:remote`)と未適用の検査が `wrangler deploy` より前に走る。0051 を `plan-auto-migration.mjs` の `destructiveFindings` に掛けると指摘は 0 件(`DELETE FROM`・`UPDATE … SET`・`ALTER TABLE … RENAME` を含まない)なので、Deploy の中で自動適用され、手動の Migrate(manifest の承認)は要らない。新しいコードは 0051 の列を読むが、列は Worker より先に入る。
-- **0051 の後で古いコードが動く間**: 移し替えのあいだ古い Worker が残っても、足したのは NULL を許す列と索引だけなので、古いコードの INSERT / SELECT は変わらず通る。
-- **巻き戻しの前提(対称でない点)**: 列は残したままコードだけを戻す。戻したコードには `deleted_at IS NULL` が無いので、削除中の行が有効な行として一覧・合計・集計に戻ってしまう。巻き戻す前に、削除中の行を restore で戻すか、指している `tx_edits` の `cash:<id>` と一緒に同じ batch で消すかを決める(`docs/data-schema.md`「0051 の適用と巻き戻し」)。`runtimeSchemaGuard` の `EXPECTED_D1_MIGRATION` も同じ変更で戻す。
+- **Migrate と Deploy の順序**: `.github/workflows/deploy.yml` では、D1 migration の適用(`db:migrate:remote`)と未適用の検査が `wrangler deploy` より前に走る。0052 を `plan-auto-migration.mjs` の `destructiveFindings` に掛けると指摘は 0 件(`DELETE FROM`・`UPDATE … SET`・`ALTER TABLE … RENAME` を含まない)なので、Deploy の中で自動適用され、手動の Migrate(manifest の承認)は要らない。新しいコードは 0052 の列を読むが、列は Worker より先に入る。
+- **0052 の後で古いコードが動く間**: 移し替えのあいだ古い Worker が残っても、足したのは NULL を許す列と索引だけなので、古いコードの INSERT / SELECT は変わらず通る。
+- **巻き戻しの前提(対称でない点)**: 列は残したままコードだけを戻す。戻したコードには `deleted_at IS NULL` が無いので、削除中の行が有効な行として一覧・合計・集計に戻ってしまう。巻き戻す前に、削除中の行を restore で戻すか、指している `tx_edits` の `cash:<id>` と一緒に同じ batch で消すかを決める(`docs/data-schema.md`「0052 の適用と巻き戻し」)。`runtimeSchemaGuard` の `EXPECTED_D1_MIGRATION` も同じ変更で戻す。
 - **夜間の予算**: 完全消去の 2 本で計画上限が 47 → 49。Free の 50 未満に収まり、`scheduled-maintenance-budget.test.ts` が `total === PLAN_MAX` を固定する。
 - **範囲の外の変更**: `packages/web/src/components/Layout.tsx` にログアウト時の `clearAllCashDrafts` を足した。R16(ログアウトで全利用者の下書きを消す)を満たすための 1 行で、共用端末で他人の下書きが残らないようにする。ほかの画面の振る舞いは変えない。
 - **P05 の見落とし**: `check:cash-screen` が task の成果物にあるのに未実装だった。task と差分の照合で見つけ、`check-financial-visuals.mjs` に `cash` の範囲を足し、`verify:full` に組み込んだ。
-- **担当者の必須化がアーキテクチャから外れていた**: `architecture/cash-backend.md` は「API では担当者と業務の目的を任意にし、画面では必須にする」と決めていた。0051 より前の SPA が送る本文を、移し替えのあいだも通すためだ。ところが実装では API も `z.enum(OWNER_VALUES)` で必須にしていた。`preview:smoke` が担当者を持たない本文で POST して 400 になったことで見つけた。core の `validateCashInput` に `allowUnset`(API だけが渡す)を足し、担当者と業務の目的の「無い」だけを許すようにした。値があるときの検査は画面と同じ。POST で無ければ NULL(R10 の「未設定」)を入れ、PUT で無ければ今の値を保つ(`keepUnsent`)。古い SPA で編集しても、0051 の後に付けた値が消えないようにするためだ。統合テスト「0051 より前の SPA の本文…を通す互換」の 4 件と core の 1 件で固定した。画面の検査は既定(厳格)のまま変えていない。
+- **担当者の必須化がアーキテクチャから外れていた**: `architecture/cash-backend.md` は「API では担当者と業務の目的を任意にし、画面では必須にする」と決めていた。0052 より前の SPA が送る本文を、移し替えのあいだも通すためだ。ところが実装では API も `z.enum(OWNER_VALUES)` で必須にしていた。`preview:smoke` が担当者を持たない本文で POST して 400 になったことで見つけた。core の `validateCashInput` に `allowUnset`(API だけが渡す)を足し、担当者と業務の目的の「無い」だけを許すようにした。値があるときの検査は画面と同じ。POST で無ければ NULL(R10 の「未設定」)を入れ、PUT で無ければ今の値を保つ(`keepUnsent`)。古い SPA で編集しても、0052 の後に付けた値が消えないようにするためだ。統合テスト「0052 より前の SPA の本文…を通す互換」の 4 件と core の 1 件で固定した。画面の検査は既定(厳格)のまま変えていない。
 - **`check:cash-screen` の fixture の漏れ**: 現金入力は担当者の表示名(`/api/settings/owner-labels`)を読む。これが fixture に無かったので、vite の proxy を通って API へ Cookie 無しで届き、401 が返って画面がログインへ切り替わっていた。切り替わるのが描画の途中なので、「描画待ちのタイムアウト」と「削除ボタンが見つからない」の 2 通りの落ち方をした。fixture に `{ labels: {} }`(既定の表示名)を足し、3 回続けて合格することを確かめた。
 
 ### 配信の前に残すこと
 
-- merge の直前に `origin/main` を fetch し、migration の番号 0051 がまだ空いていることを確かめる(OI-01)。
+- merge の直前に `origin/main` を fetch し、migration の番号 0052 がまだ空いていることを確かめる(OI-01)。
 - §3 の agent 推定の値は、PR のレビューで利用者が確かめる。変わったら [`rules.md`](rules.md) の行・core・テストを同じ変更で直す。
 
 ## 9. 参照画像との構造適合と意図的な差分

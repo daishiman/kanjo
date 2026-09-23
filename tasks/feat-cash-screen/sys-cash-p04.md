@@ -2,7 +2,7 @@
 graph_node_id: "SYS-CASH-P04"
 artifact_kind: "task"
 artifact_subtypes: []
-title: "core 境界値・API 契約・migration 0051・夜間予算・DOM の失敗テスト先行作成"
+title: "core 境界値・API 契約・migration 0052・夜間予算・DOM の失敗テスト先行作成"
 project_id: "feature-package-feat-cash-screen"
 domain: "quality"
 status: "active"
@@ -23,7 +23,7 @@ created_at: "2026-09-22T01:43:10Z"
 updated_at: "2026-09-22T01:43:10Z"
 depends_on: ["SYS-CASH-P03"]
 related_nodes: ["arch-cash-auth", "arch-cash-backend", "arch-cash-database", "arch-cash-frontend", "arch-cash-infrastructure", "arch-cash-maintenance-ops", "arch-cash-security", "arch-cash-ui-ux", "spec-cash-screen"]
-resource_scope: ["packages/core/test/cash-screen.test.ts", "packages/api/src/cash-screen.integration.test.ts", "packages/api/src/cash-migration-0051.test.ts", "packages/web/src/pages/cash/cash-screen.dom.test.tsx", "packages/api/src/scheduled-maintenance-budget.test.ts", "packages/api/src/import-lifecycle-pure.test.ts", "packages/api/src/schema-guard.test.ts", "packages/api/src/import-lifecycle.test.ts"]
+resource_scope: ["packages/core/test/cash-screen.test.ts", "packages/api/src/cash-screen.integration.test.ts", "packages/api/src/cash-migration-0052.test.ts", "packages/web/src/pages/cash/cash-screen.dom.test.tsx", "packages/api/src/scheduled-maintenance-budget.test.ts", "packages/api/src/import-lifecycle-pure.test.ts", "packages/api/src/schema-guard.test.ts", "packages/api/src/import-lifecycle.test.ts"]
 purpose: null
 goal: null
 scope_in: null
@@ -47,7 +47,7 @@ completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "link
 implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sections": [], "status": "complete"}
 ---
 
-# core 境界値・API 契約・migration 0051・夜間予算・DOM の失敗テスト先行作成
+# core 境界値・API 契約・migration 0052・夜間予算・DOM の失敗テスト先行作成
 
 ## Machine-readable registration fields
 
@@ -84,7 +84,7 @@ spec のテスト計画 (合計・絞り込み・ページング・交通費合�
 - Frontend: applicable: DOM テストを書く
 - Backend: applicable: core の境界値テストを書く
 - API: applicable: API の Contract tests を書く
-- Data: applicable: migration 0051 のテストを書く
+- Data: applicable: migration 0052 のテストを書く
 - Infrastructure: N/A: 基盤は変更しない
 - Security: applicable: 404 と 400 のテストを書く
 - Quality: applicable: 実装前に失敗することを確かめる
@@ -102,7 +102,7 @@ spec のテスト計画 (合計・絞り込み・ページング・交通費合�
 - Produced artifacts:
 - packages/core/test/cash-screen.test.ts
 - packages/api/src/cash-screen.integration.test.ts
-- packages/api/src/cash-migration-0051.test.ts
+- packages/api/src/cash-migration-0052.test.ts
 - packages/web/src/pages/cash/cash-screen.dom.test.tsx
 - Consumed artifacts:
 - docs/cash-screen/design-decisions.md
@@ -110,7 +110,7 @@ spec のテスト計画 (合計・絞り込み・ページング・交通費合�
 - Write scope/touches:
 - packages/core/test/cash-screen.test.ts
 - packages/api/src/cash-screen.integration.test.ts
-- packages/api/src/cash-migration-0051.test.ts
+- packages/api/src/cash-migration-0052.test.ts
 - packages/web/src/pages/cash/cash-screen.dom.test.tsx
 - packages/api/src/scheduled-maintenance-budget.test.ts
 - packages/api/src/import-lifecycle-pure.test.ts
@@ -146,7 +146,7 @@ spec のテスト計画 (合計・絞り込み・ページング・交通費合�
 - 合計・絞り込み・ページング・交通費合計・入力検証の境界が toBe / toEqual で書かれ、実装前は失敗する。
 - 削除中の行を読まない条件が経路ごとに 1 件ずつあり、条件を 1 経路だけ外すとその経路のテストだけが落ちることを検算した記録がある。
 - 夜間の完全消去の 29 日 / 31 日・501 件・tx_edits のテストと、total === PLAN_MAX (49) のテストがある。
-- 他人の id に 404、不正な入力に 400、migration 0051 の適用で既存行の更新 0 件のテストがある。
+- 他人の id に 404、不正な入力に 400、migration 0052 の適用で既存行の更新 0 件のテストがある。
 - JSON 復元が owner と transitPurpose を戻し、削除中の行だけが残る移行先では現金明細を入れず理由を返すテストが import-lifecycle.test.ts にある。
 - Automated commands:
 - pnpm --filter @kanjo/core test
@@ -155,7 +155,7 @@ spec のテスト計画 (合計・絞り込み・ページング・交通費合�
 - Required evidence:
 - packages/core/test/cash-screen.test.ts
 - packages/api/src/cash-screen.integration.test.ts
-- packages/api/src/cash-migration-0051.test.ts
+- packages/api/src/cash-migration-0052.test.ts
 - packages/web/src/pages/cash/cash-screen.dom.test.tsx
 
 ## Rollout and rollback

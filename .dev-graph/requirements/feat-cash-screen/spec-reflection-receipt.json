@@ -42,6 +42,12 @@
       "finding": "画面の決定の経緯・受入の証跡・データ構造の変更を読む場所が無い。",
       "action": "docs/cash-screen/design-decisions.md と evidence.md を置き、docs/ui-decisions.md と docs/data-schema.md に現金の節を予算の節の後へ追記した。",
       "files": ["docs/cash-screen/design-decisions.md", "docs/cash-screen/evidence.md", "docs/ui-decisions.md", "docs/data-schema.md"]
+    },
+    {
+      "id": "I7",
+      "finding": "PR 作成の直前に origin/main を取り直すと、トレードオフ画面 (#68, 683226b) が 0051_tradeoff_notes.sql と system-spec 直下のサイクルを先に取っていた。",
+      "action": "現金の migration を 0052_cash_entry_owner_soft_delete.sql へもう一段繰り上げ (schema-guard の EXPECTED_D1_MIGRATION・cash-migration-0052.test.ts・コード注釈・spec・feature・architecture・task・docs を統一)、トレードオフの確定章 14 ファイルを system-spec/archive/2026-09-22-tradeoff-screen/ へ退避して arch-tradeoff-* 8 件の source_path を付け替えた (内容同一のため digest は不変)。docs/data-schema.md・docs/ui-decisions.md・architecture/graph.json の末尾衝突は両方の節を残して並べた (158 ノード)。",
+      "files": ["migrations/0052_cash_entry_owner_soft_delete.sql", "packages/api/src/schema-guard.ts", "packages/api/src/cash-migration-0052.test.ts", "system-spec/archive/2026-09-22-tradeoff-screen/", "architecture/graph.json", "specs/spec-cash-screen.md", "docs/cash-screen/design-decisions.md", "docs/cash-screen/evidence.md"]
     }
   ],
   "no_impact": [

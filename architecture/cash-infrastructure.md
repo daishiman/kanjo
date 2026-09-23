@@ -81,7 +81,7 @@ serves_goals: ["G2"]
 | `scheduledMaintenance` | 各 job を独立に実行 | `Promise.allSettled` | packages/api | Worker |
 | `cash_soft_delete_purge` | 30 日超の `cash_entries` を 1 晩 500 行まで物理削除 | 関数 | packages/api | Worker |
 | `scheduled-maintenance-budget.ts` | job 名と query 数の宣言 | 定数 + 検査 | packages/api | Worker |
-| Migrate / Deploy ワークフロー | 0051 の適用と配信 | GitHub Actions | リポジトリ | CI |
+| Migrate / Deploy ワークフロー | 0052 の適用と配信 | GitHub Actions | リポジトリ | CI |
 
 ## Cross-cutting contracts
 
@@ -89,7 +89,7 @@ serves_goals: ["G2"]
 - Errors/resilience: job の失敗は他の job に波及しない (`allSettled`)。失敗した晩の分は翌晩に再び対象になる。
 - Observability/audit: 消去件数を JSON ログに出し、500 行の上限に達したら warn を出す (`architecture/cash-maintenance-ops.md`)。
 - Configuration/secrets: N/A: 新しい設定・secret は無い。
-- Compatibility/versioning: 0051 の適用前に新 Worker が動くと `/api/*` は `runtimeSchemaGuard` が 503 を返す。夜間 cron の完全消去 job はこの guard の外で動くため、0051 の適用 (Migrate) を Worker の配備 (Deploy) より先に行う既存の順序で守る。
+- Compatibility/versioning: 0052 の適用前に新 Worker が動くと `/api/*` は `runtimeSchemaGuard` が 503 を返す。夜間 cron の完全消去 job はこの guard の外で動くため、0052 の適用 (Migrate) を Worker の配備 (Deploy) より先に行う既存の順序で守る。
 
 ## Subtype architecture
 
@@ -111,7 +111,7 @@ serves_goals: ["G2"]
 
 #### IaC and delivery
 
-`wrangler.jsonc` は変えない。`SCHEDULED_MAINTENANCE_JOB_NAMES` (`scheduled-maintenance-budget.ts:16-24`) に `cash_soft_delete_purge` を足し、`SCHEDULED_MAINTENANCE_D1_PLAN` に D1 クエリ 2 本を宣言し、`concurrentJobs` の `Record` に足す。計画の合計は 47 → 49 になり、`SCHEDULED_D1_QUERY_PLAN_MAX` を 47 → 49 に上げる。受理上限 49 の内側、ハード上限 50 まで 1 本の余裕を残し、既存 job の枠は変えず cron も足さない (qa-cash-decision-008)。宣言漏れは typecheck で止まる。migration 0051 は既存の Migrate ワークフロー (`.github/workflows/migrate.yml`) で適用してから Deploy (`deploy.yml`) する。
+`wrangler.jsonc` は変えない。`SCHEDULED_MAINTENANCE_JOB_NAMES` (`scheduled-maintenance-budget.ts:16-24`) に `cash_soft_delete_purge` を足し、`SCHEDULED_MAINTENANCE_D1_PLAN` に D1 クエリ 2 本を宣言し、`concurrentJobs` の `Record` に足す。計画の合計は 47 → 49 になり、`SCHEDULED_D1_QUERY_PLAN_MAX` を 47 → 49 に上げる。受理上限 49 の内側、ハード上限 50 まで 1 本の余裕を残し、既存 job の枠は変えず cron も足さない (qa-cash-decision-008)。宣言漏れは typecheck で止まる。migration 0052 は既存の Migrate ワークフロー (`.github/workflows/migrate.yml`) で適用してから Deploy (`deploy.yml`) する。
 
 #### Secrets and access
 
@@ -138,7 +138,7 @@ N/A: 新しい secret・binding は無い (既存の `DB`)。
 ## Delivery, migration and rollback
 
 - Build/deploy topology: 既存の Migrate → Deploy。
-- Migration sequence: 0051 を Migrate で適用 → `EXPECTED_D1_MIGRATION` を 0051 にし、予算表に job を宣言 (計画上限 49) した Worker を Deploy → 完全消去 job を有効化。
+- Migration sequence: 0052 を Migrate で適用 → `EXPECTED_D1_MIGRATION` を 0052 にし、予算表に job を宣言 (計画上限 49) した Worker を Deploy → 完全消去 job を有効化。
 - Rollback trigger/procedure: 夜間ログで job の失敗か想定外の件数が出たら、job を外した Worker を配る。消えた行は戻らないため、job の有効化は論理削除と復元の API テストが緑になった後にする。
 
 ## Risks and verification

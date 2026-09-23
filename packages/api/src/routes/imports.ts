@@ -116,7 +116,7 @@ const restoredCashEntrySchema = z
     transitTo: z.string().nullable().default(null),
     transitRound: z.boolean().default(false),
     receiptWaived: z.boolean().default(false),
-    // 0051 の名義と業務の目的。旧バックアップには無いので「未設定」で補う
+    // 0052 の名義と業務の目的。旧バックアップには無いので「未設定」で補う
     owner: z.enum(OWNER_VALUES).nullable().default(null),
     transitPurpose: z.string().max(60).nullable().default(null),
   })

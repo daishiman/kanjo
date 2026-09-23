@@ -41,8 +41,7 @@ import type {
   SuggestionBasis,
   TotalCashflowMonth,
   TotalCashflowSeriesRow,
-  TradeoffCandidate,
-  TradeoffReviewRow,
+  TradeoffScreenResponse,
   TrendsScreen,
   UnsettledDeal,
   UnsettledReport,
@@ -964,7 +963,7 @@ export interface CashEntry {
   transitRound: boolean;
   /** 領収書が構造上出ない支出(電車代など) */
   receiptWaived: boolean;
-  /** 担当者(名義)。0051 より前の行は null(画面は「未設定」) */
+  /** 担当者(名義)。0052 より前の行は null(画面は「未設定」) */
   owner: Owner | null;
   /** 業務の目的(保存形)。交通費以外は null */
   transitPurpose: string | null;
@@ -1036,22 +1035,8 @@ export interface BackupItem {
   uploaded: string | null;
 }
 
-export interface TradeoffResponse {
-  candidates: TradeoffCandidate[];
-  budgets: BudgetRow[];
-  plans: {
-    id: number;
-    title: string | null;
-    amount: number;
-    recurring: boolean;
-    selected: { label: string; value: number }[];
-    covered: number | null;
-    verdict: string | null;
-    createdAt: string | null;
-  }[];
-  /** 立てた計画が翌月に効いたかの突合(plans と同じ id で対応する) */
-  review: TradeoffReviewRow[];
-}
+/** トレードオフ画面の応答。候補・防衛ラインの月の余裕・最新の試算条件の形は core が持つ */
+export type TradeoffResponse = TradeoffScreenResponse;
 
 /* -------- 決算書(PL・キャッシュフロー・BSの取込元) -------- */
 
@@ -1104,8 +1089,6 @@ export type {
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
-  TradeoffCandidate,
-  TradeoffReviewRow,
 };
 
 export interface SubVendorRow extends SubVendor {

@@ -627,24 +627,52 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 復元は `budget_plans` の利用者の行を消してから JSON の行を入れる。`budgetPlans` の無い古いバックアップを復元すると、既存 `budgets` と同じく `budget_plans` を消す。消した後は、既存 budgets の月額 × 12 が初期値に戻る。
 - `budget_plans` は、変更系フェンスの consumer(`canonical-mutation-fence.ts`)と取込中の表の一覧(`import-active.ts`)に入れた。保存の batch では JSON snapshot を無効化する。snapshot の無効化と復元の write-set の片方だけに入れると、snapshot が古い予算を返すため、両方に入れた。
 
-## 現金明細の担当者・業務の目的・論理削除(0051)
+## トレードオフ画面の開始月・メモと必要度の上書き(0051 / feat-tradeoff-screen)
 
-`migrations/0051_cash_entry_owner_soft_delete.sql` が `cash_entries` に 3 列と 1 索引を足す。画面仕様の正本は `specs/spec-cash-screen.md`、規則の一覧は [`cash-screen/rules.md`](cash-screen/rules.md)、判断の経緯は [`cash-screen/design-decisions.md`](cash-screen/design-decisions.md)。
+`migrations/0051_tradeoff_notes.sql` が `tradeoff_plans` に 2 列を足し、`tradeoff_candidate_notes` を作る。画面仕様の正本は `specs/spec-tradeoff-screen.md`、規則の一覧は `docs/spec-v1.1.md` の FR-09。仕様とタスク仕様の予定番号は 0050 だったが、先に main へ入った予算画面(#67)が `0050_budget_plans.sql` を使ったため 0051 へ繰り上げた。
+
+`tradeoff_plans` の追加列:
 
 | 列 | 型 | 意味 |
 |---|---|---|
-| `owner` | TEXT(CHECK: NULL か `business` / `spouse` / `family`) | 担当者。NULL は 0051 より前に記帳した行で、画面は「未設定」と出し、編集では保存の前に選ばせる。新しい記帳では API が必須にする |
+| `start_month` | TEXT | 新しい支出の開始月(`YYYY-MM`)。記録と復元のためだけに持ち、試算の年額には効かない |
+| `memo` | TEXT | 新しい支出のメモ(500 字まで)。空は NULL で保存する |
+
+- 0051 以降の POST は `selected` に `[{key, label, value}]`(候補キー、「科目 / 取引先」の表示名、保存時のサーバの月額)を、`covered` に選んだ候補の月額合計を入れる。covered と verdict は本文を信用せず、サーバーが現在の候補から再計算する。現在の候補に無いキーが 1 つでもあれば 422 で 1 行も増やさない。
+- 画面が読むのは最新の 1 行だけ。旧形式の `selected`(`{label, value}`)の行は `key` が無いので、復元される候補は 0 件になる。
+
+`tradeoff_candidate_notes`:
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT NOT NULL | 利用者 |
+| `candidate_key` | TEXT NOT NULL | 候補キー `v1:` + JSON 配列 `[科目, 取引先]`(科目は正規化後、300 字まで)。区切り文字を使わないので、科目名や取引先名に `\|` を含んでも別の組と同じキーにならない |
+| `need` | TEXT | 利用者が上書きした必要度 `low` / `mid` / `high`。NULL なら core の推定を使う |
+| `memo` | TEXT | 候補のメモ(500 字まで)。あれば理由の欄にメモを出す |
+| `updated_at` | TEXT NOT NULL | 最後に上書きした時刻 |
+
+- 索引: `tradeoff_candidate_notes_user_key`(`user_id`, `candidate_key`)の一意索引。PUT は UPSERT なので、同じ本文を繰り返しても行は増えない。`need` と `memo` の両方が NULL の PUT はその行を消し、自動の推定へ戻す。
+- `need` の値域は既存表の流儀に合わせて CHECK 制約ではなく API の zod で守る。
+- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE TABLE` / `CREATE UNIQUE INDEX` のみ)。`packages/api/src/tradeoff-migration-0051.test.ts` が、当てても既存行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+
+## 現金明細の担当者・業務の目的・論理削除(0052)
+
+`migrations/0052_cash_entry_owner_soft_delete.sql` が `cash_entries` に 3 列と 1 索引を足す。画面仕様の正本は `specs/spec-cash-screen.md`、規則の一覧は [`cash-screen/rules.md`](cash-screen/rules.md)、判断の経緯は [`cash-screen/design-decisions.md`](cash-screen/design-decisions.md)。
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `owner` | TEXT(CHECK: NULL か `business` / `spouse` / `family`) | 担当者。NULL は 0052 より前に記帳した行で、画面は「未設定」と出し、編集では保存の前に選ばせる。新しい記帳では API が必須にする |
 | `transit_purpose` | TEXT | 交通費の業務の目的。固定 4 つの表示語か `その他:<記述>`(記述は 40 字まで)。区間の無い行は NULL |
 | `deleted_at` | TEXT | 論理削除の時刻(ISO 8601)。NULL が有効な行 |
 
 - 索引: `idx_cash_user_deleted`(`user_id`, `deleted_at`)。有効な行の読取(`deleted_at IS NULL`)と夜間の完全消去(`deleted_at < ?`)の両方で使う。
-- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE INDEX IF NOT EXISTS` のみ)。`packages/api/src/cash-migration-0051.test.ts` が、既存列の値が変わらないこと・足した 3 列が NULL であること・`owner` の CHECK・索引の列を固定する。
+- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE INDEX IF NOT EXISTS` のみ)。`packages/api/src/cash-migration-0052.test.ts` が、既存列の値が変わらないこと・足した 3 列が NULL であること・`owner` の CHECK・索引の列を固定する。
 - **削除中の行を読まない経路**: 一覧と `loadDataset`(取引・集計の作り直し)、バックアップ(`BACKUP_SNAPSHOT_SQL` の現金明細と、それを指す `tx_edits` の `cash:<id>`)、取込時の設定スナップショット、科目使用状況、PUT の既存行取得。JSON 復元の件数判定(`destination_counts`)だけが削除中の行を数え、残っている間は現金明細を復元しない。
 - **`tx_edits` は論理削除では消さない**。戻したときに同じ仕分けで戻すため。完全消去と同じ batch で消す。
 - **夜間の完全消去**(`cash_soft_delete_purge`): `deleted_at < now − 30日` の行を `deleted_at, id` の古い順に 1 晩 500 行まで消す(ちょうど 30 日は残す)。上限に達した晩は `level: "warn"` と `limitReached: true` のログを出し、残りは翌晩に回す。夜間の D1 query 計画上限はこの 2 本の分で 47 → 49。
 
-### 0051 の適用と巻き戻し
+### 0052 の適用と巻き戻し
 
 - 適用は他の migration と同じく Deploy の自動適用に任せる。追加だけの migration なので、行を書き換える migration の手順(manifest → Migrate APPLY)は要らない。
-- **巻き戻すときも列は残す**。索引の掛かった列は SQLite では単独で外せず、表を作り直すと行の書き換えになる。コードだけを 0051 より前に戻すと `runtimeSchemaGuard` の `EXPECTED_D1_MIGRATION`(0051)と食い違うので、その値も同じ変更で戻す。列が残っていても旧コードは読まないので害はない。
+- **巻き戻すときも列は残す**。索引の掛かった列は SQLite では単独で外せず、表を作り直すと行の書き換えになる。コードだけを 0052 より前に戻すと `runtimeSchemaGuard` の `EXPECTED_D1_MIGRATION`(0052)と食い違うので、その値も同じ変更で戻す。列が残っていても旧コードは読まないので害はない。
 - **巻き戻したコードは削除中の行を有効な行として読む**(旧コードには `deleted_at IS NULL` が無い)。巻き戻す前に、削除中の行を restore で戻すか、30 日を待たずに消すかを決める。消すときは、その行を指す `tx_edits` の `cash:<id>` と明細の行を同じ batch で消す。

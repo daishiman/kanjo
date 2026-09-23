@@ -1205,7 +1205,7 @@ export function prepareRestoreWriteSet(args: {
         entry.transitTo ?? null,
         entry.transitRound ? 1 : 0,
         entry.receiptWaived ? 1 : 0,
-        // 0051。旧バックアップ由来は null(未設定)のまま入れる
+        // 0052。旧バックアップ由来は null(未設定)のまま入れる
         entry.owner ?? null,
         entry.transitPurpose ?? null,
       ]),

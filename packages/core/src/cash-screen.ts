@@ -4,7 +4,7 @@
  * - 入力経路: 区間 (transitFrom) があれば交通費入力、無ければ通常入力。列は持たず、既存行を書き換えずに全行へ付く。
  * - 合計・絞り込み・ページング: 一覧 API は期間で絞った明細だけを返し、画面がここの純関数で導く。
  * - 入力の上限: API の zod も CASH_LIMITS を参照し、画面と API で上限が食い違わない。
- * - 業務の目的: migration 0051 の transit_purpose 1列に、固定の選択肢は表示語のまま、その他は `その他:` 接頭辞で入れる。
+ * - 業務の目的: migration 0052 の transit_purpose 1列に、固定の選択肢は表示語のまま、その他は `その他:` 接頭辞で入れる。
  * - URL と下書き: 不正な値は既定に落とす。下書きは利用者 id を含むキーで、例外は握って画面を止めない。
  *
  * 規則の表は docs/cash-screen/rules.md にあり、core の契約テストの期待値と同じである。
@@ -299,7 +299,7 @@ export interface CashInput {
 export interface CashValidateOptions {
   /**
    * 担当者と業務の目的が「無い」ことを許す。API 用。
-   * 0051 より前の SPA が送る本文(owner / transitPurpose を持たない)を通すための互換で、
+   * 0052 より前の SPA が送る本文(owner / transitPurpose を持たない)を通すための互換で、
    * 値があるときの検査は画面と同じ。画面は既定の false で両方を必須にする。
    */
   allowUnset?: boolean;

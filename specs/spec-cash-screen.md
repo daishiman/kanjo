@@ -78,7 +78,7 @@ serves_goals: ["G1", "G2", "G3", "G4"]
 - 一覧の月送り (共通の期間の範囲内)、キーワード検索、収支・カテゴリ・担当者・取込元 (入力経路) の絞り込み、詳細検索 (金額と日付の範囲)、収入 / 支出 / 差額の合計、選択と一括削除、ページング。
 - インラインの削除確認と、削除完了トーストの『元に戻す』。
 - `packages/core/src/cash-screen.ts` の純関数 (合計・絞り込み・ページング・入力経路・交通費合計・入力検証) (I2)。
-- 追加のみの migration `0051` (cash_entries への owner・transit_purpose・deleted_at と索引) (I3)。
+- 追加のみの migration `0052` (cash_entries への owner・transit_purpose・deleted_at と索引) (I3)。
 - API: `DELETE /api/cash-entries/:id` の論理削除化、`POST /api/cash-entries/:id/restore`・`POST /api/cash-entries/bulk-delete`・`POST /api/cash-entries/bulk-restore` の新設、`GET` / `POST` / `PUT` の変更、cash_entries を読む全経路への `deleted_at IS NULL` (I3、qa-cash-backend-web-002)。
 - 夜間 scheduled 処理 (`0 18 * * *`) への完全消去 job の相乗り (qa-cash-infrastructure-web-001)。
 - 下書きのブラウザ内自動保存と保存時刻の表示、画面内だけのサンプル表示、下部固定の追加バー (I4 / I5)。
@@ -154,7 +154,7 @@ serves_goals: ["G1", "G2", "G3", "G4"]
 ## 非機能要件
 
 - 性能: 画面は既存どおり遅延読み込みする。初期 JS 予算 (`check:js-budget`) を超えない (O4)。一覧 API は対象期間で絞った読み取りだけで作り、絞り込み・合計・ページングはブラウザ内で core の純関数が行う (1 か月の現金明細は数十〜数百件の規模を想定)。
-- 可用性: migration 0051 の適用前に新しい Worker が動いても壊れないよう、`runtimeSchemaGuard` の期待 head を 0051 に進める。0051 は列と索引の追加だけで、既存行を 1 行も書き換えない。
+- 可用性: migration 0052 の適用前に新しい Worker が動いても壊れないよう、`runtimeSchemaGuard` の期待 head を 0052 に進める。0052 は列と索引の追加だけで、既存行を 1 行も書き換えない。
 - 記録の保全: 削除は論理削除で、30 日間は同じ id で戻せる。入力途中の値はブラウザ内に残る (G2)。
 - アクセシビリティ: 状態と区分を色だけで伝えない。収支は「収入」「支出」の文字、取込元は「通常入力」「交通費入力」の文字、差額は符号、必須は「必須」の文字、削除の確認と元に戻すは文で結果を伝える (WCAG 2.2 SC 1.4.1、ui-ux 章の上流指針)。入替ボタンと選択欄にはアクセシブルな名前を付ける。
 - レスポンシブ: 狭い画面では入力 2 枚と一覧を縦に積み、表は横スクロールの容器に入れ、下部固定バーに安全領域の余白を足す (frontend 章の上流指針)。
@@ -331,7 +331,7 @@ URL の検索パラメータ (キー名は **agent 推定・利用者未確認**
 
 ### 業務の目的の保存形 (agent 推定・利用者未確認)
 
-migration 0051 が持つのは `transit_purpose` 1 列なので、固定の 4 つはその表示語 (「客先訪問」など) をそのまま入れ、その他は `その他:` に続けて自由記述を入れる。読むときは完全一致で固定の 4 つに振り分け、`その他:` で始まれば その他 と記述に分ける。どちらにも当たらない値は その他 の記述として扱う。書式と読み分けは core の `formatTransitPurpose` / `parseTransitPurpose` 1 か所に置く。
+migration 0052 が持つのは `transit_purpose` 1 列なので、固定の 4 つはその表示語 (「客先訪問」など) をそのまま入れ、その他は `その他:` に続けて自由記述を入れる。読むときは完全一致で固定の 4 つに振り分け、`その他:` で始まれば その他 と記述に分ける。どちらにも当たらない値は その他 の記述として扱う。書式と読み分けは core の `formatTransitPurpose` / `parseTransitPurpose` 1 か所に置く。
 
 ### 論理削除と完全消去 (qa-cash-decision-003)
 
@@ -384,7 +384,7 @@ path `id` (正の整数、既存の `idParam`)。body なし、または空の J
 | --- | --- | --- | --- | --- |
 | 400 | invalid_input | `id` が正の整数でない | no | 画面を読み直す |
 | 404 | not_found | 行が無い、他の利用者の行、完全消去済み | no | 一覧を取り直す。トーストに「この明細はもう戻せません」 |
-| 503 | schema_unavailable | migration 0051 が未適用 | yes | 時間をおいて再試行 |
+| 503 | schema_unavailable | migration 0052 が未適用 | yes | 時間をおいて再試行 |
 
 完全消去済みの id を 404 にすることは qa-cash-backend-web-003 (agent 推定・利用者未確認) である。
 
@@ -438,7 +438,7 @@ JSON `{ "ids": number[] }`。1〜100 件の正の整数。重複は 400 (**agent
 | --- | --- | --- | --- | --- |
 | 400 | invalid_input | `ids` が空・101 件以上・整数でない・重複 | no | 選択を直す |
 | 404 | not_found | 1 件でも他の利用者・存在しない・削除中 | no | 一覧を取り直す |
-| 503 | schema_unavailable | migration 0051 が未適用 | yes | 時間をおいて再試行 |
+| 503 | schema_unavailable | migration 0052 が未適用 | yes | 時間をおいて再試行 |
 
 #### 実行セマンティクス
 
@@ -491,7 +491,7 @@ JSON `{ "ids": number[] }`。1〜100 件の正の整数。重複は 400 (**agent
 | --- | --- | --- | --- | --- |
 | 400 | invalid_input | `ids` が空・101 件以上・整数でない・重複 | no | 画面を読み直す |
 | 404 | not_found | 1 件でも他の利用者・存在しない・完全消去済み | no | 一覧を取り直す。トーストに「この明細はもう戻せません」 |
-| 503 | schema_unavailable | migration 0051 が未適用 | yes | 時間をおいて再試行 |
+| 503 | schema_unavailable | migration 0052 が未適用 | yes | 時間をおいて再試行 |
 
 #### 実行セマンティクス
 
@@ -522,7 +522,7 @@ bulk-delete した 3 件が bulk-restore で同じ id のまま GET と集計へ
 | `PUT /api/cash-entries/:id` | POST と同じ body。既存行の取得 (`routes/cash.ts:219-222`) と UPDATE の条件に `deleted_at IS NULL` を足し、削除中の行を 404 にする。 |
 | `DELETE /api/cash-entries/:id` | 物理削除 (`routes/cash.ts:250-276`) をやめ、`deleted_at` を入れる論理削除にする。同じ batch で JSON pointer の無効化と取引・集計の作り直しを行う (qa-cash-backend-web-002)。`tx_edits` は消さない (上の agent 推定)。応答は 200 `{ "ok": true, "id": number, "deletedAt": string }` (`id` と `deletedAt` を足すことは **agent 推定・利用者未確認**)。削除中の行と他の利用者の行は 404。 |
 | `CANONICAL_MUTATION_ROUTES` (`canonical-mutation-fence.ts:42-48`) | POST `^/api/cash-entries/[^/]+/restore$` (consumers `cash_entries`)、POST `^/api/cash-entries/bulk-delete$` (同)、POST `^/api/cash-entries/bulk-restore$` (同) を足す。既存の POST / PUT / DELETE の行は変えない。 |
-| `runtimeSchemaGuard` (`schema-guard.ts:4`) | `EXPECTED_D1_MIGRATION` を 0051 の migration ファイル名へ進める。guard は列の一覧ではなく適用済み migration の名前で判定する (system-spec と一致)。 |
+| `runtimeSchemaGuard` (`schema-guard.ts:4`) | `EXPECTED_D1_MIGRATION` を 0052 の migration ファイル名へ進める。guard は列の一覧ではなく適用済み migration の名前で判定する (system-spec と一致)。 |
 
 POST / PUT の body の追加項目:
 
@@ -566,7 +566,7 @@ JSON 復元の INSERT (qa-cash-database-web-002):
 
 ## データモデル
 
-migration `migrations/0051_cash_entry_owner_soft_delete.sql` (追加のみ)。既存の最新は `0050_budget_plans.sql`(計画時の予定番号 0050 は予算画面と衝突したため 0051 へ繰り上げた)。ファイル名の後半は **agent 推定・利用者未確認**。
+migration `migrations/0052_cash_entry_owner_soft_delete.sql` (追加のみ)。既存の最新は `0051_tradeoff_notes.sql`(計画時の予定番号 0050 は予算画面と、繰り上げ先の 0051 はトレードオフ画面と衝突したため 0052 へ繰り上げた)。ファイル名の後半は **agent 推定・利用者未確認**。
 
 | 列 (cash_entries) | 型 | 既定 | 制約 | 書く経路 |
 | --- | --- | --- | --- | --- |
@@ -617,9 +617,9 @@ migration `migrations/0051_cash_entry_owner_soft_delete.sql` (追加のみ)。�
 
 ## 互換性・移行・リリース
 
-- 反映の順序は既存の Migrate → Deploy。夜間 cron の完全消去 job は `/api/*` に掛かる `runtimeSchemaGuard` の外で動くので、0051 の適用を Worker の配備より先に行うこの順序で守る。0051 は列と索引の追加だけなので、適用後に旧 Worker が動いても新しい列を読まないだけで壊れない。
-- 新しい Worker は `EXPECTED_D1_MIGRATION` で 0051 未適用の DB を 503 で止める (fail-closed)。
-- **巻き戻しは対称でない。** 旧 Worker は `deleted_at` を読まないので、巻き戻すと削除中の行が一覧と集計に戻って見え、旧 DELETE は物理削除に戻る。巻き戻す前に削除中の行が無いことを確かめるか、戻って見えることを受け入れる。0051 の列そのものは残してよい。
+- 反映の順序は既存の Migrate → Deploy。夜間 cron の完全消去 job は `/api/*` に掛かる `runtimeSchemaGuard` の外で動くので、0052 の適用を Worker の配備より先に行うこの順序で守る。0052 は列と索引の追加だけなので、適用後に旧 Worker が動いても新しい列を読まないだけで壊れない。
+- 新しい Worker は `EXPECTED_D1_MIGRATION` で 0052 未適用の DB を 503 で止める (fail-closed)。
+- **巻き戻しは対称でない。** 旧 Worker は `deleted_at` を読まないので、巻き戻すと削除中の行が一覧と集計に戻って見え、旧 DELETE は物理削除に戻る。巻き戻す前に削除中の行が無いことを確かめるか、戻って見えることを受け入れる。0052 の列そのものは残してよい。
 - 既存行の owner は NULL (一覧は「未設定」)、入力経路は区間の有無から全行に付く。既存行の集計結果は変わらない (削除中の行が無い限り、読む集合が同じ)。
 - JSON バックアップ: 新しいバックアップは cash の各要素に `owner` と `transitPurpose` を持つ。旧バックアップは既定の null で復元できる。削除中の行はバックアップに含まれない。
 - 既存の DOM テストが import する `pages/Cash.tsx` の部品名 (`setCashTransitInput` / `changeCashEntryMode` / `resetCashEntryAfterCreate` など) は、`pages/cash/` から再エクスポートするか、テストを新しい構成へ書き直す。
@@ -648,9 +648,9 @@ API テスト:
 - 削除中の行だけが残る移行先への JSON 復元が主キーで衝突せず、現金明細を入れず、理由を表示する。削除中の行の中身は復元の計画・応答に出ない (qa-cash-decision-009)。
 - 夜間の完全消去: 削除から 29 日の行は残り 31 日の行は消える、`tx_edits` も同じ batch で消える、501 件で 500 件消えて warn が出る、失敗しても他の job が走る。
 - `SCHEDULED_MAINTENANCE_D1_PLAN` の job 集合と合計を固定し、合計が `SCHEDULED_D1_QUERY_PLAN_MAX` と等しい 49 であること (`total === PLAN_MAX`) を `scheduled-maintenance-budget.test.ts` で確かめる (qa-cash-decision-008)。
-- migration 0051 の適用で既存行の更新が 0 件、既存行の新しい列が NULL、owner の CHECK が候補外を拒み NULL を通す。
+- migration 0052 の適用で既存行の更新が 0 件、既存行の新しい列が NULL、owner の CHECK が候補外を拒み NULL を通す。
 - fence: 新しい 3 経路が canonical-mutation に分類され、`CANONICAL_MUTATION_ROUTES` の件数の固定 (`import-lifecycle-pure.test.ts`) を更新する。
-- `schema-guard.test.ts` の期待 head が 0051。
+- `schema-guard.test.ts` の期待 head が 0052。
 
 DOM テスト (`packages/web/src/pages/cash/cash-screen.dom.test.tsx`):
 

@@ -33,7 +33,7 @@ export interface CashEntry {
   transitRound: boolean;
   /** 領収書が構造上出ない支出(電車代など)。未添付の警告対象から外す */
   receiptWaived: boolean;
-  /** 担当者(名義)。0051 より前の行は null(画面は「未設定」) */
+  /** 担当者(名義)。0052 より前の行は null(画面は「未設定」) */
   owner: Owner | null;
   /** 交通費の業務の目的。1列の保存形(formatTransitPurpose)。区間が無ければ null */
   transitPurpose: string | null;

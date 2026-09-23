@@ -66,7 +66,7 @@ implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sectio
 
 ## 目的
 
-core の実装とテストに対応する規則表と、0051 の列、夜間の完全消去の運用を docs へ最終同期する。
+core の実装とテストに対応する規則表と、0052 の列、夜間の完全消去の運用を docs へ最終同期する。
 
 ## 背景
 
@@ -137,7 +137,7 @@ agent 推定の値が利用者確認で変わったときに core のテスト�
 
 - Acceptance:
 - 規則表の各行が core の実装とテストに対応している。
-- docs/data-schema.md に 0051 の列と索引が載っている。
+- docs/data-schema.md に 0052 の列と索引が載っている。
 - 夜間の完全消去 (1 晩 500 行と warn) と巻き戻しの前提が運用として記されている。
 - Automated commands:
 - pnpm lint

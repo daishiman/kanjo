@@ -157,9 +157,9 @@ API テストで 削除 → 一覧と集計から消える → 復元で同じ i
 
 ## Delivery, migration and rollback
 
-- Build/deploy topology: 既存の Worker デプロイ。migration 0051 の適用後に配る (`architecture/cash-infrastructure.md`)。
+- Build/deploy topology: 既存の Worker デプロイ。migration 0052 の適用後に配る (`architecture/cash-infrastructure.md`)。
 - Migration sequence: core `cash-screen.ts` → 読取経路への `deleted_at IS NULL` → DELETE の論理削除化 → restore / bulk → fence 登録 → JSON 復元の列 → 夜間 job。
-- Rollback trigger/procedure: API テストが赤なら差し戻す。Worker を戻しても 0051 の列は残る。旧 Worker は `deleted_at` を読まないため、差し戻し中は削除中の行が一覧に再び出る。差し戻す前に削除中の行の件数を確かめる。
+- Rollback trigger/procedure: API テストが赤なら差し戻す。Worker を戻しても 0052 の列は残る。旧 Worker は `deleted_at` を読まないため、差し戻し中は削除中の行が一覧に再び出る。差し戻す前に削除中の行の件数を確かめる。
 
 ## Risks and verification
 

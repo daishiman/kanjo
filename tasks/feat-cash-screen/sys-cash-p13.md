@@ -2,7 +2,7 @@
 graph_node_id: "SYS-CASH-P13"
 artifact_kind: "task"
 artifact_subtypes: []
-title: "単一 PR での配信と migration 0051 の適用とクローズアウト"
+title: "単一 PR での配信と migration 0052 の適用とクローズアウト"
 project_id: "feature-package-feat-cash-screen"
 domain: "operations"
 status: "active"
@@ -47,7 +47,7 @@ completion_evidence: {"completed_at": null, "evidence_refs": [], "policy": "link
 implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sections": [], "status": "complete"}
 ---
 
-# 単一 PR での配信と migration 0051 の適用とクローズアウト
+# 単一 PR での配信と migration 0052 の適用とクローズアウト
 
 ## Machine-readable registration fields
 
@@ -66,11 +66,11 @@ implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sectio
 
 ## 目的
 
-単一の PR で配信し、Migrate→Deploy の順で 0051 を適用して、配信後の既存行の更新 0 件を確かめて閉じる。
+単一の PR で配信し、Migrate→Deploy の順で 0052 を適用して、配信後の既存行の更新 0 件を確かめて閉じる。
 
 ## 背景
 
-夜間 cron は runtimeSchemaGuard の外で動くため、0051 の適用を Worker の配備より先に行う順序で守る。新しい secret・binding・外部サービスの登録は無い。
+夜間 cron は runtimeSchemaGuard の外で動くため、0052 の適用を Worker の配備より先に行う順序で守る。新しい secret・binding・外部サービスの登録は無い。
 
 ## 前提条件
 
@@ -84,7 +84,7 @@ implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sectio
 - Frontend: N/A: 配信のみ
 - Backend: N/A: 配信のみ
 - API: N/A: 配信のみ
-- Data: applicable: 0051 を Migrate で適用する
+- Data: applicable: 0052 を Migrate で適用する
 - Infrastructure: applicable: Migrate→Deploy の順で配信する
 - Security: N/A: 配信のみ
 - Quality: applicable: 配信後の確認を記録する
@@ -95,7 +95,7 @@ implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sectio
 
 - Architecture decisions: arch-cash-auth, arch-cash-backend, arch-cash-database, arch-cash-frontend, arch-cash-infrastructure, arch-cash-maintenance-ops, arch-cash-security, arch-cash-ui-ux, spec-cash-screen
 - Deploy unit/environment: web ビルドと Worker と D1 migration (単一 PR で同時に配信する)
-- Compatibility/migration/backfill: 0051 の適用を Worker の配備より先に行う。新しい Worker は 0051 未適用の DB を 503 で止める
+- Compatibility/migration/backfill: 0052 の適用を Worker の配備より先に行う。新しい Worker は 0052 未適用の DB を 503 で止める
 
 ## 成果物
 
@@ -144,7 +144,7 @@ implementation_readiness: {"checked_at": "2026-09-22T00:48:20Z", "missing_sectio
 ## Rollout and rollback
 
 - Rollout: 単一の PR で配信し、default branch への merge をもって反映する
-- Rollback trigger and steps: PR を revert して直前のビルドへ戻す。0051 は追加のみの列なので削除しない。巻き戻す前に削除中の行が無いことを確かめる。
+- Rollback trigger and steps: PR を revert して直前のビルドへ戻す。0052 は追加のみの列なので削除しない。巻き戻す前に削除中の行が無いことを確かめる。
 
 ## Handoff
 
