@@ -479,8 +479,72 @@ export const importRuns = sqliteTable(
     failureReason: text('failure_reason'),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
+    /** 0050: 取込 1 回の影響の値 (確定時の記録)。既存の行は NULL のまま読む。 */
+    fileCount: integer('file_count'),
+    rowCount: integer('row_count'),
+    addedCount: integer('added_count'),
+    skippedCount: integer('skipped_count'),
+    subsCandidateCount: integer('subs_candidate_count'),
+    result: text('result', { enum: ['success', 'partial', 'failed'] }),
+    keepPrevious: integer('keep_previous'),
+    /** 0050: 履歴の非表示 (記録の一括削除)。imports と明細の行は消さない。 */
+    hiddenAt: text('hidden_at'),
+    /** 0050: 同じ検査 ID の 2 本目以降の確定の親。親が取込 1 回の 1 行で、子は単独では履歴に出さない。 */
+    parentRunId: text('parent_run_id'),
   },
   (table) => [index('idx_import_runs_user_created').on(table.userId, table.createdAt)],
+);
+
+/** 0050: 検査 1 要求 = 1 行。確定後は再送用の完了記録を持ち、期限切れ (24 時間) で消す。 */
+export const importInspections = sqliteTable(
+  'import_inspections',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    /** 検査を作った本人 (SessionActor.id)。user_id は共有テナントキーなので本人の判定に使えない。 */
+    actorId: text('actor_id').notNull(),
+    status: text('status', { enum: ['open', 'committing'] }).notNull(),
+    /** 最初の確定で作った取込 1 回の run。2 本目以降の確定はこの run の子になる。 */
+    runId: text('run_id'),
+    expiresAt: text('expires_at').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [index('idx_import_inspections_user_expires').on(table.userId, table.expiresAt)],
+);
+
+/** 0050: 検査のファイル項目。累計 (件数・サイズ) はこの表から合計し、検査の行に持たない。 */
+export const importInspectionFiles = sqliteTable(
+  'import_inspection_files',
+  {
+    id: text('id').primaryKey(),
+    inspectionId: text('inspection_id')
+      .notNull()
+      .references(() => importInspections.id, { onDelete: 'cascade' }),
+    userId: text('user_id').notNull(),
+    position: integer('position').notNull(),
+    filename: text('filename').notNull(),
+    source: text('source'),
+    periodFrom: text('period_from'),
+    periodTo: text('period_to'),
+    size: integer('size').notNull(),
+    contentHash: text('content_hash'),
+    summaryJson: text('summary_json').notNull(),
+    errorKind: text('error_kind'),
+    r2Key: text('r2_key'),
+  },
+  (table) => [index('idx_import_inspection_files_inspection').on(table.inspectionId)],
+);
+
+/** 0050: 取込のレート制限 (利用者 × 経路の種別 × 1 分の時間枠)。ログイン用とは分ける。 */
+export const importRateLimits = sqliteTable(
+  'import_rate_limits',
+  {
+    userId: text('user_id').notNull(),
+    kind: text('kind', { enum: ['inspection', 'commit'] }).notNull(),
+    windowStart: integer('window_start').notNull(),
+    count: integer('count').notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.kind, table.windowStart] })],
 );
 
 /**
@@ -532,10 +596,20 @@ export const cashEntries = sqliteTable(
     transitRound: integer('transit_round').notNull().default(0),
     /** 0010: 1 = 証憑不要(電車代など領収書が出ない支出) */
     receiptWaived: integer('receipt_waived').notNull().default(0),
+    /** 0052: 名義。NULL = 未設定(旧画面で記帳した行) */
+    owner: text('owner', { enum: ['business', 'spouse', 'family'] }),
+    /** 0052: 交通費の業務の目的。固定候補か「その他:<記述>」。区間の無い行は NULL */
+    transitPurpose: text('transit_purpose'),
+    /** 0052: 論理削除の時刻。NULL = 有効。30日を過ぎた行は夜間 job が完全に消す */
+    deletedAt: text('deleted_at'),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
     updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
   },
-  (t) => [index('idx_cash_month').on(t.userId, t.month)],
+  (t) => [
+    index('idx_cash_month').on(t.userId, t.month),
+    index('idx_cash_user_deleted').on(t.userId, t.deletedAt),
+    index('idx_cash_deleted_purge').on(t.deletedAt, t.id),
+  ],
 );
 
 /**

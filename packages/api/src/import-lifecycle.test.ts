@@ -743,6 +743,96 @@ describe('active target duplicate', () => {
     expect(await d1.prepare('SELECT COUNT(*) AS n FROM cash_entries').first()).toEqual({ n: 1 });
   });
 
+  it('0052 の担当者と業務の目的を、書き出した JSON から同じ値で復元する', async () => {
+    const body = {
+      ...structuredClone(restoreBody),
+      biz: { revenue: [0], categories: ['架空旅費'], expense: { 架空旅費: [560] } },
+      cashEntries: [
+        {
+          id: 11,
+          date: '2026-07-12',
+          month: '2026-07',
+          side: 'biz',
+          io: 'expense',
+          amount: 560,
+          description: '架空駅A→架空駅B 往復',
+          categoryMajor: '架空旅費',
+          categoryMid: '',
+          memo: null,
+          transitFrom: '架空駅A',
+          transitTo: '架空駅B',
+          transitRound: true,
+          receiptWaived: true,
+          owner: 'spouse',
+          transitPurpose: 'その他:架空の打合せ',
+        },
+      ],
+      cashProjection: {
+        version: 1,
+        basis: 'post-resolution',
+        rows: [{ month: '2026-07', scope: 'biz_exp:架空旅費', amount: 560 }],
+      },
+    };
+
+    expect(await (await restore(body)).json()).toMatchObject({ cashEntries: 1, cashKept: 0 });
+    expect(
+      await d1.prepare('SELECT id,owner,transit_purpose,deleted_at FROM cash_entries').all(),
+    ).toMatchObject({
+      results: [{ id: 11, owner: 'spouse', transit_purpose: 'その他:架空の打合せ', deleted_at: null }],
+    });
+  });
+
+  it('削除中の現金明細だけが残る移行先へは現金明細を入れず、理由を返して削除中の行も変えない', async () => {
+    const now = new Date().toISOString();
+    await d1
+      .prepare(
+        `INSERT INTO cash_entries
+         (id,user_id,date,month,side,io,amount,description,category_major,category_mid,memo,created_at,updated_at,deleted_at)
+         VALUES (3,'default','2026-06-10','2026-06','biz','expense',900,'架空削除中','架空通信費','',NULL,?,?,?)`,
+      )
+      .bind(now, now, now)
+      .run();
+    const body = {
+      ...structuredClone(restoreBody),
+      biz: { revenue: [0], categories: ['架空通信費'], expense: { 架空通信費: [1000] } },
+      cashEntries: [
+        {
+          id: 7,
+          date: '2026-07-10',
+          month: '2026-07',
+          side: 'biz',
+          io: 'expense',
+          amount: 1000,
+          description: '架空現金',
+          categoryMajor: '架空通信費',
+          categoryMid: '',
+          memo: null,
+          transitFrom: null,
+          transitTo: null,
+          transitRound: false,
+          receiptWaived: false,
+        },
+      ],
+      cashProjection: {
+        version: 1,
+        basis: 'post-resolution',
+        rows: [{ month: '2026-07', scope: 'biz_exp:架空通信費', amount: 1000 }],
+      },
+    };
+
+    const result = await (await restore(body)).json();
+    // 件数判定だけが削除中の行を数える。中身(金額・内容)はどの出力にも出さない
+    expect(result).toMatchObject({
+      cashEntries: 0,
+      cashKept: 0,
+      cashKeptReason: '削除中(30日以内)の現金明細が残っているため、現金明細は復元しませんでした',
+    });
+    expect(JSON.stringify(result)).not.toContain('架空削除中');
+    expect(await d1.prepare('SELECT id,deleted_at FROM cash_entries').all()).toMatchObject({
+      results: [{ id: 3, deleted_at: now }],
+    });
+  });
+
   it('分割済みMFを再取込してもraw planningとaccounting projectionを混ぜず、内訳集計を保存する', async () => {
     const first = [
       '計算対象,日付,金額,大項目,中項目,振替,内容,ID,保有金融機関',

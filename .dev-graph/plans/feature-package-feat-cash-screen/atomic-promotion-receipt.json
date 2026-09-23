@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-09-22T01:43:10Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+  "evaluated_digest": "sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+  "published_digest": "sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-cash-screen/dev-graph-registration.json"
+}

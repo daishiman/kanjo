@@ -627,11 +627,11 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 復元は `budget_plans` の利用者の行を消してから JSON の行を入れる。`budgetPlans` の無い古いバックアップを復元すると、既存 `budgets` と同じく `budget_plans` を消す。消した後は、既存 budgets の月額 × 12 が初期値に戻る。
 - `budget_plans` は、変更系フェンスの consumer(`canonical-mutation-fence.ts`)と取込中の表の一覧(`import-active.ts`)に入れた。保存の batch では JSON snapshot を無効化する。snapshot の無効化と復元の write-set の片方だけに入れると、snapshot が古い予算を返すため、両方に入れた。
 
-## 設定画面の 3 表(0052〜0054 / feat-settings-screen)
+## 設定画面の 3 表(0054〜0056 / feat-settings-screen)
 
-`migrations/0052_settings_norm_rules.sql`・`0053_settings_cash_overrides.sql`・`0054_settings_change_log.sql` が 3 表を足す。Drizzle の定義は `packages/api/src/db/schema.ts` の `settingsNormRules`・`settingsCashOverrides`・`settingsChangeLog` にある。画面仕様の正本は `specs/spec-settings-screen.md`、判断の経緯は [`settings-screen/design-decisions.md`](settings-screen/design-decisions.md) にまとめた。`schema-guard.ts` の `EXPECTED_D1_MIGRATION` は `0054_settings_change_log.sql` を指す。
+`migrations/0054_settings_norm_rules.sql`・`0055_settings_cash_overrides.sql`・`0056_settings_change_log.sql` が 3 表を足す。Drizzle の定義は `packages/api/src/db/schema.ts` の `settingsNormRules`・`settingsCashOverrides`・`settingsChangeLog` にある。画面仕様の正本は `specs/spec-settings-screen.md`、判断の経緯は [`settings-screen/design-decisions.md`](settings-screen/design-decisions.md) にまとめた。`schema-guard.ts` の `EXPECTED_D1_MIGRATION` は `0056_settings_change_log.sql` を指す。
 
-### `settings_norm_rules`(集計ルール。0052)
+### `settings_norm_rules`(集計ルール。0054)
 
 | 列 | 型 | 意味 |
 |---|---|---|
@@ -649,7 +649,7 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 文字数の上限は DB に置かず、core の検証(`validateSettingsInput`)と api の zod だけで検査する。JSON の復元で古い値を入れられるようにするため。
 - 取込時の科目正規化は、この表の `kind='account' AND enabled=1` の行を読む。旧 `account_norm_map` は正本ではなくなった。旧 `GET /api/settings` の `normMap` は、互換のために旧表のまま読む。
 
-### `settings_cash_overrides`(現金上書き。0053)
+### `settings_cash_overrides`(現金上書き。0055)
 
 | 列 | 型 | 意味 |
 |---|---|---|
@@ -666,7 +666,7 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 主キーは `(user_id, override_id)`。一意索引 `(user_id, kind, scope, ifnull(month,''))` があるので、同じ種別・範囲・月の行は 1 つしか置けない。
 - 月指定は全期間より優先する。月指定の値は、その月の現金の明細を 1 件に置き換えて集計する(BR-12〜BR-14)。
 
-### `settings_change_log`(変更履歴。0054)
+### `settings_change_log`(変更履歴。0056)
 
 | 列 | 型 | 意味 |
 |---|---|---|
@@ -682,18 +682,18 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 
 - 主キーは `(user_id, seq)`。索引は `settings_change_log_target (user_id, target, target_key, seq)`。`/api/settings/history` は、この索引を使って直前の保存値を引く。
 - **追記だけで、UPDATE・DELETE をしない**。保持期間は無期限。
-- 0054 は、0052 で移した集計ルールの行を origin `migration`・更新者 `system` として記録する。現金・名義・統計の既存の値の履歴は作らない。
+- 0056 は、0054 で移した集計ルールの行を origin `migration`・更新者 `system` として記録する。現金・名義・統計の既存の値の履歴は作らない。
 
 ### 旧表からの写し規則(BR-22 系)
 
-0052・0053 の初回の写し、旧 API の書込み(`legacySettingsTarget`)、古いバックアップ本文の読み(`settingsJsonFromBackup`)は、どれも同じ意味で写す。
+0054・0055 の初回の写し、旧 API の書込み(`legacySettingsTarget`)、古いバックアップ本文の読み(`settingsJsonFromBackup`)は、どれも同じ意味で写す。
 
 - **集計ルール**: `account_norm_map` の各行を、`kind='account'`・`enabled=1` の行にする。`rule_id` は `'m-'||lower(hex(raw))`(元の表記の UTF-8 hex)で、core の `migratedNormRuleId` と同じ値になる。`sort_order` は元の表記の昇順の `ROW_NUMBER`、`updated_by` は `system`。NULL の行は写さない。
 - **現金上書き**: `cash_overrides` の月ごとの値を月指定の行にする。`expense` は `m-p-${month}`(`payment`)へ、`revenue` は `m-r-${month}`(`receipt`)へ写す。**0 と NULL は写さない**(R-1)。旧画面では空欄が 0 として保存されてきたので、0 を写すと『0 円の上書き』になってしまうため。
 - **旧 `PUT /api/settings`**: 旧表に書いたうえで、同じ batch で新表と変更履歴(origin `screen`)にも書き、revision を進める。`normMap` は勘定科目の行の全件として扱う。同じ元の表記の行は id と並び順を保ち、送られなかった行は消し、新しい行は末尾に足す。取引先の行は変えない。`cashOverrides` は、送った月の月指定の行だけを置き換える。**全期間(`scope='all'`)の行と、送っていない月の行は残す**。値が変わらなければ新表にも変更履歴にも書かず、revision も進めない。
 - **旧 `PUT /api/settings/owner-labels`**: `owner_labels` に書いたうえで、変更履歴(origin `screen`)にも追記する。
 - **旧 `GET /api/settings`**: 旧表のまま読む。新表で足した取引先の行・全期間の上書き・無効の行は、旧 GET の応答には出ない。
-- **旧表は書き換えない**: 0052〜0054 には、`account_norm_map`・`cash_overrides` への DROP・ALTER・UPDATE・DELETE が無い。
+- **旧表は書き換えない**: 0054〜0056 には、`account_norm_map`・`cash_overrides` への DROP・ALTER・UPDATE・DELETE が無い。
 
 ### 書き出し・復元と snapshot
 
@@ -729,3 +729,69 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 索引: `tradeoff_candidate_notes_user_key`(`user_id`, `candidate_key`)の一意索引。PUT は UPSERT なので、同じ本文を繰り返しても行は増えない。`need` と `memo` の両方が NULL の PUT はその行を消し、自動の推定へ戻す。
 - `need` の値域は既存表の流儀に合わせて CHECK 制約ではなく API の zod で守る。
 - **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE TABLE` / `CREATE UNIQUE INDEX` のみ)。`packages/api/src/tradeoff-migration-0051.test.ts` が、当てても既存行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+
+## 現金明細の担当者・業務の目的・論理削除(0052)
+
+`migrations/0052_cash_entry_owner_soft_delete.sql` が `cash_entries` に 3 列と 1 索引を足す。画面仕様の正本は `specs/spec-cash-screen.md`、規則の一覧は [`cash-screen/rules.md`](cash-screen/rules.md)、判断の経緯は [`cash-screen/design-decisions.md`](cash-screen/design-decisions.md)。
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `owner` | TEXT(CHECK: NULL か `business` / `spouse` / `family`) | 担当者。NULL は 0052 より前に記帳した行で、画面は「未設定」と出し、編集では保存の前に選ばせる。新しい記帳では API が必須にする |
+| `transit_purpose` | TEXT | 交通費の業務の目的。固定 4 つの表示語か `その他:<記述>`(記述は 40 字まで)。区間の無い行は NULL |
+| `deleted_at` | TEXT | 論理削除の時刻(ISO 8601)。NULL が有効な行 |
+
+- 索引: `idx_cash_user_deleted`(`user_id`, `deleted_at`)。有効な行の読取(`deleted_at IS NULL`)と夜間の完全消去(`deleted_at < ?`)の両方で使う。
+- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE INDEX IF NOT EXISTS` のみ)。`packages/api/src/cash-migration-0052.test.ts` が、既存列の値が変わらないこと・足した 3 列が NULL であること・`owner` の CHECK・索引の列を固定する。
+- **削除中の行を読まない経路**: 一覧と `loadDataset`(取引・集計の作り直し)、バックアップ(`BACKUP_SNAPSHOT_SQL` の現金明細と、それを指す `tx_edits` の `cash:<id>`)、取込時の設定スナップショット、科目使用状況、PUT の既存行取得。JSON 復元の件数判定(`destination_counts`)だけが削除中の行を数え、残っている間は現金明細を復元しない。
+- **`tx_edits` は論理削除では消さない**。戻したときに同じ仕分けで戻すため。完全消去と同じ batch で消す。
+- **夜間の完全消去**(`cash_soft_delete_purge`): `deleted_at < now − 30日` の行を `deleted_at, id` の古い順に 1 晩 500 行まで消す(ちょうど 30 日は残す)。上限に達した晩は `level: "warn"` と `limitReached: true` のログを出し、残りは翌晩に回す。夜間の D1 query 計画上限はこの 2 本の分で 47 → 49。
+
+### 0052 の適用と巻き戻し
+
+- 適用は他の migration と同じく Deploy の自動適用に任せる。追加だけの migration なので、行を書き換える migration の手順(manifest → Migrate APPLY)は要らない。
+- **巻き戻すときも列は残す**。索引の掛かった列は SQLite では単独で外せず、表を作り直すと行の書き換えになる。コードだけを 0052 より前に戻すと `runtimeSchemaGuard` の `EXPECTED_D1_MIGRATION`(0052)と食い違うので、その値も同じ変更で戻す。列が残っていても旧コードは読まないので害はない。
+- **巻き戻したコードは削除中の行を有効な行として読む**(旧コードには `deleted_at IS NULL` が無い)。巻き戻す前に、削除中の行を restore で戻すか、30 日を待たずに消すかを決める。消すときは、その行を指す `tx_edits` の `cash:<id>` と明細の行を同じ batch で消す。
+
+## 取込画面の検査と取込1回(0053)
+
+`migrations/0053_import_inspections.sql` が 3 表を足し、`import_runs` に 9 列を足す。画面仕様の正本は `specs/spec-import-screen.md`、規則の一覧は [`import-screen/rules.md`](import-screen/rules.md)。
+
+`import_inspections`(検査 1 要求 = 1 行):
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `id` | TEXT PK | 検査 ID。確定はこの ID だけを受ける |
+| `user_id` | TEXT NOT NULL | 業務データの共有テナントキー |
+| `actor_id` | TEXT NOT NULL | 検査を作った本人。他人の検査 ID は 404 |
+| `status` | TEXT NOT NULL | `open` / `committing` |
+| `run_id` | TEXT | 最初の確定で作った取込 1 回の run。2 本目以降の確定はこの run の子にする |
+| `expires_at` | TEXT NOT NULL | 期限。追加・削除では延ばさない |
+| `created_at` | TEXT NOT NULL | 作成時刻 |
+
+`import_inspection_files`(ファイルごとの検査結果):
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `inspection_id` | TEXT NOT NULL | 親の検査。`ON DELETE CASCADE` |
+| `position` | INTEGER NOT NULL | 選んだ順(= 送信と検査の順) |
+| `filename` / `source` / `period_from` / `period_to` / `size` / `content_hash` | — | 画面の一覧の値。検査 ID ごとの累計(件数・大きさ)はこの表から合計する |
+| `summary_json` | TEXT NOT NULL | 検証・重複・行数の結果 |
+| `error_kind` | TEXT | 取込不可の理由の種別 |
+| `r2_key` | TEXT | R2 の仮置きのキー |
+
+`import_rate_limits`(利用者 × 種別 × 1 分枠の回数): 主キー (`user_id`, `kind`, `window_start`)。`kind` は CHECK で `inspection` / `commit` だけ。ログイン用の `password_login_rate_limits` とは分ける。
+
+`import_runs` に足した列(すべて NULL を許す):
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `file_count` / `row_count` / `added_count` / `skipped_count` / `subs_candidate_count` | INTEGER | 取込 1 回の影響の値。確定時に記録し、詳細ペインはこの値を出す(数え直さない) |
+| `result` | TEXT | `success` / `partial` / `failed`(CHECK) |
+| `keep_previous` | INTEGER | 「前回データを残す」の値(0 / 1) |
+| `hidden_at` | TEXT | 一括削除(記録の非表示)の時刻。明細は変えない |
+| `parent_run_id` | TEXT | 同じ検査 ID の 2 本目以降の確定。親の run が履歴の 1 行で、子は単独では出さない |
+
+- 索引: `import_inspections` (`user_id`, `expires_at`)、`import_inspection_files` (`inspection_id`)。
+- **既存の行は 1 行も書き換えない**(`CREATE TABLE` と `ALTER TABLE ... ADD COLUMN` のみ)。0053 より前の `import_runs` の行は新しい列が NULL のまま読まれ、履歴にはファイル単位の記録として出る。`packages/api/src/import-migration-0053.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+- 検査の行は確定時に消す。期限切れの検査と古いレート制限の枠は、検査を新しく作る要求のついでに `purgeExpiredImportRows` が消す。24 時間を過ぎた R2 の仮置きは、夜間保守の `runImportStagingCleanup` が 1 回 500 件まで消す (この job は D1 を 1 本も使わない)。D1 の片づけをリクエスト側へ寄せたのは、夜間保守の D1 クエリ枠 (Free の 1 回 50 本、安全枠 49 本) が既に他の job で埋まっていたためで、判断は `docs/import-screen/design-decisions.md` の OI-08 に残す。
+- 配信は Migrate → Deploy の順にする。0053 の前の Worker は新しい表を読めない。

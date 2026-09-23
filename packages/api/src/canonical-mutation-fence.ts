@@ -55,6 +55,10 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
     path: /^\/api\/cash-entries\/[^/]+$/,
     consumers: ['cash_entries', 'tx_edits'],
   },
+  // 論理削除の戻しと一括の削除・戻し。明細を読んでから書くので、取込・JSON復元と同じleaseで直列化する
+  { method: 'POST', path: /^\/api\/cash-entries\/[^/]+\/restore$/, consumers: ['cash_entries'] },
+  { method: 'POST', path: /^\/api\/cash-entries\/bulk-delete$/, consumers: ['cash_entries'] },
+  { method: 'POST', path: /^\/api\/cash-entries\/bulk-restore$/, consumers: ['cash_entries'] },
   {
     method: 'PUT',
     path: /^\/api\/transactions\/[^/]+\/(?:class|edit)$/,

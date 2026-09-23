@@ -315,11 +315,13 @@ export interface ImportQueryPlan {
     heartbeats: number;
     unitTransitions: number;
     commitStatements: number;
+    /** 検査の読み込み・レート制限・run の件数更新。POST /imports では無い */
+    screen?: number;
   };
 }
 
 const sumPlan = (breakdown: ImportQueryPlan['breakdown']): ImportQueryPlan => {
-  const total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
+  const total = Object.values(breakdown).reduce((sum: number, value) => sum + (value ?? 0), 0);
   return { total, limit: D1_FREE_QUERY_LIMIT, accepted: total < D1_FREE_QUERY_LIMIT, breakdown };
 };
 
@@ -333,9 +335,13 @@ export function planMultipartImportQueries(args: {
   applicableUnitCount: number;
   jsonUnitCount: number;
   commitStatementCounts: number[];
+  /** 検査を経る確定 (POST /imports/runs) が同じ invocation で使う query 数 */
+  extraQueries?: number;
 }): ImportQueryPlan {
-  const { fileCount, unitCount, applicableUnitCount, jsonUnitCount, commitStatementCounts } = args;
+  const { fileCount, unitCount, applicableUnitCount, jsonUnitCount, commitStatementCounts, extraQueries } =
+    args;
   return sumPlan({
+    ...(extraQueries ? { screen: extraQueries } : {}),
     // canonical planning snapshot(norm/cash/freee/splits) + loadDataset(cash snapshot)
     preflightReads: 1 + LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
     // run create + worst claim + attempt inserts + initial reconcile + release + outer catch cleanup(2)
@@ -1302,6 +1308,9 @@ export function prepareRestoreWriteSet(args: {
         entry.transitTo ?? null,
         entry.transitRound ? 1 : 0,
         entry.receiptWaived ? 1 : 0,
+        // 0052。旧バックアップ由来は null(未設定)のまま入れる
+        entry.owner ?? null,
+        entry.transitPurpose ?? null,
       ]),
     // DBでは (kind,itemKey) / month を主キーとする集合。配列順を指紋へ混ぜない
     reviewSnoozeRows: args.reviewSnoozes
@@ -1731,6 +1740,8 @@ function restoreCashEntryStatements(
       'transit_to',
       'transit_round',
       'receipt_waived',
+      'owner',
+      'transit_purpose',
     ],
     rows,
     [

@@ -17,13 +17,13 @@
     "SYS-SETTINGS-P12",
     "SYS-SETTINGS-P13"
   ],
-  "recorded_at": "2026-09-23T10:24:07Z",
-  "base": "origin/main 683226b",
+  "recorded_at": "2026-09-23T14:19:20Z",
+  "base": "origin/main ebc9d25 (merge 済み。作成時の base は 683226b)",
   "impact": "yes",
   "changes": [
     {
       "topic": "migration 番号",
-      "decision": "0051 は main の 0051_tradeoff_notes.sql (#68) が使ったため 0052_settings_norm_rules.sql / 0053_settings_cash_overrides.sql / 0054_settings_change_log.sql へ繰り上げ。EXPECTED_D1_MIGRATION も 0054 へ",
+      "decision": "起案 0051〜0053 → トレードオフ画面 (#68) が 0051 を使ったため 0052〜0054 へ、さらに PR 作成後に現金入力画面 (#70) が 0052 を、データ取込画面 (#69) が 0053 を使ったため main 取り込みの merge で 0054_settings_norm_rules.sql / 0055_settings_cash_overrides.sql / 0056_settings_change_log.sql へ再度繰り上げ。EXPECTED_D1_MIGRATION も 0056 へ",
       "reflected_in": [
         "migrations/0052_settings_norm_rules.sql",
         "migrations/0053_settings_cash_overrides.sql",
@@ -47,10 +47,10 @@
       ]
     },
     {
-      "topic": "トレードオフ画面サイクルの章の退避",
-      "decision": "system-spec は現行 1 世代運用。main のトレードオフ画面の章を system-spec/archive/2026-09-23-tradeoff-screen/ へ丸ごと退避し、graph の arch-tradeoff-* 8 件の source_lineage.source_path を退避先へ付け替えた (内容同一のため digest は据え置き)",
+      "topic": "データ取込画面サイクルの章の退避",
+      "decision": "system-spec は現行 1 世代運用。main (ebc9d25) の取込サイクルの章を system-spec/archive/2026-09-23-import-screen/ へ丸ごと退避し、graph の arch-import-screen-* 8 件の source_lineage.source_path を退避先へ付け替えた (内容同一のため digest は据え置き)。トレードオフ画面の章は main 側の現金入力サイクルが 2026-09-22-tradeoff-screen へ既に退避済みだったため、本ブランチが作った重複退避 2026-09-23-tradeoff-screen を落とし、main の退避先へ lineage を寄せた",
       "reflected_in": [
-        "system-spec/archive/2026-09-23-tradeoff-screen/README.md",
+        "system-spec/archive/2026-09-23-import-screen/README.md",
         "architecture/graph.json"
       ]
     },
@@ -69,6 +69,17 @@
         "system-spec/infrastructure.md",
         "system-spec/maintenance-ops.md"
       ]
+    },
+    {
+      "topic": "main 取り込み時の実装の合流",
+      "decision": "loadImportRestoreSettingsSnapshot は main 側の「? の数を SQL から数えて bind する」形を採り、勘定科目の読み元は設定サイクルの settings_norm_rules (enabled=1) を残した。ImportRestoreSettingsSnapshot は両サイクルの列 (settings* と cashEntries) を併せ持つ。Layout のログアウトは現金と設定の下書きを両方消す",
+      "reflected_in": [
+        "packages/api/src/store.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/web/src/components/Layout.tsx",
+        "packages/core/src/index.ts",
+        "packages/web/package.json"
+      ]
     }
   ],
   "not_changed": [
@@ -86,19 +97,19 @@
     }
   ],
   "gates": {
-    "lint": "EXIT 0 (biome 681 files / graph-lineage 158 node / security:content OK)",
+    "lint": "EXIT 0 (biome 716 files / graph-lineage 174 node / security:content OK)",
     "typecheck": "EXIT 0",
-    "tests": "core 1103 passed + 6 skipped / api 903 passed (67 files) / web passed"
+    "tests": "EXIT 0 — core 1207 passed + 6 skipped (66 files) / api 1033 passed (72 files) / web 1054 passed (91 files)"
   },
   "digests": {
-    "specs/spec-settings-screen.md": "e8a78a32ed3e7be8614be857b8aa478615e37004ca18a8d448a17f2611681548",
+    "specs/spec-settings-screen.md": "024156cfe895b6c3ee5bb0032253d093fd8e43d693469d627a55b7cc3bc695ca",
     "architecture/settings-backend.md": "3263d786e3defa673a7ebaa798a11adc359315960dea3065e7cdc90c1c0c5b56",
     "architecture/settings-database.md": "9b4d222df618c50fecd916be5975642d225c36aee91f037cdd92f531a2ed7e53",
     "architecture/settings-infrastructure.md": "586cabaa3b27a2a2822d1396b35cbccf39a6319bce35986320a0e5bf5a1c4309",
     "architecture/settings-maintenance-ops.md": "42e8ef552d951fd73b475314379b88f86b0b8d628c6e76cc1ea1621cab1db7f9",
-    "architecture/graph.json": "cbefef355c109d37997dd18b6e7cee51e784efc078d662e57b076326d860b427",
-    "docs/data-schema.md": "d6813f35a25d65abec17cf0b6a6c7696ed785aac95a88ad351bf9e0ea57ea8fe",
-    "docs/ui-decisions.md": "b189dab2737c23e84a4687c76bb57d3bcac9d012f02f59c6baa96f42d6888011",
-    "docs/settings-screen/design-decisions.md": "919cae2dd9a9209faad4a9805ca654c1f53dad0e9165712e621ee89c6ae1f96e"
+    "architecture/graph.json": "bf97b6ff104a8e23a21d137a4cc8837885a8f33565be505398456b1fcecd6b41",
+    "docs/data-schema.md": "3cabc270e1743c3eb1b15b31f54baf0a33faa46351169a8dfa21f7b5324b0f1e",
+    "docs/ui-decisions.md": "4924108fa93de04b141a95e3b499b16e1c47f67a53efdfdef5de8cbd568dc1f5",
+    "docs/settings-screen/design-decisions.md": "6eece173a09ff384428909175fafc76a6ef99acd85c1530b8ace4cc4db26ad82"
   }
 }

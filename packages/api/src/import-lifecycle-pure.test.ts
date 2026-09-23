@@ -728,6 +728,9 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/cash-entries'],
       ['PUT', '/api/cash-entries/1'],
       ['DELETE', '/api/cash-entries/1'],
+      ['POST', '/api/cash-entries/1/restore'],
+      ['POST', '/api/cash-entries/bulk-delete'],
+      ['POST', '/api/cash-entries/bulk-restore'],
       ['PUT', '/api/transactions/tx-1/class'],
       ['PUT', '/api/transactions/tx-1/edit'],
       ['PUT', '/api/transactions/tx-1/splits'],
@@ -792,6 +795,18 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/restore'],
     ] as const;
     const nonCanonicalMutations = [
+      // データ取込画面の検査は明細の表に書かず、検査の行と R2 の仮置きだけを作る。
+      ['POST', '/api/imports/inspections'],
+      ['POST', '/api/imports/inspections/x/files'],
+      ['DELETE', '/api/imports/inspections/x/files/y'],
+      // 確定・置換は取込本体 (runMultipartImport) が自前の lease を取る。
+      // 取り消しは経路表に一致しないため、handler の中で同じ mutation lease を取る。
+      ['POST', '/api/imports/runs'],
+      ['POST', '/api/imports/runs/x/reimport'],
+      ['POST', '/api/imports/runs/x/undo'],
+      ['POST', '/api/imports/runs/x/undo/preflight'],
+      // 履歴の非表示は import_runs.hidden_at だけを書き、明細にも世代にも触れない。
+      ['POST', '/api/imports/runs/hide'],
       ['POST', '/api/auth/login'],
       ['POST', '/api/auth/logout'],
       // 自分のパスワード変更。users 1行と監査だけを触り、明細のlease層には一切入らない。
@@ -872,6 +887,9 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/cash-entries',
       'PUT /api/cash-entries/:id',
       'DELETE /api/cash-entries/:id',
+      'POST /api/cash-entries/:id/restore',
+      'POST /api/cash-entries/bulk-delete',
+      'POST /api/cash-entries/bulk-restore',
       'PUT /api/transactions/:txId/class',
       'PUT /api/transactions/:txId/edit',
       'PUT /api/transactions/:txId/splits',
@@ -913,6 +931,14 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/imports/:id/undo/preflight',
       'POST /api/imports/:id/discard',
       'POST /api/imports/:id/discard/preflight',
+      'POST /api/imports/inspections',
+      'POST /api/imports/inspections/:id/files',
+      'DELETE /api/imports/inspections/:id/files/:fileId',
+      'POST /api/imports/runs',
+      'POST /api/imports/runs/:id/reimport',
+      'POST /api/imports/runs/:id/undo/preflight',
+      'POST /api/imports/runs/:id/undo',
+      'POST /api/imports/runs/hide',
       'POST /api/data/deletions',
       'POST /api/data/deletions/preflight',
       'POST /api/data/undo/:operationId',

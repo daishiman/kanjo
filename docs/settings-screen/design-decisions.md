@@ -17,7 +17,7 @@
 
 | 事項 | 仕様の記述 | 実装 | 理由 |
 |---|---|---|---|
-| 集計ルールの `ruleId` の長さ | BR-02 は 1〜64 字の英数・`_`・`-` | `NORM_RULE_ID_PATTERN`(`packages/core/src/norm-rules.ts`)は `^(?:[A-Za-z0-9_-]{1,64}\|m-(?:[0-9a-f]{2}){1,180})$` で、移行した id(`m-` + UTF-8 の hex)を最大 362 字まで許す | 0052 は既存の `account_norm_map` の行を `'m-'\|\|lower(hex(raw))` で写す。日本語で 11 字以上の raw は 64 字を超える。この形のままだと、移行した行を含む保存が `invalid_id` で止まってしまう。hex の形は `m-` 接頭辞の id に限って広げたので、画面から発行する id は従来どおり 64 字以内に収まる |
+| 集計ルールの `ruleId` の長さ | BR-02 は 1〜64 字の英数・`_`・`-` | `NORM_RULE_ID_PATTERN`(`packages/core/src/norm-rules.ts`)は `^(?:[A-Za-z0-9_-]{1,64}\|m-(?:[0-9a-f]{2}){1,180})$` で、移行した id(`m-` + UTF-8 の hex)を最大 362 字まで許す | 0054 は既存の `account_norm_map` の行を `'m-'\|\|lower(hex(raw))` で写す。日本語で 11 字以上の raw は 64 字を超える。この形のままだと、移行した行を含む保存が `invalid_id` で止まってしまう。hex の形は `m-` 接頭辞の id に限って広げたので、画面から発行する id は従来どおり 64 字以内に収まる |
 | 30 日の保持削除の範囲 | P05 のタスク仕様は「pre-restore を保持削除の対象から除外」、仕様書(保持の節と R-4 の対処)は 30 日を過ぎた退避も消す | 夜間処理(`packages/api/src/index.ts` の `nightlyBackup`)は、`listAllBackups` で cursor を追って全件を集める。`backups/pre-restore/` の接頭辞を外した日付で比べ、30 日より古い回・`.failed.json`・退避をすべて消す | 仕様書の側に揃えた。退避を残し続けると R-4 のとおり R2 に溜まり続ける。一覧(`backupListItems`)は退避を出さないので、画面の見え方は変わらない |
 | 全データ復元での設定の扱い | 仕様書 1704 行は、全データ復元(`POST /api/restore`)でも 3 表と名義・集計ルールを同じ意味で書くとする | `import-lifecycle.ts` の全データ復元が書くのは `settings_cash_overrides` だけ。変わったときだけ置き換え、変更履歴を origin `migration` で残す。名義と集計ルールは書かない | 全データ復元の write-set は、既存の監査済みの経路(フェンス・snapshot の無効化)に縛られる。変更は現金の投影に要る最小限に留めた。名義と集計ルールを全データ復元で戻す要否は、利用者に確認していない |
 | 集計ルールの科目候補 | 仕様は既存の `CategoryPicker` を使う | 正規化後のカテゴリの欄は `<input list>` と `<datalist id="settings-norm-suggestions">` で候補を出す | 表の 1 セルに収まる入力が要り、`CategoryPicker` のタブ付きの選択は表の行の高さに収まらなかった。候補の中身は既存の科目候補と同じ |
@@ -30,7 +30,7 @@
 
 ### 3.1 新表は足すだけで、旧表と旧 API は残す
 
-`migrations/0052〜0054` の 3 本は、`settings_norm_rules`・`settings_cash_overrides`・`settings_change_log` を足し、旧表の行を写すだけにした。`account_norm_map`・`cash_overrides` には DROP・ALTER・UPDATE・DELETE を 1 文も書かない。旧 `PUT /api/settings` と `PUT /api/settings/owner-labels` は、旧表に書いたうえで `legacySettingsStatements` によって新表と変更履歴(origin `screen`)にも同じ意味で書き、revision を進める(Q-2・R-2)。旧 `GET /api/settings` は旧表のまま読む。フェンス(`canonical-mutation-fence.ts`)では、`PUT /api/settings` の consumers に `settings_cash_overrides` を加えた。写しの規則は `docs/data-schema.md` の「設定画面の 3 表(0052〜0054)」にある。
+`migrations/0054〜0056` の 3 本は、`settings_norm_rules`・`settings_cash_overrides`・`settings_change_log` を足し、旧表の行を写すだけにした。`account_norm_map`・`cash_overrides` には DROP・ALTER・UPDATE・DELETE を 1 文も書かない。旧 `PUT /api/settings` と `PUT /api/settings/owner-labels` は、旧表に書いたうえで `legacySettingsStatements` によって新表と変更履歴(origin `screen`)にも同じ意味で書き、revision を進める(Q-2・R-2)。旧 `GET /api/settings` は旧表のまま読む。フェンス(`canonical-mutation-fence.ts`)では、`PUT /api/settings` の consumers に `settings_cash_overrides` を加えた。写しの規則は `docs/data-schema.md` の「設定画面の 3 表(0054〜0056)」にある。
 
 ### 3.2 保存は 1 回、競合は revision で止める
 
@@ -62,7 +62,7 @@
 | Q-10 バックアップの日付を JST にする | agent 推定・利用者未確認 | ファイル名の日付は JST(UTC + 9 時間)。同じ日付のキーがあれば上書きする |
 | Q-11 変更履歴の表示場所 | agent 推定・利用者未確認 | 画面に出すのは集計ルールの説明パネルだけ。名義・統計・現金上書きの履歴は `/api/settings/history` と表に残す |
 | Q-12 agent 推定・具体化した値の一覧 | agent 推定・利用者未確認 | 仕様書の一覧の値で実装した。主なものは次のとおり: 下書きのキー・v1・30 日・800ms、64KB / 256KB / 500 行、`0 17 * * *`、`backups/pre-restore/`、error code 名、バックアップからの復元の本文上限 1KB、`ruleId` の `m-` 接頭辞(長さは §2 で拡張)、サイズの KB 切り上げ、失敗の回のメモ『バックアップの作成に失敗しました』 |
-| R-1 空欄が 0 に潰れた既存値 | agent 対処・利用者未確認 | 0052 / 0053 の写しと `settingsJsonFromBackup` は、0 と NULL を写さない。空欄のつもりだった月を『0 円の上書き』にしないため。本当に 0 円を意図していた月も写らないので、その場合は画面で入れ直す必要がある |
+| R-1 空欄が 0 に潰れた既存値 | agent 対処・利用者未確認 | 0054 / 0055 の写しと `settingsJsonFromBackup` は、0 と NULL を写さない。空欄のつもりだった月を『0 円の上書き』にしないため。本当に 0 円を意図していた月も写らないので、その場合は画面で入れ直す必要がある |
 | R-2 科目正規化の正本が 2 つになる | agent 対処・利用者未確認 | 旧 PUT も新表へ書く(Q-2)。取込時の正規化は新表を読む |
 | R-3 キーの日付が UTC | agent 対処・利用者未確認 | JST の日付に揃えた(Q-10)。切り替えた日に同じ日付が重なった場合は上書きする |
 | R-4 退避が 30 日で消えない | agent 対処・利用者未確認 | 削除処理は `pre-restore/` の接頭辞を外した日付で比べる。一覧(`backupListItems`)は退避を出さない。P05 との食い違いは §2 に書いた |
@@ -72,11 +72,11 @@
 
 ## 5. 配信(P13)
 
-配信は単一の PR で行い、web ビルド・Worker・D1 migration 0052〜0054・cron の変更(`wrangler.jsonc` の `crons` を `["0 17 * * *"]`、JST 2:00)を同時に出す。手順は Migrate(0052→0053→0054 を適用)→ Deploy の順にする。Deploy が先に走ると `schema-guard.ts` の `EXPECTED_D1_MIGRATION`(`0054_settings_change_log.sql`)と合わず、api が止まる。
+配信は単一の PR で行い、web ビルド・Worker・D1 migration 0054〜0056・cron の変更(`wrangler.jsonc` の `crons` を `["0 17 * * *"]`、JST 2:00)を同時に出す。手順は Migrate(0054→0055→0056 を適用)→ Deploy の順にする。Deploy が先に走ると `schema-guard.ts` の `EXPECTED_D1_MIGRATION`(`0056_settings_change_log.sql`)と合わず、api が止まる。
 
 migration は表を足して写すだけなので、戻すときは PR の revert と cron の 1 行を戻すだけで済む。表は消さない。旧表は書き換えていないため、revert 後も旧経路は同じ値を読む。
 
-merge の直前に origin/main を fetch し直し、0052〜0054 がまだ空いているかを確かめる。埋まっていたら次の空き番号へ繰り上げ、`schema-guard.ts`・本書・`docs/data-schema.md` の参照を揃える。
+merge の直前に origin/main を fetch し直し、0054〜0056 がまだ空いているかを確かめる。埋まっていたら次の空き番号へ繰り上げ、`schema-guard.ts`・本書・`docs/data-schema.md` の参照を揃える。
 
 ## 6. この決定を古びさせないために
 
@@ -114,7 +114,7 @@ merge の直前に origin/main を fetch し直し、0052〜0054 がまだ空い
 | AT-14 | api › settings-screen.integration(古い `baseSavedAt` の 409・変更履歴の追記・history) | A | 合格 |
 | AT-15 | api › settings-screen.integration(JSON の往復・4xx・自動退避)、core › settings-json(書き出し → 検証の往復・拒否) | A・C | 合格 |
 | AT-16 | api › settings-backups.integration(scheduled・失敗の回・比較・設定だけの復元) | A | 合格 |
-| AT-17 | api › settings-screen.integration(0052〜0054 の写し)、`src/index.test.ts`(`EXPECTED_D1_MIGRATION`)、core › settings-json(移行 id が migration と同じ) | A・C | 合格 |
+| AT-17 | api › settings-screen.integration(0054〜0056 の写し)、`src/index.test.ts`(`EXPECTED_D1_MIGRATION`)、core › settings-json(移行 id が migration と同じ) | A・C | 合格 |
 | AT-18 | `src/import-lifecycle-pure.test.ts` › canonical mutation lease predicate、api › settings-screen.integration(401・413・不正入力) | A | 合格 |
 | AT-19 | core › transaction-export-contract(BR-30 の 3 件) | C | 合格 |
 | AT-20 | settings.dom › 見出しと節(既存の機能はアカウントとその他の管理の節に入っている)、既存の DOM テスト | W | 合格 |
@@ -147,7 +147,7 @@ scope_out の各項目を差分から確かめた。侵犯は 0 件だった。
 | 保持 30 日の変更 | `BACKUP_RETENTION_DAYS` は 30 のまま。削除の範囲を退避と失敗マーカーへ広げたが、日数は変えていない(§2) | 無し |
 | バックアップからの全データ復元 | バックアップの節の復元は設定 4 種だけ。`backup-restore.dom.test.tsx` が `/api/restore` へ流さないことを固定する | 無し |
 | 既存 API の削除 | `GET/PUT /api/settings`・owner-labels・`GET /api/backups/:date`・`POST /api/restore`・`/api/export/*` の削除行が 0 件 | 無し |
-| 既存表 `account_norm_map`・`cash_overrides` の削除・書き換え | 0052〜0054 に旧表への DROP・ALTER・UPDATE・DELETE・INSERT が 0 件。旧表は読んで写すだけ | 無し |
+| 既存表 `account_norm_map`・`cash_overrides` の削除・書き換え | 0054〜0056 に旧表への DROP・ALTER・UPDATE・DELETE・INSERT が 0 件。旧表は読んで写すだけ | 無し |
 
 ## 9. 状態と証跡
 

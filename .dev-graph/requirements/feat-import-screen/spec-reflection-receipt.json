@@ -1,0 +1,141 @@
+{
+  "receipt_kind": "spec-reflection",
+  "parent_feature": "feat-import-screen",
+  "graph_node_id": "feat-import-screen",
+  "beads_epic": "kanjo-y7q",
+  "recorded_at": "2026-09-23T12:40:00Z",
+  "verdict": "IMPACTED_AND_REFLECTED",
+  "summary": "データ取込画面 (16-import) の作り直しは仕様・設計へ影響があると判定し、system-spec/ specs/ architecture/ features/ tasks/ docs/ へ反映した。PR 前の main 取込を 2 度行い、1 度目は予算画面 (#67)、2 度目はトレードオフ画面 (#68) と現金入力画面 (#70) と衝突した。migration は 0050 → 0051 → 0053 へ 3 段で繰り上げ、現金入力サイクルの確定章を system-spec/archive/2026-09-23-cash-entry-screen/ へ退避した。2 度目の取込では夜間保守の D1 クエリ枠が 51 本になり Free 上限を超えたため、利用者の判断で取込の片づけを夜間の D1 枠から外した (I6)。",
+  "impacts": [
+    {
+      "id": "I1",
+      "finding": "複数ファイルの検査 (inspection)・確定・取り消し・履歴を 1 画面で進める正本が無い。",
+      "action": "specs/spec-import-screen.md を新設し、FR・UI表・API契約・データモデル・業務規則・受入テストを確定した。features/feat-import-screen.md と context.json を置いた。",
+      "files": [
+        "specs/spec-import-screen.md",
+        "features/feat-import-screen.md",
+        "features/feat-import-screen.context.json"
+      ]
+    },
+    {
+      "id": "I2",
+      "finding": "system-spec のカテゴリ章に取込の検査・上限・所有者境界・保持期限の決定が無い。",
+      "action": "system-spec-harness の正規フロー (elicit → doc-fetch → compile → completeness evaluator) で要件定義書と 8 章を更新した。architecture/import-screen-*.md 8 件を新設し architecture/graph.json に登録した。",
+      "files": [
+        "system-spec/00-requirements-definition.md",
+        "system-spec/ui-ux.md",
+        "system-spec/frontend.md",
+        "system-spec/backend.md",
+        "system-spec/database.md",
+        "system-spec/auth.md",
+        "system-spec/security.md",
+        "system-spec/infrastructure.md",
+        "system-spec/maintenance-ops.md",
+        "system-spec/index.md",
+        "system-spec/spec-state.json",
+        "system-spec/fetched-references.json",
+        "system-spec/completeness-findings.json",
+        "architecture/graph.json"
+      ]
+    },
+    {
+      "id": "I3",
+      "finding": "main 取込で system-spec/ 直下の現行世代が他サイクルと衝突した (1 度目: 予算サイクル、2 度目: 現金入力サイクル)。",
+      "action": "直下は取込サイクルを現行世代とし、退避した過去サイクルの章をバイト同一で archive/ へ移した。1 度目は予算サイクル 14 ファイルを system-spec/archive/2026-09-22-budget-screen/ へ、2 度目は main (237d2a2) の現金入力サイクル 14 ファイルを system-spec/archive/2026-09-23-cash-entry-screen/ へ退避し、それぞれ README を置いた。architecture/graph.json は 166 ノードの和集合にし、arch-budget-* / arch-cash-* 各 8 件の source_lineage.source_path を退避先へ付け替えた (digest は内容同一のため不変。166 ノード全件で source_path 実在と digest 一致を確認)。",
+      "files": [
+        "system-spec/archive/2026-09-22-budget-screen/",
+        "system-spec/archive/2026-09-23-cash-entry-screen/",
+        "architecture/graph.json"
+      ]
+    },
+    {
+      "id": "I4",
+      "finding": "main が migration の番号を先に使った (0050_budget_plans.sql #67、0051_tradeoff_notes.sql #68、0052_cash_entry_owner_soft_delete.sql #70)。",
+      "action": "0050 → 0051 → 0053 と 3 段で繰り上げ、schema-guard・migration テスト・specs・tasks・docs の参照を 0053 に統一した。経緯を述べた行 (OI-01・spec の番号の由来・evidence E14) は当時の事実なので機械置換の対象から外し、当時の番号のまま残した。system-spec/ と .dev-graph/plans/ と features/*.context.json は digest 追跡下の計画時点の証跡のため予定番号 0050 のまま据え置いた。",
+      "files": [
+        "migrations/0053_import_inspections.sql",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/import-migration-0053.test.ts",
+        "specs/spec-import-screen.md",
+        "docs/data-schema.md",
+        "docs/import-screen/",
+        "tasks/feat-import-screen/"
+      ]
+    },
+    {
+      "id": "I5",
+      "finding": "画面の決定の経緯・未決事項 (OI-01〜)・証跡索引・業務規則の読み物が無い。",
+      "action": "docs/import-screen/{design-decisions,evidence,rules}.md を置き、docs/ui-decisions.md と docs/data-schema.md に取込の節を追記した。",
+      "files": [
+        "docs/import-screen/design-decisions.md",
+        "docs/import-screen/evidence.md",
+        "docs/import-screen/rules.md",
+        "docs/ui-decisions.md",
+        "docs/data-schema.md"
+      ]
+    },
+    {
+      "id": "I6",
+      "finding": "main 取込で夜間保守の D1 クエリが合計 51 本になり、Cloudflare Workers Free の 1 起動 50 本 (安全枠 49 本) を超えた。取込の import_staging_cleanup 2 本と現金入力 (#70) の cash_soft_delete_purge 2 本が同じ枠を取り合った。git は数値の衝突として見せず、planScheduledMaintenanceD1Queries() が module 初期化時に throw して初めて表に出る。",
+      "action": "利用者が「取込を夜間の D1 枠から外す」を選択した。purgeExpiredImportRows (D1 2 本) を POST /imports/inspections のついでに呼ぶ形へ移し、runImportStagingCleanup は R2 だけを触る job にして SCHEDULED_MAINTENANCE_JOB_NAMES から外した。D1 を 1 本も使わない job は予算表に載せない (載せると使わない枠を他の job から奪う)。予算表は 8 job・合計 49 本。規範文書 (specs・docs・rules・tasks) の「夜間保守が期限切れの検査を消す」記述を改め、OI-08 として記録した。",
+      "files": [
+        "packages/api/src/scheduled-maintenance-budget.ts",
+        "packages/api/src/scheduled-maintenance-budget.test.ts",
+        "packages/api/src/import-rate-limit.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/import-screen.integration.test.ts",
+        "specs/spec-import-screen.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md",
+        "docs/import-screen/design-decisions.md",
+        "docs/import-screen/rules.md",
+        "tasks/feat-import-screen/sys-import-p05.md"
+      ]
+    }
+  ],
+  "no_impact": [
+    {
+      "id": "N1",
+      "change": "新しい取込画面の checkbox 5 箇所 (ファイル表の全選択・行、履歴の一括削除、強制再取込、前回データを残す) を共通 SelectionCheckbox へ寄せた。",
+      "reason": "main (#67) が決めた『全画面の checkbox を SelectionCheckbox に寄せる』方針と、docs/design-system/requirements-baseline.md の size.tapTargetMin の適用であり、選択の意味・accessible name・フォーム挙動は変えない。新しい要件を足していないため system-spec/specs の変更は不要。"
+    }
+  ],
+  "open_items": [],
+  "resolved_items": [
+    {
+      "id": "OI-03",
+      "resolved_at": "2026-09-23T09:40:00Z",
+      "item": "xlsx 展開時のメモリ 128MB の完了条件が実測で満たせない (展開後およそ 15MB まで)。A案: xlsx だけ展開後上限 15MB / B案: xlsx は 1 要求 1 ファイル、の利用者判断待ちで P09〜P12 を保留していた。",
+      "decision": "利用者が A案を選択した。IMPORT_LIMITS.maxExpandedBytes を 62,914,560 (60MB) から 15,728,640 (15MB) へ下げた。B案は、heap の増分が同時展開ファイル数ではなく 1 ファイルの展開後サイズでほぼ決まり、単独ファイルでも展開後 60MB なら約 300MB に達するため根本解決にならないと判断して採らなかった。",
+      "reflected_files": [
+        "packages/core/src/import-screen.ts",
+        "packages/core/test/import-screen.test.ts",
+        "packages/api/src/import-limits-literal.test.ts",
+        "specs/spec-import-screen.md",
+        "architecture/import-screen-security.md",
+        "architecture/import-screen-backend.md",
+        "architecture/import-screen-infrastructure.md",
+        "architecture/import-screen-maintenance-ops.md",
+        "docs/import-screen/design-decisions.md",
+        "docs/import-screen/evidence.md",
+        "docs/import-screen/rules.md"
+      ],
+      "not_reflected": {
+        "paths": [
+          "system-spec/",
+          "tasks/feat-import-screen/",
+          "features/feat-import-screen.md",
+          "features/feat-import-screen.context.json"
+        ],
+        "reason": "いずれも digest 追跡下の計画時点の証跡で、I4 の migration 予定番号 0050 と同じ扱い。system-spec/ 直下は C01/C03 の単一 writer 経由でしか変更できず、編集すると arch-import-screen-* 8 件の source_digest がずれて check-graph-lineage が落ちる。現行の正本は specs/spec-import-screen.md と core の IMPORT_LIMITS であり、そちらで 15MB に統一した。次サイクルの elicit で system-spec を更新する際に qa-imp-decision-007 の値を 15MB へ改める。"
+      }
+    }
+  ],
+  "not_committed": [
+    {
+      "path": ".gitignore / biome.json",
+      "reason": "`.improve` の除外追加は本 feature と無関係なローカル変更。"
+    }
+  ]
+}
