@@ -56,7 +56,7 @@ describe('上限値の定数', () => {
     expect(IMPORT_LIMITS.maxFileBytes).toBe(26_214_400);
     expect(IMPORT_LIMITS.maxFiles).toBe(10);
     expect(IMPORT_LIMITS.maxTotalBytes).toBe(31_457_280);
-    expect(IMPORT_LIMITS.maxExpandedBytes).toBe(62_914_560);
+    expect(IMPORT_LIMITS.maxExpandedBytes).toBe(15_728_640);
     expect(IMPORT_LIMITS.maxArchiveEntries).toBe(1_000);
     expect(IMPORT_LIMITS.maxHideIds).toBe(100);
     expect(IMPORT_LIMITS.cleanupBatch).toBe(500);
@@ -185,10 +185,10 @@ describe('web・api と共通の境界表', () => {
 });
 
 describe('importArchiveViolation の境界', () => {
-  it('展開後 60MB ちょうどは通り、+1 byte は「展開後 60MB 超」', () => {
-    expect(importArchiveViolation({ entries: 10, expandedBytes: 60 * MB })).toBeNull();
-    expect(importArchiveViolation({ entries: 10, expandedBytes: 60 * MB + 1 })?.reason).toBe(
-      '展開後 60MB 超',
+  it('展開後 15MB ちょうどは通り、+1 byte は「展開後 15MB 超」', () => {
+    expect(importArchiveViolation({ entries: 10, expandedBytes: 15 * MB })).toBeNull();
+    expect(importArchiveViolation({ entries: 10, expandedBytes: 15 * MB + 1 })?.reason).toBe(
+      '展開後 15MB 超',
     );
   });
 

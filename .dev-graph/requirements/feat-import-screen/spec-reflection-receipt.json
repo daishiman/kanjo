@@ -45,10 +45,18 @@
       "reason": "main (#67) が決めた『全画面の checkbox を SelectionCheckbox に寄せる』方針と、docs/design-system/requirements-baseline.md の size.tapTargetMin の適用であり、選択の意味・accessible name・フォーム挙動は変えない。新しい要件を足していないため system-spec/specs の変更は不要。"
     }
   ],
-  "open_items": [
+  "open_items": [],
+  "resolved_items": [
     {
       "id": "OI-03",
-      "item": "xlsx 展開時のメモリ 128MB の完了条件が実測で満たせない (展開後およそ 15MB まで)。A案: xlsx だけ展開後上限 15MB / B案: xlsx は 1 要求 1 ファイル、の利用者判断待ちで P09〜P12 を保留した。判断後に specs/spec-import-screen.md の上限表と system-spec/backend.md を正規フローで更新する。"
+      "resolved_at": "2026-09-23T09:40:00Z",
+      "item": "xlsx 展開時のメモリ 128MB の完了条件が実測で満たせない (展開後およそ 15MB まで)。A案: xlsx だけ展開後上限 15MB / B案: xlsx は 1 要求 1 ファイル、の利用者判断待ちで P09〜P12 を保留していた。",
+      "decision": "利用者が A案を選択した。IMPORT_LIMITS.maxExpandedBytes を 62,914,560 (60MB) から 15,728,640 (15MB) へ下げた。B案は、heap の増分が同時展開ファイル数ではなく 1 ファイルの展開後サイズでほぼ決まり、単独ファイルでも展開後 60MB なら約 300MB に達するため根本解決にならないと判断して採らなかった。",
+      "reflected_files": ["packages/core/src/import-screen.ts", "packages/core/test/import-screen.test.ts", "packages/api/src/import-limits-literal.test.ts", "specs/spec-import-screen.md", "architecture/import-screen-security.md", "architecture/import-screen-backend.md", "architecture/import-screen-infrastructure.md", "architecture/import-screen-maintenance-ops.md", "docs/import-screen/design-decisions.md", "docs/import-screen/evidence.md", "docs/import-screen/rules.md"],
+      "not_reflected": {
+        "paths": ["system-spec/", "tasks/feat-import-screen/", "features/feat-import-screen.md", "features/feat-import-screen.context.json"],
+        "reason": "いずれも digest 追跡下の計画時点の証跡で、I4 の migration 予定番号 0050 と同じ扱い。system-spec/ 直下は C01/C03 の単一 writer 経由でしか変更できず、編集すると arch-import-screen-* 8 件の source_digest がずれて check-graph-lineage が落ちる。現行の正本は specs/spec-import-screen.md と core の IMPORT_LIMITS であり、そちらで 15MB に統一した。次サイクルの elicit で system-spec を更新する際に qa-imp-decision-007 の値を 15MB へ改める。"
+      }
     }
   ],
   "not_committed": [

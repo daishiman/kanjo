@@ -61,7 +61,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5", "G6"]
 ## Goals and non-goals
 
 - Goals:
-  - G3: ファイルの状態・検証の段階・取込可否・内容確認の要約・取込 1 回の結果 (全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗) を `packages/core/src/import-screen.ts` (新設) の純関数に置く。上限値 (1 ファイル 25MB・10 ファイル・合計 30MB・展開後 1 ファイル 60MB・エントリ数 1,000 件) も同じファイルの定数 `IMPORT_LIMITS` に 1 か所だけ置き、超過の理由を返す判定関数を core に置く。
+  - G3: ファイルの状態・検証の段階・取込可否・内容確認の要約・取込 1 回の結果 (全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗) を `packages/core/src/import-screen.ts` (新設) の純関数に置く。上限値 (1 ファイル 25MB・10 ファイル・合計 30MB・展開後 1 ファイル 15MB・エントリ数 1,000 件) も同じファイルの定数 `IMPORT_LIMITS` に 1 か所だけ置き、超過の理由を返す判定関数を core に置く。
   - G2: `POST /imports/inspections` (検査)・`POST /imports/inspections/:id/files` (追加)・`DELETE /imports/inspections/:id/files/:fileId` (除外)・`POST /imports/runs` (確定) を足し、確定でファイルを再送させない (qa-imp-decision-003・-005・-008)。
   - G4: 前回データを残す=オンは MF 明細を mfStableKey、freee 取引を freeeDealKeys で既にある行を飛ばして新しい行だけを足し、オフは従来の月単位の入れ替えにする (qa-imp-decision-002)。
   - G5: `GET /imports/runs` で取込 1 回を 1 行、`GET /imports/runs/:id` で影響の 3 数値と含まれるファイルを返す。再取込・取り消し (30 日)・原本の取得は既存の経路を取込単位へ束ねる。一括削除は履歴の記録だけを消す (qa-imp-decision-004)。
@@ -132,7 +132,7 @@ N/A: キューや遅延処理は無い。検査は 1 要求の中で 1 ファイ
 
 #### Security and resilience
 
-合計 30MB は本文を読む前に hono/body-limit で、ファイル数と 1 ファイル 25MB は本文を読んだ直後・パースの前に、エントリ数 1,000 件と展開後 60MB は展開の前に止める (qa-imp-decision-006・-007・-009・-011)。同時に展開するのは 1 ファイルだけにする。レート制限と Origin の検査は入口に置く。詳細は `architecture/import-screen-security.md`。
+合計 30MB は本文を読む前に hono/body-limit で、ファイル数と 1 ファイル 25MB は本文を読んだ直後・パースの前に、エントリ数 1,000 件と展開後 15MB は展開の前に止める (qa-imp-decision-006・-007・-009・-011)。同時に展開するのは 1 ファイルだけにする。レート制限と Origin の検査は入口に置く。詳細は `architecture/import-screen-security.md`。
 
 #### Operations and verification
 

@@ -96,7 +96,7 @@ describe('取込の経路に上限値の書き写しが無い', () => {
       'maxFileBytes (25 * 1024 * 1024)',
     ]);
     expect(findLiterals('const MAX = 31_457_280;')).toEqual(['maxTotalBytes (31457280)']);
-    expect(findLiterals('<small>1 ファイル 60MB まで</small>')).toEqual(['maxExpandedBytes (60MB)']);
+    expect(findLiterals('<small>1 ファイル 15MB まで</small>')).toEqual(['maxExpandedBytes (15MB)']);
     expect(findLiterals('z.array(z.string()).max(10)')).toEqual(['maxFiles (.max(10))']);
     expect(findLiterals('if (entries > 1000) throw error;')).toEqual(['maxArchiveEntries (1000)']);
     expect(findLiterals('const j = new Date(d.getTime() + 9 * 60 * 60 * 1000);')).toEqual([]);

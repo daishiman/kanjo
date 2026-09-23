@@ -63,7 +63,7 @@ feature `feat-import-screen`(Beads epic `kanjo-y7q`)の検査記録。受入の�
 
 ## 4. P09 xlsx のメモリ(OI-03)
 
-実測は design-decisions §8。展開後 15MB〜60MB の xlsx は上限の内側でも Workers のメモリ 128MB を超えうる。後退策(xlsx だけ展開後の上限を下げる / xlsx は 1 要求 1 ファイルに限る)は、上限値を決めた利用者の判断に回した。**未決。**
+実測は design-decisions §8。展開後 15MB〜60MB の xlsx は当初の上限 60MB の内側でも Workers のメモリ 128MB を超えうる。後退策(xlsx だけ展開後の上限を下げる / xlsx は 1 要求 1 ファイルに限る)を上限値を決めた利用者の判断に回し、**A案(展開後の上限を 15MB に下げる)で決着した**(2026-09-23)。`IMPORT_LIMITS.maxExpandedBytes` を 15,728,640 へ変更し、core と api の境界テストの期待値、`specs/spec-import-screen.md` の上限表を同時に更新した。判断の理由は design-decisions §8「結論」。
 
 ## 5. P10 配信してよいかの判断
 

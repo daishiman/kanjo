@@ -62,7 +62,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5", "G6"]
 
 - Goals:
   - G6: 合計 30MB を本文を読む前に 413 で止める。ファイル数 (検査 ID の累計で 10) と 1 ファイル 25MB を本文を読んだ直後・パースの前に 413 で止める (qa-imp-decision-011)。
-  - G6: xlsx と ZIP は展開する前に中央ディレクトリのエントリ数と展開後サイズの合計を確かめ、エントリ数 1,000 件か展開後 1 ファイル 60MB を超えるものは展開せずに取込不可にする (qa-imp-decision-009・ASVS 5.2.3)。
+  - G6: xlsx と ZIP は展開する前に中央ディレクトリのエントリ数と展開後サイズの合計を確かめ、エントリ数 1,000 件か展開後 1 ファイル 15MB を超えるものは展開せずに取込不可にする (qa-imp-decision-009・ASVS 5.2.3)。
   - G6: レート制限を利用者ごとに検査 30 回/分 (ファイル追加の要求も検査に数える)・確定 5 回/分とし、超過は 429 `rate_limited` と Retry-After (qa-imp-decision-006・-008)。
   - G6: `/api/imports*` の変更要求 (POST / DELETE) は Origin ヘッダーが自サイトと一致しなければ 403 `forbidden_origin`。
 - Non-goals:
@@ -83,7 +83,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5", "G6"]
 | hono/body-limit (検査・追加の経路) | 合計 30MB を本文を読む前に止める | Hono middleware (maxSize は core から) | packages/api | Worker |
 | 確定・一括削除の本文上限 | 小さい本文だけを受ける | Hono middleware | packages/api | Worker |
 | ファイル単位の判定 | 検査 ID の累計 10 ファイル・1 ファイル 25MB・累計 30MB | core の判定関数 | packages/core | Worker |
-| 展開前の判定 | エントリ数 1,000 件・展開後 1 ファイル 60MB | route 内 (上限値は core から) | packages/api | Worker |
+| 展開前の判定 | エントリ数 1,000 件・展開後 1 ファイル 15MB | route 内 (上限値は core から) | packages/api | Worker |
 | 取込のレート制限 (新設) | 検査 30 回/分・確定 5 回/分 | D1 の計数 | packages/api | Worker |
 | Origin の検査 (新設) | 変更要求の同一オリジン | Hono middleware | packages/api | Worker |
 
@@ -111,7 +111,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5", "G6"]
 
 #### Input validation
 
-拡張子は CSV・Excel・txt と既存の ZIP・JSON の許可リスト。大きさは 3 段で止める。合計 30MB は hono/body-limit で本文を読む前 (Content-Length があればその値、無ければ本文をストリームで数えて上限で止める)、ファイル数と 1 ファイル 25MB は本文を読んだ直後・パースの前 (ファイル追加では検査 ID の累計で)、エントリ数 1,000 件と展開後 1 ファイル 60MB は展開の前。サーバは同時に展開するファイルを 1 つに限る。
+拡張子は CSV・Excel・txt と既存の ZIP・JSON の許可リスト。大きさは 3 段で止める。合計 30MB は hono/body-limit で本文を読む前 (Content-Length があればその値、無ければ本文をストリームで数えて上限で止める)、ファイル数と 1 ファイル 25MB は本文を読んだ直後・パースの前 (ファイル追加では検査 ID の累計で)、エントリ数 1,000 件と展開後 1 ファイル 15MB は展開の前。サーバは同時に展開するファイルを 1 つに限る。
 
 #### Identity and authorization
 
@@ -131,14 +131,14 @@ N/A: 新しい検知の仕組みを足さない。429 と 413 は応答で利用
 
 #### Security verification
 
-API テストで、上限を超える合計が本文を読む前に 413、ファイル数と 1 ファイルの大きさの超過がパースより前に 413、展開前の 1,000 / 1,001 件と 60MB / 60MB+1 byte、検査 30 / 31 回目・確定 5 / 6 回目が 429 と Retry-After、別オリジンの変更要求が 403、ファイル名に含めた HTML がテキストとして描かれることを確かめる (O6)。境界の一覧は `architecture/import-screen-maintenance-ops.md`。
+API テストで、上限を超える合計が本文を読む前に 413、ファイル数と 1 ファイルの大きさの超過がパースより前に 413、展開前の 1,000 / 1,001 件と 15MB / 15MB+1 byte、検査 30 / 31 回目・確定 5 / 6 回目が 429 と Retry-After、別オリジンの変更要求が 403、ファイル名に含めた HTML がテキストとして描かれることを確かめる (O6)。境界の一覧は `architecture/import-screen-maintenance-ops.md`。
 
 ## Architecture decisions
 
 | Basis (qa_ref) | Decision | Alternatives | Trade-on rationale | Consequences |
 |---|---|---|---|---|
 | qa-imp-decision-011 | 合計は本文を読む前、ファイル数と 1 ファイルは読んだ直後・パースの前に 413 | すべて読んだ後に判定 (現行) | 巨大な本文をメモリに載せない | 判定の段が 2 つに分かれる |
-| qa-imp-decision-007 | 合計 30MB・展開後 60MB・同時展開 1 ファイル | 合計と展開後をより大きくする | Worker 128MB の中に収める (ピーク約 90MB は agent 推定・未実測) | 大きな取込は分けて送る |
+| qa-imp-decision-007 / OI-03 | 合計 30MB・展開後 15MB・同時展開 1 ファイル | 合計と展開後をより大きくする | Worker 128MB の中に収める (展開後 15MB が実測の限界。当初の 60MB から OI-03 の A案で引き下げ) | 展開後 15MB 超の xlsx は分けて送る |
 | qa-imp-decision-009 | エントリ数 1,000 件を展開前に数える | 10,000 件・100 件 | 展開爆弾を防ぎ、通常の xlsx と MF の ZIP は通る | 1,000 件超の正当な ZIP は取込不可 |
 | qa-imp-decision-006 | 検査 30 回/分・確定 5 回/分、ログイン用と別に数える | レート制限なし (現行) | 連続要求で Worker と D1 を占有させない | 計数の表が要る |
 | qa-imp-security-web-004 | 変更要求に Origin の検査を足す (agent 推定) | SameSite=Strict だけ (現行) | Cookie の属性に加えて境界で拒否できる | 同一オリジンの判定を 1 か所に置く |
@@ -154,4 +154,4 @@ API テストで、上限を超える合計が本文を読む前に 413、ファ
 
 - Risk/assumption: 宣言した Content-Length と実長のずれの扱いは出典の無い設計判断で、評価で low として申し送られている。ずれた要求で上限を越えて読まないことを実測するテストを maintenance-ops に足すかを実装計画で決める。
 - Architecture fitness test: api の取込の経路に上限の数値リテラルが無く、maxSize が core の `IMPORT_LIMITS` から来ていること。
-- Load/failure/security validation: 展開後 60MB 近くの xlsx をパースしたときのメモリの膨張は未実測で、ピーク約 90MB は推定である。実測と後退策は `architecture/import-screen-maintenance-ops.md` に置く。
+- Load/failure/security validation: 展開後 15MB 近くの xlsx をパースしたときのメモリの膨張を実測した (`docs/import-screen/design-decisions.md` §8)。heap の増分は展開後サイズにほぼ比例し、128MB に収まるのは展開後およそ 15MB まで。OI-03 の A案で展開後の上限を 15MB に下げて決着した。

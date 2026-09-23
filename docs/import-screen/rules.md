@@ -10,7 +10,7 @@
 
 | # | 規則 | 根拠 | 実装 | テスト |
 |---|---|---|---|---|
-| R1 | 上限値は core の `IMPORT_LIMITS` 1 か所だけに置く: 1 ファイル 25MB / 10 ファイル / 合計 30MB / 展開後 60MB / エントリ 1,000 / 非表示 100 件 / 片づけ 500 行 / ファイル名 255 文字 / 検査 30 回/分 / 確定 5 回/分 / 仮置き 24 時間 / 取り消し 30 日。MB は 1,048,576 byte | 上限値は利用者、MB の定義は推定 | `packages/core/src/import-screen.ts` `IMPORT_LIMITS`・`IMPORT_MB` | `packages/core/test/import-screen.test.ts`「上限値の定数」 |
+| R1 | 上限値は core の `IMPORT_LIMITS` 1 か所だけに置く: 1 ファイル 25MB / 10 ファイル / 合計 30MB / 展開後 15MB / エントリ 1,000 / 非表示 100 件 / 片づけ 500 行 / ファイル名 255 文字 / 検査 30 回/分 / 確定 5 回/分 / 仮置き 24 時間 / 取り消し 30 日。MB は 1,048,576 byte | 上限値は利用者、MB の定義は推定 | `packages/core/src/import-screen.ts` `IMPORT_LIMITS`・`IMPORT_MB` | `packages/core/test/import-screen.test.ts`「上限値の定数」 |
 | R2 | web・api の取込経路に上限の数値リテラルを書き写さない | 利用者(規則を 1 か所に) | 対象 10 ファイルが `IMPORT_LIMITS` を import する | `packages/api/src/import-limits-literal.test.ts`(旧 `25*1024*1024` を拾うことで検出器自体を検算) |
 | R3 | 判定の順はファイル数 → 1 ファイル → 合計。最初に当たった 1 件を `{kind, reason, index?}` で返す。ZIP は展開後の大きさとエントリ数を中央ディレクトリだけで判定する | 推定 | `importLimitViolation`、`importArchiveViolation` | core「importLimitViolation の境界」「importArchiveViolation の境界」 |
 | R4 | 境界ちょうどは通り、1 byte・1 件でも超えれば止める。この境界 12 件を core の共通表にし、web と api のテストが同じ表を読む | 利用者 | `IMPORT_LIMIT_BOUNDARY_CASES` | core「web・api と共通の境界表」、`packages/web/src/pages/import/import-screen.dom.test.tsx`「送信前の上限判定は core の共通境界表どおり」、`packages/api/src/import-screen.integration.test.ts`「上限は web の送信前判定と同じ共通境界表どおり」 |

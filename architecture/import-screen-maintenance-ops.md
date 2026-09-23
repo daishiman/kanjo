@@ -116,7 +116,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5", "G6"]
 
 境界テストは次を固定する (qa-imp-maintenance-ops-web-005、agent 推定。値は qa-imp-decision-006〜011 で確定)。
 
-- 上限ちょうどと 1 超過: 10 / 11 ファイル、1 ファイル 25MB / 25MB+1 byte、合計 30MB / 30MB+1 byte を Content-Length ありと無しの両方、展開後 60MB / 60MB+1 byte、エントリ数 1,000 / 1,001 件、ファイル追加で検査 ID の累計が 10 / 11 ファイルと 30MB / 30MB+1 byte になる場合。Content-Length が無い要求は、本文を読む前ではなく上限 +1 byte を読んだ時点で止まることを注記し、テストはその時点の 413 を確かめる (評価の low の申し送り)。
+- 上限ちょうどと 1 超過: 10 / 11 ファイル、1 ファイル 25MB / 25MB+1 byte、合計 30MB / 30MB+1 byte を Content-Length ありと無しの両方、展開後 15MB / 15MB+1 byte、エントリ数 1,000 / 1,001 件、ファイル追加で検査 ID の累計が 10 / 11 ファイルと 30MB / 30MB+1 byte になる場合。Content-Length が無い要求は、本文を読む前ではなく上限 +1 byte を読んだ時点で止まることを注記し、テストはその時点の 413 を確かめる (評価の low の申し送り)。
 - ファイル数と 1 ファイルの大きさの超過がパースより前に 413 になること。
 - 検査 30 / 31 回目 (ファイル追加を含めて数える) と確定 5 / 6 回目、一括削除 100 / 101 件、ファイル名 255 / 256 文字、期限ちょうどの検査 ID。
 - 他人の検査 ID と別の検査のファイル項目 ID、Origin 不一致。
@@ -128,7 +128,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5", "G6"]
 #### Operations verification
 
 - 数値リテラルの字面検査の指紋 (評価の low の申し送り。実装計画で確定する): バイト値の 3 表記 (MB の乗算式 `25 * 1024 * 1024` の形・10 進の積・リテラル `26214400` の形) と、取込の経路のファイルにある `maxSize:` と `.size >` の比較式を対象にする。10 や 1000 のようなありふれた値は、比較式の右辺に現れるときだけ数える。現行の `packages/api/src/routes/imports.ts:1410` の 25MB 判定でこの検査が落ちることを確かめてから、core への移設で緑にする。字面の読み取りは既存の `scripts/ui-contract-ast.mjs` と同じく TypeScript の AST を使う方針とする (agent 推定)。
-- Worker のメモリの実測 (評価の low の申し送り): 展開後 60MB 近くの xlsx を Workers ランタイム (wrangler dev) で検査に通し、128MB の中に収まるかを実測する。収まらない場合の後退策は、展開後の上限を下げて core の `IMPORT_LIMITS` の 1 か所を変えることとし、変更は利用者の確認を経る (値は利用者決定のため)。
+- Worker のメモリの実測 (評価の low の申し送り): **完了 (OI-03)**。xlsx を `parseUpload` にかけて heap の増分を測った (`docs/import-screen/design-decisions.md` §8)。128MB に収まるのは展開後およそ 15MB (約 35,000 行) まで。後退策どおり展開後の上限を下げ、core の `IMPORT_LIMITS.maxExpandedBytes` の 1 か所を 15MB から 15MB へ変更した。値は利用者の判断 (A案) を経ている。
 - 宣言と実長のずれ: hono/body-limit の宣言した Content-Length と実長のずれの扱いは出典の無い設計判断 (`architecture/import-screen-security.md`) なので、ずれた要求で上限を越えて読まないことを実測するテストを足すかを実装計画で決める。
 
 ### Infrastructure architecture (運用の観点)
@@ -178,4 +178,4 @@ N/A: 検証と記録に秘密情報は要らない。テストのセッション
 
 - Risk/assumption: DOM テストを新しい構成に書き直すとき、旧実装でも通る緩い期待値に変えてしまうと回帰を見逃す。書き直したテストが旧実装で落ちることを確かめる。
 - Architecture fitness test: `docs/import-screen/` の表の行数と core の状態・結果の定義の要素数が一致すること。字面の検査が 0 件の違反を『0 件しか調べていない』と区別できるよう、検査した取込の経路のファイル数を件数で固定すること。
-- Load/failure/security validation: 初期 JS 予算を CI 実測で確かめ、データ取込画面が遅延読み込みのままであること。展開後 60MB 近くの xlsx のメモリを実測すること。
+- Load/failure/security validation: 初期 JS 予算を CI 実測で確かめ、データ取込画面が遅延読み込みのままであること。xlsx の展開後のメモリは実測済み (OI-03。`docs/import-screen/design-decisions.md` §8)。

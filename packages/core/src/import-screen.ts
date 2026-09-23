@@ -23,8 +23,13 @@ export const IMPORT_LIMITS = {
   maxFiles: 10,
   /** 1 回の取込 (検査 ID ごとの累計) の合計サイズ */
   maxTotalBytes: 30 * IMPORT_MB,
-  /** xlsx / ZIP の展開後の合計 */
-  maxExpandedBytes: 60 * IMPORT_MB,
+  /**
+   * xlsx / ZIP の展開後の合計。
+   * 実測 (docs/import-screen/design-decisions.md §8) では Workers の 128MB に収まるのは展開後およそ 15MB
+   * (約 35,000 行) まで。60MB では上限の内側でもメモリ不足で落ちうるため、OI-03 の判断 (A案) で 15MB に下げた。
+   * CSV は行ごとに読むのでこの上限に当たらない。
+   */
+  maxExpandedBytes: 15 * IMPORT_MB,
   /** xlsx / ZIP の中央ディレクトリのエントリ数 */
   maxArchiveEntries: 1_000,
   /** 一括削除 1 要求の件数 */

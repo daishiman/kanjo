@@ -63,7 +63,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5", "G6"]
 - Goals:
   - G2: 仮置きの原本を既存の R2 (`FILES`) の接頭辞 `import-staging/{user_id}/{inspection_id}/{file_id}` に置き、確定時に既存の取込の鍵へコピーしてから仮置きを消す。応答消失後の再送には R2 原本ではなく、D1 の最小結果 receipt を使う。
   - G2: 期限切れの仮置きと検査行を既存の夜間保守が 1 回あたり 500 件まで消し、残りは翌日に回す。同じ夜間保守で `import_rate_limits` の 1 日より古い時間枠を消す (qa-imp-decision-010)。
-  - G6: 検査の 1 要求は multipart 本文 (最大 30MB) を読んだ後、1 ファイルずつ順にパースと展開 (最大 60MB) をして R2 へ置き、前のファイルの展開結果を手放してから次へ進む (qa-imp-decision-007)。
+  - G6: 検査の 1 要求は multipart 本文 (最大 30MB) を読んだ後、1 ファイルずつ順にパースと展開 (最大 15MB) をして R2 へ置き、前のファイルの展開結果を手放してから次へ進む (qa-imp-decision-007)。
 - Non-goals:
   - 新しいバインディング・R2 バケット・キュー・外部サービス・secret
   - Worker のプランや制限値の変更
@@ -109,7 +109,7 @@ serves_goals: ["G1", "G2", "G3", "G4", "G5", "G6"]
 
 #### Compute and storage
 
-計算は既存の Worker の中で行う。検査は 1 ファイルずつ順に処理し、同時に展開するのは 1 ファイルだけにする (ピーク約 90MB、agent 推定・未実測)。保存は D1 の新しい 3 表と、R2 の `import-staging/` 接頭辞。検査と確定の D1 クエリは既存のクエリ予算に収める。レート制限の計数も D1 の表で持つ。
+計算は既存の Worker の中で行う。検査は 1 ファイルずつ順に処理し、同時に展開するのは 1 ファイルだけにする (展開後の上限 15MB は実測に基づく。OI-03)。保存は D1 の新しい 3 表と、R2 の `import-staging/` 接頭辞。検査と確定の D1 クエリは既存のクエリ予算に収める。レート制限の計数も D1 の表で持つ。
 
 #### IaC and delivery
 
@@ -144,7 +144,7 @@ Migrate の手順で新しい migration が `d1_migrations` に記録される�
 
 ## Risks and verification
 
-- Risk/assumption: ピーク約 90MB は、展開後 60MB の xlsx をパースしたときの膨張を数えていない推定である (評価の low の申し送り)。実測の手順と、収まらない場合の後退策 (展開後の上限を下げる) は `architecture/import-screen-maintenance-ops.md` に置く。
+- Risk/assumption: **解消済み (OI-03)**。ピーク約 90MB の推定は、展開後の xlsx をパースしたときの膨張を数えていなかった。実測 (`docs/import-screen/design-decisions.md` §8) では展開後 15MB でも heap が約 100MB 増えるため、後退策 (展開後の上限を下げる) を発動し、上限を 15MB とした。
 - Risk/assumption: 夜間保守は 1 invocation の D1 query 予算を `scheduled-maintenance-budget.ts` で合成しており (`SCHEDULED_D1_QUERY_LIMIT` 50、現行 7 job の `SCHEDULED_MAINTENANCE_JOB_NAMES`、計画上限 `SCHEDULED_D1_QUERY_PLAN_MAX` 47)、新しい job は既存枠を再配分しない限り足せない。仮置きと検査行・古い時間枠の片づけを足すときは、この予算の中で query 数を割り当て、500 件を少数の文にまとめる方法を実装計画で決める。
 - Architecture fitness test: `wrangler.jsonc` のバインディング・cron と、ワークフローの定義に差分が無いこと。夜間保守の予算のテスト (`scheduled-maintenance-budget.test.ts`) が新しい job を含めて緑であること。
 - Load/failure/security validation: 10 ファイル・合計 30MB の検査が CPU 時間 (既定 30 秒) とクエリ予算に収まること。
