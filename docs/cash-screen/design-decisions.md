@@ -42,6 +42,7 @@ feature の受入条件は 1 文に複数の主張を含む。「一部だけ満
 | OI-03 | agent 推定・利用者未確認の値 | P01 | §3 の表に一覧化した。どれも実装を止める値ではないので、既定値で作り、利用者の確認を待つ |
 | OI-04 | 夜間予算の計画上限 49 | P05 | P04 で `total === PLAN_MAX` のテストを先に書き、P05 で `SCHEDULED_D1_QUERY_PLAN_MAX` を 47 → 49 に上げた |
 | OI-05 | `CANONICAL_MUTATION_ROUTES` の件数固定 | P04 | `import-lifecycle-pure.test.ts` の件数を 3 件増やし、新しい 3 経路の判定を足した |
+| OI-06 | 初期 JS budget 超過 (CI `check:js-budget`) | P13 | ログアウト時の下書き削除が `Layout.tsx`(初期バンドル) → `pages/cash/draft.ts` → `pages/cash/view-model.ts` → core の `cash-screen.ts` と辿り、接頭辞 1 個のために検証関数一式まで初期バンドルへ入って 112.75KiB > 110KiB で落ちた。tree-shaking はモジュール単位で切るので、`CASH_DRAFT_KEY_PREFIX` を `packages/core/src/cash-draft-key.ts` へ独立させ、`cash-screen.ts` はそこから import する形にした。結果 107.41KiB(main の 108.00KiB より軽い)。外から小さく引かれる定数は、大きな規則ファイルに同居させない |
 
 ## 3. agent 推定の値と確認の担当
 

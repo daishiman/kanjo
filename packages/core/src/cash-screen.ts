@@ -9,6 +9,7 @@
  *
  * 規則の表は docs/cash-screen/rules.md にあり、core の契約テストの期待値と同じである。
  */
+import { CASH_DRAFT_KEY_PREFIX } from './cash-draft-key.js';
 import { type CashEntry, type CashIo, type CashSide, buildTransitEntry, transitInputError } from './cash.js';
 import { monthIndex, monthKey } from './month.js';
 import { OWNER_VALUES, type Owner } from './types.js';
@@ -456,8 +457,6 @@ export function cashBulkIdsError(ids: readonly unknown[]): string | null {
 }
 
 /* ======================== 下書き ======================== */
-
-export const CASH_DRAFT_KEY_PREFIX = 'kanjo:cash-draft:v1:';
 
 export const cashDraftKey = (userId: string): string => `${CASH_DRAFT_KEY_PREFIX}${userId}`;
 
