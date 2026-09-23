@@ -46,515 +46,724 @@
     "database": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-cash-database-web-005",
+        "qa_ref": "qa-imp-decision-005",
         "serves_goals": [
+          "G1",
           "G2",
-          "G4"
+          "G3",
+          "G4",
+          "G5",
+          "G6"
         ],
         "qa_refs": [
-          "qa-cash-database-web-evidence-001",
-          "qa-cash-database-web-003",
-          "qa-cash-decision-009"
+          "qa-imp-database-web-evidence-001",
+          "qa-imp-database-web-004",
+          "qa-imp-decision-002",
+          "qa-imp-decision-003",
+          "qa-imp-decision-004",
+          "qa-imp-decision-006",
+          "qa-imp-decision-008",
+          "qa-imp-decision-010"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、database では外出先で入力した現金明細を端末内 DB に溜めて D1 と同期する規則 (論理削除の伝播を含む)を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、database では端末内に未送信の取込を保存するローカル DB とサーバとの同期規則を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、database では共有端末に残る現金明細のキャッシュの保持期限を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、database では端末に履歴を先読みしておく複製の範囲と鮮度を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、database ではオフライン時に入力した明細を保留する端末内の保存形を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、database では取込前の原本をローカルに残す保存場所と暗号化の要否を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、database では端末内に保留した明細ファイルの権限を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、database では XDG のデータ置き場に原本の写しを置くかどうかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、database では端末内に保留した明細を Keychain とファイルのどちらに置くかを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、database では Application Support 配下の原本の写しと iCloud 同期の除外を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       }
     },
     "auth": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-cash-auth-web-001",
+        "qa_ref": "qa-imp-decision-010",
         "serves_goals": [
-          "G4"
+          "G1",
+          "G2",
+          "G3",
+          "G4",
+          "G5",
+          "G6"
         ],
         "qa_refs": [
-          "qa-cash-auth-web-evidence-001"
+          "qa-imp-auth-web-evidence-001",
+          "qa-imp-auth-web-004",
+          "qa-imp-decision-003",
+          "qa-imp-decision-004",
+          "qa-imp-decision-005",
+          "qa-imp-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、auth では生体認証でのアプリ再開と、セッション Cookie に代わるトークンの保管を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、auth では生体認証でのロック解除とトークンの端末内保管を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、auth では家族と共有するタブレットでの利用者切替を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、auth では家族で共有する端末での利用者の切替と自動ログアウトを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth ではWindows 資格情報マネージャーへのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth では資格情報マネージャーへのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth ではSecret Service が無い環境でのトークン保管を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth では Secret Service が無い環境でのトークン保管の代替を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではKeychain へのトークン保管とアプリ署名を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではキーチェーンへのトークン保管とアクセス許可の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       }
     },
     "ui-ux": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-cash-ui-ux-web-001",
+        "qa_ref": "qa-imp-decision-003",
         "serves_goals": [
           "G1",
-          "G2"
+          "G2",
+          "G3",
+          "G4",
+          "G5",
+          "G6"
         ],
         "qa_refs": [
-          "qa-cash-ui-ux-web-evidence-001",
-          "qa-cash-ui-ux-web-003"
+          "qa-imp-ui-ux-web-evidence-001",
+          "qa-imp-ui-ux-web-004",
+          "qa-imp-decision-001",
+          "qa-imp-decision-002",
+          "qa-imp-decision-004",
+          "qa-imp-decision-005",
+          "qa-imp-decision-006",
+          "qa-imp-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux では片手で入力できる入力順と、下部固定バーとソフトキーボードの重なりを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux では取込ファイル一覧の 9 列をカードへ畳む規則と、下部の選択中バーを親指の届く位置に固定する配置を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux では横向きで入力と一覧を左右に並べる 2 ペイン構成を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux では横向きで取込履歴と詳細ペインを左右に並べるか重ねるかの切替を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux ではWindows のメニュー・ショートカット規約に沿った追加と削除の操作を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux ではエクスプローラーからのドラッグ&ドロップとファイル選択ダイアログの既定フォルダを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux ではデスクトップ環境ごとに異なるテーマへの追従を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux ではファイルマネージャーごとに異なるドラッグ&ドロップの受け取り方の吸収を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux ではmacOS のメニューバーと Command キーの操作体系を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux では Finder からのドロップと Dock へのファイル投下で取込を始める導線を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       }
     },
     "security": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-cash-security-web-005",
+        "qa_ref": "qa-imp-decision-006",
         "serves_goals": [
-          "G4"
+          "G1",
+          "G2",
+          "G3",
+          "G4",
+          "G5",
+          "G6"
         ],
         "qa_refs": [
-          "qa-cash-security-web-evidence-001",
-          "qa-cash-security-web-003",
-          "qa-cash-decision-006",
-          "qa-cash-decision-009"
+          "qa-imp-security-web-evidence-001",
+          "qa-imp-security-web-004",
+          "qa-imp-decision-003",
+          "qa-imp-decision-004",
+          "qa-imp-decision-007",
+          "qa-imp-decision-008",
+          "qa-imp-decision-009",
+          "qa-imp-decision-010",
+          "qa-imp-decision-011"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、security では端末紛失時に下書きと明細キャッシュを遠隔で消す手段を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、security では端末の紛失時に仮置きファイルと取込履歴を遠隔で消す手段を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、security では共有端末で下書きに残る金額と内容の見え方を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、security では共有端末に残るダウンロード済み原本の扱いを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、security では配布バイナリの署名と自動更新経路の改ざん対策を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、security ではコード署名と SmartScreen の警告への対処を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、security ではパッケージ配布経路 (deb / rpm / AppImage) の署名を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、security では配布パッケージの署名検証の手段を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、security では公証 (notarization) とサンドボックスの権限を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、security では公証 (notarization) と Gatekeeper の通過を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       }
     },
     "infrastructure": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-cash-infrastructure-web-002",
+        "qa_ref": "qa-imp-decision-007",
         "serves_goals": [
-          "G2"
+          "G1",
+          "G2",
+          "G3",
+          "G4",
+          "G5",
+          "G6"
         ],
         "qa_refs": [
-          "qa-cash-infrastructure-web-evidence-001",
-          "qa-cash-decision-008"
+          "qa-imp-infrastructure-web-evidence-001",
+          "qa-imp-infrastructure-web-002",
+          "qa-imp-decision-003",
+          "qa-imp-decision-006",
+          "qa-imp-decision-009",
+          "qa-imp-decision-010"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではストア配信と、API の後方互換を保つ版の並行運用を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではストア配布とプッシュ通知の基盤を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向けビルドの配信経路を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure では端末管理 (MDM) 下での配布経路を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではインストーラーと自動更新サーバーを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではインストーラの配布と自動更新の配信元を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではディストリビューションごとのパッケージ配信を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではパッケージリポジトリの運用を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure ではdmg の配布と Sparkle などの更新配信を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure では Sparkle 等の更新フィードの配信を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       }
     },
     "backend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-cash-backend-web-005",
+        "qa_ref": "qa-imp-decision-005",
         "serves_goals": [
+          "G1",
           "G2",
           "G3",
-          "G4"
+          "G4",
+          "G5",
+          "G6"
         ],
         "qa_refs": [
-          "qa-cash-backend-web-evidence-001",
-          "qa-cash-backend-web-003",
-          "qa-cash-decision-006",
-          "qa-cash-decision-009"
+          "qa-imp-backend-web-evidence-001",
+          "qa-imp-backend-web-005",
+          "qa-imp-decision-001",
+          "qa-imp-decision-002",
+          "qa-imp-decision-003",
+          "qa-imp-decision-004",
+          "qa-imp-decision-007",
+          "qa-imp-decision-008",
+          "qa-imp-decision-011"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、backend ではオフラインで作られた明細の後着と、論理削除・復元の競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、backend では回線が切れやすい端末向けに検査要求の再開 (分割アップロード) の契約を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、backend では複数端末から同じ明細を同時に編集したときの競合解決を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、backend では端末ごとの取込セッションの識別と、複数端末から同じ検査 ID を確定する競合の扱いを決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend では端末ごとの同期カーソルを返す APIを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend ではローカルで前処理したパース結果を受け取る別経路の契約を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend では端末ごとの同期カーソルの失効規則を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend ではコマンドラインからの一括取込を受ける API トークンの契約を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではバックグラウンド同期用の差分取得 APIを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではフォルダ監視による自動取込を受ける冪等な受付口を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       }
     },
     "frontend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-cash-frontend-web-001",
+        "qa_ref": "qa-imp-decision-005",
         "serves_goals": [
           "G1",
           "G2",
-          "G3"
+          "G3",
+          "G4",
+          "G5",
+          "G6"
         ],
         "qa_refs": [
-          "qa-cash-frontend-web-evidence-001"
+          "qa-imp-frontend-web-evidence-001",
+          "qa-imp-frontend-web-005",
+          "qa-imp-decision-002",
+          "qa-imp-decision-003",
+          "qa-imp-decision-006",
+          "qa-imp-decision-007",
+          "qa-imp-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend ではReact Native などの別実装と、core の純関数の共有方法を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend では端末のファイル選択 (共有シート) から明細ファイルを受け取る入口と、バックグラウンドでのアップロード継続を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、frontend ではタブレット用レイアウトの分岐とタッチ操作の当たり判定を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、frontend では分割表示で別アプリからファイルをドラッグして受け取る実装を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend ではElectron などの殻と Web 版の差分管理を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend では Electron 等の外枠からローカルファイルを直接読む権限の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend では殻の描画エンジンの差による表示崩れを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend では配布形式 (AppImage / Flatpak) ごとのファイルアクセスのサンドボックス差を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend ではネイティブメニューと Web 側の操作の二重実装を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend では App Sandbox の下でユーザーが選んだファイルへのアクセス権を保つ方法を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       }
     },
     "maintenance-ops": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-cash-maintenance-ops-web-001",
+        "qa_ref": "qa-imp-decision-006",
         "serves_goals": [
           "G1",
           "G2",
-          "G4"
+          "G3",
+          "G4",
+          "G5",
+          "G6"
         ],
         "qa_refs": [
-          "qa-cash-maintenance-ops-web-evidence-001",
-          "qa-cash-maintenance-ops-web-003"
+          "qa-imp-maintenance-ops-web-evidence-001",
+          "qa-imp-maintenance-ops-web-005",
+          "qa-imp-decision-002",
+          "qa-imp-decision-004",
+          "qa-imp-decision-005",
+          "qa-imp-decision-007",
+          "qa-imp-decision-008",
+          "qa-imp-decision-009",
+          "qa-imp-decision-010",
+          "qa-imp-decision-011"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops ではストア審査と、古い版が残ることを前提にした障害切り分けを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops では OS 更新ごとの実機検証と、ストア審査の手順を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops ではタブレット実機での回帰テストを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops では画面サイズと向きの組合せごとの回帰確認を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops ではWindows 実機での回帰テストとクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops では Windows 更新ごとのインストーラ回帰の手順を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops では複数ディストリビューションでの回帰テストを決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops ではディストリビューションごとの動作確認の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops ではmacOS の版ごとの回帰テストとクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-cash-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-cash-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops では macOS の版ごとの公証のやり直しと確認を決める必要があった。対象を web のみとする利用者決定 (qa-imp-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-target-platforms-001"
       }
     }
   },
   "qa_log": [
     {
-      "id": "qa-cash-decision-001",
-      "question": "画像の「領収書（ファイルを選択 / D&D、PDF・JPG・PNG 最大10MB）」をどう扱うか。証憑の保管機能は以前に廃止し、仕様で対象外 (税務上の正本は freee) と決めている。",
-      "answer": "対象外のまま。領収書の欄は出さず、代わりに「領収書は freee に保管してください」と案内する。過去の廃止決定と整合させ、ファイル保管のセキュリティ・容量・削除責任を負わない。",
-      "provenance": "AskUserQuestion / 選択肢 3 件 (対象外のまま・復活して保存する・添付した印だけ残す) と推奨案を提示し、利用者が「対象外のまま (推奨)」を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
+      "id": "qa-imp-decision-001",
+      "question": "画像の対応サービス案内 (マネーフォワード・銀行・freee) のうち、銀行・クレジットカードの明細を直接取り込む対象にするか。",
+      "answer": "対象にしない。銀行とクレジットカードの明細詳細は不要で、今回取り込むのは freee と マネーフォワードの CSV だけ。既存の ZIP・JSON 復元・MF 資産推移の受け付けは維持する。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:13:26Z",
-      "required_info_items": [
-        "domain-model",
-        "product-goal",
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-cash-decision-002",
-      "question": "画像の「担当者（社内）」列・入力欄を何で表すか。現行 DB に担当者の列は無く、近い概念は明細仕分けの名義 (business / spouse / family) である。",
-      "answer": "既存の名義を使う。担当者 = 名義として cash_entries に列を足し、明細仕分けと同じ語彙で集計する。表示名は利用者が設定した名義ラベルに従う (画像の「社内」は事業名義のラベル)。",
-      "provenance": "AskUserQuestion / 選択肢 3 件 (既存の名義を使う・自由に登録できる担当者・担当者は出さない) と推奨案を提示し、利用者が「既存の名義を使う (推奨)」を選択。answered_at は選択時刻の上界。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:13:26Z",
+      "answered_at": "2026-09-21T15:16:46Z",
       "required_info_items": [
         "context-of-use",
-        "domain-model"
+        "domain-model",
+        "product-goal"
       ]
     },
     {
-      "id": "qa-cash-decision-003",
-      "question": "削除と「元に戻す」をどう実現するか。現行は物理削除で戻す手段が無い。",
-      "answer": "論理削除で戻せるようにする。deleted_at を付けて一覧・集計から外し、「元に戻す」で同じ行 (同じ ID) を復活させる。一定期間後に物理削除する。集計が削除済み行を拾わない不変条件をテストで固定する。",
-      "provenance": "AskUserQuestion / 選択肢 2 件 (論理削除で戻せる・物理削除＋再作成で戻す) と推奨案を提示し、利用者が「論理削除で戻せる (推奨)」を選択。answered_at は選択時刻の上界。",
+      "id": "qa-imp-decision-002",
+      "question": "画像の詳細設定『前回データを残す』(既定で checked) をどう解釈するか。",
+      "answer": "行単位で追加する。既定はオン。オンのときは既存の行を消さず、同一性の鍵で既にある行を飛ばして新しい行だけを足す。オフのときは従来どおり月単位で入れ替える。強制再取込は維持する。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:13:26Z",
+      "answered_at": "2026-09-21T15:16:46Z",
       "required_info_items": [
         "domain-model",
         "product-goal"
       ]
     },
     {
-      "id": "qa-cash-decision-004",
-      "question": "一覧の「取込元」列・フィルタは何を区別するか。画像では交通費の行も含め全て「手入力」である。",
-      "answer": "入力経路を区別する。現金明細は全て手入力なので、取込元は「通常入力 / 交通費入力」の経路として表示・絞り込む。一覧の対象は現金入力の明細だけで、取込明細は混ぜない。",
-      "provenance": "AskUserQuestion / 選択肢 3 件 (入力経路を区別・取込の現金明細も並べる・手入力で固定表示) と推奨案を提示し、利用者が「入力経路を区別 (推奨)」を選択。answered_at は選択時刻の上界。",
+      "id": "qa-imp-decision-003",
+      "question": "画像の 3 段 (ファイル選択 / 内容確認 / 取込結果) を、1 ファイルずつ即時に書き込む現行の流れにどう対応させるか。",
+      "answer": "サーバに仮置きする。選んだファイルをまず検査用に送ってサーバ (R2) に一時保存し、検査結果 (重複・バリデーション・件数・対象期間) を返す。利用者が内容を確認して『取り込む』を押したら、検査 ID で確定し、ファイルは再送しない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:13:26Z",
+      "answered_at": "2026-09-21T15:16:46Z",
       "required_info_items": [
         "context-of-use",
-        "domain-model"
+        "domain-model",
+        "security-posture"
       ]
     },
     {
-      "id": "qa-cash-target-platforms-001",
-      "question": "現金入力画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
-      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『モバイル・タブレット・デスクトップ専用アプリ』を置き、利用者が U1-U9 をこの内容で承認した (appr-foundation-cash-001)。外出先からの入力は既存 web のレスポンシブ規約 (段の縦積み、表の横スクロール、下部固定バーの安全領域) の中で扱う。",
-      "provenance": "利用者承認 appr-foundation-cash-001 の scope.out に明記した範囲。承認時刻の上界は 2026-09-21T15:16:08Z。",
+      "id": "qa-imp-decision-004",
+      "question": "画像の取込履歴 (取込元・ファイル数・取込明細数・結果、選択した履歴の一括削除) の 1 行の単位と、一括削除の意味をどうするか。",
+      "answer": "1 回の取込で 1 行にする。複数ファイルをまとめた取込を 1 行で見せ、詳細ペインに含まれるファイルと影響の数を出す。一括削除は履歴の記録だけを消し、取り込んだ明細は残す。明細ごと戻したいときは各行の『取り消し』を使う。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:20:56Z",
+      "answered_at": "2026-09-21T15:16:46Z",
+      "required_info_items": [
+        "context-of-use",
+        "domain-model",
+        "information-priority",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-imp-target-platforms-001",
+      "question": "データ取込画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
+      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『web 以外の専用アプリ』を置き、利用者が U1-U9 をこの内容で承認した (appr-foundation-import-screen-001)。狭い画面は既存 web のレスポンシブ規約 (段の縦積み、表の横スクロール) の中で扱う。",
+      "provenance": "AskUserQuestion / U1-U9 承認 (scope.out に web 以外を明記)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:16:46Z",
       "required_info_items": [
         "target-platforms"
       ]
     },
     {
-      "id": "qa-cash-database-web-evidence-001",
-      "question": "database 章の裏付けとして、現行実装について何を観測したか。",
-      "answer": "cash_entries (packages/api/src/db/schema.ts:439-464) は id・user_id・date・month・side (biz/per)・io・amount・description・category_major/mid・memo・transit_from/to・transit_round・receipt_waived・created_at・updated_at を持ち、名義・業務の目的・削除時刻の列は無い。索引は idx_cash_month (user_id, month) だけ。読み取りは loadCashEntries (packages/api/src/store.ts:521-528) の 1 か所で user_id だけで絞る。migration は migrations/ 直下の連番で最新は 0049_ai_report_invariants.sql。取込・期間の一括削除には tombstone 方式の取り消し (packages/api/src/deletion-retention.ts:87) が別にあり、1 行を同じ id で戻す用途ではない。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
+      "id": "qa-imp-ui-ux-web-evidence-001",
+      "question": "ui-ux 章の裏付けとして、現行のデータ取込画面と画像の差について何を観測したか。",
+      "answer": "現行の /import は packages/web/src/pages/Import.tsx (897 行) の 1 ファイルで、ステッパー・取込ファイル一覧の表・内容確認の要約・結果の 4 枚カード・履歴の詳細ペイン・下部の選択中バーを持たない。accept は .csv,.xlsx,.xls,.zip,.json で .txt を含まない。履歴はファイル単位で最新 100 件を出す。差分の事前表示 (ImportDiff.tsx) は MF だけ。共通シェルは Layout.tsx で、ヘッダーの『防衛ライン』は前回までの spec で変更しないと決定済み。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-auth-web-evidence-001",
-      "question": "auth 章の裏付けとして、現行実装について何を観測したか。",
-      "answer": "/api/* は packages/api/src/index.ts:104 の authGuard() 配下で、cash の各経路 (packages/api/src/routes/cash.ts:175-275) は c.get('userId') を条件に読み書きし、他人の id は not_found (404) を返す。セッション Cookie は HttpOnly・Secure・SameSite=Strict (packages/api/src/auth.ts:131)。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
+      "id": "qa-imp-frontend-web-evidence-001",
+      "question": "frontend 章の裏付けとして、現行の取込画面の実装構成について何を観測したか。",
+      "answer": "Import.tsx は 1 ファイルずつ POST /api/imports を送り、部品は ImportDiff.tsx・ImportDeletion.tsx・import-retry.ts に分かれる。取得と更新は TanStack Query 5、ルーティングは react-router 7、期間は period.tsx の usePeriod と PeriodPicker。DOM テストは packages/web の Import.*.test.tsx 群。サイドバーの取込バッジは /review-queue の counts.import を読む。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-ui-ux-web-evidence-001",
-      "question": "ui-ux 章の裏付けとして、現行実装について何を観測したか。",
-      "answer": "現行の /cash は packages/web/src/pages/Cash.tsx の 1 ファイル (724 行) で、入力フォームと月別の表だけを持つ。事業/家計と収支は select、科目は 2 段の CategoryPicker、削除はモーダル確認、月は select で切り替える。キーワード検索・絞り込み・合計カード・選択・ページング・下書き・元に戻すトースト・空状態の導線・下部固定バーは無い。画像 design/FINAL-UI/images/17-cash.png はこれらと領収書欄を 1 画面に並べている。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
+      "id": "qa-imp-backend-web-evidence-001",
+      "question": "backend 章の裏付けとして、現行の取込 API と処理の流れについて何を観測したか。",
+      "answer": "packages/api/src/routes/imports.ts の POST /imports (1381 行) は 1 ファイルを受け、force・keepOnShrink・resolutionPlan を読む。流れはパース → unitFingerprint → preflightWriteSetConflicts → keepOnShrink → MF の解決 → クエリ予算 → R2 保存 → activeDuplicateOf → 月単位の洗い替え。取込元はヘッダーで判定し (import-pipeline.ts classifyRows)、文字コードは UTF-8 から Shift-JIS へ落とす (core/csv.ts decodeBuf)。GET /imports (1785 行)、GET /imports/:id/original (1870 行)、POST /imports/diff (import-diff.ts)、取り消しと破棄の preflight (deletions.ts)。取込は import_writer_claims で直列化され、同時実行は 409 import_busy。重複候補は core/total-cashflow.ts の duplicateMatchScore と reconcileBizDuplicates、サブスク候補は core/subs.ts の subsCandidates と GET /sub-vendors/candidates。packages/core に import-screen.ts は無い。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-security-web-evidence-001",
-      "question": "security 章の裏付けとして、現行実装について何を観測したか。",
-      "answer": "packages/api/src/index.ts:58 で secureHeaders、:108 で canonicalMutationFence を全 /api/* に掛ける。cash の入力は zod (packages/api/src/routes/cash.ts:57-73) で side/io の列挙、金額の上限 1,000,000,000、内容 60 字、科目 60 字、メモ 200 字、駅名 40 字を検証し、科目は checkCategory (:146) で利用者の科目表と照合する。cash 経路に専用のレート制限は無い。削除は物理削除 (:268) で、取り消しの記録は残らない。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
+      "id": "qa-imp-database-web-evidence-001",
+      "question": "database 章の裏付けとして、取込に関わる表と列について何を観測したか。",
+      "answer": "imports 表は id・user_id・filename・kind・months・row_count・status・r2_key・content_hash・duplicate_of・run_id・target_keys・failure_reason・fingerprint_version・committed_at を持つ。取込の束は import_runs、書込の直列化は import_writer_claims、有効な対象は import_active_targets、取り消しは import_deletion_operations・import_deleted_rows・import_deleted_targets (migration 0030、30 日)。mf_transactions.import_id と freee_deals.import_id が行の由来を持つ。最新の migration は migrations/0049_ai_report_invariants.sql。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-infrastructure-web-evidence-001",
-      "question": "infrastructure 章の裏付けとして、現行実装について何を観測したか。",
-      "answer": "Worker の cron は packages/api/wrangler.jsonc:31 の \"0 18 * * *\" 1 本で、scheduledMaintenance (packages/api/src/index.ts:196) がバックアップの後に 6 本の独立 job を並行実行する。job と D1 のクエリ予算は packages/api/src/scheduled-maintenance-budget.ts:77 の SCHEDULED_MAINTENANCE_D1_PLAN と Record 型で結ばれ、宣言漏れは typecheck で止まる。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
+      "id": "qa-imp-auth-web-evidence-001",
+      "question": "auth 章の裏付けとして、取込 API の認証と所有者の確認について何を観測したか。",
+      "answer": "取込の経路は /api 配下のセッション認証の後ろにあり、Cookie は SameSite=Strict (packages/api/src/routes/auth.ts:131)。imports・import_runs の読み書きは user_id で絞り込む。原本の取得 GET /imports/:id/original も所有者の行だけを返す。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-backend-web-evidence-001",
-      "question": "backend 章の裏付けとして、現行実装について何を観測したか。",
-      "answer": "cash の API は packages/api/src/routes/cash.ts の GET/POST /api/cash-entries と PUT/DELETE /api/cash-entries/:id。書込後は recomputeFromDeals / planRecomputeFromDeals で現金明細から導く取引と集計を同じ D1 batch で作り直し、JSON スナップショットを無効化する (:198-275)。導出の純関数は packages/core/src/cash.ts (309 行: cashToDeal・cashToTx・buildTransitEntry・findCashDealDuplicates など) にある。名義の語彙は packages/core/src/types.ts:114 の OWNER_VALUES (business / spouse / family) で、未設定 (null) を許す。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
+      "id": "qa-imp-security-web-evidence-001",
+      "question": "security 章の裏付けとして、取込経路の入口の防御について何を観測したか。",
+      "answer": "bodyLimit は /api/auth/* にだけ 16KB で掛かる (packages/api/src/index.ts:86-94)。POST /imports は c.req.formData() で本文を読んだ後 (imports.ts:1384) に 25MB を判定する (imports.ts:1410)。レート制限はログイン向けの login-rate-limit.ts だけで、取込には無い。CSRF の対策は Cookie の SameSite=Strict だけで Origin の検査は無い。secureHeaders で referrerPolicy=strict-origin-when-cross-origin (index.ts:79)。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-frontend-web-evidence-001",
-      "question": "frontend 章の裏付けとして、現行実装について何を観測したか。",
-      "answer": "ルートは packages/web/src/routeMetadata.ts:33-44 の id 'cash' / path '/cash'。他の作り直し済み画面は pages/<screen>/ に分割され、明細仕分けは packages/web/src/pages/classify/draft.ts (localStorage の下書き) と ResultNotices.tsx (元に戻すトースト) を持つ。画面ごとの描画検査は packages/web/package.json の check:ai-screen などの KANJO_VISUAL_SCOPE 付き check-financial-visuals.mjs で行う。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
+      "id": "qa-imp-infrastructure-web-evidence-001",
+      "question": "infrastructure 章の裏付けとして、取込の保存先と定期処理について何を観測したか。",
+      "answer": "packages/api は Cloudflare Workers の Hono アプリで、設定は packages/api/wrangler.jsonc。D1 と Drizzle で表を持ち、原本は R2 の FILES バインディング (kanjo-files) に保存する。夜間保守は cron 0 18 * * * で動く。migration はリポジトリ直下の migrations/ に番号順で置く。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-maintenance-ops-web-evidence-001",
-      "question": "maintenance-ops 章の裏付けとして、現行実装について何を観測したか。",
-      "answer": "ルートの package.json の verify:full は test・typecheck・lint・build と web の check:thead / mobile-layout / financial-figure / financial-routes / ai-screen / analysis-hub、preview:smoke を順に実行する。現金入力の画面専用の描画検査は無い。",
-      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。",
+      "id": "qa-imp-maintenance-ops-web-evidence-001",
+      "question": "maintenance-ops 章の裏付けとして、取込まわりの検証と文書について何を観測したか。",
+      "answer": "テストは packages/api の import-pipeline・import-lifecycle・import-diff・import-history-discard・deletion-* 群、packages/core の parsers・fingerprint・import-history-discard-contract、packages/web の Import.*.test.tsx 群。既存の文書は specs/import-deletion-and-override-reapply.md・features/feat-import-deletion-override-reapply.md・architecture/arch-import-deletion-undo-boundary.md。直近の画面作り直しは docs/<画面>/ に規則を残している。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
       "basis": "observed-fact",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-database-web-003",
-      "question": "web の現金入力画面で、利用者が決めていない 名義・入力経路・完全消去の具体を何にするか。",
-      "answer": "入力経路は列を持たず transit_from IS NOT NULL で交通費入力、それ以外を通常入力と導く (既存行を書き換えずに全行へ経路が付く)。既存行の owner は NULL (未設定) のままとし、画面は『未設定』と表示する。新規入力の担当者の既定は事業なら business、個人なら未選択とする。完全消去は deleted_at が 30 日より前の行を 1 晩あたり最大 500 行消す。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-imp-ui-ux-web-003",
+      "question": "web のデータ取込画面で、利用者が決めていない 表示の細部 を何にするか。",
+      "answer": "ステータスは 5 種 (アップロード中 n% / 検査中 / 取込準備完了 / 取込不可 / 取込済み) で、色だけに頼らず文字とアイコンを併記する。重複チェックは『なし / n 件 / 取込済みと同一』、バリデーションは『OK / 警告 n / エラー n』。操作はアップロード中=キャンセル、準備完了=削除、取込不可=再試行と削除。結果カードの『重複の可能性』は総収支画面、『サブスク候補』はサブスク画面へのリンクを持つ。狭い画面では段を縦に積み、表は横スクロールにする。共通シェル (ヘッダーの防衛ライン、フッターの文言) は変更しない。これは agent の推定で、利用者は未確認である。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-ui-ux-web-003",
-      "question": "web の現金入力画面で、利用者が決めていない 画像に値の無い表示の具体を何にするか。",
-      "answer": "一覧は 1 ページ 20 件。業務の目的の選択肢は『客先訪問』『打ち合わせ』『仕入れ・買い出し』『研修・セミナー』『その他 (40 字までの自由記述)』。一括削除も 1 つのトーストの『元に戻す』で選んだ全件を戻す。元に戻すトーストの表示時間は既存の ResultNotices の既定に従う。サンプル表示は保存されず、集計にも入らない。月送りは共通の期間の範囲を越えない。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-imp-frontend-web-003",
+      "question": "web のデータ取込画面で、利用者が決めていない 送信とアップロード進捗の扱い を何にするか。",
+      "answer": "検査要求はファイルごとに並列 2 本までで送り、XMLHttpRequest の upload.onprogress で進捗 % を出す (fetch はアップロード進捗を取れないため)。アップロード中のキャンセルは abort で止め、サーバ側の仮置きは夜間保守が片づける。.txt はタブ区切りまたはカンマ区切りの CSV として扱う。取込可能が 0 件のとき取り込むボタンは押せない。これは agent の推定で、利用者は未確認である。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-security-web-003",
-      "question": "web の現金入力画面で、利用者が決めていない 下書きをブラウザ内にどう保持するか。",
-      "answer": "下書きのキーに利用者 id を含めて他の利用者と混ざらないようにし、ログアウト時に消す。保存するのは入力途中の項目値だけで、一覧の内容やサーバーの応答は保存しない。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-imp-backend-web-003",
+      "question": "データ取込で、利用者が決めていない 件数の数え方と同一内容の扱い を何にするか。",
+      "answer": "『重複の可能性』は既存の duplicateMatchScore による freee と MF の二重計上候補の件数、『サブスク候補』は取込後の subsCandidates の新規件数とする。ファイルが取込済みと同一内容 (content_hash が一致し duplicate_of が立つ) なら『取込済みと同一』として取込可能から外し、強制再取込のときだけ含める。行単位の追加の対象は MF 明細と freee 取引だけで、MF 資産推移と JSON 復元は従来の動作のまま。取込 1 回の結果は、全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗。これは agent の推定で、利用者は未確認である。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-backend-web-003",
-      "question": "web の現金入力画面で、利用者が決めていない 復元・一括削除の具体の上限と期限切れの扱いを何にするか。",
-      "answer": "一括削除は 1 回 100 件まで。完全消去済みの id の復元は 404 にする。復元時の科目が科目表から消えていても行は戻し、科目の検証は次の編集時に行う。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-imp-database-web-003",
+      "question": "取込の記録で、利用者が決めていない 保持期間と索引 を何にするか。",
+      "answer": "import_inspections は期限 24 時間で、夜間保守 (cron 0 18 * * *) が期限切れの行と R2 の仮置きを消す。確定済みの検査行は確定時に消す。import_runs の履歴非表示は hidden_at の時刻列で表し、取り消し (30 日) の判定には影響しない。索引は import_inspections(user_id, expires_at) と import_runs(user_id, created_at)。これは agent の推定で、利用者は未確認である。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-maintenance-ops-web-003",
-      "question": "web の現金入力画面で、利用者が決めていない 運用で見る閾値を何にするか。",
-      "answer": "夜間の完全消去が 1 晩の上限 500 行に達したら warn ログを出し、翌晩に続きを消す。check:cash-screen は既存の check-financial-visuals.mjs に KANJO_VISUAL_SCOPE=cash を渡して実行する。 これは agent の推定で、利用者は未確認である。画像と決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "id": "qa-imp-auth-web-003",
+      "question": "取込の認可で、利用者が決めていない 応答の細部 を何にするか。",
+      "answer": "他人の検査 ID・取込 ID・期限切れの検査 ID はすべて 404 not_found を返し、存在の有無を区別させない。検査 ID は推測できない乱数 (crypto.randomUUID) にする。一括削除は 1 要求 100 件までで、所有者でない ID が混ざれば全体を 404 にして 1 件も消さない。これは agent の推定で、利用者は未確認である。",
       "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
       "basis": "agent-inference",
-      "answered_at": "2026-09-21T15:20:56Z"
+      "answered_at": "2026-09-21T15:21:42Z"
     },
     {
-      "id": "qa-cash-database-web-001",
-      "question": "現金明細の名義・業務の目的・論理削除を D1 にどう持つか。",
-      "answer": "追加のみの migration 0050 で cash_entries に owner (TEXT NULL、business / spouse / family の CHECK)、transit_purpose (TEXT NULL)、deleted_at (TEXT NULL) を足し、(user_id, deleted_at) の索引を張る。既存行は書き換えない。読み取りの正本 loadCashEntries で deleted_at IS NULL を課し、集計・取引の導出は削除中の行を一切読まない。runtimeSchemaGuard の必須列に新しい列を加える。具体の既定値と完全消去の単位は qa-cash-database-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-imp-security-web-003",
+      "question": "取込の入口の防御で、利用者が決めていない 上限値と判定の順序 を何にするか。",
+      "answer": "1 要求あたり最大 10 ファイル・1 ファイル 25MB・合計 50MB とし、Content-Length で本文を読む前に 413 payload_too_large を返す。レート制限は利用者ごとに検査 10 回/分、確定 5 回/分で、超過は 429 rate_limited と Retry-After。/api/imports* の変更要求 (POST / DELETE) は Origin ヘッダーが自サイトと一致しなければ 403 forbidden_origin。ファイル名は制御文字を除き 255 文字で切る。これは agent の推定で、利用者は未確認である。",
+      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:21:42Z"
+    },
+    {
+      "id": "qa-imp-infrastructure-web-003",
+      "question": "取込の基盤で、利用者が決めていない 保存の配置と 1 要求の処理量 を何にするか。",
+      "answer": "仮置きの接頭辞は import-staging/<user_id>/<inspection_id>/ とし、確定時に既存の取込の鍵へコピーしてから仮置きを消す。夜間保守は 1 回あたり期限切れ 500 件まで消して残りは翌日に回す。検査 1 要求の D1 クエリは既存のクエリ予算に収める。これは agent の推定で、利用者は未確認である。",
+      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:21:42Z"
+    },
+    {
+      "id": "qa-imp-maintenance-ops-web-003",
+      "question": "データ取込画面で、利用者が決めていない 境界テストの具体 を何にするか。",
+      "answer": "上限ちょうどと 1 超過 (10 / 11 ファイル、50MB / 50MB+1 byte)、期限ちょうどの検査 ID、他人の検査 ID、Origin 不一致、レート超過、前回データを残すのオンとオフで同じファイルを 2 回取り込んだときの行数、取込済みと同一内容のファイル、一部成功の結果、一括削除後に明細が残ることを固定する。テストは旧実装で落ちることを確かめる。これは agent の推定で、利用者は未確認である。",
+      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:21:42Z"
+    },
+    {
+      "id": "qa-imp-ui-ux-web-001",
+      "question": "web のデータ取込画面の構成と、段・表・カードの並べ方をどうするか。",
+      "answer": "見出し『複数の明細ファイルを、安全に取り込みますか？』の下に 3 段のステッパー (ファイル選択 / 内容確認 / 取込結果) を置き、1.ファイルを選択 (ドラッグ&ドロップ、CSV・Excel・txt、freee と マネーフォワードの取得方法の案内、詳細設定の強制再取込と前回データを残す=既定オン)、2.取込ファイル一覧 (# / ファイル名 / 取込元 / 対象期間 / ファイルサイズ / 重複チェック / バリデーション / ステータス / 操作)、3.取込内容の確認 (対象ファイル数と取込可能数、取り込み予定の明細数、対象期間、影響する取込元、重複の可能性、サブスク候補、エラーのファイルは除外される注記)、4.取込結果 (成功 / 失敗 / 重複の可能性 / サブスク候補のカードとエラーのファイルのみ再試行)、5.取込履歴 (1 回の取込で 1 行、詳細ペインに影響の 3 数値) の順に並べる。下部バーに選択中ファイル数・取込可能数・エラー数・選択をキャンセル・N ファイルを取り込むを置く。案内から『銀行』を外す (qa-imp-decision-001)。束の順位は頻度 × 失敗コストで、取り込む前に何が入るかを確かめる 3.確認を 1.選択の直後に常に見せる。",
+      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:20:56Z",
+      "answered_at": "2026-09-21T15:21:42Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-imp-frontend-web-001",
+      "question": "web のデータ取込画面のフロントエンド構成 (ファイル分割・状態・取得・部品) をどう作るか。",
+      "answer": "Import.tsx を packages/web/src/pages/import/ 配下へ分割し (ファイル選択・取込ファイル一覧・内容確認・取込結果・取込履歴・履歴詳細・選択中バー)、ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果は core の純関数の結果を描くだけにする。流れは検査 (ファイルを送って検査 ID を受け取る) → 確認 → 確定 (検査 ID だけを送る) の 2 段階 (qa-imp-decision-003)。前回データを残すは既定オンで確定要求に載せる (qa-imp-decision-002)。取得は TanStack Query で履歴一覧と履歴詳細を分け、確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する。選択中の履歴は URL の検索パラメータに持つ。画面は遅延読み込みのまま。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。",
+      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:21:42Z",
+      "required_info_items": [
+        "frontend-arch",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-imp-backend-web-001",
+      "question": "データ取込の検査・確定・履歴の規則をどこに置き、どの契約で返すか。",
+      "answer": "ファイルの状態、検証の段階、取込可否、内容確認の要約 (対象ファイル数・取込可能数・予定明細数・対象期間・影響する取込元・重複の可能性・サブスク候補)、取込 1 回の結果 (成功 / 一部成功 / 失敗) を packages/core の import-screen.ts の純関数に置く。API は 2 段階にする (qa-imp-decision-003)。POST /imports/inspections はファイルを受けてパースと検査だけを行い、原本を R2 に 24 時間仮置きして検査 ID と検査結果を返す。POST /imports/runs は検査 ID の列と前回データを残す・強制再取込を受けて確定し、ファイルを再送させない。前回データを残す=オンは MF 明細は mfStableKey、freee 取引は freeeDealKeys で既にある行を飛ばして新しい行だけを足し、オフは従来の月単位の入れ替え (qa-imp-decision-002)。GET /imports/runs は取込 1 回を 1 行で返し、GET /imports/runs/:id は影響の 3 数値 (新規追加・重複スキップ・サブスク候補) と含まれるファイルを返す (qa-imp-decision-004)。再取込・取り消し (30 日)・原本の取得は既存の経路を取込単位へ束ねる。一括削除は履歴の記録だけを消す。対象は freee と マネーフォワードの CSV で、銀行・カードは扱わない (qa-imp-decision-001)。",
+      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:21:42Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-imp-database-web-001",
+      "question": "検査の仮置き・取込 1 回の記録・履歴の削除を、どの表でどう持つか。",
+      "answer": "検査の結果は新しい表 import_inspections (検査 ID・利用者・ファイル名・取込元・対象期間・サイズ・内容ハッシュ・検査結果の要約・R2 の仮置きキー・期限) に持ち、確定で imports と import_runs へ移す (qa-imp-decision-003)。取込 1 回は import_runs を 1 行の単位とし、ファイル数・取込明細数・新規追加・重複スキップ・サブスク候補・結果を記録する (qa-imp-decision-004)。一括削除は import_runs に履歴の非表示の印を付けるだけで、imports と明細の行は消さない。行単位の追加で飛ばした行の数は import_runs に残す (qa-imp-decision-002)。migration は 0050 以降の新番号で追加し、既存の表の意味を変えない。",
+      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:21:42Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
       ]
     },
     {
-      "id": "qa-cash-auth-web-001",
-      "question": "新しい復元・一括削除の経路を誰に許すか。",
-      "answer": "既存のセッション認証 (authGuard 配下、HttpOnly・SameSite=Strict の Cookie) をそのまま使い、新しい経路もすべて /api/* に置いて userId を条件に読み書きする。他の利用者の明細の取得・変更・削除・復元は存在を明かさず 404 にする。新しい権限や役割は作らない (単一利用者の運用)。",
-      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-imp-auth-web-001",
+      "question": "検査 ID・取込 1 回・原本を、誰がどこまで操作できるようにするか。",
+      "answer": "検査・確定・履歴・原本の取得・再取込・取り消し・履歴の削除はすべて既存のセッション認証の後ろに置き、どの操作も利用者 ID で行を絞る。確定要求の検査 ID は本人が作った未期限のものだけを受け、他人の ID や期限切れは存在しないものとして扱う (qa-imp-decision-003)。一括削除は本人の履歴だけを対象にする (qa-imp-decision-004)。新しい認証方式は足さない。",
+      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:20:56Z",
+      "answered_at": "2026-09-21T15:21:42Z",
       "required_info_items": [
-        "auth-model",
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-imp-security-web-001",
+      "question": "データ取込の入口で、何を防ぎ、何を外へ出さないか。",
+      "answer": "取込の変更要求は本文を読む前に大きさで止め、1 要求のファイル件数と合計サイズの上限を置く。取込専用のレート制限を置く。取込の変更要求は同一オリジンからだけ受ける。ファイル名・取込元・エラー文などファイル由来の文字列は React のエスケープで描き、HTML として解釈しない。取込データは外部へ送信しない。仮置きの原本は本人だけが確定・取得でき、24 時間で消える (qa-imp-decision-003)。一括削除は記録だけで、明細は消さない (qa-imp-decision-004)。",
+      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:21:42Z",
+      "required_info_items": [
         "security-posture"
       ]
     },
     {
-      "id": "qa-cash-ui-ux-web-001",
-      "question": "web の現金入力画面に何をどの順で置くか。",
-      "answer": "17-cash.png の順に、問いの見出し『現金と交通費を、漏れなく記録しますか？』と説明、共通の期間 (1年 / 2年 / 3年 / 任意) と対象期間カード、通常入力 / 交通費入力のタブ、入力 (日付・事業 / 個人のラジオ・収支のラジオ・金額・内容・カテゴリ・担当者 = 名義・メモ 0/200・入力をクリア・現金明細を追加・下書き自動保存の時刻)、交通費 (出発駅・到着駅・入替・片道運賃・往復・合計金額・業務の目的・メモ・交通費として追加)、一覧 (月送り・キーワード・収支 / カテゴリ / 担当者 / 取込元の絞り込み・詳細検索・収入 / 支出 / 差額の合計・選択と一括削除・編集 / 削除・ページング)、下部固定の追加バーを置く。削除は行内で確認し、完了後のトーストの『元に戻す』で戻す。領収書欄は出さず『領収書は freee に保管してください』と案内する。取込元は通常入力 / 交通費入力の経路を文字で示す。空のときは画面内だけのサンプル表示と『はじめての明細を入力』を出す。状態と区分は色だけでなく文字で伝える。具体値は qa-cash-ui-ux-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "id": "qa-imp-infrastructure-web-001",
+      "question": "検査の仮置きと片づけを、どの基盤にどう載せるか。",
+      "answer": "仮置きの原本は既存の R2 (FILES) の専用の接頭辞に置き、確定時に取込の保存先へ移すか参照を移す。期限切れの仮置きは既存の夜間保守 (cron) で消す (qa-imp-decision-003)。新しいバインディング・外部サービス・キューは足さない。レート制限の計数は D1 の表で持つ。migration は D1 の番号順で追加する。",
+      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:20:56Z",
+      "answered_at": "2026-09-21T15:21:42Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-imp-maintenance-ops-web-001",
+      "question": "データ取込画面の品質をどう保ち、規則をどこに残すか。",
+      "answer": "ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果の規則、行単位の追加と月単位の入れ替えの違い、仮置きの期限、履歴の削除の意味を docs/import-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。既存の取込・取り消し・破棄のテストを緑のまま保ち、初期 JS 予算 (CI 実測) と verify:full を通す。境界テストの具体は qa-imp-maintenance-ops-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-import-screen-001) と決定 qa-imp-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:21:42Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-imp-decision-005",
+      "question": "検査要求 1 回が何ファイルを運び、検査 ID を何の単位で発行するか。",
+      "answer": "複数ファイルを 1 要求で送る。1 要求に検査 ID を 1 つ発行し、その中にファイルごとの項目 (ファイル項目 ID と検査結果) を持つ。確定は検査 ID と、そのうち取り込むファイル項目 ID を送り、ファイルは再送しない。1 回の取込 = 1 つの検査 ID = 取込履歴の 1 行とする。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり。完成度評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:41:14Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-imp-decision-006",
+      "question": "取込の入口の上限値とレート制限をいくつにするか。",
+      "answer": "推奨値で確定する。1 ファイル 25MB、1 回の取込 10 ファイル、xlsx / ZIP は展開後の大きさにも上限を置く。レート制限は利用者ごとに検査 30 回/分・確定 5 回/分。上限の超過は 413、レート超過は 429 を返す。bodyLimit は Content-Length が無い要求でも本文を数えて上限で止める。合計と展開後の値は qa-imp-decision-007 で Worker のメモリに合わせて下げた値を正とする。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり。完成度評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:41:14Z",
+      "required_info_items": [
+        "api-contract",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-imp-decision-007",
+      "question": "Worker のメモリ上限 (128MB) に対し、複数ファイル 1 要求のまま上限をどう調整するか。",
+      "answer": "複数ファイル 1 要求のまま上限を下げる。1 回の取込の合計を 30MB、xlsx / ZIP の展開後を 1 ファイル 60MB にする。サーバは 1 ファイルずつ順に検査して R2 へ置き、同時に展開するのは 1 ファイルだけにする (ピーク約 90MB)。1 ファイル 25MB・10 ファイル・検査 30 回/分・確定 5 回/分は維持する。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案提示あり。完成度評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T15:41:14Z",
+      "required_info_items": [
+        "infra-topology",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-imp-ui-ux-web-002",
+      "question": "web のデータ取込画面の構成・段・表・カードと、表示の細部をどうするか (改訂版)。",
+      "answer": "見出し『複数の明細ファイルを、安全に取り込みますか？』の下に 3 段のステッパー (ファイル選択 / 内容確認 / 取込結果) を置き、1.ファイルを選択 (ドラッグ&ドロップ、CSV・Excel・txt、freee と マネーフォワードの取得方法の案内、詳細設定の強制再取込と前回データを残す=既定オン、『1 回に 10 ファイル・合計 30MB まで、1 ファイル 25MB まで』の注記)、2.取込ファイル一覧 (# / ファイル名 / 取込元 / 対象期間 / ファイルサイズ / 重複チェック / バリデーション / ステータス / 操作)、3.取込内容の確認 (対象ファイル数と取込可能数、取り込み予定の明細数、対象期間、影響する取込元、重複の可能性、サブスク候補、エラーのファイルは除外される注記)、4.取込結果 (成功 / 失敗 / 重複の可能性 / サブスク候補のカードとエラーのファイルのみ再試行)、5.取込履歴 (1 回の取込 = 1 つの検査 ID = 1 行、詳細ペインに影響の 3 数値) の順に並べる。下部バーに選択中ファイル数・取込可能数・エラー数・選択をキャンセル・N ファイルを取り込むを置く。案内から『銀行』を外す。ステータスは 5 種 (アップロード中 n% / 検査中 / 取込準備完了 / 取込不可 / 取込済み) で、色だけに頼らず文字とアイコンを併記する。重複チェックは『なし / n 件 / 取込済みと同一』、バリデーションは『OK / 警告 n / エラー n』。操作はアップロード中=キャンセル、準備完了=削除、取込不可=再試行と削除。上限を超えるファイルは送る前に取込不可として理由 (25MB 超・10 ファイル超・合計 30MB 超) を出す。結果カードの『重複の可能性』は総収支画面、『サブスク候補』はサブスク画面へのリンクを持つ。狭い画面では段を縦に積み、表は横スクロールにする。共通シェル (ヘッダーの防衛ライン、フッターの文言) は変更しない。束の順位は頻度 × 失敗コストで、取り込む前に何が入るかを確かめる 3.確認を 1.選択の直後に常に見せる。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:41:14Z",
       "required_info_items": [
         "context-of-use",
         "information-priority",
@@ -562,343 +771,384 @@
       ]
     },
     {
-      "id": "qa-cash-security-web-001",
-      "question": "現金明細の入力・削除・復元で何を拒否し、何を守るか。",
-      "answer": "API の zod で名義・業務の目的・収支・事業 / 個人を候補に限り、実在しない日付、金額の範囲外、長すぎる文字列 (内容 60 字・メモ 200 字・駅名 40 字・その他の目的 40 字) を 400 で拒否する。一括削除の id 配列は上限付きで、他人の id を 1 件でも含めば全体を 404 にする。削除中の行が一覧・合計・取引・集計のどこにも出ない不変条件を API テストで固定する。下書きはブラウザ内だけに置きサーバーへ送らない。領収書ファイルは受け取らない。下書きの保持規則は qa-cash-security-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:20:56Z",
+      "id": "qa-imp-frontend-web-002",
+      "question": "web のデータ取込画面のフロントエンド構成と、送信・アップロード進捗の扱いをどうするか (改訂版)。",
+      "answer": "Import.tsx を packages/web/src/pages/import/ 配下へ分割し (ファイル選択・取込ファイル一覧・内容確認・取込結果・取込履歴・履歴詳細・選択中バー)、ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果は core の純関数の結果を描くだけにする。流れは検査 → 確認 → 確定の 2 段階。選んだファイルを 1 つの multipart 要求にまとめて XMLHttpRequest で送り、1 つの検査 ID とファイルごとの項目を受け取る。進捗は upload.onprogress の累計バイトを multipart に積んだ順のファイルへ割り当てて、ファイルごとの % を出す (fetch はアップロード進捗を取れないため)。アップロード中のキャンセルは要求全体を abort し、そのファイルを外した残りを送り直す。送る前に 1 ファイル 25MB・10 ファイル・合計 30MB を画面で判定し、超えるものは送らない。取込不可のファイルの再試行と後からの追加は、同じ検査 ID へファイルを足す要求で行う。確定は検査 ID と取り込むファイル項目 ID と前回データを残す (既定オン)・強制再取込を送る。取込可能が 0 件のとき取り込むボタンは押せない。.txt はタブ区切りまたはカンマ区切りの CSV として扱う。取得は TanStack Query で履歴一覧と履歴詳細を分け、確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する。選択中の履歴は URL の検索パラメータに持つ。画面は遅延読み込みのまま。413 と 429 は上限と待ち時間 (Retry-After) を文言で出す。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:41:14Z",
       "required_info_items": [
-        "domain-model",
-        "security-posture"
+        "frontend-arch"
       ]
     },
     {
-      "id": "qa-cash-infrastructure-web-001",
-      "question": "論理削除した明細の完全消去をどこで動かすか。",
-      "answer": "既存の夜間 cron (0 18 * * *) の scheduledMaintenance に独立 job cash_soft_delete_purge を 1 本足し、deleted_at から 30 日を過ぎた行を物理削除する。job と D1 クエリ予算を SCHEDULED_MAINTENANCE_D1_PLAN に宣言して型で結ぶ。新しい binding・cron・外部サービスは足さない。",
-      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:20:56Z",
-      "required_info_items": [
-        "infra-topology"
-      ]
-    },
-    {
-      "id": "qa-cash-backend-web-001",
-      "question": "画面の数字と削除・復元をどこで導き、API は何を返すか。",
-      "answer": "packages/core に cash-screen.ts を新設し、合計 (収入・支出・差額)、絞り込み (キーワード・収支・カテゴリ・名義・入力経路・金額と日付の範囲)、ページング、入力経路、交通費の合計 (片道 × 往復なら 2)、入力検証の純関数を置いて index.ts から export する。API は GET で対象期間の削除中でない明細を返し、DELETE /api/cash-entries/:id を論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す) に変え、POST /api/cash-entries/:id/restore で同じ id を戻し、POST /api/cash-entries/bulk-delete で選択分を 1 batch で論理削除する。POST / PUT は owner と transit_purpose を受ける。判定は core に渡して JSON に写すだけにする。具体の上限と期限切れの扱いは qa-cash-backend-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:20:56Z",
+      "id": "qa-imp-backend-web-002",
+      "question": "データ取込の検査・確定・履歴の規則をどこに置き、どの契約で返すか (改訂版)。",
+      "answer": "ファイルの状態、検証の段階、取込可否、内容確認の要約 (対象ファイル数・取込可能数・予定明細数・対象期間・影響する取込元・重複の可能性・サブスク候補)、取込 1 回の結果 (全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗) を packages/core の import-screen.ts の純関数に置く。POST /imports/inspections は 1〜10 ファイルを 1 要求で受け、1 ファイルずつ順にパース・検査して原本を R2 に 24 時間仮置きし、1 つの検査 ID とファイルごとの項目 (ファイル項目 ID・取込元・対象期間・サイズ・重複・バリデーション・明細数) を返す。POST /imports/inspections/:id/files は同じ検査 ID へファイルを足し (再試行と追加)、合わせて 10 ファイルまで。DELETE /imports/inspections/:id/files/:fileId は確定前の項目を外す。POST /imports/runs は検査 ID・取り込むファイル項目 ID・前回データを残す・強制再取込を受けて確定し、ファイルを再送させない。確定は既存の書込の直列化 (import_writer_claims) の内側でファイルを順に書き、先に全ファイルのクエリ予算を合算して上限を超えるなら 1 件も書かずに 409 を返す。前回データを残す=オンは MF 明細は mfStableKey、freee 取引は freeeDealKeys で既にある行を飛ばして新しい行だけを足し、オフは従来の月単位の入れ替え。行単位の追加の対象は MF 明細と freee 取引だけで、MF 資産推移と JSON 復元は従来の動作のまま。『重複の可能性』は既存の duplicateMatchScore による二重計上候補の件数、『サブスク候補』は取込後の subsCandidates の新規件数。取込済みと同一内容 (content_hash が一致) のファイルは取込可能から外し、強制再取込のときだけ含める。GET /imports/runs は取込 1 回を 1 行で返し、GET /imports/runs/:id は影響の 3 数値 (新規追加・重複スキップ・サブスク候補) と含まれるファイルを返す。再取込・取り消し (30 日)・原本の取得は既存の経路を取込単位へ束ねる。一括削除は履歴の記録だけを消す。対象は freee と マネーフォワードの CSV で、銀行・カードは扱わない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:41:14Z",
       "required_info_items": [
         "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-cash-frontend-web-001",
-      "question": "web の現金入力画面をどう分割し、状態をどこに持つか。",
-      "answer": "Cash.tsx を pages/cash/ 配下 (画面本体・view-model.ts・draft.ts・通常入力・交通費入力・一覧・ResultNotices) に分け、view-model は core の cash-screen を呼んで描くだけにする。タブ・月・絞り込み・ページは URL の検索パラメータに持ち、再読込と共有で同じ表示に戻す。入力途中の値は draft.ts が localStorage に自動保存して保存時刻を示し、追加成功と『入力をクリア』で消す。追加・更新・削除・復元の後は TanStack Query の現金明細と集計の query を無効化する。初期 JS 予算に収まるよう画面は既存どおり遅延読込する。",
-      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:20:56Z",
+      "id": "qa-imp-database-web-002",
+      "question": "検査の仮置き・取込 1 回の記録・履歴の削除・取込のレート制限を、どの表でどう持つか (改訂版)。",
+      "answer": "検査 1 要求は新しい表 import_inspections (検査 ID・利用者・状態・期限 24 時間・作成時刻) の 1 行、ファイルごとの項目は新しい表 import_inspection_files (ファイル項目 ID・検査 ID・利用者・ファイル名・取込元・対象期間・サイズ・内容ハッシュ・検査結果の要約・エラー種別・R2 の仮置きキー) に持つ。確定で imports と import_runs へ移し、確定済みの検査行は確定時に消す。import_runs は取込 1 回 = 1 つの検査 ID を 1 行とし、ファイル数・取込明細数・新規追加・重複スキップ・サブスク候補・結果・前回データを残すの値と、履歴の非表示の時刻 hidden_at を列で足す。一括削除は hidden_at を付けるだけで imports と明細の行は消さず、取り消し (30 日) の判定に影響しない。取込のレート制限は新しい表 import_rate_limits (利用者・経路の種別 (検査 / 確定)・1 分の時間枠の開始・回数、主キーはこの 3 つ) で数え、ログイン用の password_login_rate_limits とは分ける。索引は import_inspections(user_id, expires_at)・import_inspection_files(inspection_id)・import_runs(user_id, created_at)。夜間保守が期限切れの検査行と 1 日より古い時間枠を消す。migration は 0050 以降の新番号で表と列の追加だけにし、既存の表の意味を変えない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:41:14Z",
       "required_info_items": [
-        "context-of-use",
-        "frontend-arch"
+        "data-persistence",
+        "domain-model"
       ]
     },
     {
-      "id": "qa-cash-maintenance-ops-web-001",
-      "question": "現金入力の作り直しを何で検証し、運用で何を見るか。",
-      "answer": "core の cash-screen の単体テスト、API テスト (論理削除・復元・一括削除・利用者分離・入力検証・削除中の行が集計に出ない不変条件)、DOM テスト (画像の構成要素・下書き復元・元に戻す・空状態) を足し、web に check:cash-screen を加えて verify:full に組み込む。夜間の完全消去は消した件数を JSON ログに出す。既存の lint・typecheck・test・skills:test・初期 JS 予算・verify:full を緑に保つ。具体値は qa-cash-maintenance-ops-web-003 (agent 推定) を参照。",
-      "provenance": "利用者承認 (appr-foundation-cash-001) と決定 qa-cash-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:20:56Z",
+      "id": "qa-imp-auth-web-002",
+      "question": "検査 ID・ファイル項目・取込 1 回・原本を、誰がどこまで操作できるようにするか (改訂版)。",
+      "answer": "検査・ファイルの追加と除外・確定・履歴・原本の取得・再取込・取り消し・履歴の削除はすべて既存のセッション認証の後ろに置き、どの操作も利用者 ID で行を絞る。確定は本人が作った未期限の検査 ID と、その検査 ID に属するファイル項目 ID だけを受ける。他人の検査 ID・取込 ID・期限切れの検査 ID・別の検査のファイル項目 ID はすべて 404 not_found を返し、存在の有無を区別させない。検査 ID とファイル項目 ID は推測できない乱数 (crypto.randomUUID) にする。一括削除は本人の履歴だけを対象にし、1 要求 100 件まで、所有者でない ID が混ざれば全体を 404 にして 1 件も消さない。レート制限は利用者 ID ごとに数える。新しい認証方式は足さない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:41:14Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-imp-security-web-002",
+      "question": "データ取込の入口で、何をどの上限と順序で防ぎ、何を外へ出さないか (改訂版)。",
+      "answer": "POST /imports/inspections と同じ検査 ID へのファイル追加に hono/body-limit で 30MB の上限を掛け、Content-Length が無い要求や宣言と実長が違う要求も本文をストリームで数えて上限で止め、413 payload_too_large を返す。本文を読んだ後に 1 要求 10 ファイル・1 ファイル 25MB を判定し、超えれば 413 を返す。xlsx と ZIP は展開する前に中央ディレクトリの展開後サイズを合計し、1 ファイル 60MB を超えるものは展開せずにそのファイルを取込不可にする。サーバは同時に展開するファイルを 1 つに限り、Worker のメモリ 128MB の中に収める。確定と一括削除の本文は小さい上限で止める。レート制限は利用者ごとに検査 30 回/分・確定 5 回/分で、超過は 429 rate_limited と Retry-After。/api/imports* の変更要求 (POST / DELETE) は Origin ヘッダーが自サイトと一致しなければ 403 forbidden_origin。ファイル名は制御文字を除き 255 文字で切り、ファイル名・取込元・エラー文などファイル由来の文字列は React のエスケープで描いて HTML として解釈しない。取込データは外部へ送信しない。仮置きの原本は本人だけが確定・取得でき、24 時間で消える。一括削除は記録だけで、明細は消さない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:41:14Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-imp-infrastructure-web-002",
+      "question": "検査の仮置き・片づけ・1 要求の処理量を、どの基盤にどう載せるか (改訂版)。",
+      "answer": "仮置きの原本は既存の R2 (FILES) の接頭辞 import-staging/<user_id>/<inspection_id>/<file_id> に置き、確定時に既存の取込の鍵へコピーしてから仮置きを消す。期限切れの仮置きと検査行は既存の夜間保守 (cron 0 18 * * *) が 1 回あたり 500 件まで消し、残りは翌日に回す。同じ夜間保守で import_rate_limits の 1 日より古い時間枠を消す。Worker 1 isolate のメモリは 128MB なので、検査の 1 要求は multipart 本文 (最大 30MB) を読んだ後、1 ファイルずつ順にパースと展開 (最大 60MB) をして R2 へ置き、前のファイルの展開結果を手放してから次へ進む (ピーク約 90MB)。request body の上限 (Free/Pro 100MB) と CPU 時間 (既定 30 秒) の中に収まる。検査と確定の D1 クエリは既存のクエリ予算に収める。新しいバインディング・外部サービス・キューは足さない。レート制限の計数は D1 の表で持つ。migration は D1 の番号順で追加し、反映は Migrate → Deploy の順。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:41:14Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-imp-maintenance-ops-web-002",
+      "question": "データ取込画面の品質をどう保ち、規則と境界テストをどこに残すか (改訂版)。",
+      "answer": "ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果の規則、1 回の取込 = 1 つの検査 ID の単位、行単位の追加と月単位の入れ替えの違い、仮置きの期限、上限値とレート制限、履歴の削除の意味を docs/import-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。境界テストは、上限ちょうどと 1 超過 (10 / 11 ファイル、1 ファイル 25MB / 25MB+1 byte、合計 30MB / 30MB+1 byte を Content-Length ありと無しの両方、展開後 60MB / 60MB+1 byte)、検査 30 / 31 回目と確定 5 / 6 回目 (1 分の時間枠)、期限ちょうどの検査 ID、他人の検査 ID と別の検査のファイル項目 ID、Origin 不一致、前回データを残すのオンとオフで同じファイルを 2 回取り込んだときの行数、取込済みと同一内容のファイル、一部成功の結果、一括削除後に明細が残ること、夜間保守で期限切れの仮置きと古い時間枠が消えることを固定する。テストは旧実装で落ちることを確かめる。既存の取込・取り消し・破棄のテストを緑のまま保ち、初期 JS 予算 (CI 実測) と verify:full を通す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001) と利用者決定 qa-imp-decision-001〜007 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -001 (basis の表示が実態より強い) と -003 (検査要求の単位が章の間で食い違う) を置き換える。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T15:41:14Z",
       "required_info_items": [
         "ops-runbook"
       ]
     },
     {
-      "id": "qa-cash-decision-005",
-      "question": "承認 (appr-foundation-cash-001) の後に書き足した上位概念 (G4・S1〜S4・SH2・C1〜C4・I1〜I6 と、web 以外の専用アプリを範囲外とすること) を含め、要件定義の全文をこのまま確定してよいか。",
-      "answer": "この全文で承認する。本質的目的、G1〜G4、S1〜S4、SH1・SH2、範囲外 (領収書の保存・取込明細の混在・共通シェルの文言・担当者の自由登録・モバイル / タブレット / デスクトップ専用アプリ)、C1〜C4、I1〜I6 (I3 は削除中の行を読まない条件を cash_entries を読む全経路に掛けることと一括復元の API を含む) を確定とする。",
-      "provenance": "AskUserQuestion / 全文を preview に示して選択肢 2 件 (この全文で承認・修正して再提示) を提示し、利用者が「この全文で承認 (推奨)」を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界。",
+      "id": "qa-imp-decision-008",
+      "question": "取込不可のファイルの再試行や後からのファイル追加を、同じ検査 ID に足す経路 (POST /imports/inspections/:id/files) で行うか。",
+      "answer": "残す。同じ検査 ID へファイルを足せるようにし、上限は検査 ID ごとの累計で数える (合わせて 10 ファイル・合計 30MB)。この追加の要求は検査のレート制限 (30 回/分) に数える。1 回の取込 = 1 つの検査 ID の形を保つ。",
+      "provenance": "AskUserQuestion / 再評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。提示した選択肢と推奨: (1) 残す・累計で上限 [推奨。理由: 再試行でも全ファイルを送り直さずに済み、1 回の取込 = 1 検査 ID を保てる] (2) やめる・全体を送り直す [経路は減るが、再試行のたびに全ファイルを再アップロードする]。利用者は (1) を選択。",
       "basis": "user-decision",
-      "answered_at": "2026-09-21T15:34:28Z",
+      "answered_at": "2026-09-21T22:27:38Z",
       "required_info_items": [
-        "context-of-use",
+        "api-contract",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-imp-decision-009",
+      "question": "xlsx / ZIP を展開する前に確かめる、中のファイル数 (エントリ数) の上限をいくつにするか。",
+      "answer": "1,000 件。展開する前に中央ディレクトリのエントリ数を数え、1,000 件を超えるファイルは展開せずに取込不可にする。展開後 1 ファイル 60MB の上限と合わせて、ASVS 5.2.3 の 2 つの検査 (展開後の大きさとファイル数) を満たす。",
+      "provenance": "AskUserQuestion / 再評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。提示した選択肢と推奨: (1) 1,000 件 [推奨。理由: xlsx も MF の ZIP も通常は数十件で十分な余裕がある] (2) 10,000 件 [緩く、展開爆弾への備えが弱い] (3) 100 件 [厳しく、正当な大きな ZIP を弾きうる]。利用者は (1) を選択。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:27:38Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-imp-decision-010",
+      "question": "agent が補った値と認可の方針 (一括削除 1 要求 100 件・夜間保守の片づけ 1 回 500 件で残りは翌日・ファイル名は制御文字を除き 255 文字で切る・認可は本人の行だけで他人・期限切れ・別の検査のファイル ID はすべて 404) を確定するか。",
+      "answer": "この内容で確定する。一括削除は 1 要求 100 件まで、夜間保守の片づけは 1 回 500 件まで (残りは翌日)、ファイル名は制御文字を除いて 255 文字で切る。認可は既存のセッション認証の後ろで本人の行だけを対象にし、他人の・期限切れの・別の検査のファイル項目の ID にはすべて 404 を返して存在を区別させない。新しい認証方式は足さない。",
+      "provenance": "AskUserQuestion / 再評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。提示した選択肢と推奨: (1) この内容で確定 [推奨。理由: 既存の認証と運用の規模に合い、存在の有無を漏らさない] (2) 修正する [値を利用者が書き直す]。利用者は (1) を選択。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:27:38Z",
+      "required_info_items": [
+        "auth-model",
+        "ops-runbook",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-imp-decision-011",
+      "question": "承認済みの O6 は『上限を超える body・ファイル数・合計サイズを本文を読む前に 413 で拒否する』とするが、multipart のファイル数は本文を読まないと分からない。どう扱うか。",
+      "answer": "O6 を直して再承認する。上限を超える body (合計サイズ) は本文を読む前に 413、ファイル数と 1 ファイルの大きさは本文を読んだ直後・パースの前に 413 とする。この回答を上位概念の再承認 (appr-foundation-import-screen-002) として記録する。",
+      "provenance": "AskUserQuestion / 再評価 (FAIL) の指摘を受けて本サイクル中に利用者へ確認し、利用者が選択した。提示した選択肢と推奨: (1) O6 を直して再承認 [推奨。理由: 目標の測り方を実現できる判定順に合わせる] (2) O6 は据え置き、security とテストの節に読み方を注記する [上位概念は変えない]。利用者は (1) を選択。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-21T22:27:38Z",
+      "required_info_items": [
         "product-goal",
-        "target-platforms"
+        "security-posture"
       ]
     },
     {
-      "id": "qa-cash-decision-006",
-      "question": "一覧の選択から一括削除した行を、削除完了トーストの『元に戻す』でどう戻すか。現行の仕様には 1 件ずつの復元しか無い。",
-      "answer": "一括復元の API を足す。POST /api/cash-entries/bulk-restore が一括削除と同じ id の配列 (100 件まで) を受け、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にして何も戻さず、全件を 1 つの D1 batch で deleted_at を外して取引と集計を作り直す。トーストの『元に戻す』は一括削除した id をそのまま渡す。",
-      "provenance": "AskUserQuestion / 選択肢 (一括復元の API を足す・1 件ずつ復元を繰り返す・一括削除では元に戻すを出さない) と推奨案を提示し、利用者が「一括復元の API を足す (推奨)」を選択。answered_at は選択時刻の上界。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:34:28Z",
+      "id": "qa-imp-security-web-004",
+      "question": "データ取込の入口で、何をどの上限と順序で防ぎ、何を外へ出さないか (再改訂版)。",
+      "answer": "POST /imports/inspections と同じ検査 ID へのファイル追加に hono/body-limit で 30MB の上限を掛け、本文を読む前に止めて 413 payload_too_large を返す。hono/body-limit は Content-Length があればその値で判定し、無ければ本文をストリームで数えて上限で止める。宣言と実長のずれは HTTP の枠組み (Workers ランタイム) に任せ、仕様としては検査しない。ファイル数と 1 ファイルの大きさは本文を読んだ直後・パースの前に判定し、検査 ID ごとの累計 10 ファイル・1 ファイル 25MB・累計 30MB を超えれば 413 を返す (ファイル追加の要求では、既にある項目のサイズと数を足して判定する)。xlsx と ZIP は展開する前に中央ディレクトリのエントリ数と展開後サイズの合計を確かめ、エントリ数 1,000 件か展開後 1 ファイル 60MB を超えるものは展開せずにそのファイルを取込不可にする (ASVS 5.2.3)。サーバは同時に展開するファイルを 1 つに限り、Worker のメモリ 128MB の中に収める。確定と一括削除 (1 要求 100 件まで) の本文は小さい上限で止める。レート制限は利用者ごとに検査 30 回/分 (ファイル追加の要求も検査に数える)・確定 5 回/分で、超過は 429 rate_limited と Retry-After。/api/imports* の変更要求 (POST / DELETE) は Origin ヘッダーが自サイトと一致しなければ 403 forbidden_origin。ファイル名は制御文字を除き 255 文字で切り、ファイル名・取込元・エラー文などファイル由来の文字列は React のエスケープで描いて HTML として解釈しない。取込データは外部へ送信しない。仮置きの原本は本人だけが確定・取得でき、24 時間で消える。一括削除は記録だけで、明細は消さない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:27:38Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-imp-backend-web-004",
+      "question": "データ取込の検査・確定・履歴の規則をどこに置き、どの契約で返すか (再改訂版)。",
+      "answer": "ファイルの状態、検証の段階、取込可否、内容確認の要約 (対象ファイル数・取込可能数・予定明細数・対象期間・影響する取込元・重複の可能性・サブスク候補)、取込 1 回の結果 (全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗) を packages/core の import-screen.ts の純関数に置く。POST /imports/inspections は 1〜10 ファイルを 1 要求で受け、ファイル数と 1 ファイルの大きさを本文を読んだ直後・パースの前に確かめてから、1 ファイルずつ順にパース・検査して原本を R2 に 24 時間仮置きし、1 つの検査 ID とファイルごとの項目 (ファイル項目 ID・取込元・対象期間・サイズ・重複・バリデーション・明細数) を返す。POST /imports/inspections/:id/files は同じ検査 ID へファイルを足し (再試行と追加)、上限は検査 ID ごとの累計で合わせて 10 ファイル・合計 30MB まで (既にある項目のサイズを import_inspection_files から合計して判定する)。この要求は検査のレート制限に数える。DELETE /imports/inspections/:id/files/:fileId は確定前の項目を外す。POST /imports/runs は検査 ID・取り込むファイル項目 ID・前回データを残す・強制再取込を受けて確定し、ファイルを再送させない。確定は既存の書込の直列化 (import_writer_claims) の内側でファイルを順に書き、先に全ファイルのクエリ予算を合算して上限を超えるなら 1 件も書かずに 409 を返す。前回データを残す=オンは MF 明細は mfStableKey、freee 取引は freeeDealKeys で既にある行を飛ばして新しい行だけを足し、オフは従来の月単位の入れ替え。行単位の追加の対象は MF 明細と freee 取引だけで、MF 資産推移と JSON 復元は従来の動作のまま。『重複の可能性』は既存の duplicateMatchScore による二重計上候補の件数、『サブスク候補』は取込後の subsCandidates の新規件数。取込済みと同一内容 (content_hash が一致) のファイルは取込可能から外し、強制再取込のときだけ含める。GET /imports/runs は取込 1 回を 1 行で返し、GET /imports/runs/:id は影響の 3 数値 (新規追加・重複スキップ・サブスク候補) と含まれるファイルを返す。再取込・取り消し (30 日)・原本の取得は既存の経路を取込単位へ束ねる。一括削除は履歴の記録だけを消す。対象は freee と マネーフォワードの CSV で、銀行・カードは扱わない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:27:38Z",
       "required_info_items": [
         "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-cash-backend-web-002",
-      "question": "削除中の行を読まない条件と一括復元を含めて、API は何を返し何を拒否するか。",
-      "answer": "core の cash-screen.ts が合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を導き、API は JSON に写すだけにする。DELETE /api/cash-entries/:id は論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す)、POST /api/cash-entries/:id/restore は同じ id を戻し、POST /api/cash-entries/bulk-delete と POST /api/cash-entries/bulk-restore は 100 件までの id 配列を 1 batch で処理し、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にする。削除中の行を読まない条件 (deleted_at IS NULL) を cash_entries を読む全経路 — loadCashEntries (store.ts)、loadDataset の UNION SQL (store.ts)、JSON スナップショットの json_object SQL (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、PUT は削除中の行を 404 にする。新しい restore / bulk-delete / bulk-restore の経路は canonical-mutation-fence に登録し、既存の POST / PUT / DELETE と同じ書込の順序保証に乗せる。POST / PUT は owner と transit_purpose を受ける。",
-      "provenance": "利用者の全文承認 (appr-foundation-cash-002、qa-cash-decision-005) と一括復元の決定 (qa-cash-decision-006) の範囲に収まる確定内容。reopen の理由に挙げた読み取り経路は、リポジトリの現物で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:38:03Z",
-      "required_info_items": [
-        "api-contract",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-cash-database-web-002",
-      "question": "現金明細の名義・業務の目的・論理削除を D1 にどう持ち、どの読み取り経路で削除中の行を外すか。",
-      "answer": "追加のみの migration 0050 で cash_entries に owner (TEXT NULL、business / spouse / family の CHECK)、transit_purpose (TEXT NULL)、deleted_at (TEXT NULL) を足し、(user_id, deleted_at) の索引を張る。既存行は書き換えない。削除中の行を読まない条件 (deleted_at IS NULL) は cash_entries を読む全経路 — loadCashEntries (store.ts)、loadDataset の UNION SQL (store.ts)、JSON スナップショットの json_object SQL (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、集計・取引の導出と JSON スナップショットは削除中の行を一切読まない。JSON 復元の INSERT は新しい列を持つ形に合わせる。runtimeSchemaGuard の必須列に新しい列を加える。",
-      "provenance": "利用者の全文承認 (appr-foundation-cash-002、qa-cash-decision-005) と一括復元の決定 (qa-cash-decision-006) の範囲に収まる確定内容。reopen の理由に挙げた読み取り経路は、リポジトリの現物で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:38:03Z",
+      "id": "qa-imp-database-web-004",
+      "question": "検査の仮置き・取込 1 回の記録・履歴の削除・取込のレート制限を、どの表でどう持つか (再改訂版)。",
+      "answer": "検査 1 要求は新しい表 import_inspections (検査 ID・利用者・状態・期限 24 時間・作成時刻) の 1 行、ファイルごとの項目は新しい表 import_inspection_files (ファイル項目 ID・検査 ID・利用者・ファイル名・取込元・対象期間・サイズ・内容ハッシュ・検査結果の要約・エラー種別・R2 の仮置きキー) に持つ。確定で imports と import_runs へ移し、確定済みの検査行は確定時に消す。import_runs は取込 1 回 = 1 つの検査 ID を 1 行とし、ファイル数・取込明細数・新規追加・重複スキップ・サブスク候補・結果・前回データを残すの値と、履歴の非表示の時刻 hidden_at を列で足す。一括削除は hidden_at を付けるだけで imports と明細の行は消さず、取り消し (30 日) の判定に影響しない。検査 ID ごとの累計 (10 ファイル・30MB) は import_inspection_files のサイズと行数を合計して判定し、検査の行に合計を別に持たない。取込のレート制限は新しい表 import_rate_limits (利用者・経路の種別 (検査 / 確定。ファイル追加は検査に数える)・1 分の時間枠の開始・回数、主キーはこの 3 つ) で数え、ログイン用の password_login_rate_limits とは分ける。索引は import_inspections(user_id, expires_at)・import_inspection_files(inspection_id)・import_runs(user_id, created_at)。夜間保守が期限切れの検査行と 1 日より古い時間枠を 1 回 500 件まで消す (残りは翌日)。migration は 0050 以降の新番号で表と列の追加だけにし、既存の表の意味を変えない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:27:38Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
       ]
     },
     {
-      "id": "qa-cash-security-web-002",
-      "question": "現金明細の入力・削除・復元・一括操作で何を拒否し、何を守るか。",
-      "answer": "API の zod で名義・業務の目的・収支・事業 / 個人を候補に限り、実在しない日付、金額の範囲外、長すぎる文字列 (内容 60 字・メモ 200 字・駅名 40 字・その他の目的 40 字) を 400 で拒否する。一括削除と一括復元の id 配列は 100 件までで、他の利用者の id を 1 件でも含めば全体を 404 にして何も変えない。削除中の行は PUT でも 404 にし、編集で復活させない。新しい restore / bulk-delete / bulk-restore は canonical-mutation-fence に登録する。削除中の行が一覧・合計・取引・集計・JSON スナップショット・科目使用状況のどこにも出ない不変条件を API テストで固定する。下書きはブラウザ内だけに置きサーバーへ送らない。領収書ファイルは受け取らない。",
-      "provenance": "利用者の全文承認 (appr-foundation-cash-002、qa-cash-decision-005) と一括復元の決定 (qa-cash-decision-006) の範囲に収まる確定内容。reopen の理由に挙げた読み取り経路は、リポジトリの現物で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T15:38:03Z",
+      "id": "qa-imp-auth-web-004",
+      "question": "検査 ID・ファイル項目・取込 1 回・原本を、誰がどこまで操作できるようにするか (再改訂版)。",
+      "answer": "検査・ファイルの追加と除外・確定・履歴・原本の取得・再取込・取り消し・履歴の削除はすべて既存のセッション認証の後ろに置き、どの操作も利用者 ID で行を絞る。確定は本人が作った未期限の検査 ID と、その検査 ID に属するファイル項目 ID だけを受ける。他人の検査 ID・取込 ID・期限切れの検査 ID・別の検査のファイル項目 ID はすべて 404 not_found を返し、存在の有無を区別させない。検査 ID とファイル項目 ID は推測できない乱数 (crypto.randomUUID) にする。一括削除は本人の履歴だけを対象にし、1 要求 100 件まで、所有者でない ID が混ざれば全体を 404 にして 1 件も消さない。ファイル名は制御文字を除き 255 文字で切って記録する。レート制限は利用者 ID ごとに数える。新しい認証方式は足さない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:27:38Z",
       "required_info_items": [
-        "domain-model",
-        "security-posture"
+        "auth-model"
       ]
     },
     {
-      "id": "qa-cash-decision-007",
-      "question": "承認 appr-foundation-cash-002 の画面に載せていなかった U2 背景・U4 目標 (O1〜O4 と測定方法)・U7 範囲 (scope.in) を含めて、要件定義を確定してよいか。",
-      "answer": "この全文で承認する。U2 背景、U4 の O1〜O4 と各測定方法、U7 の scope.in 7 項目を確定とする。",
-      "provenance": "AskUserQuestion / preview に U2 (本文どおり)・U4 (O1〜O4 の本文と測定方法を項目ごとに縮めた形)・scope.in (7 項目を同じ順で縮めた形) を示し、選択肢 (この全文で承認・修正して再提示) から利用者が「この全文で承認 (推奨)」を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:26:35Z",
+      "id": "qa-imp-frontend-web-004",
+      "question": "web のデータ取込画面のフロントエンド構成と、送信・アップロード進捗の扱いをどうするか (再改訂版)。",
+      "answer": "Import.tsx を packages/web/src/pages/import/ 配下へ分割し (ファイル選択・取込ファイル一覧・内容確認・取込結果・取込履歴・履歴詳細・選択中バー)、ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果は core の純関数の結果を描くだけにする。流れは検査 → 確認 → 確定の 2 段階。選んだファイルを 1 つの multipart 要求にまとめて XMLHttpRequest で送り、1 つの検査 ID とファイルごとの項目を受け取る。進捗は upload.onprogress の累計バイトを multipart に積んだ順のファイルへ割り当てて、ファイルごとの % を出す (fetch はアップロード進捗を取れないため)。アップロード中のキャンセルは要求全体を abort し、そのファイルを外した残りを送り直す。送る前に 1 ファイル 25MB・10 ファイル・合計 30MB を画面で判定し、超えるものは送らない。取込不可のファイルの再試行と後からの追加は、同じ検査 ID へファイルを足す要求で行い、送る前に検査 ID の既存の項目と合わせた累計 (10 ファイル・30MB) を画面で判定する。確定は検査 ID と取り込むファイル項目 ID と前回データを残す (既定オン)・強制再取込を送る。取込可能が 0 件のとき取り込むボタンは押せない。.txt はタブ区切りまたはカンマ区切りの CSV として扱う。取得は TanStack Query で履歴一覧と履歴詳細を分け、確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する。選択中の履歴は URL の検索パラメータに持つ。画面は遅延読み込みのまま。413 と 429 は上限と待ち時間 (Retry-After) を文言で出す。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:27:38Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-imp-maintenance-ops-web-004",
+      "question": "データ取込画面の品質をどう保ち、規則と境界テストをどこに残すか (再改訂版)。",
+      "answer": "ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果の規則、1 回の取込 = 1 つの検査 ID の単位、行単位の追加と月単位の入れ替えの違い、仮置きの期限、上限値とレート制限、履歴の削除の意味を docs/import-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。境界テストは、上限ちょうどと 1 超過 (10 / 11 ファイル、1 ファイル 25MB / 25MB+1 byte、合計 30MB / 30MB+1 byte を Content-Length ありと無しの両方、展開後 60MB / 60MB+1 byte、エントリ数 1,000 / 1,001 件、ファイル追加で検査 ID の累計が 10 / 11 ファイルと 30MB / 30MB+1 byte になる場合)、ファイル数と 1 ファイルの大きさの超過がパースより前に 413 になること、検査 30 / 31 回目 (ファイル追加の要求を含めて数える) と確定 5 / 6 回目 (1 分の時間枠)、一括削除 100 / 101 件、ファイル名 255 / 256 文字、期限ちょうどの検査 ID、他人の検査 ID と別の検査のファイル項目 ID、Origin 不一致、前回データを残すのオンとオフで同じファイルを 2 回取り込んだときの行数、取込済みと同一内容のファイル、一部成功の結果、一括削除後に明細が残ること、夜間保守で期限切れの仮置きと古い時間枠が 1 回 500 件まで消え残りが翌日に回ることを固定する。テストは旧実装で落ちることを確かめる。既存の取込・取り消し・破棄のテストを緑のまま保ち、初期 JS 予算 (CI 実測) と verify:full を通す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。旧版 -002 にあった利用者未確認の補完値 (追加経路・一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404) は decision-008 と -010 で確定済みで、この版に利用者未確認の具体値は無い。hono/body-limit の挙動の誤記 (宣言と実長のずれも数える) を直した。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:27:38Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    },
+    {
+      "id": "qa-imp-frontend-web-005",
+      "question": "web のデータ取込画面のフロントエンド構成と、送信前の上限判定・アップロード進捗の扱いをどうするか (上限判定を core へ寄せた版)。",
+      "answer": "Import.tsx を packages/web/src/pages/import/ 配下へ分割し (ファイル選択・取込ファイル一覧・内容確認・取込結果・取込履歴・履歴詳細・選択中バー)、ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果は core の純関数の結果を描くだけにする。流れは検査 → 確認 → 確定の 2 段階。選んだファイルを 1 つの multipart 要求にまとめて XMLHttpRequest で送り、1 つの検査 ID とファイルごとの項目を受け取る。進捗は upload.onprogress の累計バイトを multipart に積んだ順のファイルへ割り当てて、ファイルごとの % を出す (fetch はアップロード進捗を取れないため)。アップロード中のキャンセルは要求全体を abort し、そのファイルを外した残りを送り直す。送る前の上限判定 (1 ファイル 25MB・10 ファイル・合計 30MB) は、packages/core の import-screen.ts に置く上限値の定数 IMPORT_LIMITS と、ファイルの一覧から超過の理由を返す判定関数を import して行い、超えるものは送らずに取込不可と理由を出す。web に上限の数値リテラルを書かない。取込不可のファイルの再試行と後からの追加は、同じ検査 ID へファイルを足す要求で行い、送る前に検査 ID の既存の項目と合わせた累計 (10 ファイル・30MB) を同じ core の判定関数で判定する。確定は検査 ID と取り込むファイル項目 ID と前回データを残す (既定オン)・強制再取込を送る。取込可能が 0 件のとき取り込むボタンは押せない。.txt はタブ区切りまたはカンマ区切りの CSV として扱う。取得は TanStack Query で履歴一覧と履歴詳細を分け、確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する。選択中の履歴は URL の検索パラメータに持つ。画面は遅延読み込みのまま。413 と 429 は上限と待ち時間 (Retry-After) を文言で出す。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。再評価 3 回目の指摘 (送信前の上限判定が web と api に二重実装されうる) に対し、承認済みの G3/S3 (判定は core の 1 か所・重複実装 0 件) を上限値にも当てはめた。上限の数値そのものは decision-006 と -009 で利用者が選んだ値のままで、新しい具体値は足していない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:40:55Z",
+      "required_info_items": [
+        "frontend-arch"
+      ]
+    },
+    {
+      "id": "qa-imp-ui-ux-web-004",
+      "question": "データ取込画面の構成・状態の見せ方・上限超過と追加の扱いをどうするか (追加の累計判定を書き足した版)。",
+      "answer": "見出し『複数の明細ファイルを、安全に取り込みますか？』の下に 3 段のステッパー (ファイル選択 / 内容確認 / 取込結果) を置き、1.ファイルを選択 (ドラッグ&ドロップ、CSV・Excel・txt、freee と マネーフォワードの取得方法の案内、詳細設定の強制再取込と前回データを残す=既定オン、『1 回に 10 ファイル・合計 30MB まで、1 ファイル 25MB まで』の注記)、2.取込ファイル一覧 (# / ファイル名 / 取込元 / 対象期間 / ファイルサイズ / 重複チェック / バリデーション / ステータス / 操作)、3.取込内容の確認 (対象ファイル数と取込可能数、取り込み予定の明細数、対象期間、影響する取込元、重複の可能性、サブスク候補、エラーのファイルは除外される注記)、4.取込結果 (成功 / 失敗 / 重複の可能性 / サブスク候補のカードとエラーのファイルのみ再試行)、5.取込履歴 (1 回の取込 = 1 つの検査 ID = 1 行、詳細ペインに影響の 3 数値) の順に並べる。下部バーに選択中ファイル数・取込可能数・エラー数・選択をキャンセル・N ファイルを取り込むを置く。案内から『銀行』を外す。ステータスは 5 種 (アップロード中 n% / 検査中 / 取込準備完了 / 取込不可 / 取込済み) で、色だけに頼らず文字とアイコンを併記する。重複チェックは『なし / n 件 / 取込済みと同一』、バリデーションは『OK / 警告 n / エラー n』。操作はアップロード中=キャンセル、準備完了=削除、取込不可=再試行と削除。上限を超えるファイルは送る前に取込不可として理由 (25MB 超・10 ファイル超・合計 30MB 超) を出す。取込不可のファイルの再試行と後からの追加は同じ検査 ID (同じ取込 1 回の行) へ足し、送る前に既存の項目と合わせた累計 (10 ファイル・合計 30MB) を判定して、超えるときは追加せずに理由を出す。上限の判定と注記の数値は core の 1 か所 (IMPORT_LIMITS と判定関数) の結果を描くだけで、画面は数値の判定を持たない。結果カードの『重複の可能性』は総収支画面、『サブスク候補』はサブスク画面へのリンクを持つ。狭い画面では段を縦に積み、表は横スクロールにする。共通シェル (ヘッダーの防衛ライン、フッターの文言) は変更しない。束の順位は頻度 × 失敗コストで、取り込む前に何が入るかを確かめる 3.確認を 1.選択の直後に常に見せる。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。再評価 3 回目の指摘 (送信前の上限判定が web と api に二重実装されうる) に対し、承認済みの G3/S3 (判定は core の 1 か所・重複実装 0 件) を上限値にも当てはめた。上限の数値そのものは decision-006 と -009 で利用者が選んだ値のままで、新しい具体値は足していない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:40:55Z",
       "required_info_items": [
         "context-of-use",
+        "information-priority",
         "product-goal"
       ]
     },
     {
-      "id": "qa-cash-decision-008",
-      "question": "夜間処理の D1 クエリ予算は計画 47 本に対して計画上限 SCHEDULED_D1_QUERY_PLAN_MAX も 47 本で空きが無い (受理上限 49・ハード上限 50)。現金明細の完全消去 (2 本) をどう収めるか。",
-      "answer": "計画上限を 49 へ上げる。受理上限 49 の内側に収め、ハード上限 50 まで 1 本の余裕を残す。既存 job の枠は変えず、新しい cron も足さない (C3 の範囲内)。",
-      "provenance": "AskUserQuestion / 選択肢 3 件 (計画上限を 49 へ上げる・既存 job の枠を割り直す・別の cron を足す) と推奨案を提示し、利用者が「計画上限を 49 へ上げる (推奨)」を選択。answered_at は選択時刻の上界。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:26:35Z",
-      "required_info_items": [
-        "infra-topology"
-      ]
-    },
-    {
-      "id": "qa-cash-backend-web-004",
-      "question": "削除中の行を読まない条件と一括復元を含めて、API は何を返し何を拒否するか。",
-      "answer": "core の cash-screen.ts が合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を導き、API は JSON に写すだけにする。DELETE /api/cash-entries/:id は論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す)、POST /api/cash-entries/:id/restore は同じ id を戻し、POST /api/cash-entries/bulk-delete と POST /api/cash-entries/bulk-restore は 100 件までの id 配列を 1 batch で処理し、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にする。削除中の行を読まない条件 (deleted_at IS NULL) を cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、PUT は削除中の行を 404 にする。新しい restore / bulk-delete / bulk-restore の経路は canonical-mutation-fence に登録し、既存の POST / PUT / DELETE と同じ書込の順序保証に乗せる。POST / PUT は owner と transit_purpose を受ける。",
-      "provenance": "利用者の承認 (appr-foundation-cash-003、qa-cash-decision-007) と決定 qa-cash-decision-006 / 008 の範囲に収まる確定内容。経路名・定数名・現在値はリポジトリの現物 (store.ts・routes/settings.ts・routes/cash.ts・schema-guard.ts・scheduled-maintenance-budget.ts) で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:28:41Z",
+      "id": "qa-imp-backend-web-005",
+      "question": "データ取込の検査・確定・履歴の規則と上限値をどこに置き、どの契約で返すか (上限値を core へ寄せた版)。",
+      "answer": "ファイルの状態、検証の段階、取込可否、内容確認の要約 (対象ファイル数・取込可能数・予定明細数・対象期間・影響する取込元・重複の可能性・サブスク候補)、取込 1 回の結果 (全ファイル成功=成功、1 件以上成功かつ 1 件以上失敗=一部成功、全失敗=失敗) を packages/core の import-screen.ts の純関数に置く。上限値 (1 ファイル 25MB・10 ファイル・合計 30MB・展開後 1 ファイル 60MB・エントリ数 1,000 件) も同じ import-screen.ts の定数 IMPORT_LIMITS に 1 か所だけ置き、ファイルの大きさと数 (追加では既存の項目を含む) から超過の理由を返す判定関数を core に置く。web の送信前の判定と api の 413 の判定 (hono/body-limit の maxSize を含む) はどちらもこの定数と関数を import し、数値を書き写さない。POST /imports/inspections は 1〜10 ファイルを 1 要求で受け、ファイル数と 1 ファイルの大きさを本文を読んだ直後・パースの前に確かめてから、1 ファイルずつ順にパース・検査して原本を R2 に 24 時間仮置きし、1 つの検査 ID とファイルごとの項目 (ファイル項目 ID・取込元・対象期間・サイズ・重複・バリデーション・明細数) を返す。POST /imports/inspections/:id/files は同じ検査 ID へファイルを足し (再試行と追加)、上限は検査 ID ごとの累計で合わせて 10 ファイル・合計 30MB まで (既にある項目のサイズを import_inspection_files から合計して判定する)。この要求は検査のレート制限に数える。DELETE /imports/inspections/:id/files/:fileId は確定前の項目を外す。POST /imports/runs は検査 ID・取り込むファイル項目 ID・前回データを残す・強制再取込を受けて確定し、ファイルを再送させない。確定は既存の書込の直列化 (import_writer_claims) の内側でファイルを順に書き、先に全ファイルのクエリ予算を合算して上限を超えるなら 1 件も書かずに 409 を返す。前回データを残す=オンは MF 明細は mfStableKey、freee 取引は freeeDealKeys で既にある行を飛ばして新しい行だけを足し、オフは従来の月単位の入れ替え。行単位の追加の対象は MF 明細と freee 取引だけで、MF 資産推移と JSON 復元は従来の動作のまま。『重複の可能性』は既存の duplicateMatchScore による二重計上候補の件数、『サブスク候補』は取込後の subsCandidates の新規件数。取込済みと同一内容 (content_hash が一致) のファイルは取込可能から外し、強制再取込のときだけ含める。GET /imports/runs は取込 1 回を 1 行で返し、GET /imports/runs/:id は影響の 3 数値 (新規追加・重複スキップ・サブスク候補) と含まれるファイルを返す。再取込・取り消し (30 日)・原本の取得は既存の経路を取込単位へ束ねる。一括削除は履歴の記録だけを消す。対象は freee と マネーフォワードの CSV で、銀行・カードは扱わない。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。再評価 3 回目の指摘 (送信前の上限判定が web と api に二重実装されうる) に対し、承認済みの G3/S3 (判定は core の 1 か所・重複実装 0 件) を上限値にも当てはめた。上限の数値そのものは decision-006 と -009 で利用者が選んだ値のままで、新しい具体値は足していない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:40:55Z",
       "required_info_items": [
         "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-cash-database-web-004",
-      "question": "現金明細の名義・業務の目的・論理削除を D1 にどう持ち、どの読み取り経路で削除中の行を外すか。",
-      "answer": "追加のみの migration 0050 で cash_entries に owner (TEXT NULL、business / spouse / family の CHECK)、transit_purpose (TEXT NULL)、deleted_at (TEXT NULL) を足し、(user_id, deleted_at) の索引を張る。既存行は書き換えない。削除中の行を読まない条件 (deleted_at IS NULL) は cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、集計・取引の導出、バックアップ、取込時の設定スナップショットは削除中の行を一切読まない。JSON 復元の INSERT は新しい列を持つ形に合わせる。schema-guard.ts の EXPECTED_D1_MIGRATION を 0050 の migration ファイル名へ進め、migration 前の D1 では Worker が論理削除の経路を動かさないようにする。",
-      "provenance": "利用者の承認 (appr-foundation-cash-003、qa-cash-decision-007) と決定 qa-cash-decision-006 / 008 の範囲に収まる確定内容。経路名・定数名・現在値はリポジトリの現物 (store.ts・routes/settings.ts・routes/cash.ts・schema-guard.ts・scheduled-maintenance-budget.ts) で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:28:41Z",
+      "id": "qa-imp-maintenance-ops-web-005",
+      "question": "データ取込画面の品質をどう保ち、規則・境界テスト・上限値の一元化をどこで固定するか (数値リテラルの検査を足した版)。",
+      "answer": "ファイルの状態・検証の段階・取込可否・要約・取込 1 回の結果の規則、1 回の取込 = 1 つの検査 ID の単位、行単位の追加と月単位の入れ替えの違い、仮置きの期限、上限値とレート制限、履歴の削除の意味を docs/import-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。境界テストは、上限ちょうどと 1 超過 (10 / 11 ファイル、1 ファイル 25MB / 25MB+1 byte、合計 30MB / 30MB+1 byte を Content-Length ありと無しの両方、展開後 60MB / 60MB+1 byte、エントリ数 1,000 / 1,001 件、ファイル追加で検査 ID の累計が 10 / 11 ファイルと 30MB / 30MB+1 byte になる場合)、ファイル数と 1 ファイルの大きさの超過がパースより前に 413 になること、検査 30 / 31 回目 (ファイル追加の要求を含めて数える) と確定 5 / 6 回目 (1 分の時間枠)、一括削除 100 / 101 件、ファイル名 255 / 256 文字、期限ちょうどの検査 ID、他人の検査 ID と別の検査のファイル項目 ID、Origin 不一致、前回データを残すのオンとオフで同じファイルを 2 回取り込んだときの行数、取込済みと同一内容のファイル、一部成功の結果、一括削除後に明細が残ること、夜間保守で期限切れの仮置きと古い時間枠が 1 回 500 件まで消え残りが翌日に回ることを固定する。テストは旧実装で落ちることを確かめる。上限値が core の IMPORT_LIMITS の 1 か所だけにあり、packages/web と packages/api の取込の経路に上限の数値リテラル (25MB・30MB・60MB・10 ファイル・1,000 件) が無いことを、既存の契約ガードと同じ字面の検査で固定する。web の送信前の判定と api の 413 が同じ境界値で同じ結果になることを、共通の境界表を両方のテストから読んで確かめる。既存の取込・取り消し・破棄のテストを緑のまま保ち、初期 JS 予算 (CI 実測) と verify:full を通す。 これは agent がまとめた内容で、利用者が選んだ値は主根拠の決定 qa にある。",
+      "provenance": "agent が、利用者承認 (appr-foundation-import-screen-001 と -002) と利用者決定 qa-imp-decision-001〜011 の範囲で、この章の確定内容をまとめ直したもの。利用者が本文を 1 つずつ見て選んだものではない。利用者が選んだ値はその決定 qa を主根拠 (qa_ref) として別に引く。再評価 3 回目の指摘 (送信前の上限判定が web と api に二重実装されうる) に対し、承認済みの G3/S3 (判定は core の 1 か所・重複実装 0 件) を上限値にも当てはめた。上限の数値そのものは decision-006 と -009 で利用者が選んだ値のままで、新しい具体値は足していない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-21T22:40:55Z",
       "required_info_items": [
-        "data-persistence",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-cash-security-web-004",
-      "question": "現金明細の入力・削除・復元・一括操作で何を拒否し、何を守るか。",
-      "answer": "API の zod で名義・業務の目的・収支・事業 / 個人を候補に限り、実在しない日付、金額の範囲外、長すぎる文字列 (内容 60 字・メモ 200 字・駅名 40 字・その他の目的 40 字) を 400 で拒否する。一括削除と一括復元の id 配列は 100 件までで、他の利用者の id を 1 件でも含めば全体を 404 にして何も変えない。削除中の行は PUT でも 404 にし、編集で復活させない。新しい restore / bulk-delete / bulk-restore は canonical-mutation-fence に登録する。削除中の行が一覧・合計・取引・集計・バックアップ (BACKUP_SNAPSHOT_SQL)・取込時の設定スナップショット (loadImportRestoreSettingsSnapshot)・科目使用状況のどこにも出ない不変条件を API テストで固定する。下書きはブラウザ内だけに置きサーバーへ送らない。領収書ファイルは受け取らない。",
-      "provenance": "利用者の承認 (appr-foundation-cash-003、qa-cash-decision-007) と決定 qa-cash-decision-006 / 008 の範囲に収まる確定内容。経路名・定数名・現在値はリポジトリの現物 (store.ts・routes/settings.ts・routes/cash.ts・schema-guard.ts・scheduled-maintenance-budget.ts) で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:28:41Z",
-      "required_info_items": [
-        "domain-model",
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-cash-infrastructure-web-002",
-      "question": "論理削除の完全消去を、夜間処理のどこでどの予算で動かすか。",
-      "answer": "既存の夜間 cron (0 18 * * *) の scheduledMaintenance に独立 job cash_soft_delete_purge を 1 本足し、deleted_at から 30 日を過ぎた行を物理削除する。job の D1 クエリ 2 本を SCHEDULED_MAINTENANCE_D1_PLAN に宣言して型で結び、計画の合計は 47 から 49 になる。これに合わせて計画上限 SCHEDULED_D1_QUERY_PLAN_MAX を 47 から 49 へ上げ、受理上限 SCHEDULED_D1_QUERY_ACCEPTED_MAX (49) の内側、ハード上限 SCHEDULED_D1_QUERY_LIMIT (50) まで 1 本の余裕を残す。既存 job の枠は変えない。新しい binding・cron・外部サービスは足さない。",
-      "provenance": "利用者の承認 (appr-foundation-cash-003、qa-cash-decision-007) と決定 qa-cash-decision-006 / 008 の範囲に収まる確定内容。経路名・定数名・現在値はリポジトリの現物 (store.ts・routes/settings.ts・routes/cash.ts・schema-guard.ts・scheduled-maintenance-budget.ts) で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:28:41Z",
-      "required_info_items": [
-        "infra-topology"
-      ]
-    },
-    {
-      "id": "qa-cash-decision-009",
-      "question": "JSON 復元は移行先の現金明細が 0 件のときだけバックアップの明細を id のまま入れる。削除中の行だけが残る利用者は 0 件と判定され、主キーが衝突して復元全体が失敗する。どう扱うか。",
-      "answer": "削除中も件数に数える。『空か』の判定だけは削除中の行を数え、削除中の行が残る間は現金明細を復元せず理由を表示する。削除中の行を他のどの出力にも出さない不変条件の例外は、この件数 1 つだけとする。",
-      "provenance": "AskUserQuestion / 選択肢 3 件 (削除中も件数に数える・復元前に削除中の行を消す・衝突した行だけ飛ばす) と推奨案を提示し、利用者が「削除中も件数に数える (推奨)」を選択。answered_at は選択時刻の上界。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:44:32Z",
-      "required_info_items": [
-        "data-persistence",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-cash-decision-010",
-      "question": "U4 の O1〜O4 と各測定方法、U7 の scope.in 7 項目を、保存済みの文面のまま示す。この逐語で確定してよいか。",
-      "answer": "この逐語で承認する。",
-      "provenance": "AskUserQuestion / preview に spec-state.json の requirements_foundation.objectives (O1〜O4 の text と measure) と scope.in (7 項目) を保存済みの文面のまま、縮めずに示し、選択肢 (この逐語で承認・修正して再提示) から利用者が「この逐語で承認 (推奨)」を選択。answered_at は選択時刻の上界。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:44:32Z",
-      "required_info_items": [
-        "context-of-use",
-        "product-goal"
-      ]
-    },
-    {
-      "id": "qa-cash-backend-web-005",
-      "question": "削除中の行を読まない条件と一括復元を含めて、API は何を返し何を拒否するか。",
-      "answer": "core の cash-screen.ts が合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を導き、API は JSON に写すだけにする。DELETE /api/cash-entries/:id は論理削除 (deleted_at を付けて同じ batch で取引と集計を作り直す)、POST /api/cash-entries/:id/restore は同じ id を戻し、POST /api/cash-entries/bulk-delete と POST /api/cash-entries/bulk-restore は 100 件までの id 配列を 1 batch で処理し、他の利用者の id や完全消去済みの id を 1 件でも含めば全体を 404 にする。削除中の行を読まない条件 (deleted_at IS NULL) を cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、PUT は削除中の行を 404 にする。新しい restore / bulk-delete / bulk-restore の経路は canonical-mutation-fence に登録し、既存の POST / PUT / DELETE と同じ書込の順序保証に乗せる。POST / PUT は owner と transit_purpose を受ける。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。",
-      "provenance": "利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-006 (一括復元) / 009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-backend-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:45:23Z",
-      "required_info_items": [
-        "api-contract",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-cash-database-web-005",
-      "question": "現金明細の名義・業務の目的・論理削除を D1 にどう持ち、どの読み取り経路で削除中の行を外すか。",
-      "answer": "追加のみの migration 0050 で cash_entries に owner (TEXT NULL、business / spouse / family の CHECK)、transit_purpose (TEXT NULL)、deleted_at (TEXT NULL) を足し、(user_id, deleted_at) の索引を張る。既存行は書き換えない。削除中の行を読まない条件 (deleted_at IS NULL) は cash_entries を読む全経路 5 本 — loadCashEntries (store.ts。一覧と loadDataset が使う)、バックアップの BACKUP_SNAPSHOT_SQL (store.ts。エクスポートと夜間バックアップが共有)、取込時の設定スナップショット loadImportRestoreSettingsSnapshot (store.ts)、科目使用状況 loadCategoryUsageContext (routes/settings.ts)、PUT の既存行取得 (routes/cash.ts) — に掛け、集計・取引の導出、バックアップ、取込時の設定スナップショットは削除中の行を一切読まない。JSON 復元の INSERT は新しい列を持つ形に合わせる。schema-guard.ts の EXPECTED_D1_MIGRATION を 0050 の migration ファイル名へ進め、migration 前の D1 では Worker が論理削除の経路を動かさないようにする。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。夜間 cron の完全消去 job は /api/* に掛かる schema guard の外で動くため、migration 0050 の適用 (Migrate) を Worker の配備 (Deploy) より先に行う既存の順序で守る。",
-      "provenance": "利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-database-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:45:23Z",
-      "required_info_items": [
-        "data-persistence",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-cash-security-web-005",
-      "question": "現金明細の入力・削除・復元・一括操作で何を拒否し、何を守るか。",
-      "answer": "API の zod で名義・業務の目的・収支・事業 / 個人を候補に限り、実在しない日付、金額の範囲外、長すぎる文字列 (内容 60 字・メモ 200 字・駅名 40 字・その他の目的 40 字) を 400 で拒否する。一括削除と一括復元の id 配列は 100 件までで、他の利用者の id を 1 件でも含めば全体を 404 にして何も変えない。削除中の行は PUT でも 404 にし、編集で復活させない。新しい restore / bulk-delete / bulk-restore は canonical-mutation-fence に登録する。削除中の行が一覧・合計・取引・集計・バックアップ (BACKUP_SNAPSHOT_SQL)・取込時の設定スナップショット (loadImportRestoreSettingsSnapshot)・科目使用状況のどこにも出ない不変条件を API テストで固定する。下書きはブラウザ内だけに置きサーバーへ送らない。領収書ファイルは受け取らない。例外は 1 つだけで、JSON 復元の『移行先の現金明細が 0 件か』の判定だけは削除中の行も数える (loadImportRestoreSettingsSnapshot の destination_counts に、削除中を含む現金明細の件数を 1 つ足す)。削除中の行が残っている間は現金明細を復元せず、理由を表示する。バックアップの id をそのまま INSERT して主キーが衝突し、復元全体が失敗することを防ぐためである。件数のほかに、削除中の行の中身はどの出力にも出さない (qa-cash-decision-009)。",
-      "provenance": "利用者の承認 (appr-foundation-cash-004、qa-cash-decision-010) と、決定 qa-cash-decision-006 (一括復元) / 009 (JSON 復元の件数の例外) の範囲に収まる確定内容。前回の確定 (qa-cash-security-web-004) に例外の記述を足した。JSON 復元の判定は routes/imports.ts と store.ts の現物で確認した。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-21T22:45:23Z",
-      "required_info_items": [
-        "domain-model",
-        "security-posture"
+        "ops-runbook"
       ]
     }
   ],
   "approval_log": [
     {
-      "id": "appr-foundation-cash-001",
-      "note": "現金入力画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/17-cash.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択。先立つ 4 決定 (領収書=対象外のまま / 担当者=既存の名義 / 削除=論理削除で戻せる / 取込元=入力経路を区別) と、要約に明記した範囲 (論理削除は 30 日後に夜間処理で完全消去、業務の目的は固定選択肢＋その他、下書きはブラウザ内、サンプル表示は画面内だけ、共通シェルの文言は変えない) を含む。承認の受領直後に実測した時刻 2026-09-21T15:16:08Z (承認時刻の上界)。basis=user-decision。"
+      "id": "appr-foundation-import-screen-001",
+      "note": "データ取込サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/16-import.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択。先立つ 4 決定 (銀行・カード明細=対象外で freee と MF の CSV のみ / 前回データを残す=行単位の追加で既定オン / 取込の流れ=サーバに仮置きする 2 段階 / 取込履歴=1 回の取込で 1 行・一括削除は記録だけ) を含む。実測時刻 2026-09-21T15:16:46Z。basis=user-decision。"
     },
     {
-      "id": "appr-foundation-cash-002",
-      "note": "現金入力画面サイクルの要件定義の全文 (U1-U9) を利用者が承認。appr-foundation-cash-001 の後に書き足した G4・S1〜S4・SH2・C1〜C4・I1〜I6 と、web 以外の専用アプリ (モバイル・タブレット・Windows / Linux / macOS デスクトップ) を範囲外とすることを全文で提示し、選択肢『この全文で承認 / 修正して再提示』から承認を選択。I3 は削除中の行を読まない条件を cash_entries を読む全経路へ掛けることと、一括復元の API (qa-cash-decision-006) を含む。承認の受領直後に実測した時刻 2026-09-21T15:34:28Z (承認時刻の上界)。basis=user-decision。"
-    },
-    {
-      "id": "appr-foundation-cash-003",
-      "note": "現金入力画面サイクルの要件定義について、appr-foundation-cash-002 で示した範囲 (本質的目的、G1〜G4、S1〜S4、SH1・SH2、範囲外、C1〜C4、I1〜I6) に加えて、今回 U2 背景 (本文どおり)・U4 の O1〜O4 と測定方法 (項目ごとに縮めた形)・U7 scope.in の 7 項目 (同じ順で縮めた形) を示し、利用者が『この全文で承認』を選択。これで U1〜U9 の全項目を利用者に示したことになる。I3 の経路名は完成度評価の指摘を受けて repo の実名 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に直した。経路の数 5 と、全経路へ削除中の行を読まない条件を掛けるという承認済みの内容は変えていない。承認の受領直後に実測した時刻 2026-09-21T22:26:35Z (承認時刻の上界)。basis=user-decision。"
-    },
-    {
-      "id": "appr-foundation-cash-004",
-      "note": "現金入力画面サイクルの要件定義について、appr-foundation-cash-003 で縮めた形で示した U4 の O1〜O4 と各測定方法、U7 scope.in の 7 項目を、今回は spec-state.json に保存済みの文面のまま (逐語・省略なし) 示し、利用者が『この逐語で承認』を選択。同時に JSON 復元の件数の例外 (qa-cash-decision-009) を決定し、I3 に 1 文足した。U1〜U3・U5・U6・U8・U9 のその他の文面は appr-foundation-cash-002 / 003 から変えていない。承認の受領直後に実測した時刻 2026-09-21T22:44:32Z (承認時刻の上界)。basis=user-decision。"
+      "id": "appr-foundation-import-screen-002",
+      "note": "O6 の測り方の再承認。multipart のファイル数は本文を読まないと分からないため、『上限を超える body (合計サイズ) は本文を読む前に、ファイル数と 1 ファイルの大きさは本文を読んだ直後・パースの前に 413』へ直す。選択肢は『O6 を直して再承認 (推奨) / O6 は据え置き』で、利用者は再承認を選択 (qa-imp-decision-011)。O6 以外の U1-U9 は appr-foundation-import-screen-001 のまま。実測時刻 2026-09-21T22:27:38Z。basis=user-decision。"
     }
   ],
   "reopen_log": [
     {
-      "category": "backend",
+      "category": "ui-ux",
       "platform": "web",
-      "reason": "完成度評価 (completeness-findings) の指摘: 削除中の行を読まない条件を loadCashEntries の 1 か所としていたが、cash_entries を読む経路は loadDataset の UNION・JSON スナップショット・科目使用状況・PUT の既存行取得にもある。加えて利用者が一括復元の API を足すと決めた (qa-cash-decision-006)。",
+      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:37:49Z"
+      "reopened_at": "2026-09-21T15:41:14Z"
     },
     {
-      "category": "database",
+      "category": "frontend",
       "platform": "web",
-      "reason": "完成度評価の指摘: 読み取りの正本を loadCashEntries 1 か所としていたが、SQL で cash_entries を直接読む経路 (loadDataset の UNION・JSON スナップショット) と Drizzle で読む経路 (科目使用状況・PUT の既存行取得) が別にある。",
+      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T15:37:49Z"
-    },
-    {
-      "category": "security",
-      "platform": "web",
-      "reason": "完成度評価の指摘: 削除中の行を編集できる経路 (PUT の既存行取得) と、一括復元 (qa-cash-decision-006) の拒否条件、canonical-mutation-fence への新経路の登録が仕様に無い。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T15:37:49Z"
+      "reopened_at": "2026-09-21T15:41:14Z"
     },
     {
       "category": "backend",
       "platform": "web",
-      "reason": "2 回目の完成度評価の指摘: 読み取り経路 5 本のうち 2 本の名前が repo と違う (『loadDataset の UNION SQL』は BACKUP_SNAPSHOT_SQL、『JSON スナップショットの json_object SQL』は loadImportRestoreSettingsSnapshot)。",
+      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T22:27:31Z"
+      "reopened_at": "2026-09-21T15:41:14Z"
     },
     {
       "category": "database",
       "platform": "web",
-      "reason": "2 回目の完成度評価の指摘と同じ経路名の誤り。加えて runtimeSchemaGuard は列の一覧を持たず EXPECTED_D1_MIGRATION の migration 名で判定しており、『必須列に新しい列を加える』は現物と合わない。",
+      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T22:27:31Z"
+      "reopened_at": "2026-09-21T15:41:14Z"
+    },
+    {
+      "category": "auth",
+      "platform": "web",
+      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T15:41:14Z"
     },
     {
       "category": "security",
       "platform": "web",
-      "reason": "削除中の行が現れてはならない場所として挙げた『JSON スナップショット』が、repo のどの経路かを指していない (バックアップと取込時の設定スナップショットの 2 つがある)。",
+      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T22:27:31Z"
+      "reopened_at": "2026-09-21T15:41:14Z"
     },
     {
       "category": "infrastructure",
       "platform": "web",
-      "reason": "夜間処理の D1 クエリ予算に空きが無く (計画 47 = 計画上限 47)、完全消去の job を宣言するだけでは予算テストが落ちる。利用者が計画上限を 49 へ上げると決めた (qa-cash-decision-008)。",
+      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T22:27:31Z"
+      "reopened_at": "2026-09-21T15:41:14Z"
     },
     {
-      "category": "backend",
+      "category": "maintenance-ops",
       "platform": "web",
-      "reason": "3 回目の完成度評価の指摘: 削除中の行を読まない不変条件に、JSON 復元の『空か』判定の例外が無く、削除中の行だけが残る利用者で主キーが衝突する。利用者が削除中も件数に数えると決めた (qa-cash-decision-009)。",
+      "reason": "完成度評価 (FAIL) の指摘による。検査要求の単位 (1 要求 1 ファイルか複数か) と上限値が章の間で食い違い、主根拠 -001 の basis=user-decision が実態 (承認の範囲で agent がまとめた内容) より強かった。利用者に単位・上限値・メモリの調整を確認した (qa-imp-decision-005〜007) ので、それを主根拠に再確定する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T22:45:09Z"
-    },
-    {
-      "category": "database",
-      "platform": "web",
-      "reason": "3 回目の完成度評価の指摘と同じ JSON 復元の主キー衝突。加えて夜間 cron の完全消去 job が schema guard の外で動くことの守り方が書かれていない。",
-      "from": "確定",
-      "reopened_at": "2026-09-21T22:45:09Z"
+      "reopened_at": "2026-09-21T15:41:14Z"
     },
     {
       "category": "security",
       "platform": "web",
-      "reason": "削除中の行がどこにも出ない不変条件に、JSON 復元の件数の例外 (qa-cash-decision-009) を明記する必要がある。",
+      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
       "from": "確定",
-      "reopened_at": "2026-09-21T22:45:09Z"
+      "reopened_at": "2026-09-21T22:27:38Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:27:38Z"
+    },
+    {
+      "category": "database",
+      "platform": "web",
+      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:27:38Z"
+    },
+    {
+      "category": "auth",
+      "platform": "web",
+      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:27:38Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:27:38Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "再評価 (FAIL・medium 7 件) の指摘による。hono/body-limit の挙動の誤記、ZIP / xlsx のエントリ数の上限の欠落、ファイル追加の経路で 1 回の取込の合計 30MB が破れること、O6 と判定順の食い違い、利用者未確認の補完値、auth-model の接地が推定だけであること。利用者に確認した qa-imp-decision-008〜011 を反映して再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:27:38Z"
+    },
+    {
+      "category": "frontend",
+      "platform": "web",
+      "reason": "再評価 3 回目 (FAIL・medium) の指摘による。送信前の上限判定を web で行うとしながら、上限値と判定の置き場所が core に書かれておらず、G3/S3 (api と web に同じ判定の重複実装 0 件) と frontend の設計知識の適用 (web は取込の判定を持たない) に反する。上限値と超過の判定を core の 1 か所に置き、web と api が import する形へ直して再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:40:55Z"
+    },
+    {
+      "category": "ui-ux",
+      "platform": "web",
+      "reason": "再評価 3 回目 (FAIL・medium) の指摘による。送信前の上限判定を web で行うとしながら、上限値と判定の置き場所が core に書かれておらず、G3/S3 (api と web に同じ判定の重複実装 0 件) と frontend の設計知識の適用 (web は取込の判定を持たない) に反する。上限値と超過の判定を core の 1 か所に置き、web と api が import する形へ直して再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:40:55Z"
+    },
+    {
+      "category": "backend",
+      "platform": "web",
+      "reason": "再評価 3 回目 (FAIL・medium) の指摘による。送信前の上限判定を web で行うとしながら、上限値と判定の置き場所が core に書かれておらず、G3/S3 (api と web に同じ判定の重複実装 0 件) と frontend の設計知識の適用 (web は取込の判定を持たない) に反する。上限値と超過の判定を core の 1 か所に置き、web と api が import する形へ直して再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:40:55Z"
+    },
+    {
+      "category": "maintenance-ops",
+      "platform": "web",
+      "reason": "再評価 3 回目 (FAIL・medium) の指摘による。送信前の上限判定を web で行うとしながら、上限値と判定の置き場所が core に書かれておらず、G3/S3 (api と web に同じ判定の重複実装 0 件) と frontend の設計知識の適用 (web は取込の判定を持たない) に反する。上限値と超過の判定を core の 1 か所に置き、web と api が import する形へ直して再確定する。",
+      "from": "確定",
+      "reopened_at": "2026-09-21T22:40:55Z"
     }
   ],
   "category_aggregate": {
@@ -925,27 +1175,35 @@
       "category": "frontend"
     },
     {
-      "target_id": "mdn-localstorage",
+      "target_id": "mdn-xhr-upload-progress",
       "category": "frontend"
     },
     {
-      "target_id": "hono-zod-validator",
-      "category": "backend"
+      "target_id": "hono-body-limit",
+      "category": "security"
     },
     {
       "target_id": "owasp-asvs",
       "category": "security"
     },
     {
+      "target_id": "hono-zod-validator",
+      "category": "backend"
+    },
+    {
       "target_id": "cloudflare-d1-migrations",
       "category": "database"
     },
     {
-      "target_id": "sqlite-alter-table",
-      "category": "database"
+      "target_id": "cloudflare-workers-limits",
+      "category": "infrastructure"
     },
     {
-      "target_id": "cloudflare-workers-cron-triggers",
+      "target_id": "cloudflare-cron-triggers",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "cloudflare-r2-object-lifecycles",
       "category": "infrastructure"
     },
     {
@@ -954,285 +1212,326 @@
     }
   ],
   "requirements_foundation": {
-    "essential_purpose": "現金入力画面を、『現金と交通費を、漏れなく記録しますか？』という問いに 1 画面で答え切る場にする。銀行・カードの取込に乗らない現金の支払い・受け取りと交通費を、外出から戻ったその場で入力し、同じ画面で一覧・合計を見て訂正まで済ませる。入力途中の離脱や誤削除で記録が欠けないこと (下書きの自動保存と、論理削除による元に戻す) を通じて、集計・月次クローズ・AI分析の入力である台帳から現金の欠けを無くす。",
-    "background": "現行の /cash (packages/web/src/pages/Cash.tsx、724 行の 1 ファイル) は入力フォームと月別の表だけで、キーワード検索・収支/カテゴリ/名義/入力経路の絞り込み・収入/支出/差額の合計・ページングが無い。削除はモーダル確認のうえ物理削除 (DELETE) で戻す手段が無く、入力途中の内容はページを離れると消える。事業/家計・収支は select で、交通費に入替ボタンと業務の目的が無い。担当者 (名義) と入力経路は DB に列が無い。一方、証憑 (領収書) の保管は以前に廃止し『税務上の正本は freee』と決めている。design/FINAL-UI/images/17-cash.png がこれらを 1 画面に並べた完成形を示したため、画面を作り直す。",
+    "essential_purpose": "データ取込画面を、『複数の明細ファイルを、安全に取り込みますか？』という問いに 1 画面で答え切る場にする。利用者が freee (事業) と マネーフォワード (家計) の CSV / Excel / テキスト明細を複数まとめて選ぶと、確定する前にファイルごとの取込元・対象期間・大きさ・重複・検証の結果を一覧で確かめ、取り込み予定の明細数・影響する取込元・重複の可能性・サブスク候補の要約を見てから、取り込めるファイルだけをまとめて確定でき、結果 (成功 / 失敗 / 重複の可能性 / サブスク候補) からそのまま次の画面へ進め、過去の取込を 1 回ごとに振り返って原本の取得・再取込・取り消しをその場で決着できる状態にする。誤った取込や二重取込で台帳を壊さないこと、取り込んだデータを外部へ送らないことを守る。",
+    "background": "現行の /import (packages/web/src/pages/Import.tsx、897 行の 1 ファイル) は、選んだファイルを送った時点で 1 ファイルずつ確定する。確定前にファイルごとの重複・検証の結果を並べて見る場所が無く、取り込み予定の明細数やサブスク候補の数も確定後にしか分からない。差分プレビューは MF 明細だけが対象で、freee には無い。取込履歴はファイルごとの 1 行で、1 回の取込 (複数ファイル) の結果と影響 (新規追加・重複スキップ・サブスク候補) をまとめて見られず、詳細の表示や原本のダウンロードの導線も弱い。『前回データを残す』に近い設定は『件数が減る月だけ前回の内容を残す』で、画像の『同一期間の既存データを残して新しいデータを追加』とは意味が違う。API (packages/api/src/routes/imports.ts) は 1 ファイル 25MB の上限を formData を読み込んだ後で判定しており、body の大きさの上限・取込専用のレート制限・Origin の検査が無い。design/FINAL-UI/images/16-import.png は、これらを 1 画面 (3 段のステッパー、1.ファイルを選択 / 2.取込ファイル一覧 / 3.取込内容の確認 / 4.取込結果 / 5.取込履歴と履歴の詳細、下部の選択件数バー) に統合した完成形である。概要・総収支・推移・家計収支・サブスク・診断・決算書・明細仕分け・AI分析を同じ流儀で作り直し終えた今、月次クローズの入口である『取込』段階の画面を揃える時期にある。",
     "goals": [
       {
         "id": "G1",
-        "text": "/cash を 17-cash.png どおりの画面にする。問いの見出しと説明、共通の期間 (1年 / 2年 / 3年 / 任意) と対象期間カード、通常入力 / 交通費入力のタブ、現金明細の入力 (日付・事業/個人・収支・金額・内容・カテゴリ・担当者・メモ 0/200・入力をクリア・現金明細を追加・下書き自動保存の表示)、交通費の入力 (出発駅・到着駅・入替・片道運賃・往復・合計金額・業務の目的・メモ・交通費として追加)、現金明細の一覧 (月送り・キーワード検索・4 種の絞り込み・詳細検索・収入/支出/差額の合計・選択・編集/削除・ページング)、インラインの削除確認と元に戻す、空状態、下部固定の追加バーを描く。"
+        "text": "/import を 16-import.png どおりの画面にする。問いの見出し『複数の明細ファイルを、安全に取り込みますか？』と説明文、共通の期間タブ、対象期間 (グローバル) のカード、3 段のステッパー (ファイル選択 / 内容確認 / 取込結果)、1.ファイルを選択 (ドラッグ&ドロップと選択ボタン、対応形式の説明、対応サービス (マネーフォワード・freee) の取得方法の案内、詳細設定の強制再取込と前回データを残す)、2.取込ファイル一覧の表、3.取込内容の確認の要約、4.取込結果の 4 枚のカード、5.取込履歴の表と履歴の詳細ペイン、下部の選択件数バーを、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。"
       },
       {
         "id": "G2",
-        "text": "記録が消えない。入力途中の内容はブラウザ内に自動保存して復元でき、削除は論理削除として一覧と集計から外したうえで『元に戻す』で同じ行を復活でき、30 日後に夜間処理で完全に消える。"
+        "text": "確定の前に検査する 2 段階の取込にする。選んだファイルを一度だけアップロードしてサーバに期限付き (24 時間) で仮置きし、ファイルごとに取込元・対象期間・明細数・重複 (取込済みと同一の内容 / 重複の可能性)・検証 (問題なし / 警告あり / エラー) を返す。確定は検査 ID を指定するだけでファイルを再送せず、エラーのファイルは確定から自動で外す。未確定の仮置きは期限後に夜間保守で消す。"
       },
       {
         "id": "G3",
-        "text": "画面の数字と判定を core の 1 か所から導く。合計・絞り込み・ページング・入力経路・交通費の合計・入力検証を core の純関数に置き、API は JSON に写すだけ、web は描くだけにする。"
+        "text": "ファイルの状態・検証の段階・取り込めるか否か・要約の数え方・取込 1 回の結果 (成功 / 一部成功 / 失敗) を core の純関数 1 か所で導き、api と web はその結果を読むだけにする。"
       },
       {
         "id": "G4",
-        "text": "現金明細の入力と変更を安全に保つ。利用者ごとの分離、入力検証、削除・復元の権限確認、削除済み行を集計へ混ぜない不変条件を API と DB の両方で守る。"
+        "text": "『前回データを残す』を画像の意味 (同一期間の既存明細を残し、まだ無い行だけ追加する。同一の行は重複スキップとして数える) に改め、既定をオンにする。オフのときは従来どおり月単位で入れ替える。強制再取込は同じ内容のファイルでも再適用する。"
+      },
+      {
+        "id": "G5",
+        "text": "取込履歴を 1 回の取込ごとの 1 行にまとめ、詳細ペインで取込日時・取込元・対象期間・ファイル数・取込明細数・結果とこの取込による影響 (新規追加・重複スキップ・サブスク候補) を示し、原本のダウンロード・再取込・取り消し (30 日以内は元に戻せる) を決着できるようにする。一括削除は取り消し済み・失敗の履歴の記録を片づけるだけで明細は消さない。"
+      },
+      {
+        "id": "G6",
+        "text": "取込の入口を守る。検査・確定・原本取得の経路に body の大きさの上限 (読み込む前に判定)・ファイル数と合計サイズの上限・取込専用のレート制限・同一オリジンの検査を置き、ファイル名や明細の文字列は HTML として解釈せずに描画する。取り込んだデータは外部へ送らない。"
       }
     ],
     "objectives": [
       {
         "id": "O1",
-        "text": "現金入力画面が画像の全構成要素を描画する (領収書欄を除く)。",
+        "text": "データ取込画面が画像の全構成要素を描画する。",
         "serves": [
           "G1"
         ],
         "serves_goals": [
           "G1"
         ],
-        "measure": "DOM テストで、問いの見出し・対象期間カード・2 つのタブ・通常入力の全項目とメモの文字数・交通費入力の全項目と入替・合計金額の自動計算・一覧の月送り/検索/4 種の絞り込み/合計 3 枚/表/ページング・インライン削除確認・元に戻すトースト・空状態・下部固定バーの存在を確認し、全て通る。"
+        "measure": "DOM テストで、問いの見出し・期間タブ・対象期間カード・ステッパー 3 段・1.ファイルを選択 (ドロップ領域・選択ボタン・対応サービス 2 件・詳細設定 2 項目)・2.一覧の 9 列・3.要約の 6 項目と除外の注記・4.結果の 4 枚のカード・5.履歴の 7 列と詳細ペイン・下部の選択件数バーが描画され、読込・空・失敗の状態テストが緑である。"
       },
       {
         "id": "O2",
-        "text": "下書きと論理削除で記録が欠けない。",
+        "text": "検査と確定が分かれ、確定時にファイルを再送しない。",
         "serves": [
           "G2"
         ],
         "serves_goals": [
           "G2"
         ],
-        "measure": "DOM テストで入力→再描画後に下書きが復元されること、API テストで削除→元に戻すで同じ id が一覧に戻ること、削除中の行が集計 (cashToDeal / cashToTx の入力) に 0 件であることが通る。"
+        "measure": "API テストで、検査が明細を 1 行も書かずに仮置きと検査結果だけを残すこと、確定が検査 ID だけで取り込むこと、期限切れ・他人の・確定済みの検査 ID が拒否されること、エラーのファイルが確定から外れることを確かめる。"
       },
       {
         "id": "O3",
-        "text": "画面の導出が core の 1 か所に集まる。",
+        "text": "ファイルの状態と要約が記録から一意に決まる。",
         "serves": [
           "G3"
         ],
         "serves_goals": [
           "G3"
         ],
-        "measure": "core の cash-screen の単体テストが合計・絞り込み・ページング・入力経路・交通費合計を固定し、web と api に同じ計算の重複が無い (grep で 0 件)。"
+        "measure": "core の単体テストで、ファイルの状態 (アップロード中 / チェック中 / 取込準備完了 / 取込不可 / 取込済み / 失敗) と検証の段階、要約の件数、取込 1 回の結果 (成功 / 一部成功 / 失敗) が入力の組合せから toBe で導かれ、境界ケースが固定される。"
       },
       {
         "id": "O4",
-        "text": "既存の品質ゲートを緑のまま保つ。",
+        "text": "『前回データを残す』が行単位の追加として効く。",
         "serves": [
-          "G1",
           "G4"
         ],
         "serves_goals": [
-          "G1",
           "G4"
         ],
-        "measure": "pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。"
+        "measure": "API テストで、オンでは同一期間の既存明細が残りまだ無い行だけが追加され同一の行が重複スキップに数えられること、オフでは月単位で入れ替わること、強制再取込で同じ内容が再適用されることを確かめる。"
+      },
+      {
+        "id": "O5",
+        "text": "取込履歴が 1 回ごとにまとまり、影響と操作が詳細で決着する。",
+        "serves": [
+          "G5"
+        ],
+        "serves_goals": [
+          "G5"
+        ],
+        "measure": "API と DOM のテストで、履歴が 1 回の取込ごとに 1 行となり、詳細の影響 3 数値 (新規追加・重複スキップ・サブスク候補) が確定時の記録と一致し、取り消しと元に戻す・原本の取得・一括削除 (明細は残る) が規則どおりに効くことを確かめる。"
+      },
+      {
+        "id": "O6",
+        "text": "入口の上限と拒否が効く。",
+        "serves": [
+          "G6"
+        ],
+        "serves_goals": [
+          "G6"
+        ],
+        "measure": "API テストで、上限を超える body (合計サイズ) が本文を読む前に、ファイル数と 1 ファイルの大きさが本文を読んだ直後・パースの前に 413 で拒否され、別オリジンの変更要求が 403、短時間の連続要求が 429 になり、ファイル名に含めた HTML がテキストとして描画されることを確かめる。"
       }
     ],
     "success_criteria": [
-      "S1 (G1): /cash で 17-cash.png の構成要素 (領収書欄を除く) がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件である。",
-      "S2 (G2): 削除した現金明細が『元に戻す』で同じ id のまま一覧に戻り、削除中は一覧・合計・集計のどこにも現れない。入力途中の内容は再読込後に復元される。",
-      "S3 (G3): 合計・絞り込み・ページング・入力経路・交通費合計が core の cash-screen だけで計算され、API と web はその結果を写すだけである。",
-      "S4 (G4): 他の利用者の明細の取得・変更・削除・復元が 404 になり、不正な入力 (実在しない日付、範囲外の金額、候補外の名義・カテゴリ・業務の目的、長すぎる文字列) が 400 になる。"
+      "S1 (G1): /import で 16-import.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。期間は usePeriod から来る。",
+      "S2 (G2): 検査の段階で明細・残高・有効取込の表への書き込みが 0 件であり、確定は検査 ID だけで行われ、同じファイルの 2 回目のアップロードが 0 件である。期限を過ぎた仮置きは夜間保守の後に R2 と D1 に残らない。",
+      "S3 (G3): ファイルの状態・取り込めるか否か・要約・取込 1 回の結果は core の関数だけが決め、api と web に同じ判定の重複実装が 0 件である。",
+      "S4 (G4): 『前回データを残す』オンで同じファイルを 2 回確定しても明細数が増えず、2 回目の新規追加が 0 件・重複スキップが全行になる。オフでは従来の月単位の入れ替えと同じ結果になる。",
+      "S5 (G5): 取込履歴の 1 行が 1 回の取込に対応し、詳細の影響の数値が確定時の記録と一致する。一括削除の前後で明細数が変わらない。既存の取り消し・破棄・置換・削除と 30 日の取り消し期限が作り直し後も同じ結果になる。",
+      "S6 (G6): 上限・オリジン・レート制限の拒否がテストで固定され、取込経路から外部ホストへの送信が 0 件である。migration は追加のみで、既存の取込履歴 (ファイル単位の記録) が作り直し後も履歴と詳細で読め、既存の取込テストと初期 JS 予算 (CI 実測) が緑のままである。"
     ],
     "stakeholders": [
-      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 外出先で使った現金や電車代を、戻ったその場で漏れなく記録し、月次クローズの前に今月の現金の出入りを一覧と合計で確かめたい。途中で離れても入力が消えず、消してしまっても戻せることを期待している。",
-      "SH2 家族 (配偶者・家族の名義で支出する): 利用者が名義 (担当者) を付けて記録することで、誰の支出かが集計で区別される。"
+      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 月次クローズの入口で、freee と マネーフォワードから書き出した複数の明細をまとめて取り込みたい。確定する前に、どのファイルが何件・どの期間で、重複や誤りが無いかを確かめ、誤りのあるファイルだけ外して安心して取り込み、あとから 1 回ごとに振り返って取り消せるようにしたい。",
+      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): ファイルの状態・取り込めるか否か・要約の数え方・『前回データを残す』の規則・仮置きの期限が core の純関数 1 か所と docs・テストで固定されていること。"
     ],
     "scope": {
       "in": [
-        "現金入力画面 (17-cash.png の構成要素と読込 / 空 / 失敗の各状態) の作り直しと、Cash.tsx の pages/cash/ 配下への分割",
-        "通常入力と交通費入力の 2 タブ。交通費は出発駅・到着駅の入替、往復の自動計算、業務の目的 (固定選択肢＋その他)",
-        "一覧の月送り (共通の期間の範囲内)、キーワード検索、収支・カテゴリ・担当者・入力経路の絞り込み、詳細検索 (金額と日付の範囲)、収入/支出/差額の合計、選択と一括削除、ページング",
-        "インラインの削除確認と、削除完了トーストの『元に戻す』。論理削除 (deleted_at) と 30 日後の夜間完全消去",
-        "担当者 = 既存の名義 (business / spouse / family) の列、業務の目的の列、論理削除の列を cash_entries へ追加する migration (入力経路は交通費の区間の有無から導く)",
-        "core の純関数 cash-screen (合計・絞り込み・ページング・入力経路・交通費合計・入力検証) と API の拡張",
-        "下書きのブラウザ内自動保存と保存時刻の表示、画面内だけのサンプル表示、下部固定の追加バー"
+        "データ取込画面 (16-import.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと、Import.tsx の pages/import/ 配下への分割",
+        "検査 (仮置きとファイルごとの検査結果) と確定 (検査 ID 指定) の 2 段階の API、アップロードの進捗表示、未確定の仮置きの夜間の片づけ",
+        "core の純関数: ファイルの状態と検証の段階の導出、取り込めるか否か、要約 (対象ファイル・取り込み予定の明細・対象期間・影響する取込元・重複の可能性・サブスク候補) の算出、取込 1 回の結果の導出",
+        "『前回データを残す』の行単位の追加への変更 (既定オン) と、強制再取込の維持",
+        "取込履歴の 1 回の取込ごとのまとめ、詳細ペイン (影響の 3 数値と原本のダウンロード)、再取込・取り消し・記録だけの一括削除",
+        "対応形式の説明とテキスト (.txt) の受け付け、対応サービス (マネーフォワード・freee) の取得方法の案内",
+        "入口の防御: body の上限・ファイル数と合計サイズの上限・取込専用のレート制限・同一オリジンの検査",
+        "追加のみの migration (検査と仮置きの記録、取込 1 回の影響の数値)",
+        "docs への規則の明記と回帰テスト"
       ],
       "out": [
-        "領収書ファイルの保存 (以前の廃止決定を維持し、欄の代わりに freee への保管を案内する。qa-cash-decision-001)",
-        "取込 (MF / freee) の現金明細を一覧に混ぜること (qa-cash-decision-004)",
-        "共通シェルの文言 (取引ライン / 防衛ライン、フッター) の変更。画像の文言は期待値にしない",
-        "担当者の自由登録と管理画面 (qa-cash-decision-002)",
-        "モバイル・タブレット・デスクトップ専用アプリ"
+        "銀行・クレジットカードの明細ファイルの取り込み: freee と マネーフォワードの CSV だけで足りるという利用者決定。対応サービスの案内からも外す",
+        "共通シェル (ヘッダーの取引ライン・検索・ダウンロード・ヘルプ、サイドバー、フッター) の作り直し: 既存実装をそのまま使う",
+        "外部サービスの API との自動連携 (freee / マネーフォワードからの自動取得): 利用者が書き出したファイルを取り込む方式を保つ",
+        "スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ",
+        "既存の取込形式 (ZIP・HTML 版互換 JSON・MF 資産推移) の廃止: 画像に無いが受け付けは維持する"
       ]
     },
     "constraints": [
-      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。判定と導出は core に置き api/web は写すだけにする。",
-      "C2 データ: D1 の migration は 0050 から採番する。既存の cash_entries の行と集計結果 (cashToDeal / cashToTx) を変えない。論理削除の列を足した後、全ての読み取り経路が deleted_at IS NULL で絞る。",
-      "C3 運用: 夜間の scheduled 処理 (0 18 * * *) の予算内に完全消去を相乗りさせる。単一利用者の運用で、マルチテナントは対象外。",
-      "C4 品質: 初期 JS 予算・verify:full・skills:test を緑のまま保つ。税務上の正本は freee であり、本画面は税務判断をしない。"
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle と R2、web は React 18 + react-router-dom 7 + TanStack Query 5)。判定と導出は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、ボタンは共通 Button、ページは PageShell。表・詳細ペイン・選択件数バーは既存画面 (AI分析・サブスク) の部品と流儀に揃える。",
+      "C3 migration: D1 の migration は追加のみ (新カラム・新表) とし、行を書き換える migration は作らない。本番反映は既存の Deploy / Migrate の手順とゲートに従う。",
+      "C4 D1 の制約: 1 要求あたりのクエリ数の上限があるため、確定はファイル単位の書き込み権と既存のクエリ予算の計画に従う。",
+      "C5 セキュリティ: 利用者向け API は /api/* の authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence の内側に置く。入力は zod で検証し、ファイル名や明細の文字列は React の既定エスケープで描画する。",
+      "C6 データの持ち出し: 取り込んだデータと原本は D1 と R2 の中だけに置き、外部へ送らない。税務上の正本は freee のままとする。"
     ],
     "concrete_intents": [
       {
         "id": "I1",
-        "text": "Cash.tsx を pages/cash/ 配下へ分割し、問いの見出し・対象期間カード・タブ・入力 2 枚・一覧・下部固定バーの構成に作り直す。選択中のタブ・月・絞り込み・ページを URL に保つ。",
+        "text": "Import.tsx を pages/import/ 配下へ分割し、問いの見出し・期間タブ・対象期間カード・ステッパー・1〜5 の各節・履歴の詳細ペイン・下部の選択件数バーの構成に作り直す。選択中の履歴を URL に保つ。",
         "serves": [
           "G1"
         ]
       },
       {
         "id": "I2",
-        "text": "core に cash-screen を新設し、合計 (収入・支出・差額)、絞り込み (キーワード・収支・カテゴリ・名義・入力経路・金額と日付の範囲)、ページング、入力経路、交通費合計を純関数で導く。",
+        "text": "検査 API (複数ファイルを一度だけ受け取り R2 に仮置きし、ファイルごとの検査結果と検査 ID を返す) と確定 API (検査 ID と選んだファイルと詳細設定を受け取る) を足し、アップロードの進捗を画面に出す。夜間保守で期限切れの仮置きを消す。",
+        "serves": [
+          "G2",
+          "G6"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "core にファイルの状態・検証の段階・取り込めるか否か・要約・取込 1 回の結果を導く純関数を新設し、api の判定と web の表示をこれに寄せる。",
         "serves": [
           "G3"
         ]
       },
       {
-        "id": "I3",
-        "text": "cash_entries に owner・transit_purpose・deleted_at を足す追加のみの migration 0050 (入力経路は列を持たず交通費の区間の有無から導く) と、削除・復元・一括削除・一括復元の API、削除中の行を読まない条件を cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に掛けること、夜間の完全消去を実装する。 JSON 復元の『空か』判定だけは削除中の行も数え、削除中の行が残る間は現金明細を復元しない (qa-cash-decision-009)。",
-        "serves": [
-          "G2",
-          "G4"
-        ]
-      },
-      {
         "id": "I4",
-        "text": "入力途中の内容をブラウザ内に自動保存し、保存時刻を表示し、復元する。『入力をクリア』で下書きも消す。",
+        "text": "『前回データを残す』を行単位の追加にし、既存の行の同一性 (mfStableKey / freeeDealKeys) で重複スキップを数える。オフは従来の月単位の入れ替えとする。",
         "serves": [
-          "G2"
+          "G4"
         ]
       },
       {
         "id": "I5",
-        "text": "削除をインライン確認にし、削除完了トーストの『元に戻す』で同じ行を復活させる。空状態では画面内だけのサンプル表示と『はじめての明細を入力』を出す。",
+        "text": "取込履歴を import_runs 単位にまとめ、確定時に影響の数値 (新規追加・重複スキップ・サブスク候補) を記録し、詳細ペインと原本のダウンロード・再取込・取り消し・記録だけの一括削除を置く。",
         "serves": [
-          "G1",
-          "G2"
+          "G5"
         ]
       },
       {
         "id": "I6",
-        "text": "入力検証 (名義・業務の目的・カテゴリの候補、文字数、金額の範囲) を core と API の zod で揃え、他の利用者の行を 404 にする。",
+        "text": "検査・確定・原本取得の経路に body の上限・ファイル数と合計サイズの上限・レート制限・同一オリジンの検査を足す。",
         "serves": [
-          "G4"
+          "G6"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "取込結果の 4 枚のカードから、重複の可能性は総収支の要確認へ、サブスク候補はサブスク画面へ、エラーのファイルは再試行へ進める導線を置く。",
+        "serves": [
+          "G1",
+          "G5"
         ]
       }
     ],
     "confirmed": true,
-    "approval_ref": "appr-foundation-cash-004"
+    "approval_ref": "appr-foundation-import-screen-002"
   },
   "decisions": [],
   "knowledge_candidates": [],
   "design_applications": {
-    "ui-ux": {
-      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付ける』を現金入力画面の段の順序に適用した。最も頻度が高いのは『外出から戻ってその場で 1 件入れる』なので入力を一覧より上に置き、画面を下へ送っても下部固定の追加バーから同じ追加に届くようにする。失敗コストが最も高いのは『誤って消す』と『入力途中で離れて消える』なので、削除は行内で確認させたうえで完了トーストに元に戻すを置き、入力欄の下に下書きの保存時刻を常に出して、消えていないことを目で確かめられるようにする。合計 3 枚は一覧の直上に置き、絞り込みの結果と合計が同じ条件から出ていることを並びで示す。",
-      "recorded_at": "2026-09-21T15:23:17Z",
+    "backend": {
+      "text": "Clean Architecture card の Dependency Rule を、取込の規則の置き場所に適用した。ファイルの状態・検証の段階・取込可否・内容確認の要約・取込 1 回の結果 (成功 / 一部成功 / 失敗) は packages/core の import-screen.ts の純関数に置き、D1 も R2 も知らない入力 (パース結果・検査の記録・既存の同一性の鍵) だけを受け取る。api は検査 (POST /imports/inspections) と確定 (POST /imports/runs) の 2 経路でこの純関数を呼ぶだけにし、web は返った値を描くだけにする。行単位の追加の判定も mfStableKey / freeeDealKeys という既存の core の鍵に寄せ、api 側に同一性の規則を新しく書かない。",
+      "recorded_at": "2026-09-21T15:24:56Z",
       "basis": "agent-inference"
     },
     "database": {
-      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、cash_entries に足す列の選び方に適用した。名義・業務の目的・削除時刻は利用者が決めた事実なので列に持つ。入力経路は交通費の区間があるかどうかで決まる導出値なので列を持たず、合計や件数も保存しない。こうして既存行を 1 行も書き換えずに、全行へ経路が付く。",
-      "recorded_at": "2026-09-21T15:23:17Z",
-      "basis": "agent-inference"
-    },
-    "backend": {
-      "text": "Clean Architecture card の Dependency Rule を、現金入力の合計・絞り込み・入力経路・交通費合計の置き場所に適用した。これらは明細の配列と条件だけから決まる入出力のない計算なので core の cash-screen 1 か所に置き、api は D1 の読み書き (論理削除・復元・一括削除・一括復元と、同じ batch での取引と集計の作り直し) だけを担って判定を持たない。画面の合計と API の応答が同じ関数から出るので、差額が画面と集計でずれることを単体テストで塞げる。",
-      "recorded_at": "2026-09-21T15:38:32Z",
-      "basis": "agent-inference"
-    },
-    "frontend": {
-      "text": "Clean Architecture card の依存方向を、web が合計と絞り込みの計算を持たない構成に適用した。現行 Cash.tsx は 724 行に入力・表・月の集計を抱えているので、pages/cash/ の view-model が core の cash-screen を呼んで描画用の形へ写すだけにし、下書きの保存は draft.ts、元に戻すの表示は ResultNotices に分ける。URL の検索パラメータを表示条件の正本にするので、同じ URL を開けば同じ一覧と合計になる。",
-      "recorded_at": "2026-09-21T15:23:17Z",
+      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、検査と取込 1 回の記録の選び方に適用した。ステータスの文言や進捗 % は記録から導けるので保存しない。一方で検査の結果の要約・仮置きの鍵・期限は確定までの間に失うと再送が要るので import_inspections に残し、取込 1 回の影響 (新規追加・重複スキップ・サブスク候補) は後から明細を数え直すと取り消しや再取込で値が変わるので import_runs に確定時の値として残す。一括削除は履歴の非表示の印だけで、明細の行を消さない。",
+      "recorded_at": "2026-09-21T15:24:56Z",
       "basis": "agent-inference"
     },
     "auth": {
-      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、新しい復元・一括削除の経路の置き場所に適用した。新経路をすべて authGuard 配下の /api/* に置き、各クエリの条件に userId を必ず含めることで、経路ごとに認可を書き足す必要をなくす。他人の id は存在を明かさない 404 にそろえる。",
-      "recorded_at": "2026-09-21T15:23:17Z",
+      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、検査 ID と取込 1 回の扱いに適用した。検査・確定・履歴・原本の取得・再取込・取り消し・履歴の削除はすべて /api/* のセッションのフェンスの内側に置き、各経路の入口で利用者 ID による行の絞り込みを 1 回だけ行う。他人の検査 ID や期限切れは存在しないものとして 404 にそろえ、存在の有無を区別させない。新しい認証方式やトークンは足さない。",
+      "recorded_at": "2026-09-21T15:24:56Z",
       "basis": "agent-inference"
     },
     "security": {
-      "text": "Secure by Design card の『入力を許可リストで検証し、大きさを境界で制限する』を、現金明細の入力と一括削除に適用した。名義・業務の目的・収支・事業 / 個人は列挙に限り、文字列は字数、金額は範囲、一括削除の id 配列は件数で境界を切る。下書きはサーバーへ送らないので、サーバー側で守る入力面を増やさない。",
-      "recorded_at": "2026-09-21T15:23:17Z",
+      "text": "Secure by Design card の『入力を許可リストで検証し、大きさを境界で制限する』を、本サイクルで最も大きい外部入力である明細ファイルの受付に適用した。拡張子は CSV・Excel・txt と既存の ZIP・JSON の許可リスト。大きさは 3 段で止める: 合計 30MB は hono/body-limit で本文を読む前 (Content-Length があればその値、無ければ本文を数える)、ファイル数と 1 ファイル 25MB は本文を読んだ直後・パースの前 (ファイル追加では検査 ID の累計で)、xlsx / ZIP のエントリ数 1,000 件と展開後 1 ファイル 60MB は展開の前。取込専用のレート制限 (検査 30 回/分・確定 5 回/分) と同一オリジンの検査を入口に置く。ファイル由来の文字列は React のエスケープで描き、取込データは外部へ送らない。",
+      "recorded_at": "2026-09-21T22:27:38Z",
+      "basis": "agent-inference"
+    },
+    "ui-ux": {
+      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付ける』を、データ取込画面の段の順序に適用した。最も頻度が高いのは『ファイルを選んで取り込む』なので 1.選択と 2.一覧を上段に置き、最も失敗コストが高いのは『何が入るかを確かめずに取り込む』なので 3.内容確認 (予定明細数・対象期間・重複の可能性・エラーのファイルの除外) を取り込むボタンの手前に必ず見せる。結果の 4 枚カードは次にすべきこと (重複の確認・サブスクの確認・エラーの再試行) への入口として並べ、履歴は 1 回の取込で 1 行に畳んで詳細ペインで影響の 3 数値を出す。",
+      "recorded_at": "2026-09-21T15:24:56Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Clean Architecture card の依存方向を、web が取込の判定を持たない構成に適用した。現行 Import.tsx は 897 行の 1 ファイルで、状態の文言や取込可否を画面側で組んでいるが、新しい構成では api が返す core の導出結果を描くだけにし、pages/import/ 配下の部品に分ける。送る前の上限判定も web に書かず、core の import-screen.ts の上限値の定数 IMPORT_LIMITS と超過の理由を返す判定関数を import して呼ぶだけにする (api の 413 も同じものを使う)。サーバーの状態 (履歴一覧・履歴詳細・検査結果) は TanStack Query に、選択中の履歴は URL に、選択中のファイルとアップロード進捗は画面の状態に置き分ける。",
+      "recorded_at": "2026-09-21T22:40:55Z",
       "basis": "agent-inference"
     },
     "infrastructure": {
-      "text": "本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1) と binding を変えず、完全消去を既存の夜間 cron に相乗りさせる判断は、Operations の上流指針 (doctrine) の側で記録した。",
-      "recorded_at": "2026-09-21T15:23:17Z",
+      "text": "本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1・R2) と binding を変えない判断を記録する。仮置きは既存の R2 (FILES) の専用の接頭辞に置き、片づけは既存の夜間保守 (cron) に載せるので、新しい基盤資源・キュー・外部サービスは生じない。基盤の変更は D1 の表の追加だけで、0 件は収集漏れではない。",
+      "recorded_at": "2026-09-21T15:24:56Z",
       "basis": "agent-inference"
     },
     "maintenance-ops": {
-      "text": "Clean Code card の『規則は名前と境界値テストで読めるようにする』を、現金入力の保守に適用した。削除中の行を集計へ出さない規則は、cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に同じ条件を掛けたうえで、経路ごとに削除 → 読み取り → 復元 → 読み取りの往復を固定する API テストを 1 件ずつ置いて読めるようにする。経路を 1 本足したときに条件を忘れないためである。30 日の期限は 29 日と 31 日の境界値で固定し、夜間予算は計画上限 49 を予算テストで固定する。",
-      "recorded_at": "2026-09-21T22:28:41Z",
+      "text": "Clean Code card の『規則は名前と境界値テストで読めるようにする』を、取込の規則の保守に適用した。ファイルの状態の優先順位・取込可否・結果の 3 区分は core の名前付きの関数 1 か所に置き、上限ちょうどと 1 超過・期限ちょうど・前回データを残すのオンとオフの行数・取込済みと同一内容を境界値テストで固定する。規則の説明は docs/import-screen/ に残し、テストは旧実装で落ちることを確かめる。",
+      "recorded_at": "2026-09-21T15:24:56Z",
       "basis": "agent-inference"
     }
   },
   "hearing_progress": {
-    "loop_count": 3,
+    "loop_count": 5,
     "next_question": null,
     "complete": true
   },
   "doctrine_applications": {
     "backend": {
       "application-architecture": {
-        "text": "api の cash 経路から集計・絞り込みの計算を外し、core の cash-screen を唯一の計算元にする形へ反映した。論理削除・復元・一括削除・一括復元の各経路は、行の状態を変えて取引と集計を作り直すことだけを担い、canonical-mutation-fence に登録して既存の書込と同じ順序保証に乗せる。",
-        "recorded_at": "2026-09-21T15:38:32Z",
+        "text": "依存方向を core (状態・検証の段階・取込可否・要約・結果の導出と、上限値 IMPORT_LIMITS と超過の判定) ← api (検査と確定の imports route) ← web (データ取込画面) の一方向へ反映した。api は core の純関数の結果を契約に載せて返すだけで、web は判定を持たない。送信前の上限判定と 413 の判定はどちらも core の同じ定数と関数を import する。",
+        "recorded_at": "2026-09-21T22:40:55Z",
         "basis": "agent-inference"
       },
       "data-access": {
-        "text": "削除中の行を読まない条件を、cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) に同じ deleted_at IS NULL として掛ける形へ反映した。読み取りの正本が 1 か所に集まっていないため、経路の一覧を仕様に持ち、経路ごとの API テストで条件の抜けを検出する。削除・復元・一括削除・一括復元の書き込みは、それぞれの経路 1 か所の D1 batch でだけ行う。",
-        "recorded_at": "2026-09-21T22:28:41Z",
+        "text": "データアクセスを route 側に閉じ、core の純関数は D1 と R2 を知らないパース結果と記録だけを受け取る形へ反映した。確定は検査 ID から仮置きを読み、既存の書込の直列化 (import_writer_claims) の内側で行う。",
+        "recorded_at": "2026-09-21T15:24:56Z",
         "basis": "agent-inference"
       }
     },
     "database": {
       "data-access": {
-        "text": "cash_entries の新しい列の書き込み元を 1 経路ずつに限る形へ反映した。deleted_at は削除と一括削除で付け、復元と一括復元でだけ外し、夜間の完全消去は読むだけで行ごと消す。owner と transit_purpose は追加と更新でだけ書く。JSON 復元の INSERT は新しい列を持つ形に合わせる。",
-        "recorded_at": "2026-09-21T15:38:32Z",
+        "text": "import_inspections と import_inspection_files の書き込みを検査の経路に、import_runs の書き込みを確定の経路に、import_rate_limits の書き込みを入口のレート制限の 1 か所にだけ置く形へ反映した。履歴の非表示は削除の経路だけが書き、明細の行には触れない。",
+        "recorded_at": "2026-09-21T15:41:14Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "migration 0050 を列の追加と索引だけにすることで、既存の現金明細を 1 行も書き換えず、巻き戻しが新しい列を読まないことだけで済む形へ反映した。schema-guard.ts の EXPECTED_D1_MIGRATION を 0050 の migration ファイル名へ進め、migration 前の D1 では Worker が論理削除の経路を動かさないようにする。",
-        "recorded_at": "2026-09-21T22:28:41Z",
+        "text": "migration を表と列の追加だけにして、既存の imports と明細を 1 行も書き換えない形へ反映した。巻き戻しは新しい表を読まないことだけで済み、取り消し (30 日) の判定は既存の表のまま動く。",
+        "recorded_at": "2026-09-21T15:24:56Z",
         "basis": "agent-inference"
       }
     },
     "auth": {
       "authentication": {
-        "text": "復元と一括削除も既存のセッション Cookie (HttpOnly・Secure・SameSite=Strict) の認証だけで通す形へ反映した。現金入力のために新しい資格情報やトークンを発行しない。",
-        "recorded_at": "2026-09-21T15:23:17Z",
+        "text": "検査・確定・履歴・原本・再取込・取り消し・履歴の削除の全経路に、既存のセッション cookie による認証をそのまま効かせる形へ反映した。新しい認証経路やトークンは足さない。",
+        "recorded_at": "2026-09-21T15:24:56Z",
         "basis": "agent-inference"
       },
       "security": {
-        "text": "他の利用者の明細を指す id を、取得・変更・削除・復元・一括削除・一括復元のどれでも 404 にそろえる形へ反映した。一括削除と一括復元は他人の id を 1 件でも含めば何も変えない。",
-        "recorded_at": "2026-09-21T15:38:32Z",
+        "text": "利用者単位でデータを閉じる規則を、検査 ID・取込 1 回・原本の全経路に反映した。どれも利用者 ID で自分の行だけを扱い、他の利用者や期限切れの ID は 404 にそろえる。",
+        "recorded_at": "2026-09-21T15:24:56Z",
         "basis": "agent-inference"
       }
     },
     "security": {
       "security": {
-        "text": "現金明細の入力面を、許可リスト (名義・業務の目的・収支・事業 / 個人)、字数、金額の範囲、一括削除と一括復元の件数 (100 件) の 4 つの境界で閉じる形へ反映した。削除中の行は PUT でも 404 にし、編集で復活させない。領収書ファイルを受け取らないので、ファイルの検査と保管の責任を持たない。",
-        "recorded_at": "2026-09-21T15:38:32Z",
+        "text": "OWASP ASVS 5.0 V5 の 5.2.1 (処理できる大きさだけを受ける) と 5.2.3 (圧縮ファイルは展開前に展開後の最大サイズと最大ファイル数を検査する) を、合計 30MB・1 ファイル 25MB・エントリ数 1,000 件・展開後 60MB の上限と判定の順序へ反映した。あわせてレート制限・同一オリジン・出力の無害化・外部送信なしを取込の入口に置く。",
+        "recorded_at": "2026-09-21T22:27:38Z",
         "basis": "agent-inference"
       }
     },
     "ui-ux": {
       "presentation": {
-        "text": "区分を色だけで伝えない規則を、収支 (収入 / 支出)・取込元 (通常入力 / 交通費入力)・担当者の表示と合計 3 枚に反映した。収入と支出は必ず文字を添え、差額の正負は符号でも示す。削除の確認と元に戻すは文で結果を伝える。",
-        "recorded_at": "2026-09-21T15:23:17Z",
+        "text": "状態を色だけで伝えない規則を、取込ファイル一覧のステータス・重複チェック・バリデーションと結果の 4 枚カードに反映した。どれも文字と件数とアイコンを添え、進捗は数値の % で出す。",
+        "recorded_at": "2026-09-21T15:24:56Z",
         "basis": "agent-inference"
       }
     },
     "frontend": {
-      "application-architecture": {
-        "text": "pages/cash/ の画面本体を view-model・draft・入力 2 種・一覧・ResultNotices に分け、view-model だけが core を呼ぶ形へ反映した。部品は描画と入力の受け渡しだけを持つ。",
-        "recorded_at": "2026-09-21T15:23:17Z",
+      "presentation": {
+        "text": "表示の共通部品を使う規則を、取込ファイル一覧の表・ステッパー・結果カード・履歴の詳細ペイン・選択中バーに反映した。ボタンは共通 Button、色はトークンだけにし、ページは PageShell に載せる。",
+        "recorded_at": "2026-09-21T15:24:56Z",
         "basis": "agent-inference"
       },
-      "presentation": {
-        "text": "下部固定の追加バーに安全領域の余白を足し、狭い画面では入力と一覧を縦に積み、表は横スクロールの容器に入れる形へ反映した。下書きの保存時刻は文で示す。",
-        "recorded_at": "2026-09-21T15:23:17Z",
+      "application-architecture": {
+        "text": "サーバー状態と画面状態を分ける規則を、履歴一覧・履歴詳細・検査結果の取得と、選択中の履歴 (URL)・選択中のファイルとアップロード進捗 (画面の状態) の分離に反映した。確定・取り消し・削除の後は該当キーを無効化する。",
+        "recorded_at": "2026-09-21T15:24:56Z",
         "basis": "agent-inference"
       }
     },
     "infrastructure": {
-      "operations": {
-        "text": "論理削除の完全消去を、新しい cron を足さず既存の 0 18 * * * の scheduledMaintenance に独立 job として相乗りさせ、D1 クエリ 2 本を SCHEDULED_MAINTENANCE_D1_PLAN に宣言する形へ反映した。計画の合計 49 に合わせて計画上限を 49 へ上げ、ハード上限 50 との間に 1 本の余裕を残す (qa-cash-decision-008)。",
-        "recorded_at": "2026-09-21T22:28:41Z",
+      "reliability": {
+        "text": "反映の順序を Migrate → Deploy に固定し、Worker のメモリ 128MB を超えないよう検査を 1 ファイルずつ順に処理する形へ反映した。migration は表の追加だけなので、適用後に旧 Worker が動いていても新しい表を読まないだけで壊れない。仮置きが確定前に消えても検査のやり直しで回復できる。",
+        "recorded_at": "2026-09-21T15:41:14Z",
         "basis": "agent-inference"
       },
-      "reliability": {
-        "text": "完全消去の job を他の夜間 job と Promise.allSettled で独立させ、失敗しても他の job とバックアップを止めない形へ反映した。1 晩の上限を超えた分は翌晩に続けて消す。",
-        "recorded_at": "2026-09-21T15:23:17Z",
+      "operations": {
+        "text": "基盤の変更が D1 の表の追加と R2 の接頭辞の追加だけであることを、既存の deploy と migrate のワークフローと夜間保守の cron をそのまま使う形へ反映した。新しい secret・キュー・外部サービスの登録は発生しない。",
+        "recorded_at": "2026-09-21T15:24:56Z",
         "basis": "agent-inference"
       }
     },
     "maintenance-ops": {
       "operations": {
-        "text": "夜間の完全消去が消した件数を JSON ログに出し、上限に達した夜は warn にする形へ反映した。画面の描画検査 check:cash-screen を verify:full に組み込み、作り直しの回帰を CI で止める。",
-        "recorded_at": "2026-09-21T15:23:17Z",
+        "text": "検証の入口を verify:full と CI に一本化する形へ反映した。取込画面の core・API・DOM テストを既存の test に載せ、既存の取込・取り消し・破棄のテストと初期 JS 予算を緑のまま保つ。",
+        "recorded_at": "2026-09-21T15:24:56Z",
         "basis": "agent-inference"
       }
     }

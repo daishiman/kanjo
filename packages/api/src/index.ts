@@ -14,6 +14,7 @@ import { type AuthEnv, type AuthVariables, authGuard, mustChangePasswordFence } 
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
 import { cashPurgeLogLine, runCashSoftDeletePurge } from './cash-purge.js';
 import { runDeletionRetention } from './deletion-retention.js';
+import { importOriginGuard, runImportStagingCleanup } from './import-rate-limit.js';
 import { cleanupStalePasswordLoginRateLimits } from './login-rate-limit.js';
 import { runR2Cleanup } from './r2-cleanup.js';
 import { adminUsersRoute } from './routes/admin-users.js';
@@ -109,6 +110,9 @@ app.use('/api/*', authGuard());
 app.use('/api/*', mustChangePasswordFence());
 app.use('/api/*', runtimeSchemaGuard);
 app.use('/api/*', canonicalMutationFence());
+// 取込の変更要求は Origin を自サイトに限る (security 章)。GET は対象外
+app.use('/api/imports', importOriginGuard());
+app.use('/api/imports/*', importOriginGuard());
 app.route('/api', adminUsersRoute);
 app.route('/api', aiRoute);
 // 差分は importsRoute より先に載せる。/imports/:id 形のルートに /imports/diff を拾わせない
@@ -217,6 +221,8 @@ export async function scheduledMaintenance(
     audit_detail_retention: runAuditDetailRetention(env),
     cash_soft_delete_purge: runCashSoftDeletePurge(env),
   } satisfies Record<ConcurrentJobName, Promise<unknown>>;
+  // D1 を 1 本も使わない job は query 予算の表に載せない (載せると使わない枠を他から奪う)。
+  const importStagingCleanup = runImportStagingCleanup(env);
   const [
     r2Cleanup,
     loginRateLimit,
@@ -225,6 +231,7 @@ export async function scheduledMaintenance(
     auditHeaderRetention,
     auditDetailRetention,
     cashPurge,
+    importStaging,
   ] = await Promise.allSettled([
     concurrentJobs.r2_cleanup,
     concurrentJobs.password_login_rate_limit_cleanup,
@@ -233,6 +240,7 @@ export async function scheduledMaintenance(
     concurrentJobs.audit_header_retention,
     concurrentJobs.audit_detail_retention,
     concurrentJobs.cash_soft_delete_purge,
+    importStagingCleanup,
   ]);
   console.log(
     JSON.stringify({
@@ -374,6 +382,23 @@ export async function scheduledMaintenance(
       }),
     );
   }
+  if (importStaging.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'import_staging_cleanup',
+        staged: importStaging.value.staged,
+      }),
+    );
+  } else {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        job: 'import_staging_cleanup',
+        name: errorName(importStaging.reason),
+      }),
+    );
+  }
   if (cashPurge.status === 'fulfilled') {
     const line = cashPurgeLogLine(cashPurge.value);
     if (cashPurge.value.limitReached) console.warn(JSON.stringify(line));
@@ -394,6 +419,7 @@ export async function scheduledMaintenance(
       deletionRetention,
       auditHeaderRetention,
       auditDetailRetention,
+      importStaging,
       cashPurge,
     ].some((result) => result.status === 'rejected')
   ) {

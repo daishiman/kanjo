@@ -1,0 +1,540 @@
+/* データ取込: 色は styles.css のトークンだけを使う (直書き色を置かない)。 */
+.import {
+  display: grid;
+  /* 横長の表(.import-table-wrap)が main を押し広げないよう列の下限を 0 にする */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  /* 下端に貼り付く選択バーが最後の段を隠さないよう、その高さぶん余白を持つ */
+  padding-bottom: 96px;
+}
+
+.import .card {
+  margin: 0;
+}
+
+.import-title-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.import-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.import-intro h2 {
+  margin: 0 0 4px;
+  font-size: var(--fs-xl);
+}
+
+.import-intro p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: var(--line-height-body);
+}
+
+.import-period {
+  flex: none;
+  width: min(100%, 300px);
+}
+
+.import-period h2 {
+  margin: 0 0 4px;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+
+.import-period-range {
+  margin: 0 0 4px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.import-period small {
+  color: var(--ink-soft);
+}
+
+/* 手順。現在の段は色と aria-current、済んだ段は ✓ の記号でも伝える (WCAG 1.4.1) */
+.import-stepper {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.import-stepper li {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink-soft);
+}
+
+.import-stepper li.current {
+  border-color: var(--primary);
+  color: var(--ink);
+}
+
+.import-stepper li.done {
+  color: var(--ink);
+}
+
+.import-stepper li strong {
+  display: block;
+  font-size: var(--fs-sm);
+}
+
+.import-stepper li small {
+  display: block;
+  font-size: var(--fs-xs);
+}
+
+.import-stepper-no {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.import-stepper li.current .import-stepper-no {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.import-stepper li.done .import-stepper-no {
+  background: var(--good-soft);
+  border-color: var(--good);
+  color: var(--good);
+}
+
+.import-step-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.import-step-head h2 {
+  margin: 0 0 2px;
+  font-size: var(--fs-lg);
+}
+
+.import-step-no {
+  color: var(--primary);
+}
+
+.import-step-sub {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+
+.import-empty {
+  margin: 0;
+  padding: 24px 0;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+/* 1. ファイルを選択 */
+.import-select-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.import-limits-note {
+  display: block;
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+.import-services {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  padding: 12px;
+}
+
+.import-services h3 {
+  margin: 0 0 4px;
+  font-size: var(--fs-md);
+}
+
+.import-service-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+
+.import-service-guide {
+  padding: 4px 0 8px;
+  font-size: var(--fs-sm);
+  line-height: var(--line-height-body);
+}
+
+.import-service-guide ol {
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+/* 2. 取込ファイル一覧 / 5. 取込履歴 の表。狭い画面では表だけを横スクロールにする */
+.import-table-wrap {
+  overflow-x: auto;
+}
+
+.import-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.import-table th,
+.import-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.import-table thead th {
+  background: var(--surface-alt);
+  color: var(--ink-soft);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.import-table tbody th {
+  font-weight: 600;
+}
+
+.import-table tbody tr:hover {
+  background: var(--row-hover);
+}
+
+.import-col-check label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--tap-target-min);
+  font-variant-numeric: tabular-nums;
+}
+
+.import-filename {
+  min-width: 12em;
+  overflow-wrap: anywhere;
+}
+
+.import-nowrap {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.import-status {
+  white-space: nowrap;
+}
+
+.import-progress {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.import-reason {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-soft);
+}
+
+.import-actions {
+  white-space: nowrap;
+}
+
+.import-actions > * + * {
+  margin-left: 4px;
+}
+
+.import-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.import-summary-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+
+.import-summary-item dt {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+.import-summary-item dd {
+  margin: 4px 0 0;
+}
+
+.import-summary-item strong {
+  display: block;
+  font-size: var(--fs-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+.import-summary-item small {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+.import-exclusion {
+  margin: 12px 0 0;
+}
+
+.import-result-headline {
+  margin: 0 0 12px;
+  padding-left: 1.2em;
+  font-weight: 600;
+}
+
+.import-result-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.import-result-card {
+  display: grid;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: var(--fs-sm);
+}
+
+.import-result-card strong {
+  font-size: var(--fs-xl);
+  font-variant-numeric: tabular-nums;
+}
+
+.import-result-card small {
+  color: var(--ink-soft);
+}
+
+.import-result-card.good {
+  border-color: var(--good);
+  background: var(--good-soft);
+}
+
+.import-result-card.bad {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.import-result-card.warn {
+  border-color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.import-result-card.info {
+  border-color: var(--biz);
+  background: var(--biz-soft);
+}
+
+.import-result-actions {
+  margin-bottom: 12px;
+}
+
+/* 3 は全幅。4 と 5 を左に積み、開いた履歴詳細を右に縦で並べる。 */
+.import-lower-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "result"
+    "history";
+  gap: 16px;
+  align-items: start;
+}
+
+.import-lower-grid.has-detail {
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  grid-template-areas:
+    "result detail"
+    "history detail";
+}
+
+.import-result {
+  grid-area: result;
+  min-width: 0;
+}
+
+.import-history {
+  grid-area: history;
+  min-width: 0;
+}
+
+.import-detail {
+  grid-area: detail;
+  min-width: 0;
+}
+
+.import-detail-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.import-detail-head h2 {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+
+.import-detail-attrs,
+.import-detail-impact {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 12px;
+  margin: 0 0 12px;
+  font-size: var(--fs-sm);
+}
+
+.import-detail-attrs dt,
+.import-detail-impact dt {
+  color: var(--ink-soft);
+}
+
+.import-detail-attrs dd,
+.import-detail-impact dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.import-detail-files {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+}
+
+.import-detail-files li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.import-detail-file-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* 下端に貼り付く選択バー。iPhone の安全領域の下端も避ける */
+.import-selection-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 -2px 8px var(--floating-panel-scrim);
+}
+
+.import-selection-bar p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.import-selection-bar p span {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+
+.import-selection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 960px) {
+  .import-select-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .import-lower-grid.has-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .import-lower-grid.has-detail {
+    grid-template-areas:
+      "result"
+      "history"
+      "detail";
+  }
+}
+
+@media (max-width: 640px) {
+  .import-title-row {
+    flex-direction: column;
+  }
+
+  .import-period {
+    width: 100%;
+  }
+
+  .import-stepper,
+  .import-summary-grid,
+  .import-result-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .import-selection-actions {
+    width: 100%;
+  }
+
+  .import-selection-actions > * {
+    flex: 1;
+  }
+}

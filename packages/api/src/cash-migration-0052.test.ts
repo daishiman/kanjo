@@ -45,8 +45,10 @@ beforeAll(async () => {
   const names = readdirSync(migrationsDir)
     .filter((f) => f.endsWith('.sql'))
     .sort();
-  expect(names.at(-1)).toBe(TARGET);
-  for (const name of names.slice(0, -1)) await run(name);
+  // TARGET の直前までを当てる。後から別の画面が番号を足しても、この検査は TARGET だけを見る。
+  const target = names.indexOf(TARGET);
+  expect(target).toBeGreaterThanOrEqual(0);
+  for (const name of names.slice(0, target)) await run(name);
 
   // 旧画面で記帳した行 (通常の支出と、往復の交通費)
   await d1

@@ -1,0 +1,149 @@
+{
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "spec_dir": "system-spec",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "前回の medium 1 件 (JSON 復元の主キー衝突が上流に無い) は解消した。qa-cash-decision-009 は利用者が 3 案から選んだ決定 (basis=user-decision) で、backend・database・security の web セル (-005) と I3 に『空か判定だけは削除中の行も数え、件数以外は削除中の行の中身をどこにも出さない』例外として入っている。security の不変条件は『件数だけが例外』と書き分けられている。repo の現物とも合う。restorableCashEntries (routes/imports.ts:434-442) は移行先に 1 件でもあれば復元しない判定で、destination_counts (store.ts:1128) は同じスナップショットにある。下流の specs/spec-cash-screen.md:553 とも一致した。前回の low (完全消去の cron が schema guard の外で動くこと) も database の web セルに Migrate→Deploy の順序として入った。requirements_foundation.approval_ref=appr-foundation-cash-004 は実在し、confirmed=true。回答時刻は 22:44:32Z の決定→22:45:09Z の reopen→22:45:23Z の再確定と単調に進み、実測の 22:51:37Z より未来のものは無い。残りは low だけである。database 章の reliability 行が cron の例外を書いていないこと、tx_edits の扱いが上流に無いこと、下流仕様の『利用者未確認』が古くなっていること、target-platforms-001 の provenance が前回から持ち越しであること。",
+      "evidence": [
+        "spec-state.json qa_log: qa-cash-decision-009 (22:44:32Z, basis=user-decision, 選択肢 3 件)、qa-cash-{backend,database,security}-web-005 (22:45:23Z)",
+        "spec-state.json reopen_log: backend/database/security web の reopen 22:45:09Z",
+        "00-requirements-definition.md:70 I3 の末尾に『JSON 復元の空か判定だけは削除中の行も数え…(qa-cash-decision-009)』",
+        "packages/api/src/routes/imports.ts:434-442 restorableCashEntries / :1510, :1989 の呼び出し、packages/api/src/store.ts:1128 destination_counts",
+        "specs/spec-cash-screen.md:553 (下流の対処が上流の決定と一致)",
+        "system-spec/database.md:32 reliability 行 (cron の例外が未記載)"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "今回足した 2 件はどちらも利用者が選択肢から明示的に選んでいる。qa-cash-decision-009 は 3 案 (削除中も件数に数える・復元前に削除中の行を消す・衝突した行だけ飛ばす) と推奨案を示した。qa-cash-decision-010 は『この逐語で承認』と『修正して再提示』の 2 択である。decisions[] が空なのは契約どおりで、needs_guidance の項目は残っていない。"
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "C07 は loop_pass・final_ready とも PASS だった。48 セル (8 カテゴリ × 6 platform) の内訳は確定 8 (web)、対象外 40、未収集 0。再確定した 3 セル (backend / database / security の -005) の qa_ref と qa_refs はすべて qa_log に実在し、確定内容を裏付けている。集約の真理値表は一致し、ungrounded_blocking_items=[]。前回の low (-004 の provenance が関係の無い decision-008 を引いていた) は解消した。-005 は 006 と 009 だけを引いている。sub-input の C06 は総合 PASS。前回 FAIL だった軸 5 は、qa-cash-decision-010 / appr-foundation-cash-004 で逐語の承認を取ったことで閉じた。残りは low 1 件で、preview に示した文字列そのもの (スナップショットやハッシュ) が保存されておらず、逐語一致は provenance の申告と件数の一致 (O1〜O4 が 4 件、scope.in が 7 件) からしか確かめられないこと。C06 の報告にはセル数 80・qa_log 35 件という数え間違いがある (実際は 48 セル・42 件)。ただし判定の要点は変わらないので、C05 は verdict を書き換えていない。",
+      "evidence": [
+        "validate-coverage-matrix.py (loop) exit0 / --require-complete --require-basis exit0",
+        "validate-knowledge-graph.py --profile required-info --state spec-state.json exit0 (ungrounded_blocking_items=[])",
+        "C07: loop_pass=PASS / final_ready=PASS",
+        "C06: 軸 1〜5 PASS (軸 5 に low 1 件)"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "再確定した章でも、card と doctrine の『本章での適用』が確定セルへ具体的に当てられている。database は DDD card を列の選び方に当て、reliability (SRE) を追加のみの migration と EXPECTED_D1_MIGRATION の前進に当てている。security は Secure by Design card を許可リスト・字数・件数の境界に当てている。infrastructure は SRE の operations を既存 cron への相乗りと計画上限 49 に当てている。ポインタが置いてあるだけの章は無い。ただし database の reliability 行は今回の cron の例外 (schema guard の外・Migrate→Deploy の順序) を反映していない (low)。knowledge / doctrine / required-info / cross の 4 profile はすべて exit0。",
+      "evidence": [
+        "aggregate-completeness.py --knowledge-graph exit0 (4 subgate すべて exit0)",
+        "database.md:121 / security.md:128 本章での適用",
+        "infrastructure.md:31-32 reliability / operations 行"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "C08 は PASS。validate-source-citation は exit0。targets 10 件をすべて WebFetch で公式サイトと再照合し、version と更新日は 10 件とも公式の現行値と一致した。非公式 host・世代落ち・未来日付はいずれも 0 件。記録の latest_checked_at=2026-09-21T15:25:02Z は、実測の 22:47:14Z より前である。"
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "installPath 0.1.14 の prompt 18 本すべてで、prompt-creator 2.1.7 の validate-prompt.py --input と verify-completeness.py --input が exit0 だった。"
+    }
+  },
+  "gate_results": [
+    {
+      "id": "G-matrix",
+      "name": "validate-coverage-matrix",
+      "command": ["python3", "scripts/validate-coverage-matrix.py", "--matrix", "spec-state.json", "--require-complete", "--require-basis"],
+      "exit_code": 0,
+      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)) を満たす"
+    },
+    {
+      "id": "G-knowledge-graph",
+      "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)",
+      "exit_code": 0
+    },
+    {
+      "id": "G-required-info-state",
+      "name": "validate-knowledge-graph --profile required-info --state spec-state.json",
+      "exit_code": 0
+    },
+    {
+      "id": "G-doc-sync",
+      "name": "validate-spec-doc-sync",
+      "exit_code": 0,
+      "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"
+    },
+    {
+      "id": "G-source-citation",
+      "name": "validate-source-citation (C08 実行)",
+      "exit_code": 0
+    },
+    {
+      "id": "G-prompt",
+      "name": "validate-prompt + verify-completeness (18 本)",
+      "exit_code": 0
+    }
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection",
+      "observation": "database の web セル (database.md:50) には『夜間 cron の完全消去 job は schema guard の外で動くため、Migrate→Deploy の順序で守る』が入った。一方、同じ章の doctrine 表の reliability 行 (database.md:32) は今も『migration 前の D1 では Worker が論理削除の経路を動かさない』だけで、cron という例外を書いていない。",
+      "suggested_fix": "[compile] database の reliability 行の反映内容に、完全消去の job は guard の外にあり、Migrate→Deploy の順序で守ることを 1 文加える。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace",
+      "observation": "tx_edits (現金明細の個人分 cash:<id> に付く手動の仕分け) の扱いが system-spec のどこにも無い。下流の specs/spec-cash-screen.md は 3 つを決めている。論理削除では残す (:342)、バックアップの tx_edits から削除中の明細を指す行を外す (:554)、完全消去で同じ batch で消す (:605)。いずれも agent 推定・利用者未確認 (:685) である。バックアップから外すことは、上流の『削除中の行の中身はどの出力にも出さない』という不変条件に含まれ、矛盾はしない。しかし 5 経路は cash_entries を読む経路しか挙げていないので、tx_edits は名指しされていない。",
+      "suggested_fix": "[elicit/C01] (low) database または backend の web セルに、tx_edits を論理削除では残し、バックアップでは外し、完全消去で消すことを確かめて足す。または下流の agent 推定のまま据え置くことを明記する。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace",
+      "observation": "下流の specs/spec-cash-screen.md は、今回の決定の前に書かれたままである。:681 は計画上限 49 を『利用者未確認』とし、:685 は JSON 復元の判定に削除中を含む件数を使うことを『利用者未確認』としている。前者は qa-cash-decision-008、後者は 009 で利用者が決めている。system-spec の範囲外だが、上流と下流の根拠の性質がずれている。",
+      "suggested_fix": "[下流の spec 更新] specs/spec-cash-screen.md:681 / :685 の該当箇所を、qa-cash-decision-008 / 009 を根拠とする確定に直す。"
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage",
+      "observation": "C06 (sub-input) 軸 5 の残存。qa-cash-decision-010 / appr-foundation-cash-004 は『保存済みの文面のまま、縮めずに示した』と記録している。しかし preview に示した文字列そのもの (スナップショットやハッシュ) は保存されていない。逐語一致は provenance の申告、件数の一致 (O1〜O4 が 4 件、scope.in が 7 件)、事後改変が無いことからしか確かめられない。",
+      "suggested_fix": "[elicit/C01] (low・任意) 今後の逐語承認では、preview に示した文面のハッシュか写しを approval_log へ残す。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace",
+      "observation": "前回からの持ち越し。qa-cash-target-platforms-001 (web 以外の 40 セルの qa_ref) の provenance は、今も appr-foundation-cash-001 だけを引いている。",
+      "suggested_fix": "[elicit/C01] (low) provenance に appr-foundation-cash-002〜004 を加える。"
+    },
+    {
+      "severity": "info",
+      "bucket": "foundation_trace",
+      "observation": "3 回目の medium 2 件の解消を確かめた。(1) JSON 復元の主キー衝突は、qa-cash-decision-009 が backend・database・security の -005 と I3 に反映され、repo の現物 (imports.ts:434-442、store.ts:1128) と下流の spec :553 に合う。(2) 逐語の承認は qa-cash-decision-010 / appr-foundation-cash-004 で取られ、C06 軸 5 は PASS に戻った。要件定義書の承認節は appr-004 だけで、旧承認の『縮めた形』の記述は残っていない。3 回目の low のうち、cron の順序 (web セル) と -004 の provenance の decision-008 は解消した。"
+    },
+    {
+      "severity": "info",
+      "bucket": "doc_freshness",
+      "observation": "C08 の参考指摘。tanstack-query・hono-zod-validator・owasp-asvs の official_host は github.com だが、どれも publisher 自身の公式組織のリポジトリで、非公式 host には当たらない。"
+    },
+    {
+      "severity": "info",
+      "bucket": "prompt_quality",
+      "observation": "prompt 18 本すべてで validate-prompt / verify-completeness が exit0 (--input 指定、installPath 0.1.14、prompt-creator 2.1.7)。"
+    }
+  ],
+  "gaps": []
+}

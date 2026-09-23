@@ -1,0 +1,148 @@
+{
+  "feature_package_id": "feature-package/feat-import-screen",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と申し送り・未決事項の解決担当の割り当て"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P01"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P02",
+      "title": "取込規則純関数と IMPORT_LIMITS・検査と確定の API・migration 0050・画面分割のワークストリーム設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P02"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P03",
+      "title": "上限・仮置き・Origin・レート制限・公開範囲の契約の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P03"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P04",
+      "title": "core 境界値・上限の字面・API 契約・migration・DOM の失敗テスト先行作成"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P04"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P05",
+      "title": "import-screen 純関数・検査と確定の API・migration 0050・データ取込画面の分割と旧操作の移設の最終実装"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P05"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P06",
+      "title": "全テストと型検査と lint と verify:full の実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P06"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P07",
+      "title": "受入基準 S1 から S6 の検証"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P07"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P08",
+      "lifecycle_role": "audit",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P08",
+      "title": "上限値と取込規則の重複・旧参照の読取専用監査"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P08"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・ファイル名の無害化・xlsx 展開のメモリ・JS バンドル予算の保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P09"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P10"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P11"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P12",
+      "title": "ファイルの状態・上限値・取込可否・要約・エラー文言の規則表の docs 最終同期"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPORT-P12"
+      ],
+      "feature_package_id": "feature-package/feat-import-screen",
+      "id": "SYS-IMPORT-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-import-screen",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信と migration 0050 の適用とクローズアウト"
+    }
+  ],
+  "parent_feature": "feat-import-screen",
+  "schema_version": "1.0.0"
+}

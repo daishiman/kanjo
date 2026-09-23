@@ -9,6 +9,14 @@ import {
   type Dataset,
   FINGERPRINT_VERSION,
   type FreeeDeal,
+  IMPORT_LIMITS,
+  IMPORT_MB,
+  type ImportDuplicate,
+  type ImportFileState,
+  type ImportHistoryResult,
+  type ImportRunResult,
+  type ImportSource,
+  type ImportValidation,
   OWNER_VALUES,
   OwnerValidationError,
   SUB_VENDOR_NAME_MAX,
@@ -21,28 +29,56 @@ import {
   cashBizDeals,
   cashTxId,
   emptyDataset,
+  freeeDealKeys,
+  importArchiveViolation,
+  importBodyLimitBytes,
+  importDuplicate,
+  importFileSelectable,
+  importFileState,
   importGenerationState,
+  importHistoryActions,
   importHistoryCancelable,
   importHistoryDiscardBlock,
+  importHistoryHideable,
+  importInspectionSummary,
   importJSON,
+  importLimitViolation,
+  importLimitsNote,
+  importPeriodFromMonths,
+  importRunResult,
+  importUndoDeadline,
+  importValidation,
   isCashTxId,
   isCloseMonth,
+  isImportSource,
   isReviewItemKey,
   isReviewItemKind,
+  mfStableKey,
   normalizeBaseKnown,
   normalizeVendorKey,
+  orderedImportSources,
   projectAccountingDataset,
+  reconcileBizDuplicates,
   resolveIncomingTx,
+  sourceNeutralSubscriptionDeals,
+  subsCandidates,
   validateTxSplitsForDataset,
   vendorKey,
 } from '@kanjo/core';
 import { and, desc, eq } from 'drizzle-orm';
-import { Hono } from 'hono';
+import { type Context, Hono, type MiddlewareHandler } from 'hono';
+import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import { AuditValidationError } from '../audit-log.js';
-import type { AuthEnv } from '../auth.js';
+import type { AuthEnv, AuthVariables } from '../auth.js';
 import { budgetPlansBackupSchema } from '../budget-plan-schema.js';
 import * as s from '../db/schema.js';
+import {
+  DELETION_UNDO_RETENTION_DAYS,
+  DeletionScopeChangedError,
+  executeDeletion,
+  planDeletion,
+} from '../deletion-lifecycle.js';
 import { computeImportDiff, diffBaselineFromDataset, importResolutionFingerprint } from '../import-diff.js';
 import {
   type MfResolutionAuditDecision,
@@ -82,7 +118,14 @@ import {
   legacyImportCountAliases,
   parseUpload,
   unitFingerprint,
+  zipCentralDirectoryStats,
 } from '../import-pipeline.js';
+import {
+  type ImportRateLimitKind,
+  consumeImportRateLimit,
+  importRateLimitedResponse,
+  purgeExpiredImportRows,
+} from '../import-rate-limit.js';
 import {
   type CashProjectionEnvelope,
   CashProjectionError,
@@ -95,7 +138,7 @@ import {
   removeCashProjection,
 } from '../store.js';
 
-type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
+type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
 
 export const importsRoute = new Hono<Ctx>();
 
@@ -580,7 +623,7 @@ interface PreparedUnit {
 }
 
 interface PreparedFile {
-  file: File;
+  file: { name: string };
   buf: Uint8Array;
   units: PreparedUnit[];
 }
@@ -1396,43 +1439,162 @@ async function executePreparedUnit(args: {
   }
 }
 
-importsRoute.post('/imports', async (c) => {
+/*
+ * 旧来の 1 要求で検査と確定をまとめる互換経路。新しい取込画面は使わず、ローカル seed・互換利用・
+ * 既存 API テストのために残す。本文の上限とファイル数・合計の上限は新経路と同じ値を掛ける。
+ * 互換経路も新経路と同じ確定レート制限で保護する。廃止判断だけを backlog で追跡する。
+ */
+importsRoute.post(
+  '/imports',
+  importRateLimit('commit'),
+  (c, next) => importUploadBodyLimit(c, next),
+  async (c) => {
+    const form = await c.req.formData();
+    const files = form.getAll('file').filter((f): f is File => f instanceof File);
+    if (!files.length) {
+      return c.json({ error: { code: 'no_file', message: 'ファイルが指定されていません' } }, 400);
+    }
+
+    // 「同じ内容でも取り込み直す」チェック。既定は重複をスキップする
+    const force = form.get('force') === '1';
+    // 「件数が減る取込は実行せず、前回の内容を残す」チェック。月の途中までのファイルを掴んだときの安全弁
+    const keepOnShrink = form.get('keepOnShrink') === '1';
+    let requestedResolution: ResolutionRequest | null = null;
+    const resolutionRaw = form.get('resolutionPlan');
+    if (resolutionRaw !== null) {
+      if (typeof resolutionRaw !== 'string')
+        return c.json({ error: { code: 'invalid_resolution', message: '取込の解決内容が不正です' } }, 400);
+      try {
+        const parsed = resolutionRequestSchema.safeParse(JSON.parse(resolutionRaw));
+        if (!parsed.success)
+          return c.json({ error: { code: 'invalid_resolution', message: '取込の解決内容が不正です' } }, 400);
+        requestedResolution = parsed.data;
+      } catch {
+        return c.json({ error: { code: 'invalid_resolution', message: '取込の解決内容が不正です' } }, 400);
+      }
+    }
+    // ファイル数と合計は core の共通判定で断る。1 ファイルの超過は旧来の code (file_too_large) のまま下で返す
+    const violation = importLimitViolation({
+      files: files.map((file) => ({ name: file.name, size: file.size })),
+    });
+    if (violation && violation.kind !== 'file') return payloadTooLarge(c, violation.reason);
+    const bufferedFiles: BufferedImportFile[] = [];
+    for (const file of files) {
+      if (file.size > IMPORT_LIMITS.maxFileBytes) {
+        return c.json(
+          {
+            error: {
+              code: 'file_too_large',
+              message: `1ファイルは${importLimitsFileText()}以下にしてください`,
+            },
+          },
+          413,
+        );
+      }
+      bufferedFiles.push({ file: { name: file.name }, buf: new Uint8Array(await file.arrayBuffer()) });
+    }
+    return runMultipartImport(c, {
+      files: bufferedFiles,
+      force,
+      keepOnShrink,
+      keepPrevious: false,
+      requestedResolution,
+    });
+  },
+);
+
+/** 取込1件ぶんの入力。multipart と検査の保管 (R2) のどちらから来ても同じ形にする */
+export interface BufferedImportFile {
+  file: { name: string };
+  buf: Uint8Array;
+}
+
+/** 取込で増えた件数・既存と同じで足さなかった件数・サブスク候補の増分 */
+export interface ImportImpact {
+  added: number;
+  skipped: number;
+  subsCandidates: number;
+}
+
+const importLimitsFileText = (): string => `${IMPORT_LIMITS.maxFileBytes / IMPORT_MB}MB`;
+
+/**
+ * 「前回データを残す」: 取込先の月にある既存の行を残し、無い行だけを足す。
+ * 洗い替えの前に unit の中身を「既存 ∪ 新規」に差し替えるため、後段の確定経路は変えない。
+ * 同一性は MF が stable_key と tx_id、freee が内容の鍵 (同じ内容の行は出現順の番号付き)。
+ */
+function keepPreviousUnion(
+  unit: ParsedUnit,
+  data: Dataset,
+  freeeDeals: FreeeDeal[],
+): { unit: ParsedUnit; added: number; skipped: number } {
+  if (unit.kind === 'mf') {
+    const months = new Set(unit.months);
+    const existing = data.mfTx.filter((tx) => months.has(tx.m) && !isCashTxId(tx.id));
+    const keys = new Set(existing.map((tx) => mfStableKey(tx)));
+    const ids = new Set(existing.map((tx) => tx.id));
+    const fresh = unit.txs.filter((tx) => !keys.has(mfStableKey(tx)) && !ids.has(tx.id));
+    const txs = [...existing, ...fresh];
+    return {
+      unit: { ...unit, txs, rows: txs.length },
+      added: fresh.length,
+      skipped: unit.txs.length - fresh.length,
+    };
+  }
+  if (unit.kind === 'freee') {
+    const months = new Set(unit.months);
+    const existing = freeeDeals.filter((deal) => months.has(deal.month));
+    const keys = new Set(freeeDealKeys(existing));
+    const incomingKeys = freeeDealKeys(unit.deals);
+    const fresh = unit.deals.filter((_, i) => !keys.has(incomingKeys[i]));
+    const deals = [...existing, ...fresh];
+    return {
+      unit: { ...unit, deals, rows: deals.length },
+      added: fresh.length,
+      skipped: unit.deals.length - fresh.length,
+    };
+  }
+  return { unit, added: unit.kind === 'error' || unit.kind === 'json' ? 0 : unit.rows, skipped: 0 };
+}
+
+/** サブスク候補に挙がる支払先の集合。取込の前後で比べ、新しく現れた数を影響として返す */
+const subsCandidatePartners = (
+  data: Dataset,
+  deals: FreeeDeal[],
+  settings: ImportRestoreSettingsSnapshot,
+): Set<string> =>
+  new Set(
+    subsCandidates(
+      sourceNeutralSubscriptionDeals(data, deals),
+      settings.subVendors,
+      20,
+      settings.subVendorExclusions.map((e) => e.partner),
+    ).map((candidate) => vendorKey(candidate.partner)),
+  );
+
+/**
+ * POST /imports と検査を経た確定 (POST /imports/runs) が共有する取込本体。
+ * 返すのは Response。前者はそのまま返し、後者は本文を読んで画面向けの形へ詰め替える。
+ */
+export async function runMultipartImport(
+  c: Context<Ctx>,
+  input: {
+    files: BufferedImportFile[];
+    force: boolean;
+    keepOnShrink: boolean;
+    keepPrevious: boolean;
+    requestedResolution: ResolutionRequest | null;
+    /** 呼び出し側 (検査の読み込み・レート制限・run の件数更新) が同じ invocation で使う query 数 */
+    extraQueries?: number;
+    /** 採番済みの run ID。検査を経る経路は先に決めて staging の片付けに使う */
+    runId?: string;
+  },
+): Promise<Response> {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const form = await c.req.formData();
-  const files = form.getAll('file').filter((f): f is File => f instanceof File);
-  if (!files.length) {
-    return c.json({ error: { code: 'no_file', message: 'ファイルが指定されていません' } }, 400);
-  }
-
-  // 「同じ内容でも取り込み直す」チェック。既定は重複をスキップする
-  const force = form.get('force') === '1';
-  // 「件数が減る取込は実行せず、前回の内容を残す」チェック。月の途中までのファイルを掴んだときの安全弁
-  const keepOnShrink = form.get('keepOnShrink') === '1';
-  let requestedResolution: ResolutionRequest | null = null;
-  const resolutionRaw = form.get('resolutionPlan');
-  if (resolutionRaw !== null) {
-    if (typeof resolutionRaw !== 'string')
-      return c.json({ error: { code: 'invalid_resolution', message: '取込の解決内容が不正です' } }, 400);
-    try {
-      const parsed = resolutionRequestSchema.safeParse(JSON.parse(resolutionRaw));
-      if (!parsed.success)
-        return c.json({ error: { code: 'invalid_resolution', message: '取込の解決内容が不正です' } }, 400);
-      requestedResolution = parsed.data;
-    } catch {
-      return c.json({ error: { code: 'invalid_resolution', message: '取込の解決内容が不正です' } }, 400);
-    }
-  }
-  const bufferedFiles: Array<{ file: File; buf: Uint8Array }> = [];
-  for (const file of files) {
-    if (file.size > 25 * 1024 * 1024) {
-      return c.json({ error: { code: 'file_too_large', message: '1ファイルは25MB以下にしてください' } }, 413);
-    }
-    bufferedFiles.push({ file, buf: new Uint8Array(await file.arrayBuffer()) });
-  }
-
+  const { files: bufferedFiles, force, keepOnShrink, keepPrevious, requestedResolution } = input;
   // claim自体は期限付きのephemeral coordinationであり、受理前にrun/R2/canonicalは作らない。
-  const runId = crypto.randomUUID();
+  const runId = input.runId ?? crypto.randomUUID();
   if (!(await acquireImportWriter(c.env.DB, userId, runId))) {
     return c.json(
       { error: { code: 'import_busy', message: '別の取込処理が進行中です。完了後に再試行してください' } },
@@ -1486,6 +1648,8 @@ importsRoute.post('/imports', async (c) => {
     candidates: 0,
   };
   let preflightAccepted = false;
+  const impact: ImportImpact = { added: 0, skipped: 0, subsCandidates: 0 };
+  let subsBefore = new Set<string>();
   try {
     // writer claim取得後のsnapshotだけを、計画と実行の双方で共有する。
     restoreSettings = await loadImportRestoreSettingsSnapshot(db, userId);
@@ -1543,6 +1707,21 @@ importsRoute.post('/imports', async (c) => {
     mfCount = new Map<string, number>();
     for (const tx of data.mfTx) {
       if (!isCashTxId(tx.id)) mfCount.set(tx.m, (mfCount.get(tx.m) ?? 0) + 1);
+    }
+    if (keepPrevious) {
+      subsBefore = subsCandidatePartners(data, freeeDeals, restoreSettings);
+      for (const preparedFile of preparedFiles) {
+        for (const prepared of preparedFile.units) {
+          const merged = keepPreviousUnion(prepared.unit, data, freeeDeals);
+          prepared.unit = merged.unit;
+          impact.added += merged.added;
+          impact.skipped += merged.skipped;
+        }
+      }
+    } else {
+      for (const unit of preparedFiles.flatMap((file) => file.units)) {
+        if (unit.unit.kind !== 'error' && unit.unit.kind !== 'json') impact.added += unit.unit.rows;
+      }
     }
     if (keepOnShrink) {
       // 実行前に判定する。洗い替えは月単位でDELETEしてから入れ直すため、実行後に「前回を残す」ことはできない
@@ -1602,6 +1781,7 @@ importsRoute.post('/imports', async (c) => {
       applicableUnitCount: applicableUnits.length,
       jsonUnitCount: applicableUnits.filter((prepared) => prepared.unit.kind === 'json').length,
       commitStatementCounts,
+      extraQueries: input.extraQueries,
     });
     if (!queryPlan.accepted) return c.json(queryBudgetError(queryPlan.total), 413);
     preflightAccepted = true;
@@ -1783,6 +1963,24 @@ importsRoute.post('/imports', async (c) => {
   } finally {
     await releaseImportWriter(c.env.DB, userId, runId);
   }
+  if (keepPrevious) {
+    // 確定した freee unit の月は、差し替え後の取引で置き換えた一覧で数え直す (追加の query は使わない)
+    const committedFreee = preparedFiles
+      .flatMap((file) => file.units)
+      .map((prepared) => prepared.unit)
+      .filter(
+        (unit): unit is Extract<ParsedUnit, { kind: 'freee' }> =>
+          unit.kind === 'freee' &&
+          results.some((result) => result.filename === unit.filename && result.status === 'committed'),
+      );
+    const replacedMonths = new Set(committedFreee.flatMap((unit) => unit.months));
+    const afterDeals = [
+      ...freeeDeals.filter((deal) => !replacedMonths.has(deal.month)),
+      ...committedFreee.flatMap((unit) => unit.deals),
+    ];
+    const subsAfter = subsCandidatePartners(data, afterDeals, restoreSettings);
+    impact.subsCandidates = [...subsAfter].filter((key) => !subsBefore.has(key)).length;
+  }
   // 見送ったunitも画面には出す。実行した分と混ざらないよう、順序は「実行→見送り」で固定する
   const all = [...results, ...keptResults];
   const ok = all.some((result) => result.status === 'committed');
@@ -1790,10 +1988,10 @@ importsRoute.post('/imports', async (c) => {
   const allSkipped =
     all.length > 0 && all.every((result) => result.status === 'duplicate' || result.status === 'kept');
   return c.json(
-    { runId, results: all, ok, queryPlan, resolution: resolutionSummary },
+    { runId, results: all, ok, queryPlan, resolution: resolutionSummary, impact },
     ok || allSkipped ? 200 : 400,
   );
-});
+}
 
 /** imports.target_keys は JSON 文字列。壊れていても履歴一覧を落とさず、対象キー不明として扱う */
 function parseTargetKeys(raw: string | null): string[] {
@@ -1805,16 +2003,12 @@ function parseTargetKeys(raw: string | null): string[] {
   }
 }
 
-importsRoute.get('/imports', async (c) => {
-  const userId = c.get('userId');
-  const db = getDb(c.env.DB);
-  const rows = await db
-    .select()
-    .from(s.imports)
-    .where(eq(s.imports.userId, userId))
-    .orderBy(desc(s.imports.id))
-    .limit(100);
-  const activeRows = await db
+/**
+ * 取込ごとの「いま何を所有し、何から参照されているか」。履歴の状態 (有効・置き換え・取り消し済み) と
+ * 取り消し・破棄の入口は、状態名ではなくこの数から導く。ファイル単位の一覧と取込 1 回の一覧で共有する。
+ */
+async function loadImportOwnership(database: D1Database, userId: string) {
+  const activeRows = await getDb(database)
     .select({ importId: s.importActiveTargets.importId, targetKey: s.importActiveTargets.targetKey })
     .from(s.importActiveTargets)
     .where(eq(s.importActiveTargets.userId, userId));
@@ -1826,8 +2020,9 @@ importsRoute.get('/imports', async (c) => {
     activeCounts.set(row.importId, (activeCounts.get(row.importId) ?? 0) + 1);
     ownedTargetKeys.add(row.targetKey);
   }
-  const protectedReferences = await c.env.DB.prepare(
-    `SELECT import_id,SUM(canonical_rows) AS canonical_rows,SUM(undo_snapshots) AS undo_snapshots
+  const protectedReferences = await database
+    .prepare(
+      `SELECT import_id,SUM(canonical_rows) AS canonical_rows,SUM(undo_snapshots) AS undo_snapshots
        FROM (
          SELECT import_id,COUNT(*) AS canonical_rows,0 AS undo_snapshots
            FROM mf_transactions WHERE user_id=? AND import_id IS NOT NULL GROUP BY import_id
@@ -1845,10 +2040,51 @@ importsRoute.get('/imports', async (c) => {
           GROUP BY CAST(json_extract(payload_json,'$.import_id') AS INTEGER)
        )
       GROUP BY import_id`,
-  )
+    )
     .bind(userId, userId, userId, userId)
     .all<{ import_id: number; canonical_rows: number; undo_snapshots: number }>();
   const protectedCounts = new Map(protectedReferences.results.map((row) => [row.import_id, row] as const));
+  return { activeCounts, ownedTargetKeys, protectedCounts };
+}
+
+type ImportOwnership = Awaited<ReturnType<typeof loadImportOwnership>>;
+
+/** 1 取込の状態と、取り消し・破棄の入口。 */
+function importLifecycleView(
+  r: { id: number; status: string | null; targetKeys: string | null },
+  ownership: ImportOwnership,
+) {
+  const activeTargetCount = ownership.activeCounts.get(r.id) ?? 0;
+  const canonicalRowCount = Number(ownership.protectedCounts.get(r.id)?.canonical_rows ?? 0);
+  return {
+    generationState: importGenerationState({
+      status: r.status as never,
+      targetKeys: parseTargetKeys(r.targetKeys),
+      ownTargetCount: activeTargetCount,
+      ownedTargetKeys: ownership.ownedTargetKeys,
+      canonicalRowCount,
+    }),
+    cancelable: importHistoryCancelable({ status: r.status as never, activeTargetCount, canonicalRowCount }),
+    discardable:
+      importHistoryDiscardBlock({
+        status: r.status as never,
+        activeTargetCount,
+        canonicalRowCount,
+        undoSnapshotCount: Number(ownership.protectedCounts.get(r.id)?.undo_snapshots ?? 0),
+      }) === null,
+  };
+}
+
+importsRoute.get('/imports', async (c) => {
+  const userId = c.get('userId');
+  const db = getDb(c.env.DB);
+  const rows = await db
+    .select()
+    .from(s.imports)
+    .where(eq(s.imports.userId, userId))
+    .orderBy(desc(s.imports.id))
+    .limit(100);
+  const ownership = await loadImportOwnership(c.env.DB, userId);
   return c.json({
     imports: rows.map((r) => ({
       id: r.id,
@@ -1859,32 +2095,12 @@ importsRoute.get('/imports', async (c) => {
       status: r.status,
       failureReason: r.failureReason ?? null,
       duplicateOf: r.duplicateOf ?? null,
-      generationState: importGenerationState({
-        status: r.status,
-        targetKeys: parseTargetKeys(r.targetKeys),
-        ownTargetCount: activeCounts.get(r.id) ?? 0,
-        ownedTargetKeys,
-        canonicalRowCount: Number(protectedCounts.get(r.id)?.canonical_rows ?? 0),
-      }),
+      ...importLifecycleView(r, ownership),
       createdAt: r.createdAt,
       committedAt: r.committedAt ?? null,
       // 投入した原本をR2へ保存できた取込だけ、やり直し(再取込)の入口を出せる。
       // ここはkeyの有無しか見ない(100行ぶんHEADを打つのは割に合わない)。実在確認は原本取得時に行う。
       originalRecorded: r.r2Key !== null,
-      /** 取込状態名ではなく、現在の所有・参照から帳簿取消の入口を出す。 */
-      cancelable: importHistoryCancelable({
-        status: r.status,
-        activeTargetCount: activeCounts.get(r.id) ?? 0,
-        canonicalRowCount: Number(protectedCounts.get(r.id)?.canonical_rows ?? 0),
-      }),
-      /** 帳簿本体ではなく、この履歴と不要原本だけを破棄できるか。最終判定は実行APIで再度行う。 */
-      discardable:
-        importHistoryDiscardBlock({
-          status: r.status,
-          activeTargetCount: activeCounts.get(r.id) ?? 0,
-          canonicalRowCount: Number(protectedCounts.get(r.id)?.canonical_rows ?? 0),
-          undoSnapshotCount: Number(protectedCounts.get(r.id)?.undo_snapshots ?? 0),
-        }) === null,
     })),
   });
 });
@@ -2150,4 +2366,1359 @@ importsRoute.post('/restore', async (c) => {
   } finally {
     await releaseImportWriter(c.env.DB, userId, runId);
   }
+});
+
+/* ======================== データ取込画面 (16-import) ======================== */
+/*
+ * 検査 → 確定 → 履歴 の 3 段。検査は明細の表に 1 行も書かず、原本を R2 の仮置きへ置くだけにする。
+ * 確定は本人の期限内の検査 ID だけを受け付け、既存の取込本体 (runMultipartImport) を 1 回だけ通す。
+ * 判定の順は Origin (index.ts) → レート制限 → 本文の上限 → 本文の形 → 件数・大きさ → ファイルごとの検査。
+ */
+
+/** 確定・一括削除・取り消しの JSON 本文の上限。ファイルを載せない要求は小さい上限で止める。 */
+const IMPORT_JSON_BODY_LIMIT_BYTES = 64 * 1024;
+
+const notFound = (c: Context) =>
+  c.json({ error: { code: 'not_found', message: '対象が見つかりません。最初から選び直してください' } }, 404);
+
+const invalidRequest = (c: Context, message: string) =>
+  c.json({ error: { code: 'invalid_request', message } }, 400);
+
+const payloadTooLarge = (c: Context, reason?: string) =>
+  c.json(
+    {
+      error: {
+        code: 'payload_too_large',
+        message: `${reason ? `${reason}のため受け付けられません。` : ''}${importLimitsNote()}`,
+      },
+    },
+    413,
+  );
+
+/** 検査・ファイル追加の本文。Content-Length があればその値で、無ければ読みながら数えて止める。 */
+const importUploadBodyLimit = bodyLimit({
+  maxSize: importBodyLimitBytes(),
+  onError: (c) => payloadTooLarge(c),
+});
+
+const importJsonBodyLimit = bodyLimit({
+  maxSize: IMPORT_JSON_BODY_LIMIT_BYTES,
+  onError: (c) => c.json({ error: { code: 'payload_too_large', message: 'リクエストが大きすぎます' } }, 413),
+});
+
+function importRateLimit(kind: ImportRateLimitKind): MiddlewareHandler<Ctx> {
+  return async (c, next) => {
+    const decision = await consumeImportRateLimit(c.env.DB, c.get('userId'), kind, Date.now());
+    if (!decision.allowed) return importRateLimitedResponse(c, decision);
+    await next();
+  };
+}
+
+/**
+ * 記録するファイル名。制御文字を除き、パスの区切りは「_」に置き換え、255 文字 (コードポイント) で切る。
+ * 拡張子で取込元を判定するので、切るときは拡張子を残す。ZIP の中身は「ZIP 名/中身の名前」で結果に出るため、
+ * 最上位の名前に「/」が残ると、どのファイルの結果かを取り違える。
+ */
+// biome-ignore lint/suspicious/noControlCharactersInRegex: ファイル名の制御文字を記録しないため
+const FILENAME_CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/g;
+
+export function sanitizeImportFilename(name: string): string {
+  const max = IMPORT_LIMITS.maxFilenameLength;
+  const cleaned = [...name.replace(FILENAME_CONTROL_CHARACTERS, '').replace(/[/\\]/g, '_').trim()];
+  if (!cleaned.length) return 'import';
+  if (cleaned.length <= max) return cleaned.join('');
+  const dot = cleaned.lastIndexOf('.');
+  const extension = dot > 0 && cleaned.length - dot <= 10 ? cleaned.slice(dot) : [];
+  return [...cleaned.slice(0, max - extension.length), ...extension].join('');
+}
+
+interface UploadedImportFile {
+  name: string;
+  size: number;
+  buf: Uint8Array;
+}
+
+/** multipart の file パートを読む。0 個なら 400、上限の超過はパースより前に 413。 */
+async function readImportUpload(
+  c: Context<Ctx>,
+  prior?: { count: number; totalBytes: number },
+): Promise<UploadedImportFile[] | Response> {
+  let form: FormData;
+  try {
+    form = await c.req.formData();
+  } catch {
+    return invalidRequest(c, 'ファイルを読み取れませんでした。選び直してください');
+  }
+  const parts = form.getAll('file').filter((entry): entry is File => entry instanceof File);
+  if (!parts.length) return invalidRequest(c, 'ファイルが指定されていません');
+  const named = parts.map((part) => ({ part, name: sanitizeImportFilename(part.name) }));
+  const violation = importLimitViolation({
+    files: named.map(({ part, name }) => ({ name, size: part.size })),
+    prior,
+  });
+  if (violation) return payloadTooLarge(c, violation.reason);
+  const files: UploadedImportFile[] = [];
+  for (const { part, name } of named) {
+    files.push({ name, size: part.size, buf: new Uint8Array(await part.arrayBuffer()) });
+  }
+  return files;
+}
+
+/** 検査結果の要約 (import_inspection_files.summary_json)。明細の中身は入れない。 */
+interface InspectionSummaryJson {
+  rowCount: number;
+  skipped: number;
+  months: string[];
+  validation: ImportValidation;
+  duplicate: ImportDuplicate;
+  reason: string | null;
+  identicalOf: number | null;
+  subsEstimate: number;
+  /**
+   * 確定応答が届かなかったときに同じ file ID を安全に再送できるように残す完了記録。
+   * 明細や原本は含まず、画面に返す結果だけを保持する。
+   */
+  commit?: {
+    state: ImportFileState;
+    rowCount: number;
+    reason: string | null;
+    possibleDuplicates: number;
+  };
+}
+
+interface InspectionFileRow {
+  id: string;
+  inspection_id: string;
+  position: number;
+  filename: string;
+  source: string | null;
+  period_from: string | null;
+  period_to: string | null;
+  size: number;
+  content_hash: string | null;
+  summary_json: string;
+  error_kind: string | null;
+  r2_key: string | null;
+}
+
+const EMPTY_SUMMARY: InspectionSummaryJson = {
+  rowCount: 0,
+  skipped: 0,
+  months: [],
+  validation: { kind: 'error', count: 1 },
+  duplicate: { kind: 'none', count: 0 },
+  reason: '検査結果を読み取れません',
+  identicalOf: null,
+  subsEstimate: 0,
+};
+
+function parseInspectionSummary(raw: string): InspectionSummaryJson {
+  try {
+    const parsed = JSON.parse(raw) as Partial<InspectionSummaryJson>;
+    return { ...EMPTY_SUMMARY, ...parsed };
+  } catch {
+    return EMPTY_SUMMARY;
+  }
+}
+
+/** 項目の状態。上限の超過 (error_kind='limit') は検査結果より先に取込不可にする。 */
+function inspectionFileStatus(row: InspectionFileRow, force: boolean) {
+  const summary = parseInspectionSummary(row.summary_json);
+  const status = importFileState({
+    commit: null,
+    limitViolation: row.error_kind === 'limit' ? (summary.reason ?? '上限を超えています') : null,
+    uploaded: true,
+    inspection:
+      row.error_kind === 'limit'
+        ? null
+        : { validation: summary.validation, duplicate: summary.duplicate, errorReason: summary.reason },
+    force,
+  });
+  return { summary, ...status };
+}
+
+function inspectionFileView(row: InspectionFileRow) {
+  const { summary, state, reason } = inspectionFileStatus(row, false);
+  return {
+    id: row.id,
+    filename: row.filename,
+    source: isImportSource(row.source) ? row.source : null,
+    periodFrom: row.period_from,
+    periodTo: row.period_to,
+    size: row.size,
+    rowCount: summary.rowCount,
+    duplicate: summary.duplicate,
+    validation: summary.validation,
+    state,
+    reason,
+    subsEstimate: summary.subsEstimate,
+  };
+}
+
+function inspectionBody(id: string, expiresAt: string, rows: InspectionFileRow[]) {
+  const files = [...rows].sort((a, b) => a.position - b.position).map(inspectionFileView);
+  return {
+    id,
+    expiresAt,
+    files: files.map(({ subsEstimate: _subsEstimate, ...file }) => file),
+    summary: importInspectionSummary(files),
+  };
+}
+
+async function loadInspectionFiles(
+  database: D1Database,
+  userId: string,
+  inspectionId: string,
+): Promise<InspectionFileRow[]> {
+  const rows = await database
+    .prepare(
+      `SELECT id,inspection_id,position,filename,source,period_from,period_to,size,content_hash,summary_json,error_kind,r2_key
+         FROM import_inspection_files WHERE inspection_id=? AND user_id=? ORDER BY position`,
+    )
+    .bind(inspectionId, userId)
+    .all<InspectionFileRow>();
+  return rows.results;
+}
+
+/**
+ * 本人の・期限内の・確定していない検査だけを返す。それ以外は区別せず null (404)。
+ * 本人は actor_id で見る。user_id は全利用者が共有するテナントキーなので、それだけでは他人の検査に届く。
+ */
+async function loadOpenInspection(
+  database: D1Database,
+  userId: string,
+  actorId: string,
+  inspectionId: string,
+) {
+  return database
+    .prepare(
+      `SELECT id,expires_at,run_id FROM import_inspections
+        WHERE id=? AND user_id=? AND actor_id=? AND status='open' AND expires_at>?`,
+    )
+    .bind(inspectionId, userId, actorId, new Date().toISOString())
+    .first<{ id: string; expires_at: string; run_id: string | null }>();
+}
+
+const sha256Hex = async (buf: Uint8Array): Promise<string> =>
+  [...new Uint8Array(await crypto.subtle.digest('SHA-256', buf))]
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+/** JSON バックアップは行の概念が無いので、明細の件数を行数として見せる */
+const jsonRowCount = (json: Record<string, unknown>): number =>
+  Array.isArray(json.mfTx) ? Math.max(1, json.mfTx.length) : 1;
+
+/**
+ * ファイルごとの検査。明細の表には書かず、見込みは取込前の正本の複製に当てて数える。
+ * 重複の可能性・サブスク候補は「前回データを残す」(既定) で当てたときの近似で、確定時の記録値とは別物である。
+ */
+async function inspectUploadedFiles(
+  c: Context<Ctx>,
+  userId: string,
+  inspectionId: string,
+  files: UploadedImportFile[],
+  startPosition: number,
+): Promise<InspectionFileRow[]> {
+  const db = getDb(c.env.DB);
+  const settings = await loadImportRestoreSettingsSnapshot(db, userId);
+  const base = await loadDataset(db, userId, settings.cashEntries, { withSplits: false });
+  base.txSplits = settings.txSplits;
+  const baseReview = reconcileBizDuplicates(base, settings.freeeDeals).review.length;
+  const baseSubs = subsCandidatePartners(base, settings.freeeDeals, settings);
+
+  const rows: InspectionFileRow[] = [];
+  const hashChecks: Array<{ rowIndex: number; statement: D1PreparedStatement; targetCount: number }> = [];
+  const unitCounts: number[] = [];
+  for (const [offset, file] of files.entries()) {
+    const id = crypto.randomUUID();
+    const row: InspectionFileRow = {
+      id,
+      inspection_id: inspectionId,
+      position: startPosition + offset,
+      filename: file.name,
+      source: null,
+      period_from: null,
+      period_to: null,
+      size: file.size,
+      content_hash: null,
+      summary_json: '',
+      error_kind: null,
+      r2_key: null,
+    };
+    const summary: InspectionSummaryJson = { ...EMPTY_SUMMARY, reason: null };
+    const archive = zipCentralDirectoryStats(file.buf);
+    const archiveViolation = archive ? importArchiveViolation(archive) : null;
+    if (archiveViolation) {
+      // 展開せずに取込不可にする。要求全体は拒否しない
+      row.error_kind = 'limit';
+      row.summary_json = JSON.stringify({ ...summary, reason: archiveViolation.reason });
+      rows.push(row);
+      unitCounts.push(0);
+      continue;
+    }
+    const units = parseUpload(file.name, file.buf, settings.normMap);
+    const usable = units.filter((unit) => unit.kind !== 'error');
+    const failures = units.filter(
+      (unit): unit is Extract<ParsedUnit, { kind: 'error' }> => unit.kind === 'error',
+    );
+    const rowCount = usable.reduce(
+      (sum, unit) => sum + (unit.kind === 'json' ? jsonRowCount(unit.json) : unit.rows),
+      0,
+    );
+    const skipped =
+      usable.reduce((sum, unit) => sum + (unit.kind === 'json' ? 0 : unit.skipped), 0) +
+      (usable.length ? failures.length : 0);
+    const months = [...new Set(usable.flatMap((unit) => (unit.kind === 'json' ? [] : unit.months)))].sort();
+    const period = importPeriodFromMonths(months);
+    row.source = orderedImportSources(usable.map((unit) => unit.kind))[0] ?? null;
+    row.period_from = period.from;
+    row.period_to = period.to;
+    row.content_hash = await sha256Hex(file.buf);
+    summary.rowCount = rowCount;
+    summary.skipped = skipped;
+    summary.months = months;
+    summary.validation = importValidation({ error: usable.length === 0, rows: rowCount, skipped });
+    summary.reason = usable.length === 0 ? (failures[0]?.reason ?? '取り込めない形式です') : null;
+    if (summary.validation.kind === 'error') row.error_kind = 'validation';
+
+    // 見込み: 取込前の複製へ当て、増えた二重計上の候補とサブスク候補を数える
+    if (usable.length) {
+      const candidate = structuredClone(base);
+      let deals = settings.freeeDeals;
+      for (const unit of usable) {
+        if (unit.kind === 'mf') {
+          const merged = keepPreviousUnion(unit, candidate, deals).unit;
+          if (merged.kind === 'mf') applyMfTxs(candidate, canonicalMfTransactions(merged.txs));
+        } else if (unit.kind === 'freee') {
+          const merged = keepPreviousUnion(unit, candidate, deals).unit;
+          const replaced = new Set(unit.months);
+          if (merged.kind === 'freee')
+            deals = [...deals.filter((deal) => !replaced.has(deal.month)), ...merged.deals];
+        }
+      }
+      const possible = Math.max(0, reconcileBizDuplicates(candidate, deals).review.length - baseReview);
+      summary.duplicate = importDuplicate({ identical: false, possibleCount: possible });
+      summary.subsEstimate = [...subsCandidatePartners(candidate, deals, settings)].filter(
+        (key) => !baseSubs.has(key),
+      ).length;
+    }
+
+    // 取込済みと同一: 使える unit がすべて有効な取込と同じ内容なら「同一」
+    let checks = 0;
+    for (const unit of usable) {
+      if (unit.kind === 'json') continue;
+      const contentHash = await unitFingerprint(unit);
+      const targetKeys = targetKeysForUnit(unit);
+      if (!contentHash || !targetKeys.length) continue;
+      checks += 1;
+      hashChecks.push({
+        rowIndex: rows.length,
+        targetCount: targetKeys.length,
+        statement: c.env.DB.prepare(
+          `SELECT COUNT(*) AS matched, MIN(import_id) AS import_id
+             FROM import_active_targets
+            WHERE user_id=? AND content_hash=?
+              AND target_key IN (SELECT CAST(value AS TEXT) FROM json_each(?))`,
+        ).bind(userId, contentHash, JSON.stringify(targetKeys)),
+      });
+    }
+    unitCounts.push(usable.some((unit) => unit.kind === 'json') ? 0 : checks);
+    row.summary_json = JSON.stringify(summary);
+    rows.push(row);
+  }
+
+  if (hashChecks.length) {
+    const results = await c.env.DB.batch<{ matched: number; import_id: number | null }>(
+      hashChecks.map((check) => check.statement),
+    );
+    const matches = new Map<number, Array<number | null>>();
+    for (const [index, check] of hashChecks.entries()) {
+      const first = results[index]?.results[0];
+      const list = matches.get(check.rowIndex) ?? [];
+      list.push(first && first.matched === check.targetCount ? first.import_id : null);
+      matches.set(check.rowIndex, list);
+    }
+    for (const [rowIndex, list] of matches) {
+      const row = rows[rowIndex];
+      if (list.length !== unitCounts[rowIndex] || list.some((id) => id === null)) continue;
+      const summary = parseInspectionSummary(row.summary_json);
+      summary.duplicate = importDuplicate({ identical: true, possibleCount: 0 });
+      summary.identicalOf = list[0] ?? null;
+      row.summary_json = JSON.stringify(summary);
+    }
+  }
+
+  // 取込不可のファイルも含め、検査を通ったものだけ仮置きする (上限超過は展開も保管もしない)
+  for (const [index, row] of rows.entries()) {
+    if (row.error_kind === 'limit') continue;
+    const key = `import-staging/${userId}/${inspectionId}/${row.id}`;
+    try {
+      await c.env.FILES.put(key, files[index].buf);
+      row.r2_key = key;
+    } catch {
+      const summary = parseInspectionSummary(row.summary_json);
+      row.error_kind = 'staging';
+      row.summary_json = JSON.stringify({
+        ...summary,
+        validation: { kind: 'error', count: 1 },
+        reason: '一時保管できませんでした。もう一度お試しください',
+      });
+    }
+  }
+  return rows;
+}
+
+const insertInspectionFileStatement = (database: D1Database, userId: string, row: InspectionFileRow) =>
+  database
+    .prepare(
+      `INSERT INTO import_inspection_files
+         (id,inspection_id,user_id,position,filename,source,period_from,period_to,size,content_hash,summary_json,error_kind,r2_key)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    )
+    .bind(
+      row.id,
+      row.inspection_id,
+      userId,
+      row.position,
+      row.filename,
+      row.source,
+      row.period_from,
+      row.period_to,
+      row.size,
+      row.content_hash,
+      row.summary_json,
+      row.error_kind,
+      row.r2_key,
+    );
+
+async function deleteStagedObjects(bucket: R2Bucket, rows: InspectionFileRow[]): Promise<void> {
+  const keys = rows.map((row) => row.r2_key).filter((key): key is string => !!key);
+  if (!keys.length) return;
+  try {
+    await bucket.delete(keys);
+  } catch {
+    // 片づけの失敗で応答を失敗にしない。残った仮置きは夜間保守が期限で消す
+    console.error(
+      JSON.stringify({ level: 'error', event: 'import_staging_delete_failed', count: keys.length }),
+    );
+  }
+}
+
+importsRoute.post('/imports/inspections', importRateLimit('inspection'), importUploadBodyLimit, async (c) => {
+  const userId = c.get('userId');
+  const files = await readImportUpload(c);
+  if (files instanceof Response) return files;
+  const inspectionId = crypto.randomUUID();
+  const now = new Date();
+  /*
+    期限切れの検査と古い時間枠は、夜間保守ではなくこの要求のついでに消す。
+    夜間の D1 query 予算 (1 invocation 50 本) は既存 8 job で埋まっており、後から来た
+    この機能が枠を取ると他の job の枠を削ることになる。掃除が要る量は検査を作った回数に
+    比例するので、作った本人の要求へ相乗りさせれば量に見合う頻度で片づく。
+    片づけに失敗しても検査そのものは作れるため、結果は落とさずログにだけ残す。
+  */
+  try {
+    await purgeExpiredImportRows(c.env.DB, now.getTime());
+  } catch (error) {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        job: 'import_expired_rows_purge',
+        name: error instanceof Error ? error.name : 'UnknownError',
+      }),
+    );
+  }
+  const expiresAt = new Date(now.getTime() + IMPORT_LIMITS.stagingTtlMs).toISOString();
+  const rows = await inspectUploadedFiles(c, userId, inspectionId, files, 0);
+  await c.env.DB.batch([
+    c.env.DB.prepare(
+      `INSERT INTO import_inspections (id,user_id,actor_id,status,expires_at,created_at) VALUES (?,?,?,'open',?,?)`,
+    ).bind(inspectionId, userId, c.get('actor').id, expiresAt, now.toISOString()),
+    ...rows.map((row) => insertInspectionFileStatement(c.env.DB, userId, row)),
+  ]);
+  return c.json({ inspection: inspectionBody(inspectionId, expiresAt, rows) }, 201);
+});
+
+importsRoute.post(
+  '/imports/inspections/:id/files',
+  importRateLimit('inspection'),
+  importUploadBodyLimit,
+  async (c) => {
+    const userId = c.get('userId');
+    const inspectionId = c.req.param('id');
+    const inspection = await loadOpenInspection(c.env.DB, userId, c.get('actor').id, inspectionId);
+    // 確定を始めた検査は再送用の完了記録を持つ。後からファイル構成は変えない。
+    if (!inspection || inspection.run_id) return notFound(c);
+    const existing = await loadInspectionFiles(c.env.DB, userId, inspectionId);
+    const files = await readImportUpload(c, {
+      count: existing.length,
+      totalBytes: existing.reduce((sum, row) => sum + row.size, 0),
+    });
+    if (files instanceof Response) return files;
+    const start = existing.reduce((max, row) => Math.max(max, row.position + 1), 0);
+    const rows = await inspectUploadedFiles(c, userId, inspectionId, files, start);
+    await c.env.DB.batch(rows.map((row) => insertInspectionFileStatement(c.env.DB, userId, row)));
+    // 期限は延ばさない (最初の検査から 24 時間)
+    return c.json({
+      inspection: inspectionBody(inspectionId, inspection.expires_at, [...existing, ...rows]),
+    });
+  },
+);
+
+importsRoute.delete('/imports/inspections/:id/files/:fileId', async (c) => {
+  const userId = c.get('userId');
+  const inspectionId = c.req.param('id');
+  const inspection = await loadOpenInspection(c.env.DB, userId, c.get('actor').id, inspectionId);
+  if (!inspection || inspection.run_id) return notFound(c);
+  const rows = await loadInspectionFiles(c.env.DB, userId, inspectionId);
+  const target = rows.find((row) => row.id === c.req.param('fileId'));
+  if (!target) return notFound(c);
+  await c.env.DB.prepare('DELETE FROM import_inspection_files WHERE id=? AND inspection_id=? AND user_id=?')
+    .bind(target.id, inspectionId, userId)
+    .run();
+  await deleteStagedObjects(c.env.FILES, [target]);
+  return c.json({
+    inspection: inspectionBody(
+      inspectionId,
+      inspection.expires_at,
+      rows.filter((row) => row.id !== target.id),
+    ),
+  });
+});
+
+/** 確定の後処理が同じ invocation で使う query (レート制限・検査の claim・項目の読み込み・run の更新・片づけ)。 */
+const RUN_EXTRA_QUERIES = 6;
+/** 検査経由の確定は、応答消失時の再送用にファイルごとの完了記録を 1 query で残す。 */
+const INSPECTION_RUN_EXTRA_QUERIES = RUN_EXTRA_QUERIES + 1;
+
+type RunImportBody = {
+  runId: string;
+  results: UnitResult[];
+  impact: ImportImpact;
+};
+
+const isRunImportBody = (body: unknown): body is RunImportBody =>
+  typeof body === 'object' && body !== null && 'runId' in body && 'results' in body;
+
+/** ZIP の中身は「ZIP 名/中身の名前」で結果に出る。最上位のファイルごとに成否をまとめる */
+const resultsOfFile = (results: UnitResult[], filename: string): UnitResult[] =>
+  results.filter((result) => result.filename === filename || result.filename.startsWith(`${filename}/`));
+
+const SUCCEEDED_IMPORT_STATUSES = new Set(['committed', 'duplicate', 'ok']);
+
+/**
+ * 確定の結果を取込 1 回の記録 (import_runs の影響の値と結果) へ書き、画面向けの形にする。
+ * 影響の値は確定時に数えたものを記録し、後から明細を数え直さない。
+ */
+async function recordImportRun(
+  c: Context<Ctx>,
+  input: {
+    runId: string;
+    body: RunImportBody;
+    files: Array<{ id: string; filename: string; possibleDuplicates: number }>;
+    keepPrevious: boolean;
+    /** 同じ取込 1 回の 2 本目以降。値はこの run ではなく親の run に足す */
+    parentRunId?: string | null;
+  },
+) {
+  const userId = c.get('userId');
+  const files = input.files.map((file) => {
+    const results = resultsOfFile(input.body.results, file.filename);
+    const succeeded = results.some(
+      (result) => result.status === 'committed' || result.status === 'duplicate',
+    );
+    const committedRows = results
+      .filter((result) => result.status === 'committed')
+      .reduce((sum, result) => sum + result.rows, 0);
+    const failure = results.find((result) => result.status === 'failed');
+    return {
+      id: file.id,
+      filename: file.filename,
+      state: (succeeded ? 'imported' : 'failed') as ImportFileState,
+      rowCount: succeeded ? committedRows : 0,
+      reason: succeeded ? null : (failure?.reason ?? '取り込めませんでした'),
+      possibleDuplicates: file.possibleDuplicates,
+    };
+  });
+  const succeeded = files.filter((file) => file.state === 'imported').length;
+  const result = importRunResult(succeeded, files.length - succeeded);
+  const rowCount = files.reduce((sum, file) => sum + file.rowCount, 0);
+  const impact = input.body.impact;
+  const files0 = files.map(({ possibleDuplicates: _possible, ...file }) => file);
+  const duplicateCandidates = files
+    .filter((file) => file.state === 'imported')
+    .reduce((sum, file) => sum + file.possibleDuplicates, 0);
+  if (input.parentRunId) {
+    // 子の run は値を持たず親を指すだけ。結果は親と同じなら保ち、違えば一部成功にする
+    const [, parent] = await c.env.DB.batch([
+      c.env.DB.prepare(
+        'UPDATE import_runs SET parent_run_id=?,keep_previous=? WHERE id=? AND user_id=?',
+      ).bind(input.parentRunId, input.keepPrevious ? 1 : 0, input.runId, userId),
+      c.env.DB.prepare(
+        `UPDATE import_runs
+            SET file_count=COALESCE(file_count,0)+?,row_count=COALESCE(row_count,0)+?,
+                added_count=COALESCE(added_count,0)+?,skipped_count=COALESCE(skipped_count,0)+?,
+                subs_candidate_count=COALESCE(subs_candidate_count,0)+?,
+                result=CASE WHEN result IS NULL OR result=? THEN ? ELSE 'partial' END
+          WHERE id=? AND user_id=?
+          RETURNING added_count,skipped_count,subs_candidate_count,result`,
+      ).bind(
+        files.length,
+        rowCount,
+        impact.added,
+        impact.skipped,
+        impact.subsCandidates,
+        result,
+        result,
+        input.parentRunId,
+        userId,
+      ),
+    ]);
+    const total = (parent?.results?.[0] ?? null) as {
+      added_count: number;
+      skipped_count: number;
+      subs_candidate_count: number;
+      result: ImportRunResult;
+    } | null;
+    return {
+      id: input.parentRunId,
+      result: total?.result ?? result,
+      files: files0,
+      impact: {
+        added: total?.added_count ?? impact.added,
+        skipped: total?.skipped_count ?? impact.skipped,
+        subsCandidates: total?.subs_candidate_count ?? impact.subsCandidates,
+      },
+      duplicateCandidates,
+    };
+  }
+  await c.env.DB.prepare(
+    `UPDATE import_runs
+        SET file_count=?,row_count=?,added_count=?,skipped_count=?,subs_candidate_count=?,result=?,keep_previous=?
+      WHERE id=? AND user_id=?`,
+  )
+    .bind(
+      files.length,
+      rowCount,
+      impact.added,
+      impact.skipped,
+      impact.subsCandidates,
+      result,
+      input.keepPrevious ? 1 : 0,
+      input.runId,
+      userId,
+    )
+    .run();
+  return {
+    id: input.runId,
+    result,
+    files: files0,
+    impact: { added: impact.added, skipped: impact.skipped, subsCandidates: impact.subsCandidates },
+    duplicateCandidates,
+  };
+}
+
+/** 仮置き済みの原本を持たず、確定後の再送に必要な結果だけを持つ行。 */
+function committedInspectionFile(row: InspectionFileRow) {
+  if (row.error_kind !== 'committed' || row.r2_key) return null;
+  const commit = parseInspectionSummary(row.summary_json).commit;
+  if (!commit) return null;
+  return {
+    id: row.id,
+    filename: row.filename,
+    state: commit.state,
+    rowCount: commit.rowCount,
+    reason: commit.reason,
+    possibleDuplicates: commit.possibleDuplicates,
+  };
+}
+
+/** 同じ確定要求の再送に、既に記録した run とファイル結果を返す。 */
+async function replayCommittedInspectionRun(c: Context<Ctx>, runId: string, rows: InspectionFileRow[]) {
+  const recorded = await c.env.DB.prepare(
+    `SELECT id,result,added_count,skipped_count,subs_candidate_count
+       FROM import_runs WHERE id=? AND user_id=? AND parent_run_id IS NULL`,
+  )
+    .bind(runId, c.get('userId'))
+    .first<{
+      id: string;
+      result: ImportRunResult | null;
+      added_count: number | null;
+      skipped_count: number | null;
+      subs_candidate_count: number | null;
+    }>();
+  const committed = rows.map(committedInspectionFile);
+  if (!recorded?.result || committed.some((file) => !file)) return null;
+  const files = committed as Array<NonNullable<ReturnType<typeof committedInspectionFile>>>;
+  return {
+    id: recorded.id,
+    result: recorded.result,
+    files: files.map(({ possibleDuplicates: _possible, ...file }) => file),
+    impact: {
+      added: recorded.added_count ?? 0,
+      skipped: recorded.skipped_count ?? 0,
+      subsCandidates: recorded.subs_candidate_count ?? 0,
+    },
+    duplicateCandidates: files.reduce((sum, file) => sum + file.possibleDuplicates, 0),
+  };
+}
+
+const runCommitSchema = z
+  .object({
+    inspectionId: z.string().min(1).max(64),
+    fileIds: z.array(z.string().min(1).max(64)).min(1).max(IMPORT_LIMITS.maxFiles),
+    keepPrevious: z.boolean().default(true),
+    force: z.boolean().default(false),
+  })
+  .strict();
+
+async function readJsonBody<T extends z.ZodTypeAny>(c: Context<Ctx>, schema: T): Promise<z.infer<T> | null> {
+  let raw: unknown;
+  try {
+    raw = await c.req.json();
+  } catch {
+    return null;
+  }
+  const parsed = schema.safeParse(raw);
+  return parsed.success ? parsed.data : null;
+}
+
+/**
+ * 検査 ID の確定。D1 の 1 invocation の query 予算 (50) に 2 ファイルは載らないので、1 要求で確定するのは
+ * 選んだファイルのうち先頭の 1 つだけにして、残りの ID を `remaining` で返す。画面は残りが空になるまで
+ * 同じ検査 ID で呼び直す。2 本目以降の run は最初の run の子にして、取込 1 回 = 履歴 1 行を保つ。
+ * 最初の要求で選ばなかったファイルはその場で外す。確定済みの行は原本を消した完了記録として
+ * 検査の期限まで残し、応答消失後の同一 payload 再送に同じ結果を返す。
+ */
+importsRoute.post('/imports/runs', importJsonBodyLimit, async (c) => {
+  const userId = c.get('userId');
+  const body = await readJsonBody(c, runCommitSchema);
+  if (!body) return invalidRequest(c, '取り込むファイルを選び直してください');
+  const claimed = await c.env.DB.prepare(
+    `UPDATE import_inspections SET status='committing'
+      WHERE id=? AND user_id=? AND actor_id=? AND status='open' AND expires_at>?
+      RETURNING run_id`,
+  )
+    .bind(body.inspectionId, userId, c.get('actor').id, new Date().toISOString())
+    .first<{ run_id: string | null }>();
+  const reopen = () =>
+    c.env.DB.prepare(`UPDATE import_inspections SET status='open' WHERE id=? AND user_id=?`)
+      .bind(body.inspectionId, userId)
+      .run();
+  // 確定の回数は「取込 1 回」で数える。続きの要求 (run_id を持つ検査) は、検査に残ったファイルを
+  // 消費するだけで検査 1 つにつき最大 maxFiles-1 回で尽きるので数えない。見つからない ID は数える
+  if (!claimed?.run_id) {
+    const decision = await consumeImportRateLimit(c.env.DB, userId, 'commit', Date.now());
+    if (!decision.allowed) {
+      if (claimed) await reopen();
+      return importRateLimitedResponse(c, decision);
+    }
+  }
+  if (!claimed) return notFound(c);
+  const parentRunId = claimed.run_id;
+
+  try {
+    const rows = await loadInspectionFiles(c.env.DB, userId, body.inspectionId);
+    const byId = new Map(rows.map((row) => [row.id, row] as const));
+    const requested = [...new Set(body.fileIds)];
+    if (requested.some((id) => !byId.has(id))) {
+      await reopen();
+      return notFound(c);
+    }
+    const requestedRows = requested.map((id) => byId.get(id) as InspectionFileRow);
+    const committedRequested = requestedRows.filter((row) => committedInspectionFile(row));
+    if (committedRequested.length) {
+      // 同じ payload の再送に完了済み ID が含まれるときは、次のファイルへ進まない。
+      // 完了済みの結果だけを再生し、未処理 ID を remaining で返すことで、Web は失った
+      // 1 回分の結果を取り込んでから通常の続きへ進める。
+      const replay = parentRunId
+        ? await replayCommittedInspectionRun(c, parentRunId, committedRequested)
+        : null;
+      if (!replay) {
+        await reopen();
+        return notFound(c);
+      }
+      const remaining = rows.filter((row) => !!row.r2_key).map((row) => row.id);
+      await reopen();
+      return c.json({ run: replay, remaining }, 201);
+    }
+    // 取込可能でないものは外す。強制再取込のときだけ「取込済みと同一」を含める
+    const selected = requestedRows.filter(
+      (row) => row.r2_key && importFileSelectable(inspectionFileStatus(row, body.force).state),
+    );
+    if (!selected.length) {
+      await reopen();
+      return invalidRequest(c, '取り込めるファイルがありません');
+    }
+    const [current, ...rest] = selected as [InspectionFileRow, ...InspectionFileRow[]];
+    const object = await c.env.FILES.get(current.r2_key as string);
+    if (!object) {
+      await reopen();
+      return notFound(c);
+    }
+    const buffered: BufferedImportFile[] = [
+      { file: { name: current.filename }, buf: new Uint8Array(await object.arrayBuffer()) },
+    ];
+
+    const runId = crypto.randomUUID();
+    const response = await runMultipartImport(c, {
+      files: buffered,
+      force: body.force,
+      keepOnShrink: false,
+      keepPrevious: body.keepPrevious,
+      requestedResolution: null,
+      extraQueries: INSPECTION_RUN_EXTRA_QUERIES,
+      runId,
+    });
+    const result: unknown = await response.clone().json();
+    if (!isRunImportBody(result)) {
+      // 取込が始まらなかった (busy・予算超過・形式の不整合)。検査はそのまま選び直せる
+      await reopen();
+      return response;
+    }
+    const summary = parseInspectionSummary(current.summary_json);
+    const run = await recordImportRun(c, {
+      runId,
+      body: result,
+      files: [
+        {
+          id: current.id,
+          filename: current.filename,
+          possibleDuplicates: summary.duplicate.kind === 'possible' ? summary.duplicate.count : 0,
+        },
+      ],
+      keepPrevious: body.keepPrevious,
+      parentRunId,
+    });
+    // 原本は取込本体が uploads/ へ置いた。仮置きは消し、応答消失後の再送を識別できるよう
+    // 結果だけの小さな完了記録を検査の期限まで残す。最初に選ばなかった行はここで消す。
+    const currentResult = run.files[0];
+    if (!currentResult) throw new Error('committed import file result is missing');
+    const receiptSummary: InspectionSummaryJson = {
+      ...summary,
+      commit: {
+        state: currentResult.state,
+        rowCount: currentResult.rowCount,
+        reason: currentResult.reason,
+        possibleDuplicates: run.duplicateCandidates,
+      },
+    };
+    const committedIds = rows.filter((row) => committedInspectionFile(row)).map((row) => row.id);
+    const keepIds = new Set([...committedIds, current.id, ...rest.map((row) => row.id)]);
+    const dropped = rows.filter((row) => row.id === current.id || !keepIds.has(row.id));
+    await c.env.DB.batch([
+      c.env.DB.prepare(
+        `UPDATE import_inspection_files
+            SET summary_json=?,error_kind='committed',r2_key=NULL
+          WHERE id=? AND inspection_id=? AND user_id=?`,
+      ).bind(JSON.stringify(receiptSummary), current.id, body.inspectionId, userId),
+      c.env.DB.prepare(
+        `DELETE FROM import_inspection_files
+          WHERE inspection_id=? AND user_id=? AND id NOT IN (SELECT CAST(value AS TEXT) FROM json_each(?))`,
+      ).bind(body.inspectionId, userId, JSON.stringify([...keepIds])),
+      c.env.DB.prepare(`UPDATE import_inspections SET status='open',run_id=? WHERE id=? AND user_id=?`).bind(
+        run.id,
+        body.inspectionId,
+        userId,
+      ),
+    ]);
+    await deleteStagedObjects(c.env.FILES, dropped);
+    return c.json({ run, remaining: rest.map((row) => row.id) }, 201);
+  } catch (error) {
+    await reopen().catch(() => undefined);
+    throw error;
+  }
+});
+
+/* ---------- 取込 1 回の履歴 ---------- */
+
+interface ImportRunRow {
+  id: string;
+  status: string;
+  failure_reason: string | null;
+  created_at: string;
+  file_count: number | null;
+  row_count: number | null;
+  added_count: number | null;
+  skipped_count: number | null;
+  subs_candidate_count: number | null;
+  result: string | null;
+  keep_previous: number | null;
+  hidden_at: string | null;
+}
+
+interface RunImportRow {
+  id: number;
+  run_id: string;
+  filename: string | null;
+  kind: string | null;
+  months: string | null;
+  row_count: number | null;
+  status: string | null;
+  r2_key: string | null;
+  target_keys: string | null;
+  failure_reason: string | null;
+  created_at: string | null;
+}
+
+const RUN_COLUMNS =
+  'id,status,failure_reason,created_at,file_count,row_count,added_count,skipped_count,subs_candidate_count,result,keep_previous,hidden_at';
+
+async function loadImportsOfRuns(
+  database: D1Database,
+  userId: string,
+  runIds: string[],
+): Promise<RunImportRow[]> {
+  if (!runIds.length) return [];
+  // D1 のバインドは 1 文 100 個まで。ID の配列は JSON 1 個で渡す。
+  // 子の run (同じ取込 1 回の 2 本目以降) の明細は親の run_id に寄せて返す
+  const rows = await database
+    .prepare(
+      `SELECT i.id,COALESCE(r.parent_run_id,i.run_id) AS run_id,i.filename,i.kind,i.months,i.row_count,i.status,
+              i.r2_key,i.target_keys,i.failure_reason,i.created_at
+         FROM imports i JOIN import_runs r ON r.id=i.run_id AND r.user_id=i.user_id
+        WHERE i.user_id=? AND COALESCE(r.parent_run_id,i.run_id) IN (SELECT CAST(value AS TEXT) FROM json_each(?))
+        ORDER BY i.id`,
+    )
+    .bind(userId, JSON.stringify(runIds))
+    .all<RunImportRow>();
+  return rows.results;
+}
+
+/** 最上位のファイル名。ZIP の中身は「ZIP 名/中身の名前」で記録されている */
+const topLevelFilename = (filename: string | null): string => (filename ?? '').split('/')[0] || '(名前なし)';
+
+/** 取込 1 回の状態。結果・取り消し済み・操作の可否は core の関数から導く */
+function summarizeImportRun(
+  run: ImportRunRow,
+  rows: RunImportRow[],
+  ownership: ImportOwnership,
+  now: number,
+) {
+  const byFile = new Map<string, RunImportRow[]>();
+  for (const row of rows) {
+    const key = topLevelFilename(row.filename);
+    byFile.set(key, [...(byFile.get(key) ?? []), row]);
+  }
+  const succeeded = [...byFile.values()].filter((units) =>
+    units.some((unit) => SUCCEEDED_IMPORT_STATUSES.has(unit.status ?? '')),
+  ).length;
+  const fileCount = run.file_count ?? byFile.size;
+  const failed = Math.max(0, fileCount - succeeded);
+  const lifecycle = rows.map((row) => ({
+    row,
+    ...importLifecycleView({ id: row.id, status: row.status, targetKeys: row.target_keys }, ownership),
+  }));
+  const committed = lifecycle.filter((entry) => entry.row.status === 'committed');
+  const undone = committed.length > 0 && committed.every((entry) => entry.generationState === 'deleted');
+  const baseResult: ImportRunResult = isRunResult(run.result)
+    ? run.result
+    : importRunResult(succeeded, failed);
+  const result: ImportHistoryResult = undone ? 'undone' : baseResult;
+  const actions = importHistoryActions({ result, createdAt: run.created_at, now });
+  const cancelable = lifecycle.filter((entry) => entry.cancelable);
+  const months = [
+    ...new Set(rows.flatMap((row) => (row.months ? row.months.split(',').filter(Boolean) : []))),
+  ];
+  const period = importPeriodFromMonths(months);
+  return {
+    id: run.id,
+    createdAt: run.created_at,
+    sources: orderedImportSources(rows.map((row) => row.kind)),
+    periodFrom: period.from,
+    periodTo: period.to,
+    fileCount,
+    rowCount:
+      run.row_count ??
+      rows.reduce((sum, row) => sum + (row.status === 'committed' ? (row.row_count ?? 0) : 0), 0),
+    result,
+    detail: {
+      succeeded,
+      failed,
+      failureSummary: rows.find((row) => row.failure_reason)?.failure_reason ?? run.failure_reason ?? null,
+    },
+    undoable: actions.includes('undo') && cancelable.length > 0,
+    replaceable: actions.includes('replace') && rows.some((row) => row.r2_key),
+    undoDeadline: importUndoDeadline(run.created_at),
+    canHide: importHistoryHideable(result),
+    hasOriginal: rows.some((row) => row.r2_key),
+    keepPrevious: run.keep_previous === null ? null : run.keep_previous === 1,
+    impact:
+      run.added_count === null
+        ? null
+        : {
+            added: run.added_count,
+            skipped: run.skipped_count ?? 0,
+            subsCandidates: run.subs_candidate_count ?? 0,
+          },
+    lifecycle,
+  };
+}
+
+const isRunResult = (value: unknown): value is ImportRunResult =>
+  value === 'success' || value === 'partial' || value === 'failed';
+
+importsRoute.get('/imports/runs', async (c) => {
+  const userId = c.get('userId');
+  const runs = await c.env.DB.prepare(
+    `SELECT ${RUN_COLUMNS} FROM import_runs
+      WHERE user_id=? AND hidden_at IS NULL AND parent_run_id IS NULL
+      ORDER BY created_at DESC, id DESC LIMIT 100`,
+  )
+    .bind(userId)
+    .all<ImportRunRow>();
+  const imports = await loadImportsOfRuns(
+    c.env.DB,
+    userId,
+    runs.results.map((run) => run.id),
+  );
+  const ownership = await loadImportOwnership(c.env.DB, userId);
+  const now = Date.now();
+  return c.json({
+    runs: runs.results
+      .map((run) =>
+        summarizeImportRun(
+          run,
+          imports.filter((row) => row.run_id === run.id),
+          ownership,
+          now,
+        ),
+      )
+      // 全部を見送った・まだ unit を作っていない run は、取込の記録として見せるものが無い
+      .filter((run) => run.fileCount > 0 || run.lifecycle.length > 0)
+      .map(
+        ({
+          lifecycle: _lifecycle,
+          periodFrom: _from,
+          periodTo: _to,
+          keepPrevious: _keep,
+          impact: _impact,
+          ...run
+        }) => run,
+      ),
+  });
+});
+
+async function loadOwnedRun(database: D1Database, userId: string, runId: string) {
+  return database
+    .prepare(`SELECT ${RUN_COLUMNS} FROM import_runs WHERE id=? AND user_id=? AND parent_run_id IS NULL`)
+    .bind(runId, userId)
+    .first<ImportRunRow>();
+}
+
+importsRoute.get('/imports/runs/:id', async (c) => {
+  const userId = c.get('userId');
+  const run = await loadOwnedRun(c.env.DB, userId, c.req.param('id'));
+  if (!run) return notFound(c);
+  const rows = await loadImportsOfRuns(c.env.DB, userId, [run.id]);
+  const ownership = await loadImportOwnership(c.env.DB, userId);
+  const summary = summarizeImportRun(run, rows, ownership, Date.now());
+  const { lifecycle, ...rest } = summary;
+  return c.json({
+    run: {
+      ...rest,
+      files: lifecycle.map(({ row, generationState, cancelable, discardable }) => ({
+        importId: row.id,
+        filename: row.filename,
+        source: isImportSource(row.kind) ? row.kind : null,
+        state: (SUCCEEDED_IMPORT_STATUSES.has(row.status ?? '') ? 'imported' : 'failed') as ImportFileState,
+        status: row.status,
+        rowCount: row.row_count ?? 0,
+        months: row.months ? row.months.split(',').filter(Boolean) : [],
+        reason: row.failure_reason,
+        hasOriginal: row.r2_key !== null,
+        generationState,
+        cancelable,
+        discardable,
+      })),
+    },
+  });
+});
+
+/* ---------- 置換 (同じ原本で強制再取込) ---------- */
+
+const reimportSchema = z
+  .object({
+    /** 2 回目以降の呼び直し: 残りの原本の名前と、1 回目で作った新しい取込 1 回の ID */
+    filenames: z
+      .array(z.string().min(1).max(IMPORT_LIMITS.maxFilenameLength))
+      .min(1)
+      .max(IMPORT_LIMITS.maxFiles),
+    intoRunId: z.string().min(1).max(64),
+  })
+  .strict();
+
+/**
+ * 保存した原本で強制再取込する。確定と同じ理由で 1 要求 1 ファイルにし、残りの名前を `remaining` で返す。
+ * 画面は `{ filenames: remaining, intoRunId: run.id }` で呼び直し、新しい取込 1 回の子として足していく。
+ */
+importsRoute.post('/imports/runs/:id/reimport', importRateLimit('commit'), importJsonBodyLimit, async (c) => {
+  const userId = c.get('userId');
+  const text = await c.req.text();
+  let continuation: z.infer<typeof reimportSchema> | null = null;
+  if (text.trim()) {
+    let raw: unknown;
+    try {
+      raw = JSON.parse(text);
+    } catch {
+      return invalidRequest(c, '再取込するファイルを選び直してください');
+    }
+    const parsed = reimportSchema.safeParse(raw);
+    if (!parsed.success) return invalidRequest(c, '再取込するファイルを選び直してください');
+    continuation = parsed.data;
+  }
+  const run = await loadOwnedRun(c.env.DB, userId, c.req.param('id'));
+  if (!run) return notFound(c);
+  const rows = await loadImportsOfRuns(c.env.DB, userId, [run.id]);
+  const ownership = await loadImportOwnership(c.env.DB, userId);
+  const summary = summarizeImportRun(run, rows, ownership, Date.now());
+  if (!summary.replaceable && !continuation)
+    return c.json(
+      {
+        error: { code: 'not_replaceable', message: 'この取込は置換できません (成功した取込だけ、30 日以内)' },
+      },
+      409,
+    );
+  if (continuation && !(await loadOwnedRun(c.env.DB, userId, continuation.intoRunId))) return notFound(c);
+  // 最上位のファイルごとに、保存した原本を 1 つ読む (ZIP の中身は同じ原本を共有する)
+  const originals = new Map<string, string>();
+  for (const row of rows) {
+    const name = topLevelFilename(row.filename);
+    if (row.r2_key && !originals.has(name)) originals.set(name, row.r2_key);
+  }
+  const targets = continuation ? continuation.filenames : [...originals.keys()];
+  if (targets.some((name) => !originals.has(name))) return notFound(c);
+  const [name, ...remaining] = targets as [string, ...string[]];
+  const object = await c.env.FILES.get(originals.get(name) as string);
+  if (!object)
+    return c.json(
+      {
+        error: {
+          code: 'import_original_missing',
+          message: '保存した原本が見つかりません。ファイルを選び直してください',
+        },
+      },
+      404,
+    );
+  const buffered: BufferedImportFile[] = [
+    { file: { name }, buf: new Uint8Array(await object.arrayBuffer()) },
+  ];
+  const runId = crypto.randomUUID();
+  const keepPrevious = run.keep_previous === 1;
+  const response = await runMultipartImport(c, {
+    files: buffered,
+    force: true,
+    keepOnShrink: false,
+    keepPrevious,
+    requestedResolution: null,
+    extraQueries: RUN_EXTRA_QUERIES,
+    runId,
+  });
+  const result: unknown = await response.clone().json();
+  if (!isRunImportBody(result)) return response;
+  const recorded = await recordImportRun(c, {
+    runId,
+    body: result,
+    files: [{ id: name, filename: name, possibleDuplicates: 0 }],
+    keepPrevious,
+    parentRunId: continuation?.intoRunId ?? null,
+  });
+  return c.json({ run: recorded, remaining }, 201);
+});
+
+/* ---------- 取込 1 回の取り消し ---------- */
+
+async function undoTargets(c: Context<Ctx>, runId: string) {
+  const userId = c.get('userId');
+  const run = await loadOwnedRun(c.env.DB, userId, runId);
+  if (!run) return null;
+  const rows = await loadImportsOfRuns(c.env.DB, userId, [run.id]);
+  const ownership = await loadImportOwnership(c.env.DB, userId);
+  const summary = summarizeImportRun(run, rows, ownership, Date.now());
+  return {
+    summary,
+    importIds: summary.undoable
+      ? summary.lifecycle.filter((entry) => entry.cancelable).map((entry) => entry.row.id)
+      : [],
+  };
+}
+
+const notUndoable = (c: Context) =>
+  c.json(
+    {
+      error: {
+        code: 'not_undoable',
+        message: 'この取込は取り消せません (30 日を過ぎたか、取り消し済みです)',
+      },
+    },
+    409,
+  );
+
+const sumCounts = (list: Array<Record<string, number>>): Record<string, number> => {
+  const total: Record<string, number> = {};
+  for (const counts of list)
+    for (const [key, value] of Object.entries(counts)) total[key] = (total[key] ?? 0) + value;
+  return total;
+};
+
+importsRoute.post('/imports/runs/:id/undo/preflight', async (c) => {
+  const userId = c.get('userId');
+  const targets = await undoTargets(c, c.req.param('id'));
+  if (!targets) return notFound(c);
+  if (!targets.importIds.length) return notUndoable(c);
+  const plans = [];
+  for (const importId of targets.importIds) {
+    const preflight = await planDeletion(c.env.DB, userId, { granularity: 'import', importId });
+    plans.push({
+      importId,
+      fingerprint: preflight.fingerprint,
+      counts: preflight.counts as unknown as Record<string, number>,
+      months: preflight.targets.months,
+    });
+  }
+  return c.json({
+    imports: plans,
+    counts: sumCounts(plans.map((plan) => plan.counts)),
+    months: [...new Set(plans.flatMap((plan) => plan.months))].sort(),
+    undoRetentionDays: DELETION_UNDO_RETENTION_DAYS,
+  });
+});
+
+const runUndoSchema = z
+  .object({
+    fingerprints: z
+      .array(z.object({ importId: z.number().int().positive(), fingerprint: z.string().min(1) }).strict())
+      .min(1)
+      .max(100),
+  })
+  .strict();
+
+importsRoute.post('/imports/runs/:id/undo', importJsonBodyLimit, async (c) => {
+  const userId = c.get('userId');
+  const body = await readJsonBody(c, runUndoSchema);
+  if (!body) return invalidRequest(c, '取り消す内容をもう一度確認してください');
+  // この経路は canonical-mutation-fence の経路表に一致しないため、同じ lease をここで取る
+  const leaseToken = `mutation:${crypto.randomUUID()}`;
+  if (!(await acquireImportWriter(c.env.DB, userId, leaseToken)))
+    return c.json(
+      {
+        error: {
+          code: 'canonical_write_busy',
+          message: '別の取込みまたは更新が進行中です。完了後に再試行してください',
+        },
+      },
+      409,
+    );
+  try {
+    const targets = await undoTargets(c, c.req.param('id'));
+    if (!targets) return notFound(c);
+    if (!targets.importIds.length) return notUndoable(c);
+    const expected = new Map(body.fingerprints.map((entry) => [entry.importId, entry.fingerprint] as const));
+    const sameScope =
+      expected.size === targets.importIds.length &&
+      targets.importIds.every((importId) => expected.has(importId));
+    if (!sameScope)
+      return c.json(
+        {
+          error: {
+            code: 'deletion_scope_changed',
+            message: '確認した内容から対象が変わりました。もう一度確認してください',
+          },
+        },
+        409,
+      );
+    const done: Array<{
+      importId: number;
+      operationId: string;
+      counts: Record<string, number>;
+      months: string[];
+    }> = [];
+    for (const importId of targets.importIds) {
+      try {
+        const result = await executeDeletion({
+          database: c.env.DB,
+          userId,
+          operationId: crypto.randomUUID(),
+          request: { granularity: 'import', importId },
+          expectedFingerprint: expected.get(importId),
+          recordTransactionHistory: false,
+        });
+        done.push({
+          importId,
+          operationId: result.operationId,
+          counts: result.counts as unknown as Record<string, number>,
+          months: result.targets.months,
+        });
+      } catch (error) {
+        if (error instanceof DeletionScopeChangedError)
+          return c.json(
+            {
+              error: {
+                code: 'deletion_scope_changed',
+                message: '確認した内容から対象が変わりました。もう一度確認してください',
+              },
+              undone: done.map((entry) => entry.importId),
+            },
+            409,
+          );
+        throw error;
+      }
+    }
+    return c.json({
+      operations: done,
+      counts: sumCounts(done.map((entry) => entry.counts)),
+      months: [...new Set(done.flatMap((entry) => entry.months))].sort(),
+    });
+  } finally {
+    try {
+      await releaseImportWriter(c.env.DB, userId, leaseToken);
+    } catch {
+      console.error(JSON.stringify({ level: 'error', event: 'canonical_lease_release_failed' }));
+    }
+  }
+});
+
+/* ---------- 記録の一括削除 (非表示) ---------- */
+
+const hideSchema = z
+  .object({ ids: z.array(z.string().min(1).max(64)).min(1).max(IMPORT_LIMITS.maxHideIds) })
+  .strict();
+
+importsRoute.post('/imports/runs/hide', importJsonBodyLimit, async (c) => {
+  const userId = c.get('userId');
+  const body = await readJsonBody(c, hideSchema);
+  if (!body) return invalidRequest(c, `削除する履歴を 1〜${IMPORT_LIMITS.maxHideIds} 件選んでください`);
+  const ids = [...new Set(body.ids)];
+  const owned = await c.env.DB.prepare(
+    `SELECT ${RUN_COLUMNS} FROM import_runs
+      WHERE user_id=? AND hidden_at IS NULL AND parent_run_id IS NULL
+        AND id IN (SELECT CAST(value AS TEXT) FROM json_each(?))`,
+  )
+    .bind(userId, JSON.stringify(ids))
+    .all<ImportRunRow>();
+  if (owned.results.length !== ids.length) return notFound(c);
+  const rows = await loadImportsOfRuns(c.env.DB, userId, ids);
+  const ownership = await loadImportOwnership(c.env.DB, userId);
+  const now = Date.now();
+  const blocked = owned.results.some(
+    (run) =>
+      !summarizeImportRun(
+        run,
+        rows.filter((row) => row.run_id === run.id),
+        ownership,
+        now,
+      ).canHide,
+  );
+  if (blocked)
+    return c.json(
+      { error: { code: 'not_hideable', message: '削除できるのは失敗・取り消し済みの履歴だけです' } },
+      409,
+    );
+  const updated = await c.env.DB.prepare(
+    `UPDATE import_runs SET hidden_at=?
+      WHERE user_id=? AND hidden_at IS NULL AND id IN (SELECT CAST(value AS TEXT) FROM json_each(?))`,
+  )
+    .bind(new Date().toISOString(), userId, JSON.stringify(ids))
+    .run();
+  return c.json({ hidden: updated.meta.changes ?? 0 });
 });

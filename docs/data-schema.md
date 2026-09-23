@@ -676,3 +676,47 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 適用は他の migration と同じく Deploy の自動適用に任せる。追加だけの migration なので、行を書き換える migration の手順(manifest → Migrate APPLY)は要らない。
 - **巻き戻すときも列は残す**。索引の掛かった列は SQLite では単独で外せず、表を作り直すと行の書き換えになる。コードだけを 0052 より前に戻すと `runtimeSchemaGuard` の `EXPECTED_D1_MIGRATION`(0052)と食い違うので、その値も同じ変更で戻す。列が残っていても旧コードは読まないので害はない。
 - **巻き戻したコードは削除中の行を有効な行として読む**(旧コードには `deleted_at IS NULL` が無い)。巻き戻す前に、削除中の行を restore で戻すか、30 日を待たずに消すかを決める。消すときは、その行を指す `tx_edits` の `cash:<id>` と明細の行を同じ batch で消す。
+
+## 取込画面の検査と取込1回(0053)
+
+`migrations/0053_import_inspections.sql` が 3 表を足し、`import_runs` に 9 列を足す。画面仕様の正本は `specs/spec-import-screen.md`、規則の一覧は [`import-screen/rules.md`](import-screen/rules.md)。
+
+`import_inspections`(検査 1 要求 = 1 行):
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `id` | TEXT PK | 検査 ID。確定はこの ID だけを受ける |
+| `user_id` | TEXT NOT NULL | 業務データの共有テナントキー |
+| `actor_id` | TEXT NOT NULL | 検査を作った本人。他人の検査 ID は 404 |
+| `status` | TEXT NOT NULL | `open` / `committing` |
+| `run_id` | TEXT | 最初の確定で作った取込 1 回の run。2 本目以降の確定はこの run の子にする |
+| `expires_at` | TEXT NOT NULL | 期限。追加・削除では延ばさない |
+| `created_at` | TEXT NOT NULL | 作成時刻 |
+
+`import_inspection_files`(ファイルごとの検査結果):
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `inspection_id` | TEXT NOT NULL | 親の検査。`ON DELETE CASCADE` |
+| `position` | INTEGER NOT NULL | 選んだ順(= 送信と検査の順) |
+| `filename` / `source` / `period_from` / `period_to` / `size` / `content_hash` | — | 画面の一覧の値。検査 ID ごとの累計(件数・大きさ)はこの表から合計する |
+| `summary_json` | TEXT NOT NULL | 検証・重複・行数の結果 |
+| `error_kind` | TEXT | 取込不可の理由の種別 |
+| `r2_key` | TEXT | R2 の仮置きのキー |
+
+`import_rate_limits`(利用者 × 種別 × 1 分枠の回数): 主キー (`user_id`, `kind`, `window_start`)。`kind` は CHECK で `inspection` / `commit` だけ。ログイン用の `password_login_rate_limits` とは分ける。
+
+`import_runs` に足した列(すべて NULL を許す):
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `file_count` / `row_count` / `added_count` / `skipped_count` / `subs_candidate_count` | INTEGER | 取込 1 回の影響の値。確定時に記録し、詳細ペインはこの値を出す(数え直さない) |
+| `result` | TEXT | `success` / `partial` / `failed`(CHECK) |
+| `keep_previous` | INTEGER | 「前回データを残す」の値(0 / 1) |
+| `hidden_at` | TEXT | 一括削除(記録の非表示)の時刻。明細は変えない |
+| `parent_run_id` | TEXT | 同じ検査 ID の 2 本目以降の確定。親の run が履歴の 1 行で、子は単独では出さない |
+
+- 索引: `import_inspections` (`user_id`, `expires_at`)、`import_inspection_files` (`inspection_id`)。
+- **既存の行は 1 行も書き換えない**(`CREATE TABLE` と `ALTER TABLE ... ADD COLUMN` のみ)。0053 より前の `import_runs` の行は新しい列が NULL のまま読まれ、履歴にはファイル単位の記録として出る。`packages/api/src/import-migration-0053.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+- 検査の行は確定時に消す。期限切れの検査と古いレート制限の枠は、検査を新しく作る要求のついでに `purgeExpiredImportRows` が消す。24 時間を過ぎた R2 の仮置きは、夜間保守の `runImportStagingCleanup` が 1 回 500 件まで消す (この job は D1 を 1 本も使わない)。D1 の片づけをリクエスト側へ寄せたのは、夜間保守の D1 クエリ枠 (Free の 1 回 50 本、安全枠 49 本) が既に他の job で埋まっていたためで、判断は `docs/import-screen/design-decisions.md` の OI-08 に残す。
+- 配信は Migrate → Deploy の順にする。0053 の前の Worker は新しい表を読めない。

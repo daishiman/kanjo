@@ -4551,164 +4551,6 @@ label.check {
   font-size: var(--fs-sm);
 }
 
-/* 取込前差分: 件数を先に、選ぶ必要のある例外だけを後ろへ。 */
-.import-diff {
-  margin-top: 12px;
-}
-.import-diff > button {
-  min-height: var(--tap-target-min);
-  white-space: nowrap;
-}
-.import-diff-result {
-  margin-top: 12px;
-  padding: 16px;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-.import-diff-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-}
-.import-diff-heading strong {
-  display: block;
-  font-size: var(--fs-base);
-}
-.import-diff-counts {
-  margin: 12px 0 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  background: var(--surface);
-  border-block: 1px solid var(--line);
-}
-.import-diff-counts > div {
-  padding: 12px;
-  border-right: 1px solid var(--line);
-}
-.import-diff-counts > div:last-child {
-  border-right: 0;
-}
-.import-diff-counts dt {
-  color: var(--ink-soft);
-  font-size: var(--fs-xs);
-}
-.import-diff-counts dd {
-  margin: 1px 0 0;
-  color: var(--ink);
-  font-size: var(--fs-xl);
-  font-weight: 700;
-}
-.import-diff-message {
-  margin: 12px 0 0;
-  padding: 10px 12px;
-  display: grid;
-  gap: 2px;
-  background: var(--warn-soft);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  font-size: var(--fs-sm);
-}
-.import-diff-message.calm {
-  background: var(--good-soft);
-}
-.import-conflict {
-  margin-top: 10px;
-  padding: 14px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-left-width: 1px;
-  border-radius: var(--radius);
-}
-.import-conflict-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-.import-conflict-table {
-  margin-top: 10px;
-  overflow-x: auto;
-}
-.import-conflict-table table {
-  width: 100%;
-  min-width: 560px;
-  border-collapse: collapse;
-  font-size: var(--fs-sm);
-}
-.import-conflict-table th,
-.import-conflict-table td {
-  padding: 7px 8px;
-  text-align: left;
-  border-bottom: 1px solid var(--line);
-}
-.import-conflict-table thead th {
-  color: var(--ink-soft);
-  font-size: var(--fs-xs);
-  white-space: nowrap;
-}
-.import-conflict-options {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-.import-conflict-options label,
-.import-remember-choice {
-  min-height: var(--tap-target-min);
-  padding: 9px 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  font-size: var(--fs-sm);
-}
-.import-conflict-options label:has(input:checked) {
-  background: var(--biz-soft);
-  border-color: var(--biz-soft-line);
-}
-.import-remember-choice {
-  margin-top: 8px;
-  width: fit-content;
-}
-.import-suggestions {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-.import-suggestions > p {
-  margin: 2px 0 8px;
-}
-.import-suggestions ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.import-suggestions li {
-  min-height: 56px;
-  padding: 8px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  border-top: 1px solid var(--line);
-}
-.import-suggestions li > span {
-  min-width: 0;
-  display: grid;
-}
-.import-suggestions small {
-  color: var(--ink-soft);
-  font-size: var(--fs-xs);
-}
-.import-suggestions button {
-  flex: none;
-  white-space: nowrap;
-}
-
 /* 削除は最頻操作ではないため畳む。開いた後だけ3段階を見せる。 */
 .import-deletion-disclosure.card {
   margin: 0;
@@ -5219,20 +5061,16 @@ label.check {
     flex-wrap: wrap;
   }
   .import-count-grid,
-  .import-diff-counts,
   .deletion-count-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .import-conflict-options,
   .deletion-scope-options {
     grid-template-columns: 1fr;
   }
-  .import-suggestions li,
   .deletion-check-action {
     align-items: stretch;
     flex-direction: column;
   }
-  .import-suggestions button,
   .deletion-check-action button {
     width: 100%;
   }
