@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { after, describe, it } from 'node:test';
 
+import { parseApprovals, sha256 } from './migration-approvals.mjs';
 import { destructiveFindings, planAutoMigration, stripSqlNoise } from './plan-auto-migration.mjs';
 
 const BANNER = ['⛅️ wrangler 4.42.0', '─────────────────', 'Resource location: remote'].join('\n');
@@ -103,6 +104,65 @@ describe('planAutoMigration', () => {
     });
     assert.equal(plan.decision, 'blocked');
     assert.deepEqual(plan.blockers, ['0029_x.sql: 列を削除します']);
+  });
+});
+
+describe('planAutoMigration の PR 承認', () => {
+  const REBUILD =
+    'CREATE TABLE t2 (id TEXT);\nINSERT INTO t2 SELECT id FROM t;\nDROP TABLE t;\nALTER TABLE t2 RENAME TO t;';
+  const approvalsFor = (entries) =>
+    parseApprovals(
+      JSON.stringify({
+        schema_version: 1,
+        baseline: '0028_base.sql',
+        approvals: entries.map(([filename, sql]) => ({
+          filename,
+          sha256: sha256(sql),
+          reason: '検証済み',
+          approved_by: 'test',
+        })),
+      }),
+    );
+
+  it('承認済みで本文が一致する破壊的変更は自動適用する', () => {
+    const plan = planAutoMigration({
+      migrationsDir: migrationsDirWith({ '0029_rebuild.sql': REBUILD }),
+      runRemoteList: listing(pendingStdout(['0029_rebuild.sql'])),
+      approvals: approvalsFor([['0029_rebuild.sql', REBUILD]]),
+    });
+    assert.equal(plan.decision, 'apply');
+    assert.deepEqual(plan.approved, ['0029_rebuild.sql']);
+  });
+
+  it('承認後に本文が変わったら止める', () => {
+    const plan = planAutoMigration({
+      migrationsDir: migrationsDirWith({ '0029_rebuild.sql': `${REBUILD}\nDELETE FROM t;` }),
+      runRemoteList: listing(pendingStdout(['0029_rebuild.sql'])),
+      approvals: approvalsFor([['0029_rebuild.sql', REBUILD]]),
+    });
+    assert.equal(plan.decision, 'blocked');
+    assert.deepEqual(plan.approved, []);
+  });
+
+  it('別ファイルの承認では通さない', () => {
+    const plan = planAutoMigration({
+      migrationsDir: migrationsDirWith({ '0029_rebuild.sql': REBUILD }),
+      runRemoteList: listing(pendingStdout(['0029_rebuild.sql'])),
+      approvals: approvalsFor([['0030_other.sql', REBUILD]]),
+    });
+    assert.equal(plan.decision, 'blocked');
+  });
+
+  it('R2 cleanup の 0040 は承認があっても止める', () => {
+    const filename = '0040_drop_tax_and_receipt_tables.sql';
+    const sql = 'DROP TABLE receipts;';
+    const plan = planAutoMigration({
+      migrationsDir: migrationsDirWith({ [filename]: sql }),
+      runRemoteList: listing(pendingStdout([filename])),
+      approvals: approvalsFor([[filename, sql]]),
+    });
+    assert.equal(plan.decision, 'blocked');
+    assert.match(plan.blockers.join('\n'), /R2 cleanup/);
   });
 });
 

@@ -21,7 +21,7 @@
     "test:coverage:account-login": "pnpm --filter @kanjo/api run test:coverage:account-login && pnpm --filter @kanjo/web run test:coverage:account-login",
     "test:aux": "pnpm run runbooks:test && pnpm run guard-real-data:test && pnpm run github-scripts:test && pnpm run seed-admin:test && pnpm run skills:test && pnpm run delivery:test",
     "typecheck": "pnpm -r typecheck",
-    "lint": "biome check . && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs && node scripts/check-report-css.mjs && node scripts/check-graph-lineage.mjs && node scripts/check-design-tokens.mjs && node scripts/check-design-system-document-contract.mjs && node scripts/check-design-system-delivery.mjs --worktree-content && node scripts/check-design-system-run-references.mjs && pnpm run security:content",
+    "lint": "biome check . && node .github/scripts/check-migration-approvals.mjs && node scripts/sync-project-skills.mjs --check && node scripts/check-glossary.mjs && node scripts/check-report-css.mjs && node scripts/check-graph-lineage.mjs && node scripts/check-design-tokens.mjs && node scripts/check-design-system-document-contract.mjs && node scripts/check-design-system-delivery.mjs --worktree-content && node scripts/check-design-system-run-references.mjs && pnpm run security:content",
     "lint:fix": "biome check --write .",
     "deploy": "pnpm --filter @kanjo/web build:artifact && pnpm --filter @kanjo/api run deploy",
     "db:migrate:local": "pnpm --filter @kanjo/api exec wrangler d1 migrations apply kanjo-db --local",

@@ -29,7 +29,7 @@
 重要な原則は次の4点です。
 
 1. `main`へ直接pushせず、必ずPRとCIを経由する。
-2. D1の構造変更は`Deploy`がWorker配信の**前に**適用する。取り返しのつく追加だけを自動適用し、列や行を失う変更と判定不能は配信前に停止して`Migrate`の手動承認へ倒す。適用がコード配信より後になる順序は作らない。
+2. D1の構造変更は`Deploy`がWorker配信の**前に**適用する。追加だけの変更と、PRで承認済みの列や行を失う変更を自動適用する。承認はmerge前のPRで済ませ（`.github/migration-approvals.json`）、merge後に人が手を動かさなくても本番へ届くようにする。適用がコード配信より後になる順序は作らない。
 3. Cloudflareへの公開はGitHub Actionsへ一本化し、Cloudflare Workers BuildsのGit連携を併用しない。
 4. 品質閾値は`CI`で止め、`Deploy`では止めない。JS予算のような「超えても本番は動く」検査が配信を止めると、`main`に入った変更が無言で本番に出ないまま残る。`Deploy`が止まってよいのは、進めると壊れるとき（破壊的migration、remote D1の未適用、スモークの失敗）だけです。
 
@@ -41,10 +41,14 @@
 |---|---|---|
 | `skip` | pendingなし | 何もせず配信へ進む |
 | `apply` | 追加だけ（`CREATE TABLE` / `ADD COLUMN` / `CREATE INDEX` など） | Time Travelの復元地点を記録してから適用し、配信へ進む |
-| `blocked` | `DROP TABLE` / `DROP COLUMN` / `DELETE FROM` / `TRUNCATE` / `UPDATE ... SET` / `ALTER TABLE ... RENAME` | 配信前に停止。理由をファイル名つきでログへ出す |
+| `apply` | 列や行を失う変更で、`.github/migration-approvals.json` の承認とSHA-256が一致するもの | 同上。ログに「PR で承認済みの破壊的変更」として出す |
+| `blocked` | `DROP TABLE` / `DROP COLUMN` / `DELETE FROM` / `TRUNCATE` / `UPDATE ... SET` / `ALTER TABLE ... RENAME` で承認が無い・承認後に本文が変わった | 配信前に停止。理由をファイル名つきでログへ出す |
+| `blocked` | R2の残件確認が要る`0040_drop_tax_and_receipt_tables.sql` | 承認があっても停止し、`Migrate`の手動経路へ回す |
 | `blocked` | remoteを読めない・出力を解釈できない | 同上（`apply`へ倒さない） |
 
-SQLiteで列の型や制約を変える定型手順（新テーブル作成 → コピー → 旧テーブル`DROP` → `RENAME`）は`blocked`になります。これは意図した挙動で、その手順こそ人が復元地点と切り戻しを確認すべき操作です。
+SQLiteで列の型や制約を変える定型手順（新テーブル作成 → コピー → 旧テーブル`DROP` → `RENAME`）は、承認が無ければ`blocked`になります。人が確かめるべき操作であることは変わりませんが、確かめる場所をmerge後の手動実行からmerge前のPRへ移しました（6.2）。承認の無い破壊的migrationは`pnpm lint`（`check-migration-approvals.mjs`）で落ちるので、mergeされた時点で`Deploy`が止まることはありません。
+
+本番へ届かなかったDeploy（mainのCI失敗で走らなかった場合を含む）は、`Deploy`の`report`ジョブが「本番に反映されていません」Issueを開いて通知します。次に届いた配信がそのIssueを閉じるので、開いたIssueが無ければ本番は`main`に追いついています。
 
 `Deploy`と`Migrate`は同じconcurrency群 `production-mutation` に属し、本番D1への書き換えが重なりません。
 
@@ -53,8 +57,8 @@ SQLiteで列の型や制約を変える定型手順（新テーブル作成 → 
 | ワークフロー | ファイル | 起動条件 | 主な処理 | 外部への影響 |
 |---|---|---|---|---|
 | CI | `.github/workflows/ci.yml` | PR、`main`へのpush、手動 | 4ジョブ並列（lint・Env型生成を内包した型検査・周辺スクリプト検査・依存監査 / core・webテスト / apiテスト / ビルド確認）と、それらを束ねる`verify` | なし |
-| Deploy | `.github/workflows/deploy.yml` | `main`のCI成功後、または`main`から手動 | 手動時の品質検査、Webビルド（`build:artifact`。JS予算はCI側で守るので配信は止めない）、pending migrationの判定、追加だけの自動適用（Time Travel記録つき）、remote D1未適用のfail-closed検査、Worker公開、2回のスモークテスト | 本番DBへ追加だけのmigrationを適用し、本番アプリを更新 |
-| Migrate | `.github/workflows/migrate.yml` | `main`から`APPLY`と承認済みmanifest入力付きの手動実行のみ | repository head・ordered migrations digest・remote pendingの再照合、D1 Time Travel情報確認、リモートmigration適用 | 本番DBの構造を更新。破壊的変更の適用経路 |
+| Deploy | `.github/workflows/deploy.yml` | `main`のCI完了後、または`main`から手動 | 手動時の品質検査、Webビルド（`build:artifact`。JS予算はCI側で守るので配信は止めない）、pending migrationの判定、追加だけ・PR承認済みの自動適用（Time Travel記録つき）、remote D1未適用のfail-closed検査、Worker公開、2回のスモークテスト、反映結果のIssue記録 | 本番DBへmigrationを適用し、本番アプリを更新。届かなければIssueを開く |
+| Migrate | `.github/workflows/migrate.yml` | `main`から`APPLY`と承認済みmanifest入力付きの手動実行のみ | repository head・ordered migrations digest・remote pendingの再照合、D1 Time Travel情報確認、リモートmigration適用 | 本番DBの構造を更新。R2残件確認が要る変更（0040）の適用経路 |
 
 共通設定:
 
@@ -260,7 +264,7 @@ pnpm --filter @kanjo/api exec wrangler deployments list
 
 `Deploy`の手動実行は、同じ`main`コミットの再実行や緊急復旧に限定します。`main`以外からはjobが起動せず、手動時もlint・型検査・テストを再実行します。
 
-`Deploy`は `wrangler d1 migrations list kanjo-db --remote` を本番D1の状態の唯一の情報源とします。追加だけのpendingはWorker配信の前に自動適用し、破壊的なpendingと、認証・通信失敗や未知の出力形式はすべて配信前に停止します。Wranglerの生出力は再表示せず、承認manifestつきで`Migrate`を`APPLY`実行してから`Deploy`を再実行する固定案内だけを出します。
+`Deploy`は `wrangler d1 migrations list kanjo-db --remote` を本番D1の状態の唯一の情報源とします。追加だけのpendingはWorker配信の前に自動適用し、破壊的なpendingと、認証・通信失敗や未知の出力形式はすべて配信前に停止します。Wranglerの生出力は再表示せず、`.github/migration-approvals.json`へ承認を足すPRをmergeするよう固定案内だけを出します（mergeでDeployが再び走ります）。
 
 適用後は `check-d1-migrations.mjs` が後条件として未適用ゼロを再確認します。自動適用が部分的に失敗した状態でWorkerが配信されることはありません。
 
@@ -276,9 +280,20 @@ pnpm --filter @kanjo/api exec wrangler deployments list
 
 `schema-guard`の`EXPECTED_D1_MIGRATION`を同じPRで引き上げても安全です。適用がWorker配信より前に完了しているため、期待版に達しないまま新コードが公開される順序は生じません。
 
-### 6.2 破壊的なmigrationを適用する場合（手動経路）
+### 6.2 破壊的なmigrationを適用する場合（PR承認経路・通常）
 
-`Deploy`が`blocked`で停止した場合、または列削除・列の型変更・backfillを行う場合はこちらを使います。
+列削除・列の型変更（テーブル作り直し）・backfillは、migrationと同じPRで承認します。
+
+1. migrationを書き、行が失われないことをテストで確かめる（例: `improvement-migration-0057.test.ts`）。
+2. `.github/migration-approvals.json`の`approvals`へ、`filename`・`sha256`（`shasum -a 256 migrations/<file>`）・`reason`（何が失われうるか・なぜ安全か）・`approved_by`を足す。
+3. PRのCI（`pnpm lint`内の`check-migration-approvals.mjs`）が、未承認・承認後の本文変更・存在しないmigrationへの承認を落とす。
+4. mergeが承認です。`Deploy`がTime Travelの復元地点を記録してから適用し、配信します。切り戻しは6.3のTime Travel復元です。
+
+`baseline`は本番へ適用済みの最後のmigrationで、それ以前は検査しません。承認は適用後も消さず、監査記録として残します。
+
+### 6.2.1 R2の残件確認が要る場合（手動経路）
+
+`0040_drop_tax_and_receipt_tables.sql`のように、D1の外（R2）の状態を見ないと安全を判断できないmigrationは、承認台帳では通しません。`Deploy`は停止するので、こちらを使います。
 
 1. migrationだけのPRをmergeする。
 2. `main`のrepository head、`migrations/*.sql`のファイル別SHA-256とordered digest、remote pending一覧を同一時点で取得する。
@@ -370,7 +385,7 @@ gh variable list
 |---|---|
 | CIが失敗 | frozen lockfile、Env型生成、Linuxでの大文字小文字、未commitファイルへの依存 |
 | Deployが認証エラー | Environment secret名、APIトークン期限、Workers/D1/R2権限 |
-| Deployがmigration判定で停止 | ログの理由行で破壊的判定か判定不能かを確認する。破壊的なら`Migrate`を`APPLY`＋承認済みmanifestで実行し、成功後に同じ`Deploy`を再実行。判定不能（認証・通信・出力形式）は原因を解消してから`Deploy`を再実行する |
+| Deployがmigration判定で停止 | ログの理由行で破壊的判定か判定不能かを確認する。未承認の破壊的変更なら6.2の手順で承認を足すPRをmergeする（mergeでDeployが再び走る）。0040なら6.2.1の`Migrate`手動経路。判定不能（認証・通信・出力形式）は原因を解消してから`Deploy`を再実行する |
 | Migrateがmanifest再照合で停止 | repository head・ordered migrations digest・remote pendingを再取得し、manifestを承認し直す。古いmanifestを再利用しない |
 | Deployは成功したが画面が古い | 30秒・90秒後の結果、対象deployment、`APP_URL` |
 | 本番でDBエラー | migrationがコードより先に適用されたか |

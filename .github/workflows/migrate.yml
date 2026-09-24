@@ -1,5 +1,5 @@
-# 列や行を失うD1変更だけを、承認manifestつきで手動実行する。
-# 追加だけのmigrationはDeployが自動適用するので、通常このworkflowは使わない。
+# 承認台帳では通せないD1変更（R2の残件確認が要る0040）を、承認manifestつきで手動実行する。
+# 追加だけの変更とPRで承認済みの破壊的変更はDeployが自動適用するので、通常このworkflowは使わない。
 name: Migrate
 
 on:
