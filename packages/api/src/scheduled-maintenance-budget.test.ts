@@ -46,10 +46,12 @@ function worstPathDatabase(
     const query = normalize(sql);
     if (query.includes('from sqlite_master'))
       return [{ name: 'attachments' }, { name: 'attachment_cleanup_jobs' }];
-    if (query.includes('select id,screenshot_key from improvement_requests'))
+    // 最悪経路: 期限の検索が添付の期限と完全消去の期限を半分ずつ拾い、UPDATE と DELETE の両方が走る
+    if (query.includes('select id,screenshot_key,kind from'))
       return Array.from({ length: 500 }, (_, index) => ({
         id: `improvement-${index + 1}`,
         screenshot_key: `improvements/synthetic/${index + 1}.jpg`,
+        kind: index % 2 === 0 ? 'erase' : 'purge',
       }));
     if (query.includes('select screenshot_key from improvement_requests'))
       return [{ screenshot_key: 'improvements/synthetic/live.jpg' }];
@@ -102,7 +104,12 @@ function worstPathDatabase(
       run: async () => {
         execute();
         const query = normalize(sql);
-        return result(query.startsWith('update improvement_requests') ? 500 : 1);
+        return result(
+          query.startsWith('update improvement_requests') ||
+            query.startsWith('delete from improvement_requests')
+            ? 250
+            : 1,
+        );
       },
       raw: async () => {
         execute();
@@ -175,9 +182,9 @@ describe('scheduled maintenance D1 plan', () => {
       nightly_backup: 1,
       r2_cleanup: 20,
       password_login_rate_limit_cleanup: 2,
-      improvement_retention: 3,
+      improvement_retention: 4,
       deletion_undo_retention: 12,
-      audit_header_retention: 3,
+      audit_header_retention: 2,
       audit_detail_retention: 6,
       cash_soft_delete_purge: 2,
     });

@@ -1,0 +1,184 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/plan-feat-improvement-screen-20260923T1404Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "第1周の medium finding (migration ファイル名が正本 specs/spec-improvement-screen.md:726 の提示値『0053_improvement_request_screen.sql』と plan 側の採用値『0053_improvement_screen.sql』で不一致) は、task-specs/phase-05-implementation.md (差分ハッシュのみ変更、他13 phase は不変)・task-specs/phase-13-release-deploy.md・workstream-inventory.json の全 3 箇所で『migrations/0053_improvement_request_screen.sql』に統一されたことを rg で再確認し解消を確認した。正本と plan の値が一致した以外の差分は無く (system-build-handoff.json は source_manifest の再生成に伴う自動再計算のみ)、feature-package.json・goal-spec.json・task-graph.json・phase-01〜04/06〜12 の11 task-specs のハッシュは第1周から不変で、scope_in/scope_out・acceptance・write_scope の分離規則 (P05のみコード、P04のみテスト、他はdocs) は引き続き矛盾なく反復している。migration 番号 0053・SCHEDULED_D1_QUERY_PLAN_MAX=49 の扱いも第1周から不変で一貫している。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-13-release-deploy.md",
+        "workstream-inventory.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "migration ファイル名の是正は phase-05 (Produced/Consumed/Write scope の3箇所)・phase-13 (Consumed artifacts)・workstream-inventory.json (P05 の write_scope) の全参照箇所に漏れなく反映されており (rg で該当行を全件確認、旧名 '0053_improvement_screen.sql' の残存は 0 件)、命名変更が一部の参照だけに適用されて他が旧名のまま残るという新たな漏れは生じていない。P04 (test-design) の write_scope・acceptance は第1周から不変で、goal-spec.json の acceptance S1〜S5・open_items OI-01〜OI-08 の担当 phase 割当ても不変のまま漏れが無い。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-13-release-deploy.md",
+        "workstream-inventory.json",
+        "task-graph.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "staging-manifest.json の files 17 件および staging-manifest.json 自身の sha256 を shasum -a 256 で実測し、新しい記録値 (canonical_digest=sha256:976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144) と全件一致することを確認した。validate-system-plan.py を独立に再実行し validated_digest が同値であること、status=pass、violations=[] を確認した。system-build-handoff.json#identity.source_feature_digest (sha256:b60f7361f6fa727b2daf321c03d451594b92170cd4526e6ab3b6e0d75ed01b39) は feature-package.json#source_feature_digest・goal-spec.json#identity_check.feature_context_sha256 と第1周から不変で一致する。system-build-handoff.json#source_manifest は再生成に伴い canonical_digest_before_handoff / sha256_before_handoff が更新されているが、これは handoff の正常な再計算であり identity・repository_id (github:daishiman/kanjo) に変化は無い。",
+      "evidence": [
+        "staging-manifest.json",
+        "system-build-handoff.json",
+        "feature-package.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json (第1周から不変) の depends_on は P01→P02→…→P13 の単鎖であり、write_scope の分離 (P05のみコード実装、P04のみテスト、他はdocs) と phase 順序 (preparation→design-review→test-design→mutation→test-run→acceptance→audit→quality-assurance→independent-review→evidence→documentation-sync→release) は第1周から変化なく整合している。今回の是正 (ファイル名統一) は write_scope の対象ファイル数や依存関係を変えておらず、C4 に影響する変更は無い。",
+      "evidence": [
+        "task-graph.json",
+        "workstream-inventory.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${CLAUDE_PLUGIN_CACHE}/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--staging",
+        ".dev-graph/staging/plan-feat-improvement-screen-20260923T1404Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144\",\n  \"feature_package_id\": \"feature-package/feat-improvement-screen\",\n  \"parent_feature\": \"feat-improvement-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "staging-manifest.json",
+      "sha256": "4a294b824a5835572a0e84ae6825675924dd5dd78cad269d171513b23a188c06"
+    },
+    {
+      "path": "feature-package.json",
+      "sha256": "2beef9c6d85214fae8f7388be6d8c081a96f0110b8e9de3c355c9a60a4b1376f"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "7359cee4eaf77dbb32889a25e7f167dd46262b47e2973003ffb8e28777f35881"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "feb89c88824dbe26a5b4146ca0746b7213cf0690cc4b4ba9d16df23512705b1f"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "10b48df8f9b35829336a61e90316dc43ee0e06450a50243b03a90f965b7982cd"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "632669c65d089fed11b6c32b1c4d02db9c5299342cd9dbb2247bdbdf1357396f"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "d7bf16156cd05b25ba132d566a50a2ef492226139e2f1d95be3c3605fa7a5184"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "ad6f18bf9fed228d21d3b3525cf72d3f019f7b69cf9254def133380b6b232170"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "44b849eed374e8a7460957a9b300c22e41d6da52fe28ec230e6276ead8089dc6"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "995b3eef371a9c54833d202bf83147ee75fe0f58898301d7ec7a730bde060144"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "effe091ba856cc67bf9b7887e6f4bb5a710eaca829fc5c5b5407c6424dfd2042"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "f05033cd0c7c81a3a9aa0b2c3a79e0ae80f1c28946330f340af9a54ef6bbe9ec"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "2a90c110daf86e28dae2b62186c3e8fec021c72df08ee1e55fb565d858bcfe83"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "1eac601c2e2ea25709ae6e6323fae035b068b8a71bef088578e52c444c6675ab"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "bb19f5c6c28449091d3fab7cad51f760605e50c9993652b286d31ac5f191df5e"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "f6067a6285afb2dabb254464cd93d56b2ff11839f320160049874461ffebbadc"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "a52963eed51b712da8941614e94d60b85ec3be08df6e01e8aa3d29dc07dae576"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "d039ec45bdc779783e8936e72dff66e1be0f53eb827ff1759aa5d904620db8e5"
+    }
+  ],
+  "staleness_rule": "本 findings は evaluated_digest (staging-manifest.json#canonical_digest = sha256:976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144) に束縛される。staging-manifest.json の canonical_digest、files 配下いずれかの sha256、または staging-manifest.json 自身の sha256 が再生成等で変化した場合、本 findings は無効 (stale) であり、C11 promotion gate は evaluated_digest と promotion 対象 digest の完全一致、および evaluated_inputs (manifest files 全件 + staging-manifest.json 自身) の exact-set 一致を要求し、不一致時は本 findings を採用してはならない。第1周 (evaluated_digest=sha256:b6c135fb02a2e9a509cb62448aceae6565c66e5edfdae90c057cf449958353f5、staging から退避済み) の verdict は本 findings の根拠として再利用していない。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "consistency",
+      "observation": "第1周の finding (medium: migration 0053 のファイル名が正本 specs/spec-improvement-screen.md:726 の提示値と plan 側の採用値で不一致) は、task-specs/phase-05-implementation.md・phase-13-release-deploy.md・workstream-inventory.json の全3ファイル・全該当行 (rg で計 10 箇所超) が『migrations/0053_improvement_request_screen.sql』に統一されたことで解消を確認した。旧名 '0053_improvement_screen.sql' の残存は staging 内に 0 件である。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-13-release-deploy.md",
+        "workstream-inventory.json"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "digest-integrity",
+      "observation": "staging-manifest.json の files 17 件および staging-manifest.json 自身の sha256 を実ファイルから再計算し、新しい記録値と完全一致することを確認した。canonical_digest は validate-system-plan.py の validated_digest と一致する。変更されたのは phase-05・phase-13・workstream-inventory.json・system-build-handoff.json (再計算による自動追随) の4ファイルのみで、他13ファイルのハッシュは第1周から不変であることを確認した。",
+      "evidence": [
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "repository-boundary",
+      "observation": "system-build-handoff.json#identity.repository_id = github:daishiman/kanjo・source_feature_digest は第1周から不変であり、registration_request の promotion_receipt / registration_receipt はいずれも status=not-emitted で先行発行がない。",
+      "evidence": [
+        "system-build-handoff.json"
+      ]
+    }
+  ]
+}

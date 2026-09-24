@@ -99,11 +99,12 @@ describe('削除ジョブの失敗が他へ波及しないこと', () => {
       await d1
         .prepare(
           `INSERT INTO improvement_requests
-             (id, user_id, title, body, route, status, screenshot_key, done_at, created_at, updated_at)
-           VALUES (?, 'default', '架空の要望', '本文', '/', 'done', ?, ?, ?, ?)`,
+             (id, user_id, seq, title, body, route, status, screenshot_key, done_at, created_at, updated_at)
+           VALUES (?, 'default', ?, '架空の要望', '本文', '/', 'done', ?, ?, ?, ?)`,
         )
         .bind(
           id,
+          id === 'imp-a' ? 1 : 2,
           `improvements/default/${id}.jpg`,
           '2026-01-01T00:00:00.000Z',
           '2026-01-01T00:00:00.000Z',
@@ -148,8 +149,8 @@ describe('削除ジョブの失敗が他へ波及しないこと', () => {
     await d1
       .prepare(
         `INSERT INTO improvement_requests
-           (id, user_id, title, body, route, status, screenshot_key, done_at, created_at, updated_at)
-         VALUES ('imp-c', 'default', '架空の要望', '本文', '/', 'done',
+           (id, user_id, seq, title, body, route, status, screenshot_key, done_at, created_at, updated_at)
+         VALUES ('imp-c', 'default', 3, '架空の要望', '本文', '/', 'done',
                  'improvements/default/imp-c.jpg', ?, ?, ?)`,
       )
       .bind('2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z')

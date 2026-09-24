@@ -158,7 +158,10 @@ export function KpiCard({
       {icon != null && <span className="kpi-icon">{icon}</span>}
       <div className="kpi-content">
         <div className="label">{label}</div>
-        <div className={`value${tone ? ` ${tone}` : ''}`}>{value}</div>
+        {/* 金額を出す欄。撮影用の複製では伏字にする (spec-improvement-screen FR-24) */}
+        <div className={`value${tone ? ` ${tone}` : ''}`} data-capture-mask="">
+          {value}
+        </div>
       </div>
       {note != null && <div className="note">{note}</div>}
     </div>
@@ -190,10 +193,10 @@ export function AnnualComparisonTable({
   const row = (item: Omit<AnnualComparisonRow, 'key'>, key?: string) => (
     <tr key={key} className={key ? undefined : 'total'}>
       <th scope="row">{item.label}</th>
-      <td className="num" data-label={previousLabel}>
+      <td className="num" data-label={previousLabel} data-capture-mask="">
         {yen(item.previous)}
       </td>
-      <td className="num" data-label={currentLabel}>
+      <td className="num" data-label={currentLabel} data-capture-mask="">
         {yen(item.current)}
       </td>
       <td className={`num ${deltaCls(item.delta)}`} data-label="増減率">

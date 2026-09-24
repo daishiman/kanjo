@@ -3,7 +3,7 @@
  * 実データを使わず、インメモリの D1 + R2 と架空の要望だけで検証する。
  *
  * ここが固定するのは受入条件のうち次の点。
- *  - 撮影が無くても投稿が成立する
+ *  - 撮影が無くても投稿が成立する。画像が不適合なら投稿ごと 400 にし、黙って落とさない (S4)
  *  - トークンは平文で D1 に残らない(SHA-256 ハッシュだけ)
  *  - 期限切れと取得回数超過が区別され、どちらも 500 にならない
  *  - スクリーンショットの取得経路が Worker 1本だけである(公開/署名 URL を返さない)
@@ -65,12 +65,13 @@ const get = async (path: string): Promise<Response> =>
 
 /** 画面からの投稿。screenshot を渡さなければ本文だけの投稿になる */
 async function create(
-  options: { screenshot?: Uint8Array; diagnostics?: unknown; title?: string } = {},
+  options: { screenshot?: Uint8Array; diagnostics?: unknown } = {},
 ): Promise<{ id: string; prompt: string; json: Record<string, unknown> }> {
   const form = new FormData();
-  form.set('title', options.title ?? '架空の不具合');
   form.set('body', '保存ボタンを押しても何も起きません');
   form.set('route', '/classify');
+  form.set('privacyConfirmed', 'true');
+  form.set('privacyConsented', 'true');
   form.set(
     'diagnostics',
     JSON.stringify(
@@ -141,7 +142,9 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  // 履歴は依頼の行と一緒に消える (ON DELETE CASCADE)。番号の採番もテストごとに 1 から始める
   await d1.prepare('DELETE FROM improvement_requests').run();
+  await d1.prepare('DELETE FROM improvement_request_counters').run();
   // R2 も一緒に空にする。消し忘れると前のテストの画像が次のテストで孤児として数えられる
   const listed = await files.list({ prefix: 'improvements/' });
   for (const object of listed.objects) await files.delete(object.key);
@@ -152,7 +155,7 @@ describe('投稿', () => {
   it('スクリーンショットが無くても本文だけで 201 になる', async () => {
     const { json } = await create();
     expect((json.request as { screenshot: { available: boolean } }).screenshot.available).toBe(false);
-    expect(json.screenshotRejected).toBeNull();
+    expect(json.number).toBe('IMP-001');
     expect(json.diagnosticsRejected).toBe(false);
   });
 
@@ -162,33 +165,39 @@ describe('投稿', () => {
     expect(row?.screenshot_key).toBe(`improvements/default/${id}.jpg`);
     expect(await files.head(String(row?.screenshot_key))).not.toBeNull();
 
-    const list = (await (await get('/improvements')).json()) as {
-      requests: { id: string; screenshot: { available: boolean } }[];
+    const list = (await (await get('/improvements')).json()) as { items: { id: string }[] };
+    expect(list.items.map((r) => r.id)).toContain(id);
+    const detail = (await (await get(`/improvements/${id}`)).json()) as {
+      request: { screenshot: { available: boolean } };
     };
-    expect(list.requests.map((r) => r.id)).toContain(id);
-    expect(list.requests[0].screenshot.available).toBe(true);
+    expect(detail.request.screenshot.available).toBe(true);
   });
 
-  it('JPEG でも PNG でもない中身は保存せず、拒否理由を返して投稿自体は成立させる', async () => {
+  it('JPEG でも PNG でもない中身は 400 で、行も画像も残さない', async () => {
     const form = new FormData();
-    form.set('title', '架空の不具合');
     form.set('body', '中身が画像ではないファイル');
     form.set('route', '/');
+    form.set('privacyConfirmed', 'true');
+    form.set('privacyConsented', 'true');
     form.set('screenshot', new File([new Uint8Array([1, 2, 3, 4])], 'x.jpg', { type: 'image/jpeg' }));
     const res = await app.request(
       '/api/improvements',
       { method: 'POST', headers: { cookie }, body: form },
       env(),
     );
-    expect(res.status).toBe(201);
-    const json = (await res.json()) as { screenshotRejected: string };
-    expect(json.screenshotRejected).toBe('unsupported_type');
+    expect(res.status).toBe(400);
+    const json = (await res.json()) as { error: { code: string; fields: { screenshot?: string } } };
+    expect(json.error.code).toBe('invalid_request');
+    expect(json.error.fields.screenshot).toBeTruthy();
+    expect(await d1.prepare('SELECT COUNT(*) AS n FROM improvement_requests').first<number>('n')).toBe(0);
+    expect((await files.list({ prefix: 'improvements/' })).objects).toHaveLength(0);
   });
 
-  it('件名と内容が空なら 400 で、行が増えない', async () => {
+  it('内容が空なら 400 で、行が増えない', async () => {
     const form = new FormData();
-    form.set('title', '');
     form.set('body', '');
+    form.set('privacyConfirmed', 'true');
+    form.set('privacyConsented', 'true');
     const res = await app.request(
       '/api/improvements',
       { method: 'POST', headers: { cookie }, body: form },

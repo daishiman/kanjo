@@ -3794,6 +3794,174 @@
       "referenced_by": []
     },
     {
+      "id": "arch-improvement-screen-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "改善リクエスト — 上段に作成フォーム・下段に一覧と詳細の 2 ペインを置き、プライバシー確認 2 つとマスク対象の説明を送信の直前に、削除は『元に戻す』で取り返せるようにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "55d1437d6fba626dd898122b48d66e5e981a95dfc2f5a71af1dff3e7e7de94b0",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "改善リクエスト — pages/improvement/ に分けて core を呼ぶのは view-model だけにし、表示条件は URL を正本に、撮影は遅延読み込みの DOM 複製に伏字と範囲選択を足して画像はメモリだけに持つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "1153b45360c5786d15aee28f19d9d684aa3155b8d44ae0b83e6b9a354c5101c6",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "改善リクエスト — 状態の遷移・一覧・関連・履歴の判定を core の improvement-screen に置き、API は zod で検証して D1 batch 1 つで依頼と履歴を書き、削除中の行を全経路で読まず、夜間に 30 日後の完全消去を他 job の枠 1 本で回す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "13f0f32a2b6dfc894e328acfe9efd46454e5b6642111f6088ac9bd61366a5d95",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "改善リクエスト — migration 0053 で improvement_requests を作り直して状態を 4 つに改め、利用者ごとの連番・論理削除・履歴表を足し、既存の行・画像・トークンを 1 件も落とさずバックアップの外に置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "c982ad2a18786c75d0d9c1f523c1adb00d6c5cc0fdabfeada0219c68af5950b3",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "改善リクエスト — 削除・復元・一覧の検索を既存のセッション Cookie と authGuard の配下に置き、他の利用者の依頼と削除中の依頼をどの経路からも 404 にそろえる",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "e97adcfd5be8331dcdc57c615ade418260e0a9f530e410024e38c455ae8f61da",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "改善リクエスト — 同じ core のマスク規則をブラウザとサーバの 2 層で掛け、入力を 5 つの境界で閉じ、論理削除から 30 日後の完全消去までを保持期限で守る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "46502737710bfbffc42ed88bf9f2404279b72b5fdf193e1ec7af50260cf43ade",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "改善リクエスト — 削除から 30 日後の完全消去を新しい cron を足さず夜間の improvement_retention に相乗りさせ、audit_header_retention から 1 本回して D1 予算の合計 49 を保つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "7c10807c3331802623de4fae6013177370c39b9dae5377ecd19f48cd1a1cadf2",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "改善リクエスト — 既存の品質ゲートを全て緑に保ち、0053 の適用前バックアップと戻し方を runbook に置き、夜間の完全消去の件数を個人情報なしの JSON ログで追えるようにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "d0a9ec61c38694ac6f85838678d0a9f3adcdb9070a6e9e77b03db4189b4cbfdc",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
       "id": "arch-settings-auth",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -3807,7 +3975,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-23-settings-screen/auth.md",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/auth.md",
         "source_version": "0.1.14",
         "source_digest": "1968df8fa1eed625d5ba1376decf22c7c0a3e636d0e0ecda927fce14049294ff",
         "imported_at": "2026-09-22T10:13:43Z"
@@ -3830,7 +3998,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-23-settings-screen/backend.md",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/backend.md",
         "source_version": "0.1.14",
         "source_digest": "8ed202ee635561a574f5fb733a146afe35b10e295340e7e5a49f50d75ec1bb3c",
         "imported_at": "2026-09-22T10:13:43Z"
@@ -3853,7 +4021,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-23-settings-screen/database.md",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/database.md",
         "source_version": "0.1.14",
         "source_digest": "0f71b39eb0d4aef2864a0fb9b5ba913b68a72fb2d69bd08ef7a7792ef470f78f",
         "imported_at": "2026-09-22T10:13:43Z"
@@ -3876,7 +4044,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-23-settings-screen/frontend.md",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/frontend.md",
         "source_version": "0.1.14",
         "source_digest": "711a2fd0946231628d693ec05f71d6f7013ad9d4d589f3b06dc548264f76f000",
         "imported_at": "2026-09-22T10:13:43Z"
@@ -3899,7 +4067,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-23-settings-screen/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/infrastructure.md",
         "source_version": "0.1.14",
         "source_digest": "6b7af8e430bf9e58190417f42bb9e68c682f79d5c790e70419330e6e5ef75192",
         "imported_at": "2026-09-22T10:13:43Z"
@@ -3922,7 +4090,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-23-settings-screen/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/maintenance-ops.md",
         "source_version": "0.1.14",
         "source_digest": "55b201ec86e261da7cb5fceb2ba2d639875931c7a72a259401e72e623add4452",
         "imported_at": "2026-09-22T10:13:43Z"
@@ -3945,7 +4113,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-23-settings-screen/security.md",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/security.md",
         "source_version": "0.1.14",
         "source_digest": "c0d64d31afc54115c07bc73eaa3884d65f3a33205d92327fda0e583c56edb163",
         "imported_at": "2026-09-22T10:13:43Z"
@@ -3968,7 +4136,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-23-settings-screen/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/ui-ux.md",
         "source_version": "0.1.14",
         "source_digest": "376a461e32d6277d040822ed6cd4d4b016c46332dece3f6f8c7c412114b754de",
         "imported_at": "2026-09-22T10:13:43Z"

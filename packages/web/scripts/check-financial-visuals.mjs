@@ -1491,6 +1491,82 @@ const guideFixture = {
   },
 };
 
+// 改善リクエスト (KANJO_VISUAL_SCOPE=improvement)。1 ページ 10 件を超える 12 件で、ページ送り・4 つの状態・長い概要を同時に描く
+const improvementStatuses = ['open', 'in_progress', 'done', 'reconfirm'];
+const improvementStatusLabel = { open: '受付', in_progress: '対応中', done: '完了', reconfirm: '再確認' };
+const improvementItem = (index) => {
+  const seq = 12 - index;
+  const status = improvementStatuses[index % 4];
+  return {
+    id: `imp-visual-${seq}`,
+    seq,
+    number: `IMP-${String(seq).padStart(3, '0')}`,
+    route: index % 2 ? '/budget' : '/cash',
+    routeLabel: index % 2 ? '予算' : '現金入力',
+    summary:
+      index === 0
+        ? '匿名の画面で、表の見出しと合計の行が重なって読めなくなるので、狭い幅でも折り返して読めるようにしてほしい'
+        : `匿名の改善の概要 ${seq}`,
+    status,
+    statusLabel: improvementStatusLabel[status],
+    createdAt: `2026-03-${String(seq).padStart(2, '0')}T09:00:00.000Z`,
+    updatedAt: `2026-03-${String(seq).padStart(2, '0')}T10:00:00.000Z`,
+  };
+};
+const improvementItems = Array.from({ length: 12 }, (_, index) => improvementItem(index));
+const improvementList = {
+  items: improvementItems.slice(0, 10),
+  counts: { all: 12, open: 3, in_progress: 3, done: 3, reconfirm: 3 },
+  page: 1,
+  pageSize: 10,
+  total: 12,
+};
+const improvementDetail = {
+  request: {
+    id: improvementItems[0].id,
+    seq: improvementItems[0].seq,
+    title: null,
+    body: `${improvementItems[0].summary}。金額は *** のように伏せています。`,
+    route: '/cash',
+    status: 'open',
+    screenshot: { available: false, size: null },
+    diagnostics: { available: true, entryCount: 2, omittedCount: 0 },
+    token: { status: 'active', expiresAt: '2026-03-20T00:00:00.000Z', fetchCount: 0 },
+    copiedAt: null,
+    copiedTarget: null,
+    doneAt: null,
+    purgedAt: null,
+    attachmentExpiresAt: null,
+    deletedAt: null,
+    createdAt: improvementItems[0].createdAt,
+    updatedAt: improvementItems[0].updatedAt,
+  },
+  number: improvementItems[0].number,
+  summary: improvementItems[0].summary,
+  routeLabel: '現金入力',
+  diagnosticsSummary: {
+    os: 'macOS',
+    browser: 'Chrome',
+    viewport: '1280x800',
+    environment: 'デスクトップ',
+    sessionIdMasked: 'sess-****',
+  },
+  activities: [
+    {
+      id: 'act-visual-1',
+      kind: 'created',
+      fromStatus: null,
+      toStatus: 'open',
+      createdAt: improvementItems[0].createdAt,
+      title: '作成しました',
+      description: '状態: 未対応',
+    },
+  ],
+  related: improvementItems.slice(2, 5),
+  allowedTransitions: ['in_progress', 'done'],
+  diagnostics: null,
+};
+
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
 const responseFor = (url) => {
   const requestUrl = new URL(url);
@@ -1535,6 +1611,8 @@ const responseFor = (url) => {
   // 現金入力は担当者の表示名を読む。fixture に無いと proxy 先の API が Cookie 無しで 401 を返し、
   // 画面がログインへ切り替わる(描画の途中で切り替わるので、落ち方が実行ごとに変わる)
   if (path === '/api/settings/owner-labels') return { labels: {} };
+  if (path === '/api/improvements') return improvementList;
+  if (path === `/api/improvements/${improvementDetail.request.id}`) return improvementDetail;
   return undefined;
 };
 
@@ -1587,11 +1665,20 @@ try {
       if (await evaluate(expression)) return;
       await sleep(250);
     }
-    const body = await evaluate('document.body.innerText.slice(0, 500)');
-    throw new Error(`${label} の描画待ちがタイムアウトしました: ${body}`);
+    const state = await evaluate(`JSON.stringify({ url: location.href,
+      readyState: document.readyState,
+      body: document.body?.innerText.slice(0, 500) ?? '',
+      root: document.querySelector('#root')?.innerHTML.slice(0, 500) ?? '',
+      failedResources: performance.getEntriesByType('resource')
+        .filter((item) => item.responseStatus >= 400)
+        .slice(-8)
+        .map((item) => ({ name: item.name, status: item.responseStatus })) })`);
+    throw new Error(
+      `${label} の描画待ちがタイムアウトしました: ${state}; 実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`,
+    );
   };
   const mouseClick = async (selector, label) => {
-    const probe = await evaluate(`(async () => {
+    const probeExpression = `(async () => {
         const node = document.querySelector(${JSON.stringify(selector)});
         if (!node) return null;
         node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
@@ -1626,8 +1713,28 @@ try {
           hit: hit ? { tag: hit.tagName, className: hit.className, text: hit.textContent?.trim() } : null,
           hitWithinTarget: Boolean(hit && (hit === node || node.contains(hit))),
         };
-      })()`);
-    if (!probe) throw new Error(`${label} の実クリック対象が見つかりません: ${selector}`);
+      })()`;
+    // 狭幅の詳細選択後は画面全体の smooth scroll がまだ進むことがある。
+    // 一時的に viewport 外へ出た対象を欠落と誤判定しないよう、座標が取れるまで待つ。
+    let probe = null;
+    for (let attempt = 0; attempt < 15 && !probe; attempt += 1) {
+      probe = await evaluate(probeExpression);
+      if (!probe) await sleep(100);
+    }
+    if (!probe) {
+      const diagnostics = await evaluate(`JSON.stringify((() => {
+        const node = document.querySelector(${JSON.stringify(selector)});
+        const rect = node?.getBoundingClientRect();
+        return {
+          url: location.href,
+          exists: Boolean(node),
+          rect: rect ? { left: rect.left, top: rect.top, width: rect.width, height: rect.height } : null,
+          scrollY,
+          body: document.body.innerText.slice(0, 240),
+        };
+      })())`);
+      throw new Error(`${label} の実クリック対象が見つかりません: ${selector} ${diagnostics}`);
+    }
     if (TRACE_INTERACTIONS) console.log(`${label} click probe ${JSON.stringify(probe)}`);
     if (!probe.hitWithinTarget)
       throw new Error(`${label} のクリック位置が対象外です: ${JSON.stringify(probe)}`);
@@ -2167,6 +2274,202 @@ try {
       );
     }
   }
+  if (VISUAL_SCOPE === 'improvement') {
+    // 改善リクエストは図を持たないので、画面の構成要素・横のはみ出し・一覧と詳細の並び・範囲選択の覆いを実ブラウザで測る。
+    // 範囲選択はポインタの有無に依らず、キーボードで開いて閉じる (CI の headless Chrome は pointer:none)
+    const improvementViewports = VIEWPORTS.filter(
+      ({ label, width, zoom }) =>
+        (zoom === 1 && [360, 390, 641, 768, 900, 1023, 1024, 1280, 1600].includes(width)) ||
+        label === 'zoom200',
+    );
+    for (const { label: viewportLabel, width, zoom } of improvementViewports) {
+      const tag = zoom === 1 ? `${width}px` : viewportLabel;
+      await send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: width < 640,
+      });
+      await send('Emulation.setPageScaleFactor', { pageScaleFactor: zoom });
+      runtimeProblems.length = 0;
+      await send('Page.navigate', { url: `${BASE_URL}/improvement?id=${improvementDetail.request.id}` });
+      await waitFor(
+        "document.querySelectorAll('.improvement-table tbody tr').length > 0 && Boolean(document.querySelector('#improvement-detail-title'))",
+        `${tag} Improvement`,
+      );
+      const metrics = JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          const box = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value && value.width > 0 && value.height > 0 ? value : null;
+          };
+          const viewportWidth = document.documentElement.clientWidth;
+          const list = box(document.querySelector('.improvement-list'));
+          const detail = box(document.querySelector('.improvement-detail'));
+          const tabs = [...document.querySelectorAll('.improvement-list [role="tab"]')];
+          return {
+            viewportWidth,
+            pageWidth: document.documentElement.scrollWidth,
+            title: document.querySelector('main h1')?.textContent?.trim() ?? '',
+            question: document.querySelector('main h2.page-question')?.textContent?.trim() ?? '',
+            form: Boolean(box(document.querySelector('.improvement-create'))),
+            privacy: document.querySelectorAll('.improvement-privacy input[type="checkbox"]').length,
+            count: document.querySelector('.improvement-count')?.textContent?.trim() ?? '',
+            mask: Boolean(box(document.querySelector('.improvement-mask'))),
+            search: Boolean(box(document.querySelector('.improvement-search input'))),
+            tabs: tabs.map((tab) => tab.textContent?.trim() ?? ''),
+            tabHeights: tabs.map((tab) => Math.round(box(tab)?.height ?? 0)),
+            rows: document.querySelectorAll('.improvement-table tbody tr').length,
+            selected: document.querySelectorAll('.improvement-table tbody tr.is-selected').length,
+            pager: Boolean(box(document.querySelector('.improvement-pager'))),
+            number: document.querySelector('.improvement-detail .improvement-number')?.textContent?.trim() ?? '',
+            sections: document.querySelectorAll('.improvement-detail .improvement-detail-section').length,
+            ops: document.querySelectorAll('.improvement-ops button').length,
+            sideBySide: Boolean(list && detail && detail.left >= list.right - 1),
+            overflowing: [...document.querySelectorAll('main *')]
+              // 表の枠と件数タブ (.segment) は狭い幅では自分の中で横スクロールする共通の作り
+              .filter((node) => !node.closest('.scroll-x, .improvement-table-wrap, .segment'))
+              .filter((node) => {
+                const value = box(node);
+                return value && (value.left < -1 || value.right > viewportWidth + 1);
+              })
+              .slice(0, 3)
+              .map((node) => \`\${node.className || node.tagName}「\${(node.getAttribute('aria-label') ?? node.textContent ?? '').trim().slice(0, 20)}」\${Math.round(box(node).left)}-\${Math.round(box(node).right)}\`),
+          };
+        })())`),
+      );
+      if (metrics.pageWidth > metrics.viewportWidth + 1)
+        failures.push(
+          `${tag} Improvement の本体が横にはみ出す(${metrics.pageWidth}/${metrics.viewportWidth}px)`,
+        );
+      if (metrics.overflowing.length)
+        failures.push(`${tag} Improvement の要素が画面の外へ出る: ${metrics.overflowing.join(', ')}`);
+      if (metrics.title !== '改善リクエスト')
+        failures.push(`${tag} Improvement のタイトルが「改善リクエスト」ではない: ${metrics.title}`);
+      if (metrics.question !== '画面の文脈を保ったまま、改善を共有しますか？')
+        failures.push(`${tag} Improvement の問いの見出しが一致しない: ${metrics.question}`);
+      if (!metrics.form || metrics.privacy !== 2 || !metrics.mask || !/1000/.test(metrics.count))
+        failures.push(
+          `${tag} Improvement の作成フォーム・確認 2 つ・マスクの説明・文字数のどれかが無い(確認=${metrics.privacy} 文字数=${metrics.count})`,
+        );
+      if (!metrics.search) failures.push(`${tag} Improvement の検索欄が描画されない`);
+      if (
+        JSON.stringify(metrics.tabs) !==
+        JSON.stringify(['すべて 12', '受付 3', '対応中 3', '完了 3', '再確認 3'])
+      )
+        failures.push(`${tag} Improvement の件数タブが一致しない: ${metrics.tabs.join(' / ')}`);
+      if (metrics.tabHeights.some((height) => height < 43))
+        failures.push(`${tag} Improvement のタブの高さが 44px に届かない: ${metrics.tabHeights.join(', ')}`);
+      if (metrics.rows !== 10 || !metrics.pager)
+        failures.push(
+          `${tag} Improvement の一覧が 1 ページ 10 件とページ送りで描画されない(${metrics.rows} 行)`,
+        );
+      if (metrics.selected !== 1)
+        failures.push(`${tag} Improvement の選択中の行が 1 行ではない(${metrics.selected})`);
+      if (metrics.number !== improvementDetail.number || metrics.sections !== 6 || metrics.ops !== 5)
+        failures.push(
+          `${tag} Improvement の詳細が欠ける(番号=${metrics.number} 区画=${metrics.sections} 操作=${metrics.ops})`,
+        );
+      // 801px 以上は一覧と詳細が横に並び、800px 以下は縦に積む
+      if (zoom === 1 && width > 800 && !metrics.sideBySide)
+        failures.push(`${tag} Improvement の一覧と詳細が横に並ばない`);
+      if (zoom === 1 && width <= 800 && metrics.sideBySide)
+        failures.push(`${tag} Improvement の一覧と詳細が狭い幅でも横に並ぶ`);
+
+      // 右下の「改善を送る」から浮動パネルを開き、範囲選択の覆いをキーボードで開閉する
+      const triggerVisible = await evaluate(
+        "(() => { const node = document.querySelector('.improve-trigger'); if (!node) return false; const style = getComputedStyle(node); const box = node.getBoundingClientRect(); const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2); return style.display !== 'none' && style.visibility === 'visible' && Number(style.opacity) > 0 && box.width >= 44 && box.height >= 44 && box.left >= 0 && box.right <= document.documentElement.clientWidth && box.top >= 0 && box.bottom <= window.innerHeight && Boolean(hit && node.contains(hit)); })()",
+      );
+      if (!triggerVisible) {
+        failures.push(`${tag} Improvement の『改善を送る』入口が見えないか、押せない`);
+      } else {
+        await evaluate("document.querySelector('.improve-trigger').click()");
+        await waitFor(
+          "Boolean(document.querySelector('section.capture-panel'))",
+          `${tag} Improvement 撮影パネル`,
+        );
+        const panel = JSON.parse(
+          await evaluate(`JSON.stringify((() => {
+            const value = document.querySelector('section.capture-panel')?.getBoundingClientRect();
+            return {
+              left: value?.left ?? -1,
+              right: value?.right ?? 0,
+              bottom: value?.bottom ?? 0,
+              viewportWidth: document.documentElement.clientWidth,
+              viewportHeight: window.innerHeight,
+              hidden: document.querySelector('section.capture-panel')?.hasAttribute('data-capture-hide') ?? false,
+            };
+          })())`),
+        );
+        if (
+          panel.left < -1 ||
+          panel.right > panel.viewportWidth + 1 ||
+          panel.bottom > panel.viewportHeight + 1 ||
+          !panel.hidden
+        )
+          failures.push(`${tag} Improvement の撮影パネルが画面に収まらないか、撮影から除外されない`);
+        await evaluate(
+          "[...document.querySelectorAll('section.capture-panel button')].find((b) => b.textContent.trim() === '範囲を選択する')?.click()",
+        );
+        await waitFor(
+          'Boolean(document.querySelector(\'.capture-region [role="application"]\'))',
+          `${tag} Improvement 範囲選択`,
+        );
+        await evaluate('document.querySelector(\'.capture-region [role="application"]\').focus()');
+        const beforeText = await evaluate(
+          "[...document.querySelectorAll('.capture-region *')].find((n) => /^選択範囲:/.test(n.textContent ?? '') && n.children.length === 0)?.textContent ?? ''",
+        );
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key: 'ArrowRight',
+          code: 'ArrowRight',
+          windowsVirtualKeyCode: 39,
+        });
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyUp',
+          key: 'ArrowRight',
+          code: 'ArrowRight',
+          windowsVirtualKeyCode: 39,
+        });
+        const afterText = await evaluate(
+          "[...document.querySelectorAll('.capture-region *')].find((n) => /^選択範囲:/.test(n.textContent ?? '') && n.children.length === 0)?.textContent ?? ''",
+        );
+        if (!beforeText || beforeText === afterText)
+          failures.push(`${tag} Improvement の範囲選択が矢印キーで動かないか、範囲が文字で示されない`);
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key: 'Escape',
+          code: 'Escape',
+          windowsVirtualKeyCode: 27,
+        });
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyUp',
+          key: 'Escape',
+          code: 'Escape',
+          windowsVirtualKeyCode: 27,
+        });
+        try {
+          await waitFor(
+            "!document.querySelector('.capture-region')",
+            `${tag} Improvement 範囲選択を Escape で閉じる`,
+          );
+        } catch {
+          failures.push(`${tag} Improvement の範囲選択が Escape で閉じない`);
+        }
+      }
+      const screenshot = await send('Page.captureScreenshot', {
+        format: 'png',
+        fromSurface: true,
+        captureBeyondViewport: true,
+      });
+      writeFileSync(join(OUTPUT_DIR, `improvement-${tag}.png`), Buffer.from(screenshot.data, 'base64'));
+      if (runtimeProblems.length)
+        failures.push(`${tag} Improvement で実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`);
+      console.log(
+        `${tag} Improvement 行=${metrics.rows} 本体=${metrics.pageWidth}/${metrics.viewportWidth}px 横並び=${metrics.sideBySide} 撮影パネル=${triggerVisible}`,
+      );
+    }
+  }
   if (VISUAL_SCOPE === 'all' || VISUAL_SCOPE === 'core') {
     for (const { label: viewportLabel, width, zoom } of VIEWPORTS) {
       await send('Emulation.setDeviceMetricsOverride', {
@@ -2574,8 +2877,14 @@ try {
             `document.querySelector('.recon-row-open[aria-current="true"]')?.textContent?.trim() === ${JSON.stringify(detailTarget)}`,
             `${tag} Reconciliation 行詳細同期`,
           );
-          // 狭幅ではdetailへsmooth scrollするため、次の実クリック座標を採る前に移動完了を待つ。
-          await sleep(width < 1024 ? 600 : 100);
+          // 狭幅ではdetailへsmooth scrollする。ここからは一覧の選択操作を検証するため、
+          // detailへの移動を止めてから次の実クリック座標を採る。
+          await sleep(100);
+          if (width < 1024) {
+            await evaluate(
+              "window.scrollTo({ left: window.scrollX, top: window.scrollY, behavior: 'instant' })",
+            );
+          }
           const afterClick = JSON.parse(
             await evaluate(`JSON.stringify((() => ({
               active: document.querySelector('.recon-row-open[aria-current="true"]')?.textContent?.trim() ?? '',
@@ -2863,7 +3172,7 @@ try {
           const brandCopy = document.querySelector('.sidebar .brand-copy');
           const firstNavIcon = document.querySelector('.sidebar .nav .route-icon');
           const improvement = document.querySelector('.improve-trigger');
-          const improvementNav = document.querySelector('.sidebar a[href="/improvement"]');
+          const improvementBox = box(improvement);
           const close = document.querySelector('.monthly-close-card');
           const closeButton = close?.querySelector('.btn');
           const closeLongCopy = close
@@ -2944,11 +3253,38 @@ try {
                     box(closeButton)?.width <= 45 &&
                     box(closeButton)?.height >= 43 &&
                     box(closeButton)?.height <= 45))),
-            improvementDelegated:
+            improvementReachable:
               !rail ||
-              (getComputedStyle(improvement).display === 'none' &&
-                Boolean(improvementNav) &&
-                box(improvementNav)?.height >= 43),
+              (Boolean(improvementBox) &&
+                getComputedStyle(improvement).display !== 'none' &&
+                getComputedStyle(improvement).visibility === 'visible' &&
+                improvementBox.width >= 44 &&
+                improvementBox.height >= 44 &&
+                improvementBox.left >= 0 &&
+                improvementBox.right <= viewportWidth + 1 &&
+                improvementBox.bottom <= window.innerHeight + 1 &&
+                improvement.contains(
+                  document.elementFromPoint(
+                    improvementBox.left + improvementBox.width / 2,
+                    improvementBox.top + improvementBox.height / 2,
+                  ),
+                )),
+            improvementProbe: !rail
+              ? null
+              : {
+                  box: improvementBox,
+                  display: improvement ? getComputedStyle(improvement).display : null,
+                  visibility: improvement ? getComputedStyle(improvement).visibility : null,
+                  hit: improvementBox
+                    ? (() => {
+                        const node = document.elementFromPoint(
+                          improvementBox.left + improvementBox.width / 2,
+                          improvementBox.top + improvementBox.height / 2,
+                        );
+                        return node ? node.tagName + '.' + String(node.className) : null;
+                      })()
+                    : null,
+                },
             noVerticalRailCopy:
               !rail ||
               (lineCount(close?.querySelector('.monthly-close-count')) <= 1 &&
@@ -3574,8 +3910,27 @@ try {
           failures.push(`${tag} ${route.name} のrail badgeがiconまたはscrollbarと重なる`);
         if (!routeMetrics.shell.closeCompact)
           failures.push(`${tag} ${route.name} のrail月次進捗が縮約されていない`);
-        if (!routeMetrics.shell.improvementDelegated)
-          failures.push(`${tag} ${route.name} のrail改善操作が既存navへ安全に委譲されていない`);
+        let improvementReachable = routeMetrics.shell.improvementReachable;
+        for (
+          let attempt = 0;
+          !improvementReachable && routeMetrics.shell.rail && attempt < 20;
+          attempt += 1
+        ) {
+          await sleep(150);
+          improvementReachable = Boolean(
+            await evaluate(`(() => {
+            const node = document.querySelector('.improve-trigger');
+            if (!node || getComputedStyle(node).display === 'none' || getComputedStyle(node).visibility !== 'visible') return false;
+            const box = node.getBoundingClientRect();
+            const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+            return box.width >= 44 && box.height >= 44 && box.left >= 0 && box.right <= innerWidth + 1 && box.top >= 0 && box.bottom <= innerHeight + 1 && Boolean(hit && node.contains(hit));
+          })()`),
+          );
+        }
+        if (!improvementReachable)
+          failures.push(
+            `${tag} ${route.name} のrail改善操作が画面内で押せない: ${JSON.stringify(routeMetrics.shell.improvementProbe)}`,
+          );
         if (!routeMetrics.shell.noVerticalRailCopy)
           failures.push(`${tag} ${route.name} のrail文言が縦1文字に分断される`);
         if (

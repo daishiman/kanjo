@@ -5,7 +5,7 @@
   "beads_epic": "kanjo-ogz",
   "recorded_at": "2026-09-24T10:07:19Z",
   "verdict": "NO_CONTRACT_IMPACT_GENERATION_ARCHIVED",
-  "summary": "実装は specs/spec-guide-screen.md と architecture/guide-*.md の契約(GET /api/guide、DB 変更なし、フッタの AI 補足、信頼度の段階 80/50、shiftedPeriod の共有)のとおりで、仕様の再 compile は不要。実装で決めた細部はモジュール配置の判断にとどまり、追跡外の設計・判断記録へ追記した。main(ef7ee82)取り込みで直下の世代が衝突したため、settings サイクルを退避した。",
+  "summary": "実装は specs/spec-guide-screen.md と architecture/guide-*.md の契約(GET /api/guide、DB 変更なし、フッタの AI 補足、信頼度の段階 80/50、shiftedPeriod の共有)のとおりで、仕様の再 compile は不要。実装で決めた細部はモジュール配置の判断にとどまり、追跡外の設計・判断記録へ追記した。main(ef7ee82)取り込みで直下の世代が衝突したため、settings サイクルを退避した。 2026-09-25 に main(e495813、#72 改善リクエスト画面)を再度取り込み、同様に improvement サイクルを退避した。settings サイクルの退避先は main 側と同一内容のため main の archive/2026-09-24-settings-screen/ に一本化した。",
   "impacts": [
     {
       "id": "I1",
@@ -28,10 +28,11 @@
     },
     {
       "id": "I3",
-      "finding": "main 取り込みで直下の現行世代(guide と settings)が衝突",
-      "action": "直下は guide サイクルを現行世代として残し、settings サイクル 14 ファイルをバイト同一で archive/2026-09-23-settings-screen/ へ README 付きで退避。graph.json は和集合(182 ノード)にし arch-settings-* 8 件の source_path を退避先へ付け替え(digest 不変)",
+      "finding": "main 取り込みで直下の現行世代が衝突(1 回目: guide と settings、2 回目: guide と improvement)",
+      "action": "直下は guide サイクルを現行世代として残す。settings サイクルは main が既にバイト同一で退避した archive/2026-09-24-settings-screen/ に一本化し、本ブランチの 2026-09-23 退避は削除。improvement サイクル 14 ファイルをバイト同一で archive/2026-09-25-improvement-screen/ へ README 付きで退避。graph.json は和集合(190 ノード)にし arch-improvement-screen-* 8 件の source_path を退避先へ付け替え(digest 不変)",
       "files": [
-        "system-spec/archive/2026-09-23-settings-screen/",
+        "system-spec/archive/2026-09-24-settings-screen/",
+        "system-spec/archive/2026-09-25-improvement-screen/",
         "architecture/graph.json"
       ]
     },

@@ -1,0 +1,45 @@
+{
+  "graph_node_id": "feat-improvement-screen",
+  "artifact_kind": "feature",
+  "purpose": "改善リクエスト画面を、利用者 (個人事業主とその家族の家計を 1 人で管理する本人) が、使っていて困ったことを、そのとき見えていた画面 (個人情報を伏せた画像) と診断情報ごと 1 画面で送り、送った依頼の状態・履歴・関連する依頼を同じ画面で追い、Claude Code / Codex がそのまま着手できる指示文として取り出せる場にする。送る前に何が伏せられるかを確かめられ、送った後も誤って消した依頼を戻せることで、改善の経路から個人情報と記録の欠けを無くす。",
+  "goal": "/improvement が 20-improvement.png の構成 (問いの見出しと説明・使い方リンク・共通の期間・作成フォーム (スクリーンショットと撮り直し/差し替え/削除・本文 0/1000・プライバシー確認 2 つ・自動マスキングの説明・送信)・一覧 (検索・すべて/受付/対応中/完了/再確認の件数タブ・選択・表・10 件ずつのページング)・詳細パネル (IMP 番号と状態・本文・添付画像と拡大・マスク済み診断・アクティビティ・関連する依頼・状態変更・再発行・Claude Code 用 / Codex 用のコピー・削除)・空状態・読み込み失敗と再読み込み・画面キャプチャの浮動パネル・選択中バー・コピー完了トースト) を共通シェルの文言を除いてトークンと共通部品で描画し、状態・概要・IMP 番号・検索・件数・ページング・関連・アクティビティ・診断要約・マスクが core の improvement-screen (とマスクを拡張した improvement.ts) 1 か所で導かれて API と web が写すだけになり、migration 0053 (状態の CHECK 張り替えと wontfix→完了の移し替え・利用者ごとの連番・論理削除の列・件名の NULL 許容・アクティビティの表) と削除・復元の経路で削除した依頼が同じ番号のまま戻り、削除中の行が全ての読み取り経路から外れ、30 日後に夜間の improvement_retention で行・履歴・R2 の画像が消え (夜間予算 49 は audit_header_retention の読み取り 1 本を回して維持、D-imp-008)、画像・本文・診断から個人情報がブラウザとサーバの両方で伏せられた状態。",
+  "scope_in": [
+    "改善リクエスト画面 (20-improvement.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直し。packages/web/src/pages/Improvement.tsx を packages/web/src/pages/improvement/ 配下 (ImprovementPage・view-model・作成フォーム・一覧・詳細パネル・撮影パネル・選択中バー・トースト) へ分割し、選択中の依頼・タブ・検索・ページを URL に保つ。見出しを『改善リクエスト』に揃える (I1)",
+    "作成フォームを画面内へ置く。件名欄を廃止し本文 1000 字、概要は本文 1 行目から core で最大 40 字を切り出す。プライバシー確認 2 つの必須化と自動マスキングの対象の説明 (qa-imp-decision-002)",
+    "画面キャプチャの浮動パネル (キャプチャする・範囲を選択する)。右下の『改善を送る』(Layout.tsx) からどの画面でもパネルを出し、撮影後に画像と関連ページを持って /improvement の作成フォームへ移る。撮り直しは関連ページへ戻ってパネルを出す。ImprovementRequestButton.tsx のモーダルはパネルの入口に変える (I5)",
+    "撮影用 DOM 複製の伏字 (data-capture-mask) と、本文・診断情報のマスク規則の拡張 (金額・電話・住所・取引先名の辞書・個人名の辞書)。ブラウザとサーバで同じ core の規則を掛ける (I3)",
+    "packages/core/src/improvement-screen.ts の純関数 (状態の体系と遷移・概要・IMP 番号・検索・件数タブ・ページング・関連する依頼・アクティビティ・診断の表示用要約) (I2)",
+    "migration 0053 (状態の CHECK 張り替えと wontfix→完了の移し替え・理由のアクティビティ記録・利用者ごとの連番・論理削除の列・件名の NULL 許容・アクティビティの表)。schema.ts と runtimeSchemaGuard の期待 migration を 0053 へ進める (I4)",
+    "API: DELETE /api/improvements/:id の論理削除と復元の新設、一覧 (検索・件数・ページング)・詳細 (履歴・関連する依頼)・作成・状態変更・再発行の拡張、全ての読み取り経路への削除中の行の除外 (I4)",
+    "入力検証 (本文 1000 字・プライバシー確認 2 つ・状態の候補・画像の形式と 2MB) を core と API の zod で揃え、他の利用者の依頼を 404 にする (I6)",
+    "夜間の完全消去を既存の improvement_retention に相乗りさせ、audit_header_retention の読み取りを 1 本減らして夜間予算 49 を維持する (D-imp-008)。BACKUP_SNAPSHOT_SQL に改善リクエストの表を入れない不変条件を保つ",
+    "core・API・DOM のテストと、docs/improvement-request.md・runbook の更新"
+  ],
+  "scope_out": [
+    "共通シェルの文言 (取引ライン / 最終更新 / 月次クローズ / フッター) の変更。画像の文言は期待値にしない (U7)",
+    "改善を起点にした自動修正・自動 PR 作成と、外部の課題管理サービスへの連携 (2026-09-02 サイクルの範囲外を維持)",
+    "関連する依頼の手動紐付け。自動導出だけにする (qa-imp-decision-006)",
+    "複数利用者の間での依頼の共有と権限分離。単一利用者の運用を維持する",
+    "モバイル・タブレット・デスクトップ専用アプリ。狭い幅はレスポンシブ web で扱う (qa-imp-decision-005)",
+    "新しい Cron・新しい資格情報の種類・R2 のキーの形の変更"
+  ],
+  "acceptance": [
+    "S1 (G1): /improvement で 20-improvement.png の構成要素 (共通シェルの文言を除く) がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件、読込 / 空 / 失敗の各状態とプライバシー確認 2 つが未チェックのとき送信不可であることが DOM テストで固定されている。",
+    "S2 (G2): 送信された画像・本文・診断情報に、口座情報・取引先名・金額・個人名・メールアドレス・電話番号・住所・秘匿値が 1 件も残らず、クライアントのマスクを飛ばした投稿にもサーバで同じ規則が掛かることが core・DOM・API のテストで固定されている。",
+    "S3 (G3): 状態・概要・番号・検索・件数・ページング・関連・アクティビティ・診断要約・マスクが core だけで計算され、API と web はその結果を写すだけで、web と api に同じ計算の重複が無い (grep で 0 件)。",
+    "S4 (G4): 他の利用者の依頼の取得・変更・削除・復元が 404、不正な入力 (空の本文、1000 字超、プライバシー確認の欠け、候補外の状態、形式外・2MB 超の画像) が 400 になり、削除した依頼は『元に戻す』で同じ id と番号のまま戻り、削除中の行が一覧と件数に 0 件、30 日経過の完全消去で R2 の画像と履歴が消える。",
+    "S5 (全体): migration 0053 の適用で既存の行・R2 の画像・トークンが失われず (wontfix は完了へ移り理由が履歴に残る)、夜間予算テストが total === PLAN_MAX (49) を固定し、BACKUP_SNAPSHOT_SQL に改善リクエストの表が無く、pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0 で、旧 Improvement.tsx とモーダルにあった操作がすべて新しい構成から実行できる。受入は実行済みの最新のテスト証跡だけで判定する。"
+  ],
+  "architecture_refs": [
+    "specs/spec-improvement-screen.md",
+    "architecture/improvement-screen-ui-ux.md",
+    "architecture/improvement-screen-frontend.md",
+    "architecture/improvement-screen-backend.md",
+    "architecture/improvement-screen-database.md",
+    "architecture/improvement-screen-auth.md",
+    "architecture/improvement-screen-security.md",
+    "architecture/improvement-screen-infrastructure.md",
+    "architecture/improvement-screen-maintenance-ops.md"
+  ],
+  "updated_at": "2026-09-23T14:02:50Z"
+}

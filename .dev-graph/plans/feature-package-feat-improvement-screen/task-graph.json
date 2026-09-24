@@ -1,0 +1,148 @@
+{
+  "feature_package_id": "feature-package/feat-improvement-screen",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と持ち越し事項・推定値の確認担当の割り当て"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P01"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P02",
+      "title": "improvement-screen 純関数・マスクの 2 境界・migration 0053・削除と復元・夜間消去・画面分割のワークストリーム設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P02"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P03",
+      "title": "削除と復元の契約・読取経路・マスクの 2 境界・入力検証・URL 契約の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P03"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P04",
+      "title": "core 境界値・マスク・API 契約・migration 0053・夜間予算・DOM の失敗テスト先行作成"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P04"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P05",
+      "title": "improvement-screen 純関数・マスクの拡張・migration 0053・削除と復元・夜間の完全消去・改善リクエスト画面の分割と撮影パネルの最終実装"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P05"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P06",
+      "title": "全テストと型検査と lint と skill テストの実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P06"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P07",
+      "title": "受入基準 S1 から S5 の検証"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P07"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P08",
+      "lifecycle_role": "audit",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P08",
+      "title": "導出とマスクの重複・削除中の行の読取漏れ・旧参照の読取専用監査"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P08"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・マスク・入力検証・他人の依頼の拒否・撮影のブラウザ内完結・JS バンドル予算の保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P09"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P10"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P11"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P12",
+      "title": "状態・番号・マスク・削除と復元・夜間消去の規則表と docs/improvement-request.md・runbook の最終同期"
+    },
+    {
+      "depends_on": [
+        "SYS-IMPSCR-P12"
+      ],
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "id": "SYS-IMPSCR-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-improvement-screen",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信と migration 0053 の適用とクローズアウト"
+    }
+  ],
+  "parent_feature": "feat-improvement-screen",
+  "schema_version": "1.0.0"
+}
