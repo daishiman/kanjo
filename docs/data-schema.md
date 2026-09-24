@@ -627,6 +627,81 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 復元は `budget_plans` の利用者の行を消してから JSON の行を入れる。`budgetPlans` の無い古いバックアップを復元すると、既存 `budgets` と同じく `budget_plans` を消す。消した後は、既存 budgets の月額 × 12 が初期値に戻る。
 - `budget_plans` は、変更系フェンスの consumer(`canonical-mutation-fence.ts`)と取込中の表の一覧(`import-active.ts`)に入れた。保存の batch では JSON snapshot を無効化する。snapshot の無効化と復元の write-set の片方だけに入れると、snapshot が古い予算を返すため、両方に入れた。
 
+## 設定画面の 3 表(0054〜0056 / feat-settings-screen)
+
+`migrations/0054_settings_norm_rules.sql`・`0055_settings_cash_overrides.sql`・`0056_settings_change_log.sql` が 3 表を足す。Drizzle の定義は `packages/api/src/db/schema.ts` の `settingsNormRules`・`settingsCashOverrides`・`settingsChangeLog` にある。画面仕様の正本は `specs/spec-settings-screen.md`、判断の経緯は [`settings-screen/design-decisions.md`](settings-screen/design-decisions.md) にまとめた。`schema-guard.ts` の `EXPECTED_D1_MIGRATION` は `0056_settings_change_log.sql` を指す。
+
+### `settings_norm_rules`(集計ルール。0054)
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `rule_id` | TEXT | 行の id。画面で発行する id は英数・`_`・`-` の 1〜64 字、移行した行は `m-` + 元の表記の UTF-8 hex |
+| `kind` | TEXT | `account`(勘定科目)/ `vendor`(取引先)(CHECK) |
+| `raw` | TEXT | 元の表記(入力値) |
+| `norm` | TEXT | 正規化後のカテゴリ |
+| `sort_order` | INTEGER | 並び順。小さいほど上で、同じ照合キーの行は上の行が効く |
+| `enabled` | INTEGER NOT NULL DEFAULT 1 | 0 / 1(CHECK)。0 の行は効かない |
+| `updated_at` | TEXT | 保存時刻 |
+| `updated_by` | TEXT | 更新者(メールのローカル部。移行の行は `system`) |
+
+- 主キーは `(user_id, rule_id)`。索引は `settings_norm_rules_order (user_id, sort_order)`。
+- 文字数の上限は DB に置かず、core の検証(`validateSettingsInput`)と api の zod だけで検査する。JSON の復元で古い値を入れられるようにするため。
+- 取込時の科目正規化は、この表の `kind='account' AND enabled=1` の行を読む。旧 `account_norm_map` は正本ではなくなった。旧 `GET /api/settings` の `normMap` は、互換のために旧表のまま読む。
+
+### `settings_cash_overrides`(現金上書き。0055)
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `override_id` | TEXT | 行の id。移行した行は `m-p-YYYY-MM`(支払い)/ `m-r-YYYY-MM`(受け取り) |
+| `kind` | TEXT | `payment`(現金の支払い)/ `receipt`(現金の受け取り)(CHECK) |
+| `amount` | INTEGER | 上書きする月額(円)。NULL は上書きしない(空欄)、0 は 0 円(CHECK: NULL か 0 以上) |
+| `scope` | TEXT | `all`(全期間)/ `month`(月指定)(CHECK) |
+| `month` | TEXT | `YYYY-MM`。`scope='all'` なら NULL、`scope='month'` なら必須(CHECK) |
+| `memo` | TEXT NOT NULL DEFAULT '' | メモ(100 字以内は api で検査) |
+| `updated_at` | TEXT | 保存時刻 |
+| `updated_by` | TEXT | 更新者 |
+
+- 主キーは `(user_id, override_id)`。一意索引 `(user_id, kind, scope, ifnull(month,''))` があるので、同じ種別・範囲・月の行は 1 つしか置けない。
+- 月指定は全期間より優先する。月指定の値は、その月の現金の明細を 1 件に置き換えて集計する(BR-12〜BR-14)。
+
+### `settings_change_log`(変更履歴。0056)
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `seq` | INTEGER | 利用者ごとの連番 |
+| `target` | TEXT | `norm_rule` / `owner_label` / `stat_min_months` / `cash_override`(CHECK) |
+| `target_key` | TEXT | 対象の鍵(行の id、名義の鍵、`statMinMonths`) |
+| `before` | TEXT | 変更前の値の JSON。作成なら NULL |
+| `after` | TEXT | 変更後の値の JSON。削除なら NULL |
+| `changed_by` | TEXT | 更新者 |
+| `changed_at` | TEXT | 変更時刻。最新の値が設定の revision になり、`baseSavedAt` の照合に使う |
+| `origin` | TEXT | `screen`(画面・旧 API)/ `restore`(設定の復元)/ `migration`(移行・全データ復元)(CHECK) |
+
+- 主キーは `(user_id, seq)`。索引は `settings_change_log_target (user_id, target, target_key, seq)`。`/api/settings/history` は、この索引を使って直前の保存値を引く。
+- **追記だけで、UPDATE・DELETE をしない**。保持期間は無期限。
+- 0056 は、0054 で移した集計ルールの行を origin `migration`・更新者 `system` として記録する。現金・名義・統計の既存の値の履歴は作らない。
+
+### 旧表からの写し規則(BR-22 系)
+
+0054・0055 の初回の写し、旧 API の書込み(`legacySettingsTarget`)、古いバックアップ本文の読み(`settingsJsonFromBackup`)は、どれも同じ意味で写す。
+
+- **集計ルール**: `account_norm_map` の各行を、`kind='account'`・`enabled=1` の行にする。`rule_id` は `'m-'||lower(hex(raw))`(元の表記の UTF-8 hex)で、core の `migratedNormRuleId` と同じ値になる。`sort_order` は元の表記の昇順の `ROW_NUMBER`、`updated_by` は `system`。NULL の行は写さない。
+- **現金上書き**: `cash_overrides` の月ごとの値を月指定の行にする。`expense` は `m-p-${month}`(`payment`)へ、`revenue` は `m-r-${month}`(`receipt`)へ写す。**0 と NULL は写さない**(R-1)。旧画面では空欄が 0 として保存されてきたので、0 を写すと『0 円の上書き』になってしまうため。
+- **旧 `PUT /api/settings`**: 旧表に書いたうえで、同じ batch で新表と変更履歴(origin `screen`)にも書き、revision を進める。`normMap` は勘定科目の行の全件として扱う。同じ元の表記の行は id と並び順を保ち、送られなかった行は消し、新しい行は末尾に足す。取引先の行は変えない。`cashOverrides` は、送った月の月指定の行だけを置き換える。**全期間(`scope='all'`)の行と、送っていない月の行は残す**。値が変わらなければ新表にも変更履歴にも書かず、revision も進めない。
+- **旧 `PUT /api/settings/owner-labels`**: `owner_labels` に書いたうえで、変更履歴(origin `screen`)にも追記する。
+- **旧 `GET /api/settings`**: 旧表のまま読む。新表で足した取引先の行・全期間の上書き・無効の行は、旧 GET の応答には出ない。
+- **旧表は書き換えない**: 0054〜0056 には、`account_norm_map`・`cash_overrides` への DROP・ALTER・UPDATE・DELETE が無い。
+
+### 書き出し・復元と snapshot
+
+- 3 表は、変更系フェンスの consumer(`canonical-mutation-fence.ts`)と、取込中の表の一覧(`import-active.ts`)に入れた。旧 `PUT /api/settings` の consumers にも `settings_cash_overrides` を加えた。
+- 設定だけの復元(`POST /api/settings/restore`・`POST /api/backups/:date/restore`)は、設定 4 種を置き換え、変更履歴を origin `restore` で残す。取引は変えない。
+- 全データ復元(`POST /api/restore`)は、`settings_cash_overrides` を変わったときだけ置き換え、変更履歴を origin `migration` で残す。名義と集計ルールは書かない。これは仕様と食い違っている([`settings-screen/design-decisions.md`](settings-screen/design-decisions.md) の §2)。
+- 夜間バックアップは JST 2:00 に動き、`backups/YYYY-MM-DD.json`(日付は JST)に集計ルールと現金上書きの新表を含めて書く。R2 の customMetadata には、状態・メモ・要約・形式の版を持たせる。失敗したときは `backups/YYYY-MM-DD.failed.json` を置く。30 日を過ぎた回は、失敗マーカーと `backups/pre-restore/` の退避も含めて消す。
+
 ## トレードオフ画面の開始月・メモと必要度の上書き(0051 / feat-tradeoff-screen)
 
 `migrations/0051_tradeoff_notes.sql` が `tradeoff_plans` に 2 列を足し、`tradeoff_candidate_notes` を作る。画面仕様の正本は `specs/spec-tradeoff-screen.md`、規則の一覧は `docs/spec-v1.1.md` の FR-09。仕様とタスク仕様の予定番号は 0050 だったが、先に main へ入った予算画面(#67)が `0050_budget_plans.sql` を使ったため 0051 へ繰り上げた。

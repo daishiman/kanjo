@@ -3,8 +3,9 @@
  * - /api/auth/*: ログイン(アプリ内セッション)。Access併用時は不要だが常設(冪等)
  * - /api/*: 認証必須のREST(spec §9)
  * - それ以外: Workers Assets がSPAを配信(データを含まないため公開)
- * - scheduled: 夜間バックアップ(統合JSON→R2 backups/、30日保持)
+ * - scheduled: 夜間バックアップ(統合JSON→R2 backups/、JST 2:00、30日保持)
  */
+import { settingsJsonFromBackup, summarizeSettings, validateSettingsJson } from '@kanjo/core';
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { type RequestIdVariables, requestId } from 'hono/request-id';
@@ -22,6 +23,7 @@ import { aiAgentRoute, aiRoute } from './routes/ai.js';
 import { analysisHubRoute } from './routes/analysis-hub.js';
 import { analyticsRoute } from './routes/analytics.js';
 import { authRoute } from './routes/auth.js';
+import { backupsRoute, listAllBackups } from './routes/backups.js';
 import { balancesRoute } from './routes/balances.js';
 import { budgetPlansRoute } from './routes/budget-plans.js';
 import { cashRoute } from './routes/cash.js';
@@ -33,6 +35,7 @@ import { importsRoute } from './routes/imports.js';
 import { improvementAgentRoute, improvementRoute, runImprovementRetention } from './routes/improvement.js';
 import { reconciliationRoute } from './routes/reconciliation.js';
 import { savedFiltersRoute } from './routes/saved-filters.js';
+import { settingsScreenRoute } from './routes/settings-screen.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
 import { totalCashflowRoute } from './routes/total-cashflow.js';
@@ -126,7 +129,9 @@ app.route('/api', classifyRoute);
 app.route('/api', classifyBulkRoute);
 app.route('/api', savedFiltersRoute);
 app.route('/api', vendorMemoryRoute);
+app.route('/api', settingsScreenRoute);
 app.route('/api', settingsRoute);
+app.route('/api', backupsRoute);
 app.route('/api', budgetPlansRoute);
 app.route('/api', subsRoute);
 app.route('/api', balancesRoute);
@@ -182,22 +187,64 @@ interface NightlyBackupSummary {
   deleted: number;
 }
 
-async function nightlyBackup(env: Pick<AuthEnv, 'DB' | 'FILES'>): Promise<NightlyBackupSummary> {
+/** 夜間バックアップの日付。cron は UTC 17:00 (= JST 2:00) に動くので、日付は JST で切る */
+export const jstDate = (ms: number): string => new Date(ms + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+const BACKUP_RETENTION_DAYS = 30;
+
+/**
+ * 一覧に出す設定の要約。D1 を読み直さず、置く本文そのものから作る
+ * (D1 の読込は本文の 1 回だけ、かつ要約とその回の中身が必ず一致する)。読めなければ要約なしで置く。
+ */
+function backupSettingsSummary(payload: Record<string, unknown>, exportedAt: string): string | undefined {
+  const checked = validateSettingsJson(settingsJsonFromBackup(payload, exportedAt));
+  if (!checked.ok) return undefined;
+  const labels = payload.ownerLabels;
+  const ownerLabelsSaved = typeof labels === 'object' && labels !== null && Object.keys(labels).length > 0;
+  return JSON.stringify(summarizeSettings(checked.value, ownerLabelsSaved));
+}
+
+/**
+ * 1 回ぶんの夜間バックアップ。設定画面の一覧が読む customMetadata (状態・メモ・設定の要約・形式の版) を付ける。
+ * 置けなかった回は `YYYY-MM-DD.failed.json` を残し、一覧に『失敗』として出す (黙って欠けさせない)。
+ * 30 日より古い回は、失敗の印と復元前の退避 (pre-restore/) も含めて消す。
+ */
+export async function nightlyBackup(
+  env: Pick<AuthEnv, 'DB' | 'FILES'>,
+  nowMs: number = Date.now(),
+): Promise<NightlyBackupSummary> {
   const db = getDb(env.DB);
-  const payload = await loadBackupPayload(db, 'default');
-  const today = new Date().toISOString().slice(0, 10);
-  await env.FILES.put(`backups/${today}.json`, JSON.stringify(payload));
-  // 30日より古いバックアップを削除
-  const list = await env.FILES.list({ prefix: 'backups/' });
-  const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const today = jstDate(nowMs);
+  let failed = false;
+  try {
+    const payload = await loadBackupPayload(db, 'default');
+    const summary = backupSettingsSummary(payload, new Date(nowMs).toISOString());
+    await env.FILES.put(`backups/${today}.json`, JSON.stringify(payload), {
+      customMetadata: {
+        status: 'success',
+        memo: '自動バックアップ',
+        ...(summary ? { summary } : {}),
+        formatVersion: '1',
+      },
+    });
+  } catch {
+    failed = true;
+    await env.FILES.put(`backups/${today}.failed.json`, JSON.stringify({ reason: 'put_failed' }), {
+      customMetadata: { status: 'failed', memo: '自動バックアップ', reason: 'put_failed' },
+    });
+  }
+
+  const cutoff = jstDate(nowMs - BACKUP_RETENTION_DAYS * 24 * 60 * 60 * 1000);
   let deleted = 0;
-  for (const obj of list.objects) {
-    const day = obj.key.slice('backups/'.length, 'backups/'.length + 10);
-    if (day && day < cutoff) {
+  for (const obj of await listAllBackups(env.FILES)) {
+    const rest = obj.key.slice('backups/'.length);
+    const day = (rest.startsWith('pre-restore/') ? rest.slice('pre-restore/'.length) : rest).slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(day) && day < cutoff) {
       await env.FILES.delete(obj.key);
       deleted += 1;
     }
   }
+  if (failed) throw new Error('nightly backup put failed');
   return { stored: 1, deleted };
 }
 

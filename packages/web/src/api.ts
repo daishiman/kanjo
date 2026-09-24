@@ -26,6 +26,7 @@ import type {
   HouseholdCategoryDetail,
   HouseholdSummary,
   MatrixData,
+  NormRuleKind,
   OverviewData,
   ReconcileExcluded,
   ReconcileFreee,
@@ -33,6 +34,9 @@ import type {
   ReconcileReview,
   ReviewReason,
   SegmentSummary,
+  SettingsDiff,
+  SettingsScreenView,
+  SettingsSummary,
   SplitTemplate,
   StatementSource,
   StatementsScreen,
@@ -1149,11 +1153,62 @@ export interface SettingsResponse {
   statMinMonthsRange: { min: number; max: number; default: number };
 }
 
-/** 夜間バックアップ(R2 に30日保持)の一覧行 */
+/** 夜間バックアップ(R2 に30日保持)の一覧行 (spec-settings-screen §API: GET /api/backups) */
 export interface BackupItem {
   date: string;
-  size: number;
+  /** バイト。失敗の回は null */
+  size: number | null;
   uploaded: string | null;
+  status: 'success' | 'failed';
+  memo: string;
+  summary: SettingsSummary | null;
+  formatVersion: number | null;
+  /** 成功の回のうち最新か */
+  latest: boolean;
+  /** 失敗の回の理由コード */
+  reason: string | null;
+}
+
+/** GET /api/settings/screen。値は core の settingsScreen が組む */
+export type SettingsScreenResponse = SettingsScreenView;
+
+/** PUT /api/settings/screen */
+export interface SettingsSaveResponse {
+  ok: true;
+  savedAt: string | null;
+  changes: number;
+  recomputed: boolean;
+}
+
+/** GET /api/settings/history?ruleId= */
+export interface SettingsHistoryResponse {
+  ruleId: string;
+  previous: { kind: NormRuleKind; raw: string; norm: string; enabled: boolean; order: number } | null;
+  lastChangedAt: string | null;
+  lastChangedBy: string | null;
+}
+
+/** POST /api/settings/restore/preview・POST /api/backups/:date/restore/preview */
+export interface SettingsPreviewResponse {
+  valid: true;
+  diff: SettingsDiff;
+  revision: string | null;
+}
+
+/** POST /api/settings/restore・POST /api/backups/:date/restore */
+export interface SettingsRestoreResponse {
+  ok: true;
+  savedAt: string;
+  changes: number;
+  preRestoreKey: string;
+  recomputed: boolean;
+}
+
+/** GET /api/backups/:date/compare */
+export interface BackupCompareResponse {
+  date: string;
+  diff: SettingsDiff;
+  revision: string | null;
 }
 
 /** トレードオフ画面の応答。候補・防衛ラインの月の余裕・最新の試算条件の形は core が持つ */

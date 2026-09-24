@@ -1,0 +1,170 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/plan-feat-settings-screen-20260922T1041Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json は同一 feature_package_id (feature-package/feat-settings-screen) と parent_feature (feat-settings-screen) を一貫して持つ。goal-spec.json の open_items 19 件 (Q-1〜Q-12・R-1〜R-7) はP01で Open risk (agent推定・利用者未確認) とBlocker (既存実装との具体的な食い違い) に区分されたうえでdocsへ転記され、P02〜P05/P07/P08/P09/P13 の各所在記述と矛盾なく対応する。P05のBlocker対処 (R-1〜R-7の解消方法) はP07で『対処が全て実装済みであることを前提として確認』、P08で『core 1か所に閉じ api/web に重複が無いことを監査』、P09で『実運用データでの再確認』とされ、記述間に食い違いはない。migration 0051-0053を予定番号としP01/P05/P13で一貫してorigin/main再確認を要求している点も矛盾なし。P08の監査対象 (旧Settings.tsx参照・現金上書き重複判定・account_norm_map/cash_overrides表書き換え有無) はgoal-specのscope_outおよびP05の追加のみmigration方針と矛盾しない。P09の外部送信ゼロの保証確認はP07のAT-22検証、goal-spec S5と一致する。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "task-specs/phase-01-requirements.md#前提条件",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-09-quality-assurance.md",
+        "task-specs/phase-13-release-deploy.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "P01..P13 exact-13 が揃い (validator phase_refs=P01..P13, violations=[])、各 task-spec は 108〜187 行の実質記述を持つ。全13ファイルを横断検索した結果 TBD/TODO/placeholder/未定の残存は0件、N/A表記はすべて理由付き (例: 'N/A: 本phaseの責務に含まれない') で空section・title+1文の擬似taskは検出されなかった。P08/P13はnodeを省略せず、非該当workstreamにも理由付きのN/Aが付く。goal-spec.jsonの受入S1〜S5 (5件確認) とAT-01〜AT-22はP07 (受入検証)・P10 (最終確認)・P11 (証跡索引) へ写像され、open_items 19件全件がP01のOpen risk/Blockerとして明示的に転記され、resolution_owner (主にP02〜P05、migration番号はP05/P13) が特定されている (推測による早期解決なし)。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-10-final-review.md",
+        "task-specs/phase-11-evidence.md",
+        "task-specs/phase-13-release-deploy.md",
+        "workstream-inventory.json"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json は同一feature_package_id・parent_feature・repository_id (github:daishiman/kanjo) を持ち、feature-package.jsonのtask_node_idsとtask-graph.jsonのnode id、system-build-handoff.jsonのexecution_tasks.task_idがSYS-SETTINGS-P01..P13で完全一致する。staging-manifest.json記載17ファイルおよびstaging-manifest.json自身のsha256を独立にshasum -a 256で再計算し全18件が manifest/handoff記載値と一致した (差分0件)。staging-manifest.json#canonical_digestとvalidatorのvalidated_digestも一致する (sha256:77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa)。goal-spec.jsonのidentity_check.feature_context_sha256 (8d3065af44802ddbd2eb5e81824fd5bdd59a3f1c2e4c035b29912ecc21d13560) はfeature-package.jsonのsource_feature_digestおよびsystem-build-handoff.jsonのidentity.source_feature_digestと一致し、repo_identityも全ファイルでgithub:daishiman/kanjoに揃っている。core算出の単一化 (packages/core/src/settings-screen.ts等への集約、api/webでの再実装禁止) がP05で宣言されP08がその監査を担う構造も一貫している。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "feature-package.json#source_feature_digest",
+        "system-build-handoff.json#identity.source_feature_digest",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13 nodeはP01→P02→...→P13の単一直鎖 (depends_onは常に直前phase_refのみ1件、P01のdepends_on=[])。循環・後方edge・cross-feature task参照は検出されず、全edgeが同一feature_package_id/parent_feature (feature-package/feat-settings-screen) 内に閉じている。system-build-handoff.jsonのexecution_tasksも同じ直鎖を再掲しており矛盾はない。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<HOME>/.claude/plugins/cache/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<REPO_ROOT>",
+        "--staging",
+        ".dev-graph/staging/plan-feat-settings-screen-20260922T1041Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa\",\n  \"feature_package_id\": \"feature-package/feat-settings-screen\",\n  \"parent_feature\": \"feat-settings-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "675707000a3b224d4094372a0e8b51b3746a4341c6154ed56ad43ce51e95d96c"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "8e6a0983766176546bf2be8ff733330bd62a307c4f7c966395dbb15552968da2"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "33f7d546c79fe4daff941509aed2d21027d03417c1cd6e5b532875e180061edc"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "64bf725030280d6849b771f4fcf611bb4719e6fe387230117e4de09f9bca9847"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "ce12f98b88ed0ba5d0eceeaedcee1de69d722da959485b589ba8a09c4ce68070"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "b4ba928a5f7830b99e18ae6d99ffd634c4e625c62d7241654ec0825a0430934c"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "bd1ff5316911e289b309cf47bef9fa4cc6b780cfc88196e5caf2837edbde6ab8"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "bec1dbc871b472a3d5511eddd79299f5cf4312729a21a57863a84461fa5a460c"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "41d5fa856c6e6620b2477b1644a9cceb60ad86146dba6ef077ec146aed2593f8"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "7787643402f5a8a068b8c22ea6e6d91078e681f59f74b47f801a41b345c365c6"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "730d0dc6047ab9878d94060fefbf061c9ae6fa67420487306a61d6ee3f49b5b0"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "83ea5455c821535374972624857ea16becd73f578b98f0b2f883b9e01ff90003"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "d7842cc9b765ccfc276ce6a3277d8c45d57e22f96bd88b81a494560b4d191319"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "4041e485577e4e370a56e0f4b4942f8de9f4d84c92f1619ef23bc9f2cbf84243"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "540d3edbacf3c0d8bcb0b4d88fbed08885d7ef24cc4748dab131e9b379164eed"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "01c109733a917304b0ba47ae32c68e5cca4db5edc703a15564400a0076d7c6de"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "197fc404962b8e60ad1fa8ccd71e298012d5216a4d9fc3633dc736ecbd4ec3e4"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "92b9623debe9bce5f3d503892e3024a483abcf9afcb0eb1e22820e6396793769"
+    }
+  ],
+  "staleness_rule": "promotion 直前に staging 配下の各 evaluated_inputs path (staging-manifest.json 自身を含む18件) の current raw bytes から shasum -a 256 を再計算し、本 plan-findings.json の evaluated_inputs および validate-system-plan.py が返す validated_digest と全件完全一致することを再照合する。1バイトでも差分があれば、または staging-manifest.json#canonical_digest と evaluated_digest が不一致になれば、本 verdict は無効 (stale) とみなし promotion しない。",
+  "findings": []
+}

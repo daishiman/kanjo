@@ -34,6 +34,15 @@ type CanonicalConsumer =
   | 'saved_filters'
   | 'tx_history';
 
+/** 設定画面の保存・設定だけの復元が書く表 (spec-settings-screen §API契約) */
+const SETTINGS_SCREEN_CONSUMERS: readonly CanonicalConsumer[] = [
+  'settings_norm_rules',
+  'settings_cash_overrides',
+  'settings_change_log',
+  'owner_labels',
+  'analysis_settings',
+];
+
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   path: RegExp;
@@ -163,7 +172,31 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   {
     method: 'PUT',
     path: /^\/api\/settings$/,
-    consumers: ['account_norm_map', 'unrecorded_months', 'cash_overrides', 'analysis_settings'],
+    // 旧経路の normMap・cashOverrides は新表と変更履歴にも同期して書く (BR-22・R-2)
+    consumers: [
+      'account_norm_map',
+      'unrecorded_months',
+      'cash_overrides',
+      'analysis_settings',
+      'settings_norm_rules',
+      'settings_cash_overrides',
+      'settings_change_log',
+    ],
+  },
+  /*
+   * 0051〜0053: 設定画面。保存と設定だけの復元は 3 表・名義・統計を 1 回の batch で置き換える。
+   * プレビューと比較は読むだけなのでここに載せない。
+   */
+  {
+    method: 'PUT',
+    path: /^\/api\/settings\/screen$/,
+    consumers: SETTINGS_SCREEN_CONSUMERS,
+  },
+  { method: 'POST', path: /^\/api\/settings\/restore$/, consumers: SETTINGS_SCREEN_CONSUMERS },
+  {
+    method: 'POST',
+    path: /^\/api\/backups\/\d{4}-\d{2}-\d{2}\/restore$/,
+    consumers: SETTINGS_SCREEN_CONSUMERS,
   },
   { method: 'POST', path: /^\/api\/category-options$/, consumers: ['category_options'] },
   {
@@ -178,7 +211,11 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
    * 名義の割当て (PUT /classification) と同じ利用者設定の更新なので、同じ変更系保護の下で直列化する。
    * 4 名義を 1 回で差し替えるため、2 つの保存が重なると名義ごとに別の保存の値が残りうる。
    */
-  { method: 'PUT', path: /^\/api\/settings\/owner-labels$/, consumers: ['owner_labels'] },
+  {
+    method: 'PUT',
+    path: /^\/api\/settings\/owner-labels$/,
+    consumers: ['owner_labels', 'settings_change_log'],
+  },
   { method: 'POST', path: /^\/api\/sub-vendors$/, consumers: ['sub_vendors'] },
   {
     method: 'PUT',
