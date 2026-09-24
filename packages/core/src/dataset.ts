@@ -3,8 +3,9 @@
  * HTML版 ensureMonth / importFreee / importMF / importJSON の挙動を忠実に移植。
  */
 import type { BudgetPlanRow } from './budget-screen.js';
-import { isCashTxId } from './cash.js';
+import { type CashOverrideRule, isCashTxId } from './cash.js';
 import { applyClassification, overridesFromEdits } from './classify.js';
+import type { NormRule } from './norm-rules.js';
 import { applySplits, reconcileTxSplits, txSplitsFromSnapshot, txSplitsSnapshot } from './splits.js';
 import { type SubVendor, matchSubVendor } from './subs.js';
 import {
@@ -140,7 +141,13 @@ export function countableMfTxs(txs: MfTx[]): MfTx[] {
 /** ルール・手動判定・明細の現状から personal / bizPersonal を再生成する */
 export function recomputeClassification(data: Dataset, replaceMonths?: ReadonlySet<string>): void {
   data.overrides = overridesFromEdits(data.edits);
-  const r = applyClassification(countableMfTxs(data.mfTx), data.rules, data.edits, data.institutionOwners);
+  const r = applyClassification(
+    countableMfTxs(data.mfTx),
+    data.rules,
+    data.edits,
+    data.institutionOwners,
+    data.normRules ?? [],
+  );
   // raw MF行がある月は、集計対象が0件でも「空の再計算結果」で旧値を置換する。
   // cash:*だけの月やraw MF行自体が無いJSON復元月は対象にせず、既存baselineを温存する。
   const rawMfMonths = new Set(data.mfTx.filter((tx) => !isCashTxId(tx.id)).map((tx) => tx.m));
@@ -191,6 +198,9 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
   if (obj.budgets) data.budgets = obj.budgets as Record<string, number>;
   if (Array.isArray(obj.budgetPlans)) data.budgetPlans = obj.budgetPlans as BudgetPlanRow[];
   if (obj.cashOverride) data.cashOverride = obj.cashOverride as Dataset['cashOverride'];
+  if (Array.isArray(obj.normRules)) data.normRules = obj.normRules as NormRule[];
+  if (Array.isArray(obj.cashOverrideRules))
+    data.cashOverrideRules = obj.cashOverrideRules as CashOverrideRule[];
   if (obj.mfTx) data.mfTx = obj.mfTx as MfTx[];
   if (Object.prototype.hasOwnProperty.call(obj, 'txSplits'))
     data.txSplits = txSplitsFromSnapshot(obj.txSplits);
@@ -255,6 +265,8 @@ export function exportJSON(data: Dataset): Record<string, unknown> {
     budgets: data.budgets,
     budgetPlans: data.budgetPlans ?? [],
     cashOverride: data.cashOverride,
+    normRules: data.normRules ?? [],
+    cashOverrideRules: data.cashOverrideRules ?? [],
     unrecordedExpMonths: data.unrecordedExpMonths,
     exportedAt: new Date().toISOString(),
   };

@@ -149,7 +149,7 @@ core の単体テストで 7 種 (口座・取引先名・金額・個人名・�
 ## Delivery, migration and rollback
 
 - Build/deploy topology: 既存の web (Workers Assets) と api Worker。
-- Migration sequence: core のマスク規則の拡張と単体テスト → サーバの再マスクと zod の上限 → 撮影用の複製の伏字と DOM テスト → 画像の 400 化 → 診断のセッション ID。0054 の列 (`deleted_at` 等) を使う保持期限は `architecture/improvement-screen-infrastructure.md` の順に従う。
+- Migration sequence: core のマスク規則の拡張と単体テスト → サーバの再マスクと zod の上限 → 撮影用の複製の伏字と DOM テスト → 画像の 400 化 → 診断のセッション ID。0057 の列 (`deleted_at` 等) を使う保持期限は `architecture/improvement-screen-infrastructure.md` の順に従う。
 - Rollback trigger/procedure: O2 の core・DOM・API テストのどれかが赤なら差し戻す。マスクの拡張は保存済みの行を書き換えないので、コードを戻すだけで済む。
 
 ## Risks and verification

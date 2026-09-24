@@ -86,7 +86,7 @@ serves_goals: ["G4"]
 | `runImprovementRetention` (`routes/improvement.ts:498`) | 完了から 30 日の添付の消去 + 論理削除から 30 日の行・履歴・画像の完全消去 + 孤立画像の照合 (4 本) | 関数 | packages/api | 同上 |
 | `runAuditHeaderRetention` (`audit-log.ts:412`) | 監査ヘッダの 400 日保持。削除前の読み取りを外して 2 本 | 関数 | packages/api | 同上 |
 | D1 予算表 (`scheduled-maintenance-budget.ts`) | job ごとの本数の宣言と合計 49 の検査 | 定数 + 検査関数 | packages/api | 同上 |
-| migration 0054 (`migrations/`) | 表の作り直し (`deleted_at`・連番・履歴表)。詳細は `architecture/improvement-screen-database.md` | SQL | migrations | D1 |
+| migration 0057 (`migrations/`) | 表の作り直し (`deleted_at`・連番・履歴表)。詳細は `architecture/improvement-screen-database.md` | SQL | migrations | D1 |
 
 ## Cross-cutting contracts
 
@@ -94,7 +94,7 @@ serves_goals: ["G4"]
 - Errors/resilience: 完全消去は他の job と `Promise.allSettled` で独立させ、失敗しても他の job とバックアップを止めない。R2 の削除に成功した行だけを D1 で消し、失敗した行は D1 を触らず翌晩もう一度対象にする。1 晩 500 件を超えた分は翌晩に回す。いずれかの job が失敗したときに最後に `scheduled_maintenance_failed` を投げる現行 (`index.ts:400`) は保つ。
 - Observability/audit: job ごとの JSON ログ (`improvement_retention` は `index.ts:290-307`) に、完全消去の対象件数・消した件数・失敗件数を足す (項目名は未定)。本文・利用者 ID・R2 のキーは載せない。`audit_header_retention` のログ (`index.ts:335` 以降) からは `beforeBytes` (:339) が消える。削除前の件数は、削除後の件数と消した件数の和で出す。
 - Configuration/secrets: 新しい binding・var・secret を足さない。
-- Compatibility/versioning: `EXPECTED_D1_MIGRATION` (`packages/api/src/schema-guard.ts:4`、現在 `0052_cash_entry_owner_soft_delete.sql`) を 0054 へ進める。0054 のファイル名は `0054_improvement_request_screen.sql`。`runtimeSchemaGuard` が migration の未適用を拒むので、D1 migration の適用を Worker のデプロイより先に済ませる。
+- Compatibility/versioning: `EXPECTED_D1_MIGRATION` (`packages/api/src/schema-guard.ts:4`、現在 `0052_cash_entry_owner_soft_delete.sql`) を 0057 へ進める。0057 のファイル名は `0057_improvement_request_screen.sql`。`runtimeSchemaGuard` が migration の未適用を拒むので、D1 migration の適用を Worker のデプロイより先に済ませる。
 
 ## Subtype architecture
 
@@ -116,7 +116,7 @@ serves_goals: ["G4"]
 
 #### IaC and delivery
 
-`wrangler.jsonc` は変えない。0054 は表を作り直すので `DROP TABLE` を含む見込み (推定) で、`.github/scripts/plan-auto-migration.mjs` の `DESTRUCTIVE_PATTERNS` (:45 以降) に当たる。その場合 `deploy.yml` は自動適用 (:73-78、Time Travel の復元地点を記録してから適用) を行わない。`migrate.yml` の手動経路 (confirm に `APPLY`、`approved_manifest`、Time Travel の復元地点の確認) で適用してから Worker をデプロイする。
+`wrangler.jsonc` は変えない。0057 は表を作り直すので `DROP TABLE` を含む見込み (推定) で、`.github/scripts/plan-auto-migration.mjs` の `DESTRUCTIVE_PATTERNS` (:45 以降) に当たる。その場合 `deploy.yml` は自動適用 (:73-78、Time Travel の復元地点を記録してから適用) を行わない。`migrate.yml` の手動経路 (confirm に `APPLY`、`approved_manifest`、Time Travel の復元地点の確認) で適用してから Worker をデプロイする。
 
 #### Secrets and access
 
@@ -124,11 +124,11 @@ serves_goals: ["G4"]
 
 #### Reliability and recovery
 
-R2 の削除は冪等で、D1 の書き込みは R2 の成功後だけに行う。D1 の書き込みが失敗したら、その回の全行を未処理として翌晩に回す (現行の形)。0054 の適用失敗は、Time Travel の復元地点へ戻す (`docs/runbooks/prod-d1-schema-recovery.md`、手順の追記は `architecture/improvement-screen-maintenance-ops.md`)。
+R2 の削除は冪等で、D1 の書き込みは R2 の成功後だけに行う。D1 の書き込みが失敗したら、その回の全行を未処理として翌晩に回す (現行の形)。0057 の適用失敗は、Time Travel の復元地点へ戻す (`docs/runbooks/prod-d1-schema-recovery.md`、手順の追記は `architecture/improvement-screen-maintenance-ops.md`)。
 
 #### Infrastructure verification
 
-`scheduled-maintenance-budget.test.ts` (:173-182 の job 固定) を improvement_retention 4・audit_header_retention 2 に改め、合計 49 を確かめる。:257 のログ検査に完全消去の件数を足す。`audit-log-d8.test.ts` の `header.queries < 49` (:479) は緑のまま。`improvement-retention.test.ts` の系列で、論理削除から 30 日を過ぎた行が R2 の画像・履歴と一緒に消えること、R2 の削除に失敗した行が残って翌晩の対象になること、30 日未満の行と完了の本文が残ることを確かめる。`deletion-schema.test.ts:63` と `schema-guard.ts:4` を 0054 へ進める。
+`scheduled-maintenance-budget.test.ts` (:173-182 の job 固定) を improvement_retention 4・audit_header_retention 2 に改め、合計 49 を確かめる。:257 のログ検査に完全消去の件数を足す。`audit-log-d8.test.ts` の `header.queries < 49` (:479) は緑のまま。`improvement-retention.test.ts` の系列で、論理削除から 30 日を過ぎた行が R2 の画像・履歴と一緒に消えること、R2 の削除に失敗した行が残って翌晩の対象になること、30 日未満の行と完了の本文が残ることを確かめる。`deletion-schema.test.ts:63` と `schema-guard.ts:4` を 0057 へ進める。
 
 ## Architecture decisions
 
@@ -142,13 +142,13 @@ R2 の削除は冪等で、D1 の書き込みは R2 の成功後だけに行う�
 ## Delivery, migration and rollback
 
 - Build/deploy topology: `deploy.yml` の配信 (web の build:artifact → migration の判定 → 適用 → 未適用の検査 → Worker のデプロイ)。
-- Migration sequence: 0054 を手動経路で適用 (D1 バックアップ・Time Travel の復元地点の確認を先に) → `EXPECTED_D1_MIGRATION` を 0054 にした Worker をデプロイ → 翌晩の夜間処理のログで件数を確かめる。
-- Rollback trigger/procedure: 夜間処理が `scheduled_maintenance_failed` を出し続ける、または予算の検査が落ちたら、Worker を前の版へ戻す。0054 が壊れたら Time Travel の復元地点へ戻し、`EXPECTED_D1_MIGRATION` が取込画面の 0053 を指す旧版をデプロイする。
+- Migration sequence: 0057 を手動経路で適用 (D1 バックアップ・Time Travel の復元地点の確認を先に) → `EXPECTED_D1_MIGRATION` を 0057 にした Worker をデプロイ → 翌晩の夜間処理のログで件数を確かめる。
+- Rollback trigger/procedure: 夜間処理が `scheduled_maintenance_failed` を出し続ける、または予算の検査が落ちたら、Worker を前の版へ戻す。0057 が壊れたら Time Travel の復元地点へ戻し、`EXPECTED_D1_MIGRATION` が設定画面の 0056 を指す旧版をデプロイする。
 
 ## Risks and verification
 
 - Risk/assumption: 予算の宣言は本数を数えるだけで、実際の本数と一致するかはテストが頼り。`improvement_retention` のテストで、実行時のクエリ数が 4 本以下であることを確かめる。
 - Risk/assumption: 論理削除の行が 1 晩に 500 件を大きく超え続けると消し終わるまで日数がかかる。利用者ごとの依頼数から見て起こりにくい (推定)。
-- Risk/assumption: 0054 が破壊的と判定されず自動適用に乗った場合でも、`deploy.yml` は Time Travel の復元地点を先に記録する。
+- Risk/assumption: 0057 が破壊的と判定されず自動適用に乗った場合でも、`deploy.yml` は Time Travel の復元地点を先に記録する。
 - Architecture fitness test: `SCHEDULED_MAINTENANCE_D1_PLAN` の合計が 49 以下、job 名の集合が 8 つのまま。`wrangler.jsonc` の crons が 1 本のまま。
 - Load/failure/security validation: R2 の削除失敗を注入したテストで他の job が走り切ること、ログに本文・利用者 ID・R2 のキーが出ないこと。

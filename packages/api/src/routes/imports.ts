@@ -5,6 +5,7 @@
  */
 import {
   type CashEntry,
+  type CashOverrideRule,
   DEFAULT_STAT_MIN_MONTHS,
   type Dataset,
   FINGERPRINT_VERSION,
@@ -348,6 +349,80 @@ const resolveRestoreSettings = (
     vendorMemories: destination.vendorMemories,
     destinationRowCounts: destination.destinationRowCounts,
   };
+};
+
+const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+const cashOverrideRulesBackupSchema = z
+  .array(
+    z
+      .object({
+        overrideId: z.string().min(1).max(64),
+        kind: z.enum(['payment', 'receipt']),
+        amount: z.number().int().min(0).nullable(),
+        scope: z.enum(['all', 'month']),
+        month: z.string().regex(MONTH_RE).nullable(),
+        memo: z.string().max(200),
+      })
+      .strict()
+      .refine((r) => (r.scope === 'all' ? r.month === null : r.month !== null)),
+  )
+  .max(100)
+  .refine((rows) => new Set(rows.map((r) => r.overrideId)).size === rows.length)
+  .refine((rows) => new Set(rows.map((r) => `${r.kind}|${r.scope}|${r.month ?? ''}`)).size === rows.length);
+
+const legacyCashOverrideBackupSchema = z.record(
+  z.string().regex(MONTH_RE),
+  z
+    .object({
+      revenue: z.number().int().min(0).nullable().optional(),
+      expense: z.number().int().min(0).nullable().optional(),
+    })
+    .passthrough(),
+);
+
+/**
+ * 0052: 全データ JSON 復元での設定画面の現金上書き (BR-29)。
+ * - cashOverrideRules があれば、その集合で置き換える
+ * - 無く、旧 cashOverride があれば、月指定の行だけを旧値の写しで置き換え、全期間の行は残す
+ *   (0 と未設定は写さない。id は migration 0052 と同じ m-p-/m-r- + 月)
+ * - どちらも無ければ null (復元先を保つ)
+ */
+const resolveRestoreCashOverrideRules = (
+  obj: Record<string, unknown>,
+  destination: ReadonlyArray<CashOverrideRule>,
+): CashOverrideRule[] | null => {
+  const has = (key: string) => Object.prototype.hasOwnProperty.call(obj, key);
+  if (has('cashOverrideRules')) {
+    const parsed = cashOverrideRulesBackupSchema.safeParse(obj.cashOverrideRules);
+    if (!parsed.success) throw new InvalidRestoreSettingsError();
+    return parsed.data;
+  }
+  if (!has('cashOverride')) return null;
+  const legacy = legacyCashOverrideBackupSchema.safeParse(obj.cashOverride);
+  if (!legacy.success) throw new InvalidRestoreSettingsError();
+  const monthRows: CashOverrideRule[] = [];
+  for (const [month, value] of Object.entries(legacy.data)) {
+    if (value.expense)
+      monthRows.push({
+        overrideId: `m-p-${month}`,
+        kind: 'payment',
+        amount: value.expense,
+        scope: 'month',
+        month,
+        memo: '',
+      });
+    if (value.revenue)
+      monthRows.push({
+        overrideId: `m-r-${month}`,
+        kind: 'receipt',
+        amount: value.revenue,
+        scope: 'month',
+        month,
+        memo: '',
+      });
+  }
+  return [...destination.filter((rule) => rule.scope === 'all'), ...monthRows];
 };
 
 /**
@@ -941,6 +1016,13 @@ const prepareJsonApplication = async (args: {
   }
   candidate.budgetPlans = [];
   importJSON(candidate, structuredClone(args.json));
+  // 全データ復元は集計ルールを書かない。分類も復元先の集計ルールで解く (表と結果を食い違わせない)
+  candidate.normRules = args.data.normRules ?? [];
+  const settingsCashOverrides = resolveRestoreCashOverrideRules(
+    args.json,
+    args.destinationSettings.destinationRowCounts.settingsCashOverrideRules,
+  );
+  candidate.cashOverrideRules = settingsCashOverrides ?? args.data.cashOverrideRules ?? [];
   const sourceVendorNames = new Set(candidate.subs.vendors);
   if (
     subscriptionState.metadata &&
@@ -1009,6 +1091,7 @@ const prepareJsonApplication = async (args: {
     duplicateVerdicts: reviewState.duplicateVerdicts,
     freeeDealExclusions: reviewState.freeeDealExclusions,
     totalCashflowOperations: reviewState.totalCashflowOperations,
+    settingsCashOverrides,
     existingDestinationRowCounts: args.destinationSettings.destinationRowCounts,
   });
   return {
@@ -1629,6 +1712,10 @@ export async function runMultipartImport(
       budgets: 0,
       budgetPlans: 0,
       cashOverrides: 0,
+      settingsNormRules: 0,
+      settingsCashOverrides: 0,
+      settingsRevision: null,
+      settingsCashOverrideRules: [],
       cashEntries: 0,
     },
   };
@@ -2215,6 +2302,10 @@ importsRoute.post('/restore', async (c) => {
       budgets: 0,
       budgetPlans: 0,
       cashOverrides: 0,
+      settingsNormRules: 0,
+      settingsCashOverrides: 0,
+      settingsRevision: null,
+      settingsCashOverrideRules: [],
       cashEntries: 0,
     },
   };

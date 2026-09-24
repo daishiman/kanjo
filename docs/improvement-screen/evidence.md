@@ -43,7 +43,7 @@ feature `feat-improvement-screen`(Beads epic `kanjo-kkp`)の検査記録。受�
 | S4-c 削除した依頼が『元に戻す』で同じ id と番号のまま戻る | PASS | G1 の api 統合「削除から復元で同じ id と seq が一覧に戻り…(AC-008)」、DOM「削除すると一覧から消え、『元に戻す』で同じ番号が戻る」 |
 | S4-d 削除中の行が一覧と件数に 0 件で、詳細・画像・指示文・コピー記録・状態・agent の 2 経路で 404 | PASS | G1 の api 統合「削除中の行は items にも counts にも入らず…」「削除中の依頼は詳細・画像・…で 404」、[`design-decisions.md`](design-decisions.md) §7 の変異検算 M1〜M5 |
 | S4-e 30 日を過ぎた論理削除の行が R2 の画像・行・履歴ごと消え、R2 の削除に失敗した行は翌晩に回る | PASS | G1 の `improvement-retention.test.ts`「論理削除から30日の完全消去 (AC-010)」3 件 |
-| S5-a 0054 の適用で既存行・画像のキー・トークンのハッシュが失われず、wontfix は完了へ移り履歴に理由が残る | PASS | G1 の `improvement-migration-0054.test.ts` 6 件 |
+| S5-a 0057 の適用で既存行・画像のキー・トークンのハッシュが失われず、wontfix は完了へ移り履歴に理由が残る | PASS | G1 の `improvement-migration-0057.test.ts` 6 件 |
 | S5-b 夜間予算が `total === PLAN_MAX (49)` | PASS | G1 の `scheduled-maintenance-budget.test.ts` |
 | S5-c `BACKUP_SNAPSHOT_SQL` に改善リクエストの表が無い | PASS | G1 の `improvement-backup-exclusion.test.ts` |
 | S5-d `lint`・`typecheck`・`test`・`skills:test`・初期 JS 予算・`verify:full` が exit 0 | PASS | G1(`verify:full` は test・typecheck・lint・build と初期 JS 予算を含む)、G2 |
@@ -53,7 +53,7 @@ feature `feat-improvement-screen`(Beads epic `kanjo-kkp`)の検査記録。受�
 ## 3. 2026-09-23 時点で残っていたこと
 
 - **タブレット幅の撮影の入口**: 641〜1023px では、右下の『改善を送る』が CSS(`styles.css` の `@media (min-width: 641px) and (max-width: 1023px)` の中の `.improve-trigger { display: none; }`)で隠れていた。G1 の check:improvement-screen は、768px でボタンが見えないとき撮影パネルの検査を飛ばした(ログの `撮影パネル=false`)。現在の修正と再検証は、この履歴とは別の実行結果で判定する。
-- **P13(配信)**: merge・本番の migration 0054 の適用・deploy は行っていない。手順は `docs/improvement-request.md` の「配信と巻き戻し」と [`design-decisions.md`](design-decisions.md) §8 にある。
+- **P13(配信)**: merge・本番の migration 0057 の適用・deploy は行っていない。手順は `docs/improvement-request.md` の「配信と巻き戻し」と [`design-decisions.md`](design-decisions.md) §8 にある。
 
 ## 4. 2026-09-24 JST 思考リセット後の再検証
 

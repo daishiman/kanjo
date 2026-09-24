@@ -147,7 +147,7 @@ O1 の DOM テストで次を確かめる。問いの見出し、作成フォー
 
 - Build/deploy topology: 既存の web ビルドと Workers Assets。
 - Migration sequence: 見出しと期間 → 作成フォーム (確認 2 つと説明) → 一覧 (検索・件数タブ・ページング) → 詳細パネル → 削除と『元に戻す』・コピー完了トースト → キャプチャの浮動パネルと範囲選択 → 空 / 失敗の状態と選択中バー。
-- Rollback trigger/procedure: DOM テスト・直書き色の lint・初期 JS 予算のどれかが赤なら差し戻す。ただし 0054 適用後の DB は新しい状態値を持つ (`architecture/improvement-screen-database.md`)。そのため旧画面へ戻す前に、再確認の状態の扱いを確かめる。
+- Rollback trigger/procedure: DOM テスト・直書き色の lint・初期 JS 予算のどれかが赤なら差し戻す。ただし 0057 適用後の DB は新しい状態値を持つ (`architecture/improvement-screen-database.md`)。そのため旧画面へ戻す前に、再確認の状態の扱いを確かめる。
 
 ## Risks and verification
 

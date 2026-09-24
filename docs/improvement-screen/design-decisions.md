@@ -25,7 +25,7 @@ feature の受入条件(`.dev-graph/plans/feature-package-feat-improvement-scree
 | | S4-c 削除した依頼が『元に戻す』で同じ id と番号のまま戻る | api 統合「削除から復元で同じ id と seq が一覧に戻り…(AC-008)」、DOM「削除すると一覧から消え、『元に戻す』で同じ番号が戻る」 |
 | | S4-d 削除中の行が一覧と件数に 0 件で、詳細・画像・指示文・コピー記録・状態・agent の 2 経路で 404 | api 統合「削除中の行は items にも counts にも入らず…」「削除中の依頼は詳細・画像・…で 404」 |
 | | S4-e 30 日を過ぎた論理削除の行が R2 の画像・行・履歴ごと消え、R2 の削除に失敗した行は翌晩に回る | `improvement-retention.test.ts`「論理削除から30日の完全消去 (AC-010)」3 件 |
-| S5 | S5-a 0054 の適用で既存行・画像のキー・トークンのハッシュが失われず、wontfix は完了へ移り履歴に理由が残る | `improvement-migration-0054.test.ts` 6 件 |
+| S5 | S5-a 0057 の適用で既存行・画像のキー・トークンのハッシュが失われず、wontfix は完了へ移り履歴に理由が残る | `improvement-migration-0057.test.ts` 6 件 |
 | | S5-b 夜間予算が `total === PLAN_MAX (49)` | `scheduled-maintenance-budget.test.ts` |
 | | S5-c `BACKUP_SNAPSHOT_SQL` に改善リクエストの表が無い | `improvement-backup-exclusion.test.ts` |
 | | S5-d `pnpm lint`・`typecheck`・`test`・`skills:test`・初期 JS 予算・`verify:full` が exit 0 | §7 P06・P09 の実行記録 |
@@ -36,7 +36,7 @@ feature の受入条件(`.dev-graph/plans/feature-package-feat-improvement-scree
 
 | OI | 事項 | 担当 | 結論 |
 |---|---|---|---|
-| OI-01 | migration の番号 0053 | P05 | 計画時の予定番号 0053 は、取込画面(#69)の `0053_import_inspections.sql` が先に main へ入った。本機能は `migrations/0054_improvement_request_screen.sql` を使い、`EXPECTED_D1_MIGRATION` も 0054。spec・architecture・system-spec の現行手順は 0054 に合わせた。tasks・`.dev-graph/plans/` に残る 0053 は計画時の履歴で、実行手順には使わない |
+| OI-01 | migration の番号 0053 | P05 | 計画時の予定番号 0053 は、取込画面(#69)の `0053_import_inspections.sql` が先に main へ入った。本機能はいったん 0054 に進めたが、設定画面(#71)が 0054〜0056 を先に main へ入れた。そのため merge 時(2026-09-24)に `migrations/0057_improvement_request_screen.sql` へもう一度進め、`EXPECTED_D1_MIGRATION` も 0057 にした。architecture・docs の現行手順は 0057 に合わせた。system-spec の章にある 0054 は、graph の digest 追跡下にあるので書き換えず、予定番号として読む。tasks・`.dev-graph/plans/` に残る 0053 は計画時の履歴で、実行手順には使わない |
 | OI-02 | 一覧と共通の期間の関係 | P01 → P03 | 一覧は期間で絞らない(spec FR-2 のとおり)。依頼は会計期間に属するデータではなく、期間で隠すと未対応の依頼が見えなくなる。共通の期間は他の画面と同じく表示だけする。利用者の確認は PR のレビューで取る(§3) |
 | OI-03 | ブラウザ側での辞書マスク | P02 | 取引先名・個人名の辞書をブラウザへ渡す経路は作らない。辞書そのものが個人情報の一覧で、渡すとブラウザに平文で残るため。ブラウザの層は `data-capture-mask` の伏字と、辞書を使わない規則(`capture-screen.ts` の `maskSensitiveText` が core の `redactPersonalInfo` を空の辞書で呼ぶ)だけにする。辞書のマスクはサーバがリクエストのたびに `buildMaskDictionary` で作って掛ける(`packages/api/src/improvement/redact.ts`) |
 | OI-04 | 撮り直しとコピー時の再発行 | P01 → P03 | 端末の画像ファイルは受け付けない。撮り直しは関連ページへ戻って撮影パネルを開く 1 経路にまとめる。コピーは、原文の指示文が画面のメモリにあればそのまま使い、無ければ(後日開いたとき)コピーの前に再発行する。再発行は前に配った指示文を失効させるので、コピーを押す前に説明する |
@@ -101,7 +101,7 @@ spec が **agent 推定・利用者未確認** と注記した値。実装は既
 - **agentGuard**: トークンが無い・形式が違う・行が当たらない・期限切れ・回数超過・添付の削除済みは 401、削除中は 404(OI-06)。取得のたびに `token_fetch_count` を 1 増やす。
 - **採番**: `improvement_request_counters` が利用者ごとの `last_seq` を持つ。作成は counters の UPSERT と行の INSERT を 1 つの batch に置き、削除しても番号を戻さない。
 - **夜間の完全消去**: `improvement_retention` に、`deleted_at` から 30 日を過ぎた行の選択と削除を足した。R2 の画像を先に消し、成功した行だけを D1 から消す。削除の条件に `deleted_at` を残し、選択の後に『元に戻す』が入った行は消さない。履歴は外部キーの `ON DELETE CASCADE` で消える。消した件数は `RETURNING` で数える(`meta.changes` は CASCADE で消えた履歴まで数えるため)。
-- **migration 0054**: `improvement_requests` を作り直して状態の CHECK を張り替え(wontfix→done)、`seq`・`deleted_at` を足し、件名を NULL 許容にする。アクティビティの表と counters を作り、全行に作成の履歴、wontfix だった行に `migrated_wontfix` の履歴を 1 行ずつ入れる。
+- **migration 0057**: `improvement_requests` を作り直して状態の CHECK を張り替え(wontfix→done)、`seq`・`deleted_at` を足し、件名を NULL 許容にする。アクティビティの表と counters を作り、全行に作成の履歴、wontfix だった行に `migrated_wontfix` の履歴を 1 行ずつ入れる。
 - **画面の分割**: `pages/Improvement.tsx` は `pages/improvement/ImprovementPage.tsx` を再 export するだけの入口にする(遅延読み込みを保つため)。本体は `pages/improvement/` に、作成フォーム・一覧・詳細パネル・選択中バー・トースト・view-model に分けた。撮影は `components/CapturePanel.tsx` と `improvement-handoff.ts`(メモリだけの受け渡し)。
 
 ## 6. 独立レビュー(P03)
@@ -160,15 +160,15 @@ M2・M3 の等価変異は、SQL の条件を外しても core が同じ行を�
 
 - **結論**: 配信してよい。ただし巻き戻しは対称でないので、下の前提を配信の手順書(`docs/improvement-request.md` の「配信と巻き戻し」)に載せた。
 - **確かめたこと**
-  - migration 0054 は既存の行・画像のキー・トークンのハッシュを落とさない(`improvement-migration-0054.test.ts`)。
+  - migration 0057 は既存の行・画像のキー・トークンのハッシュを落とさない(`improvement-migration-0057.test.ts`)。
   - 夜間予算は 49 で、Free の上限 50 に 1 本の余白を残す。
   - 新しい secret・binding・Cron は無い。
   - 改善リクエストの 3 表は `BACKUP_SNAPSHOT_SQL` に入らない。
 - **巻き戻しの前提(読んで確かめた挙動)**
-  - schema guard は「適用済みの番号が期待より新しい」ときも `ready` とみなす(`schema-guard.ts` の `appliedVersion > expectedVersion`)。そのため、Worker だけを 0053 前提の版へ戻しても guard は止めず、旧コードが 0054 の表をそのまま使う。
+  - schema guard は「適用済みの番号が期待より新しい」ときも `ready` とみなす(`schema-guard.ts` の `appliedVersion > expectedVersion`)。そのため、Worker だけを 0056 前提の版へ戻しても guard は止めず、旧コードが 0057 の表をそのまま使う。
   - 旧コードで起きること: (1) 作成は `seq` を渡さないので NOT NULL 違反で失敗する。(2) `deleted_at` を知らないので、削除中の行が一覧に戻って見え、30 日の完全消去も止まる。(3) `reconfirm` は旧画面の知らない状態として出る。(4) `wontfix` への変更は CHECK で失敗する。
-  - したがって巻き戻す前に `SELECT status, deleted_at IS NOT NULL AS deleted, count(*) FROM improvement_requests GROUP BY 1, 2` で再確認の行と削除中の行の件数を確かめる(task P13 の Rollback)。0 件でなければ、コードだけの巻き戻しは表示の乱れを伴うと承知のうえで行うか、`docs/runbooks/prod-d1-schema-recovery.md` の手順(Time Travel の復元地点と 0053 前提の版)で表ごと戻す。コードだけの巻き戻しで作成が止まる点は、どちらの場合も変わらない。
-- **配信の前に残すこと**: merge の直前に `origin/main` を fetch し、migration の番号 0054 が空いていることを確かめる(番号は main に先に入ったほうが勝つ)。
+  - したがって巻き戻す前に `SELECT status, deleted_at IS NOT NULL AS deleted, count(*) FROM improvement_requests GROUP BY 1, 2` で再確認の行と削除中の行の件数を確かめる(task P13 の Rollback)。0 件でなければ、コードだけの巻き戻しは表示の乱れを伴うと承知のうえで行うか、`docs/runbooks/prod-d1-schema-recovery.md` の手順(Time Travel の復元地点と 0056 前提の版)で表ごと戻す。コードだけの巻き戻しで作成が止まる点は、どちらの場合も変わらない。
+- **配信の前に残すこと**: merge の直前に `origin/main` を fetch し、migration の番号 0057 が空いていることを確かめる(番号は main に先に入ったほうが勝つ)。
 
 ## 9. 参照画像との差分
 

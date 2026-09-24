@@ -148,7 +148,7 @@ view-model の単体テストで、core の結果の写しを確かめる。DOM 
 
 - Build/deploy topology: 既存の web ビルドと Workers Assets。
 - Migration sequence: core improvement-screen → view-model → 部品の分割と再輸出 → URL の検索パラメータ → API 関数の置き換え (検索・タブ・ページ、削除・復元) → 撮影パネルの伏字と範囲選択 → 右下の『改善を送る』からの受け渡し。
-- Rollback trigger/procedure: DOM テスト・初期 JS 予算・verify:full のどれかが赤なら差し戻す。web は保存データを持たないので、差し戻しで失うものは無い。ただし API が 0054 後の形を返す間は、旧画面の件名表示が空になる。
+- Rollback trigger/procedure: DOM テスト・初期 JS 予算・verify:full のどれかが赤なら差し戻す。web は保存データを持たないので、差し戻しで失うものは無い。ただし API が 0057 後の形を返す間は、旧画面の件名表示が空になる。
 
 ## Risks and verification
 

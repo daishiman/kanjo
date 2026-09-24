@@ -2,7 +2,7 @@
 graph_node_id: "arch-improvement-screen-maintenance-ops"
 artifact_kind: "architecture"
 artifact_subtypes: ["infrastructure"]
-title: "改善リクエスト — 既存の品質ゲートを全て緑に保ち、0054 の適用前バックアップと戻し方を runbook に置き、夜間の完全消去の件数を個人情報なしの JSON ログで追えるようにする"
+title: "改善リクエスト — 既存の品質ゲートを全て緑に保ち、0057 の適用前バックアップと戻し方を runbook に置き、夜間の完全消去の件数を個人情報なしの JSON ログで追えるようにする"
 project_id: "kanjo"
 domain: "maintenance-ops"
 status: "active"
@@ -50,12 +50,12 @@ serves_goals: ["G1", "G4"]
 
 # Architecture overview
 
-改善リクエスト — core・API・DOM のテストを足したうえで、`pnpm lint`・`typecheck`・`test`・`skills:test`・初期 JS 予算・`verify:full` を全て緑にする。0054 は表を作り直すので、D1 のバックアップ → migration → Worker のデプロイの手順と失敗時の戻し方を runbook に置く。`docs/improvement-request.md` を新しい画面・論理削除・完全消去に合わせて更新する。夜間の完全消去の結果 (対象件数・消した件数・失敗件数) は、既存の job ごとの JSON ログに本文・利用者 ID・R2 のキーを載せずに出す (qa-imp-maintenance-ops-web-001、qa-imp-decision-008)。`system-spec/maintenance-ops.md` は承認時入力、本書は検証の配分・運用文書・ログの制約を持つ。行番号は 2026-09-23 時点の現物で確かめた値である。
+改善リクエスト — core・API・DOM のテストを足したうえで、`pnpm lint`・`typecheck`・`test`・`skills:test`・初期 JS 予算・`verify:full` を全て緑にする。0057 は表を作り直すので、D1 のバックアップ → migration → Worker のデプロイの手順と失敗時の戻し方を runbook に置く。`docs/improvement-request.md` を新しい画面・論理削除・完全消去に合わせて更新する。夜間の完全消去の結果 (対象件数・消した件数・失敗件数) は、既存の job ごとの JSON ログに本文・利用者 ID・R2 のキーを載せずに出す (qa-imp-maintenance-ops-web-001、qa-imp-decision-008)。`system-spec/maintenance-ops.md` は承認時入力、本書は検証の配分・運用文書・ログの制約を持つ。行番号は 2026-09-23 時点の現物で確かめた値である。
 
 ## Context and drivers
 
 - Business/technical context: 品質ゲートは root の `package.json` の `test` (:20、`test:aux` で `skills:test` も走る)・`typecheck` (:23)・`lint` (:24)・`skills:test` (:36)・`verify:full` (:40)。web の `build` (`packages/web/package.json:9`) は `build:bundle` → `check:js-budget` → `strip:manifest` の順で、初期 JS 予算は `build:bundle` の直後でしか測れない。`verify:full` は 4175 の vite が前提で、CI の headless Chrome は `pointer:none` である。改善要望の運用文書は `docs/improvement-request.md` (141 行) と `architecture/arch-improvement-request-pipeline.md`。夜間 job の結果は `packages/api/src/index.ts` で job ごとの JSON ログとして出る (`improvement_retention` は :290-307) (qa-imp-maintenance-ops-web-evidence-001)。
-- 現状との差分: `packages/web/src/pages/Improvement.tsx` は 255 行の 1 ファイルで、`pages/improvement/` はまだ無い。`docs/improvement-request.md` の 1.4「添付はいつ消えるか」(:59) と 2.1「削除ジョブの相乗り先」(:69) は、完了から 30 日の添付の消去だけを書いている。`docs/runbooks/` に 0054 の手順は無い。`docs/ci-cd-operations.md:433` は `improvement_retention` を「改善要望の添付削除」と説明している。
+- 現状との差分: `packages/web/src/pages/Improvement.tsx` は 255 行の 1 ファイルで、`pages/improvement/` はまだ無い。`docs/improvement-request.md` の 1.4「添付はいつ消えるか」(:59) と 2.1「削除ジョブの相乗り先」(:69) は、完了から 30 日の添付の消去だけを書いている。`docs/runbooks/` に 0057 の手順は無い。`docs/ci-cd-operations.md:433` は `improvement_retention` を「改善要望の添付削除」と説明している。
 - Quality attribute priorities: G1・G4 に資する。Google SRE (operations) に従い、不可逆な手順を runbook に書き、夜間処理の結果をログから追えるようにする。Clean Code card の『Appropriate abstraction / DRY』『Executable examples』『Continuous refactoring』を検証の配分と分割の進め方に適用する (章の適用記述。agent 推定・利用者未確認)。
 - Constraints: vitest の expect (vitest-expect 5.0.1、2026-09-23 確認)。public repository のため実データをテスト・runbook・ログの例へ含めない (C4)。
 
@@ -64,7 +64,7 @@ serves_goals: ["G1", "G4"]
 - Goals:
   - G1: O1 の DOM テスト (画像の構成要素の存在と操作) を通す。
   - G4: O4 の API テスト (削除→元に戻す、削除中 0 件、他人 404、30 日の完全消去、バックアップの対象外) と、既存ゲート全ての exit 0。
-  - G4: 0054 の適用前バックアップ・適用・デプロイ・戻し方を runbook に置く。
+  - G4: 0057 の適用前バックアップ・適用・デプロイ・戻し方を runbook に置く。
   - G4: 夜間の完全消去の件数をログで追えるようにする。
 - Non-goals:
   - 新しい描画検査 script (`check:*`) の追加。章は `verify:full` への新しい検査を決めていない
@@ -85,14 +85,14 @@ serves_goals: ["G1", "G4"]
 | API テスト (`packages/api/src/improvement-*.test.ts`) | 境界 (404・400・論理削除・完全消去・バックアップの対象外) の観測できる結果 | vitest | packages/api | CI |
 | DOM テスト (`packages/web/src/*.dom.test.tsx`) | 画像の構成要素の存在と操作 | vitest + DOM | packages/web | CI |
 | 既存ゲート (`package.json` の lint〜verify:full) | 用語・秘匿・型・予算・描画の既存検査 | pnpm scripts | repo | ローカル / CI |
-| runbook (`docs/runbooks/`) | 0054 の適用前バックアップ・適用・デプロイ・戻し方 | Markdown | docs | repo |
+| runbook (`docs/runbooks/`) | 0057 の適用前バックアップ・適用・デプロイ・戻し方 | Markdown | docs | repo |
 | 運用文書 (`docs/improvement-request.md`、`architecture/arch-improvement-request-pipeline.md`) | 利用者向けの保持期限の説明と、運用向けのジョブとログの説明 | Markdown | docs | repo |
 | 夜間の JSON ログ (`index.ts` の `improvement_retention`) | 完全消去の対象件数・消した件数・失敗件数 | `console.log(JSON.stringify(...))` | packages/api | api Worker |
 
 ## Cross-cutting contracts
 
 - Identity/access: N/A: 運用手順は新しい権限を足さない。本番 D1 の変更は `migrate.yml` の既存の確認 (`APPLY`・`approved_manifest`) による。
-- Errors/resilience: runbook に、0054 の適用が途中で失敗したときに Time Travel の復元地点へ戻す手順と、`EXPECTED_D1_MIGRATION` が取込画面の 0053 を指す旧版を出す手順を書く。
+- Errors/resilience: runbook に、0057 の適用が途中で失敗したときに Time Travel の復元地点へ戻す手順と、`EXPECTED_D1_MIGRATION` が設定画面の 0056 を指す旧版を出す手順を書く。
 - Observability/audit: 夜間ログの `improvement_retention` に完全消去の 3 つの件数を足す (項目名は backend 側で決める)。本文・利用者 ID・R2 のキー・トークンを載せない。`audit_header_retention` のログから `beforeBytes` が消えることを `docs/improvement-request.md` 2.2 または `docs/ci-cd-operations.md` に書く。
 - Configuration/secrets: N/A: 新しい設定・秘密情報を持たない。
 - Compatibility/versioning: `docs/improvement-request.md` の見出し番号 (1.1〜2.4) は他文書から参照されうるので、節を足す場合も既存の番号を崩さない (推定。参照元の全件は未確認)。
@@ -113,7 +113,7 @@ serves_goals: ["G1", "G4"]
 
 #### Documentation upkeep
 
-`docs/improvement-request.md` を次のとおり直す。1.1 に件名欄の廃止・本文 1000 字・プライバシー確認 2 つ、1.4 に論理削除と『元に戻す』・削除から 30 日の完全消去、2.1 に完全消去の相乗りと予算の回し方 (audit_header_retention 3→2、improvement_retention 3→4)、2.2 にログの新しい件数、2.4 に `pages/improvement/` と 0054 を足す。`docs/ci-cd-operations.md:433` の説明に完全消去を足す。`architecture/arch-improvement-request-pipeline.md` は本書群 (`architecture/improvement-screen-*.md`) への参照を足す (推定。既存文書をどこまで書き換えるかは章が決めていない)。
+`docs/improvement-request.md` を次のとおり直す。1.1 に件名欄の廃止・本文 1000 字・プライバシー確認 2 つ、1.4 に論理削除と『元に戻す』・削除から 30 日の完全消去、2.1 に完全消去の相乗りと予算の回し方 (audit_header_retention 3→2、improvement_retention 3→4)、2.2 にログの新しい件数、2.4 に `pages/improvement/` と 0057 を足す。`docs/ci-cd-operations.md:433` の説明に完全消去を足す。`architecture/arch-improvement-request-pipeline.md` は本書群 (`architecture/improvement-screen-*.md`) への参照を足す (推定。既存文書をどこまで書き換えるかは章が決めていない)。
 
 #### Regression scope
 
@@ -135,7 +135,7 @@ N/A: 本章は計算資源と保存先を足さない。夜間処理の本数は
 
 #### IaC and delivery
 
-0054 の手順を runbook に書く。(1) Time Travel の復元地点を確かめる (`pnpm run db:checkpoint`、root `package.json` の `db:checkpoint`) 。(2) `migrate.yml` を `APPLY` と `approved_manifest` を付けて起動する。(3) `EXPECTED_D1_MIGRATION` を 0054 にした Worker をデプロイする。0054 は表を作り直すので `plan-auto-migration.mjs` の破壊的な判定に当たり、`deploy.yml` の自動適用には乗らない見込み (推定)。runbook の新しいファイル名は正本に無いので、`docs/runbooks/` 配下に置くことだけを決める (推定)。既存の `docs/runbooks/prod-d1-schema-recovery.md` と `templates/approved-pending-manifest.example.json` を参照する。
+0057 の手順を runbook に書く。(1) Time Travel の復元地点を確かめる (`pnpm run db:checkpoint`、root `package.json` の `db:checkpoint`) 。(2) `migrate.yml` を `APPLY` と `approved_manifest` を付けて起動する。(3) `EXPECTED_D1_MIGRATION` を 0057 にした Worker をデプロイする。0057 は表を作り直すので `plan-auto-migration.mjs` の破壊的な判定に当たり、`deploy.yml` の自動適用には乗らない見込み (推定)。runbook の新しいファイル名は正本に無いので、`docs/runbooks/` 配下に置くことだけを決める (推定)。既存の `docs/runbooks/prod-d1-schema-recovery.md` と `templates/approved-pending-manifest.example.json` を参照する。
 
 #### Secrets and access
 
@@ -143,7 +143,7 @@ N/A: 新しい秘密情報を持たない。本番 D1 への書き込みは GitH
 
 #### Reliability and recovery
 
-0054 の適用に失敗したら、Time Travel の復元地点へ戻し、取込画面の 0053 を前提にした旧 Worker の版をデプロイし直す。夜間の完全消去が失敗件数を出し続けたら、`docs/improvement-request.md` 2.3「失敗が続くときの切り分け」(:116) の手順に完全消去の項を足して切り分ける。
+0057 の適用に失敗したら、Time Travel の復元地点へ戻し、取込画面の 0053 を前提にした旧 Worker の版をデプロイし直す。夜間の完全消去が失敗件数を出し続けたら、`docs/improvement-request.md` 2.3「失敗が続くときの切り分け」(:116) の手順に完全消去の項を足して切り分ける。
 
 #### Infrastructure verification
 
@@ -154,16 +154,16 @@ N/A: 新しい秘密情報を持たない。本番 D1 への書き込みは GitH
 | Basis (qa_ref) | Decision | Alternatives | Trade-on rationale | Consequences |
 |---|---|---|---|---|
 | qa-imp-maintenance-ops-web-001 | core・API・DOM のテストを足し、既存ゲートを全て緑にする | 新規テストだけ緑 | 既存の用語・秘匿・予算・描画の検査が画面の作り直しを見張る | `verify:full` の時間は変わらない (新しい検査を足さない) |
-| qa-imp-maintenance-ops-web-001 | 0054 の適用前バックアップ・適用・デプロイ・戻し方を runbook に書く | PR の説明だけに書く | 表の作り直しは不可逆で、手順を repo に残す必要がある | runbook が 1 本増える |
+| qa-imp-maintenance-ops-web-001 | 0057 の適用前バックアップ・適用・デプロイ・戻し方を runbook に書く | PR の説明だけに書く | 表の作り直しは不可逆で、手順を repo に残す必要がある | runbook が 1 本増える |
 | qa-imp-maintenance-ops-web-001 | `docs/improvement-request.md` を更新する | 新しい文書を作る | 利用者と運用者が既に読む場所に置く | 1.4 と 2.1〜2.4 を書き換える |
 | qa-imp-decision-008 | 完全消去の件数を既存の JSON ログに足し、個人情報を載せない | 別のログ job / 外部の監視 | 既存の読み方 (2.2 の確認手順) のまま追える | `audit_header_retention` のログから `beforeBytes` が消える |
 | qa-imp-maintenance-ops-web-001 (Clean Code card) | `Improvement.tsx` を `pages/improvement/` へ部品ごとに移す | 一度に書き換える | 1 回ごとにゲートを緑にでき、戻しやすい | 移行の途中で 2 つの置き場が一時的に並ぶ |
 
 ## Delivery, migration and rollback
 
-- Build/deploy topology: `ci.yml` (PR ゲート) → `migrate.yml` (0054 の手動適用) → `deploy.yml` (Worker のデプロイ)。
-- Migration sequence: runbook を先に入れる → core・API・DOM のテストと実装 → 0054 を手動で適用 → Worker をデプロイ → 翌晩のログで件数を確かめる → `docs/improvement-request.md` を最終の姿に合わせる。
-- Rollback trigger/procedure: ゲートのどれかが赤なら PR を止める。本番で 0054 が壊れたら runbook の戻し方 (Time Travel の復元地点、取込画面の 0053 前提の旧版) に従う。
+- Build/deploy topology: `ci.yml` (PR ゲート) → `migrate.yml` (0057 の手動適用) → `deploy.yml` (Worker のデプロイ)。
+- Migration sequence: runbook を先に入れる → core・API・DOM のテストと実装 → 0057 を手動で適用 → Worker をデプロイ → 翌晩のログで件数を確かめる → `docs/improvement-request.md` を最終の姿に合わせる。
+- Rollback trigger/procedure: ゲートのどれかが赤なら PR を止める。本番で 0057 が壊れたら runbook の戻し方 (Time Travel の復元地点、取込画面の 0056 前提の旧版) に従う。
 
 ## Risks and verification
 

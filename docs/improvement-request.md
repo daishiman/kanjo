@@ -173,17 +173,17 @@ backupは先に確定し、他の6つを含む残り7 jobも独立に完走し�
 
 ### 2.4 配信と巻き戻し
 
-migration `0054_improvement_request_screen.sql` は表を作り直し、状態の CHECK を `wontfix` から `reconfirm` へ張り替え、`seq`（番号）と `deleted_at`（論理削除）を足します。巻き戻しは対称ではありません。
+migration `0057_improvement_request_screen.sql` は表を作り直し、状態の CHECK を `wontfix` から `reconfirm` へ張り替え、`seq`（番号）と `deleted_at`（論理削除）を足します。巻き戻しは対称ではありません。
 
 - **配信の順序**: 夜間の Cron は schema guard の外で動くので、**Migrate → Deploy** の順で適用します。適用の前後で `SELECT count(*), count(screenshot_key), count(token_hash) FROM improvement_requests` を取り、件数・画像のキー・トークンの数が一致することを確かめます。
-- **コードだけを戻したとき**: schema guard は「適用済みの番号が期待より新しい」ときも通すので、0053 前提の Worker は 0054 の表をそのまま使います。そのとき、(1) 作成は `seq` を渡さないので失敗し、(2) 削除中の依頼が一覧に戻って見え、完全消去も止まり、(3) 再確認の依頼は旧画面の知らない状態として出て、(4) 「対応しない」への変更は CHECK で失敗します。
-- **戻す前に確かめること**: `SELECT status, deleted_at IS NOT NULL AS deleted, count(*) FROM improvement_requests GROUP BY 1, 2` で、再確認の依頼と削除中の依頼の件数を確かめます。0 件でなければ、上の表示の乱れを承知のうえでコードだけを戻すか、`docs/runbooks/prod-d1-schema-recovery.md` の手順（Time Travel の復元地点へ戻し、0053 前提の版をデプロイ）で表ごと戻します。表は手で 0053 の形へ戻しません。
+- **コードだけを戻したとき**: schema guard は「適用済みの番号が期待より新しい」ときも通すので、0056 前提の Worker は 0057 の表をそのまま使います。そのとき、(1) 作成は `seq` を渡さないので失敗し、(2) 削除中の依頼が一覧に戻って見え、完全消去も止まり、(3) 再確認の依頼は旧画面の知らない状態として出て、(4) 「対応しない」への変更は CHECK で失敗します。
+- **戻す前に確かめること**: `SELECT status, deleted_at IS NOT NULL AS deleted, count(*) FROM improvement_requests GROUP BY 1, 2` で、再確認の依頼と削除中の依頼の件数を確かめます。0 件でなければ、上の表示の乱れを承知のうえでコードだけを戻すか、`docs/runbooks/prod-d1-schema-recovery.md` の手順（Time Travel の復元地点へ戻し、0056 前提の版をデプロイ）で表ごと戻します。表は手で 0053 の形へ戻しません。
 - 画面・規則・判断の記録は `docs/improvement-screen/`（`design-decisions.md`・`rules.md`・`evidence.md`）にあります。
 
 ### 2.5 関連ファイル
 
 - `migrations/0029_improvement_requests.sql`
-- `migrations/0054_improvement_request_screen.sql` — 状態の張り替え・番号・論理削除・アクティビティ
+- `migrations/0057_improvement_request_screen.sql` — 状態の張り替え・番号・論理削除・アクティビティ
 - `packages/api/src/routes/improvement.ts` — API と `runImprovementRetention`
 - `packages/api/src/improvement/contract.ts` — テーブル定義・入出力スキーマ・指示文
 - `packages/api/src/improvement/redact.ts` — サーバ側の再マスク

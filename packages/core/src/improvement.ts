@@ -412,7 +412,7 @@ export const IMPROVEMENT_TOKEN_PREFIX = 'imp_';
 
 /**
  * 改善リクエストの対応状態 (qa-imp-decision-001)。
- * reconfirm は「開発側が直したので利用者が確かめる段階」。旧 wontfix は migration 0054 で done へ移した。
+ * reconfirm は「開発側が直したので利用者が確かめる段階」。旧 wontfix は migration 0057 で done へ移した。
  * 遷移の可否は improvement-screen.ts の IMPROVEMENT_TRANSITIONS が正本。
  */
 export type ImprovementStatus = 'open' | 'in_progress' | 'done' | 'reconfirm';

@@ -5,7 +5,7 @@
  * 「改善要望に関わるファイルだけ」に閉じているため。getDb() は schema を束縛しない
  * drizzle instance を返す(store.ts の `drizzle(d1)`)ので、table 定義の置き場所は
  * クエリの型付けにしか影響しない。migrations/0029_improvement_requests.sql と
- * 0054_improvement_request_screen.sql (状態の張り替え・連番・論理削除・履歴) が正本で、
+ * 0057_improvement_request_screen.sql (状態の張り替え・連番・論理削除・履歴) が正本で、
  * ここはその型の写し。
  */
 import {

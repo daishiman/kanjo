@@ -146,8 +146,8 @@ API テスト (`improvement-lifecycle.test.ts` の系列) で、利用者を 2 �
 ## Delivery, migration and rollback
 
 - Build/deploy topology: 既存の api Worker。
-- Migration sequence: 0054 で `deleted_at` の列が入った後に、`loadRow`・一覧・`agentGuard`・その他の読み取り経路へ `deleted_at IS NULL` を足し、最後に削除・復元の経路を開く。境界の順序 (`index.ts:107`・:109・:110・:111) は変えない。0054 の前の D1 では `runtimeSchemaGuard` が新しい経路を動かさない (`architecture/improvement-screen-infrastructure.md`)。
-- Rollback trigger/procedure: 分離・削除中の除外・再発行の API テストが赤なら差し戻す。Worker を戻しても 0054 の列は残してよい (読まれないだけ)。
+- Migration sequence: 0057 で `deleted_at` の列が入った後に、`loadRow`・一覧・`agentGuard`・その他の読み取り経路へ `deleted_at IS NULL` を足し、最後に削除・復元の経路を開く。境界の順序 (`index.ts:107`・:109・:110・:111) は変えない。0057 の前の D1 では `runtimeSchemaGuard` が新しい経路を動かさない (`architecture/improvement-screen-infrastructure.md`)。
+- Rollback trigger/procedure: 分離・削除中の除外・再発行の API テストが赤なら差し戻す。Worker を戻しても 0057 の列は残してよい (読まれないだけ)。
 
 ## Risks and verification
 

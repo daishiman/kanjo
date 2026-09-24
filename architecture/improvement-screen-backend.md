@@ -56,7 +56,7 @@ serves_goals: ["G3", "G4"]
 
 - Business/technical context: 現行 api は `routes/improvement.ts` (561 行) に次の経路を持つ。POST /improvements (multipart、:130)、一覧 GET (:242)、詳細 GET :id (:254)、画像 GET :id/screenshot (:267)、指示文 POST :id/prompt (:311)、コピー記録 POST :id/copied (:359)、状態 POST :id/status (:374)、agent 用の GET :id/agent/data (:443) と :id/agent/screenshot (:472)。DELETE は無く、一覧には検索・件数・ページングが無い。一覧は利用者で絞って作成の新しい順に最大 200 件を返す (:242-251)。指示文は `improvement/contract.ts` の `buildImprovementPrompt` (:185) が組み立てる (qa-imp-backend-web-evidence-001)。夜間の `runImprovementRetention` (:498) は、完了から 30 日を過ぎた行の添付・診断・トークンだけを消し、本文と状態は残す。結線は `index.ts:103` (agent)、`:132` (利用者)、`:214` (夜間 job) にある。
 - Quality attribute priorities: G3 (導出の一元化) と G4 (分離・検証・論理削除・完全消去・再発行・バックアップ除外)。上流指針は Clean Architecture の Dependency Rule と gateways/repositories boundary。
-- Constraints: Hono + zod + Drizzle + D1 + R2 (C1)。migration 0054 の後の表を前提にする (C2、`architecture/improvement-screen-database.md`)。新しい Cron は足さない。夜間の D1 予算 `SCHEDULED_D1_QUERY_PLAN_MAX=49` (`scheduled-maintenance-budget.ts:14`) を超えない (C3)。
+- Constraints: Hono + zod + Drizzle + D1 + R2 (C1)。migration 0057 の後の表を前提にする (C2、`architecture/improvement-screen-database.md`)。新しい Cron は足さない。夜間の D1 予算 `SCHEDULED_D1_QUERY_PLAN_MAX=49` (`scheduled-maintenance-budget.ts:14`) を超えない (C3)。
 
 ## Goals and non-goals
 
@@ -93,7 +93,7 @@ serves_goals: ["G3", "G4"]
 - Errors/resilience: zod の違反は 400 にし、欄ごとの理由を返す。core が許さない遷移は 409 にする (agent 推定・利用者未確認)。完全消去後の指示文の再発行は、今の `purged` の扱い (410) を保つ。削除と復元は冪等で、同じ状態へ何度送っても結果は変わらない。
 - Observability/audit: 状態の変更・再発行・削除・復元を履歴の行として追記し、書き換えない。夜間 job の結果は今の `improvement_retention` の構造化ログ (`index.ts:290-307`) に、完全消去の件数を足す (agent 推定・利用者未確認)。
 - Configuration/secrets: トークンは平文を保存しない (今の `token_hash`)。値そのものはログにも応答にも出さない (:396)。
-- Compatibility/versioning: 経路のパスは今のものを保ち、削除 (DELETE /api/improvements/:id) と復元 (POST /api/improvements/:id/restore) を足す。この 2 経路は backend 章の『適用された設計知識』にある、アシスタントの推定 (利用者未確認) である。`schema-guard.ts` の `EXPECTED_D1_MIGRATION` を 0054 に進め、0054 を当てる前の D1 では新しい経路を動かさない。
+- Compatibility/versioning: 経路のパスは今のものを保ち、削除 (DELETE /api/improvements/:id) と復元 (POST /api/improvements/:id/restore) を足す。この 2 経路は backend 章の『適用された設計知識』にある、アシスタントの推定 (利用者未確認) である。`schema-guard.ts` の `EXPECTED_D1_MIGRATION` を 0057 に進め、0057 を当てる前の D1 では新しい経路を動かさない。
 
 ## Subtype architecture
 
@@ -151,16 +151,16 @@ Cloudflare Workers 上の Hono。依存の向きは api → core の一方向に
 | Basis (qa_ref) | Decision | Alternatives | Trade-on rationale | Consequences |
 |---|---|---|---|---|
 | qa-imp-backend-web-001 | 判定と導出を core の improvement-screen に置き、API は写すだけ | routes に計算を残す | 導出の置き場所が 1 か所になり、純関数で速く検証できる | api の今の判定 (:381 など) を core へ移す作業が要る |
-| qa-imp-decision-001 | 状態を open/in_progress/done/reconfirm にし、遷移は core が判定する | 現行の wontfix を残す | 画像のタブと揃い、完了を 30 日の起点に保てる | 0054 で wontfix の行を移す必要がある |
+| qa-imp-decision-001 | 状態を open/in_progress/done/reconfirm にし、遷移は core が判定する | 現行の wontfix を残す | 画像のタブと揃い、完了を 30 日の起点に保てる | 0057 で wontfix の行を移す必要がある |
 | qa-imp-decision-003 | 削除は論理削除 + 復元にし、30 日後に夜間で完全消去 | 即時の物理削除 | 誤削除を取り返せる。完全消去も保証できる | 全経路に deleted_at の条件が要る |
 | qa-imp-decision-006 | 関連する依頼は同じ関連ページから最大 3 件を自動導出 | 手動の紐付け | 保存する関係が要らない | 関連ページの無い依頼では 0 件になる |
 | qa-imp-decision-008 | 完全消去の DELETE は `audit_header_retention` から 1 本借りる (borrow-slot) | 予算の上限を上げる / 別の Cron | 49/49 のまま、完全消去をコードとテストに明示できる | 監査ヘッダ保持の削除前の件数は、読まずに計算で出す値になる |
 
 ## Delivery, migration and rollback
 
-- Build/deploy topology: 既存の Workers に同梱する。Migrate (0054) → Deploy の順にする (`architecture/improvement-screen-database.md`)。
+- Build/deploy topology: 既存の Workers に同梱する。Migrate (0057) → Deploy の順にする (`architecture/improvement-screen-database.md`)。
 - Migration sequence: core improvement-screen と単体テスト → contract.ts の表定義と zod → 読み取りの全経路に deleted_at の条件 → 作成 (件名なし・seq) → 状態・再発行の履歴 → 削除と復元の経路 → 夜間の完全消去と予算の付け替え → `EXPECTED_D1_MIGRATION` の更新。
-- Rollback trigger/procedure: API テストと verify:full のどれかが赤なら差し戻す。0054 の後の表は旧コードの前提と違う (件名 NULL・reconfirm・`seq`)。schema guard は期待番号より新しい適用済み番号を許容するため、旧 Worker だけを戻しても停止しない。作成失敗や表示の乱れを確認し、必要なら database 章の Time Travel 復旧手順に従う。
+- Rollback trigger/procedure: API テストと verify:full のどれかが赤なら差し戻す。0057 の後の表は旧コードの前提と違う (件名 NULL・reconfirm・`seq`)。schema guard は期待番号より新しい適用済み番号を許容するため、旧 Worker だけを戻しても停止しない。作成失敗や表示の乱れを確認し、必要なら database 章の Time Travel 復旧手順に従う。
 
 ## Risks and verification
 

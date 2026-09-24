@@ -149,7 +149,8 @@ const snapshotInterleavingDatabase = (
         }
         if (property === 'run' || property === 'all' || property === 'first' || property === 'raw') {
           return async (...values: unknown[]) => {
-            if (claimBatchCompleted && !checked && sql.includes('account_norm_map')) {
+            // 0051: 取込・復元の設定 snapshot は集計ルールを settings_norm_rules から読む
+            if (claimBatchCompleted && !checked && sql.includes('settings_norm_rules')) {
               checked = true;
               await onFirstSnapshotRead();
             }

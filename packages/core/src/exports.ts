@@ -49,7 +49,7 @@ export function transactionExportRows(
     return k !== 0 ? k : a.id.localeCompare(b.id);
   });
   return sorted.map((t) => {
-    const r = resolveTx(t, data.rules, data.edits, data.institutionOwners);
+    const r = resolveTx(t, data.rules, data.edits, data.institutionOwners, data.normRules);
     return [
       t.m,
       t.d,
@@ -74,10 +74,14 @@ export function transactionExportRows(
 /**
  * 行列をCSV本文にする。Excelで開く前提なので改行はCRLF、BOMは呼び出し側で付ける。
  * 数値はカンマ区切りにしない(表計算側で数値として読ませるため)。
+ *
+ * 文字列のセルの先頭が = + - @ なら ' を前に付ける(BR-30)。明細の内容や取引先名は
+ * 利用者の外から来る文字列で、そのまま表計算で開くと式として実行される。
+ * 数値のセルは数値のまま出す(負数に ' が付くと表計算で計算できなくなる)。
  */
 export function toCsv(rows: readonly (readonly (string | number)[])[]): string {
   const esc = (v: string | number): string => {
-    const t = String(v);
+    const t = typeof v === 'string' && /^[=+\-@]/.test(v) ? `'${v}` : String(v);
     return /[",\n\r]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
   };
   return rows.map((r) => r.map(esc).join(',')).join('\r\n');

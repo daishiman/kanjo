@@ -1,7 +1,7 @@
--- Migration number: 0054  改善リクエスト画面(状態の張り替え・利用者ごとの連番・論理削除・アクティビティ)
+-- Migration number: 0057  改善リクエスト画面(状態の張り替え・利用者ごとの連番・論理削除・アクティビティ)
 --
 -- 仕様 (specs/spec-improvement-screen.md「データモデル」) は 0053 と書くが、0053 は取込画面
--- (0053_import_inspections.sql) が先に使った。番号だけを 0054 に進め、内容は仕様のとおりである。
+-- (0053_import_inspections.sql)、0054〜0056 は設定画面が先に使った。番号だけを 0057 に進め、内容は仕様のとおりである。
 --
 -- SQLite は CHECK を後から替えられないので、improvement_requests を作り直す (0026 と同じ手順)。
 -- 他の表から improvement_requests を参照する外部キーは無いので、退避表は要らない。

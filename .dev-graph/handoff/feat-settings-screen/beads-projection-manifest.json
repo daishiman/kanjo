@@ -1,0 +1,151 @@
+{
+  "feature": {
+    "graph_node_id": "feat-settings-screen",
+    "title": "設定画面 (18-settings) の作り直しと集計ルール・現金上書き・設定 JSON・夜間バックアップの解釈の core 一本化",
+    "description": "dev-graph feature projection (features/feat-settings-screen.md)",
+    "bd_issue_id": "kanjo-0l4"
+  },
+  "children": [
+    {
+      "graph_node_id": "SYS-SETTINGS-P01",
+      "phase_ref": "P01",
+      "parent_feature": "feat-settings-screen",
+      "title": "P01 要件ベースライン確定と未決事項 19 件の着手時整理",
+      "description": "dev-graph P01 projection (tasks/feat-settings-screen/sys-settings-p01.md)",
+      "depends_on": [],
+      "bd_issue_id": "kanjo-0l4.1"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P02",
+      "phase_ref": "P02",
+      "parent_feature": "feat-settings-screen",
+      "title": "P02 settingsScreen・取引先ルール照合/適用・現金上書き解決・10 API・migration 0051-0053 のワークストリーム設計決定記録",
+      "description": "dev-graph P02 projection (tasks/feat-settings-screen/sys-settings-p02.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P01"
+      ],
+      "bd_issue_id": "kanjo-0l4.2"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P03",
+      "phase_ref": "P03",
+      "parent_feature": "feat-settings-screen",
+      "title": "P03 算出契約・API 契約・migration 契約・変更フェンス整合の独立レビュー",
+      "description": "dev-graph P03 projection (tasks/feat-settings-screen/sys-settings-p03.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P02"
+      ],
+      "bd_issue_id": "kanjo-0l4.3"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P04",
+      "phase_ref": "P04",
+      "parent_feature": "feat-settings-screen",
+      "title": "P04 core 不変条件・API 契約・migration・DOM の失敗テスト先行作成",
+      "description": "dev-graph P04 projection (tasks/feat-settings-screen/sys-settings-p04.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P03"
+      ],
+      "bd_issue_id": "kanjo-0l4.4"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P05",
+      "phase_ref": "P05",
+      "parent_feature": "feat-settings-screen",
+      "title": "P05 settings-screen.ts・settings-json.ts・norm-rules.ts・10 API・migration 0051-0053・/settings 画面の最終実装",
+      "description": "dev-graph P05 projection (tasks/feat-settings-screen/sys-settings-p05.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P04"
+      ],
+      "bd_issue_id": "kanjo-0l4.5"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P06",
+      "phase_ref": "P06",
+      "parent_feature": "feat-settings-screen",
+      "title": "P06 全テストと型検査と lint の実行記録",
+      "description": "dev-graph P06 projection (tasks/feat-settings-screen/sys-settings-p06.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P05"
+      ],
+      "bd_issue_id": "kanjo-0l4.6"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P07",
+      "phase_ref": "P07",
+      "parent_feature": "feat-settings-screen",
+      "title": "P07 受入基準 S1 から S5（AT-01〜AT-22）の検証",
+      "description": "dev-graph P07 projection (tasks/feat-settings-screen/sys-settings-p07.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P06"
+      ],
+      "bd_issue_id": "kanjo-0l4.7"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P08",
+      "phase_ref": "P08",
+      "parent_feature": "feat-settings-screen",
+      "title": "P08 旧 Settings.tsx 参照・現金上書き重複判定・account_norm_map/cash_overrides 表書き換え有無の読取専用監査",
+      "description": "dev-graph P08 projection (tasks/feat-settings-screen/sys-settings-p08.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P07"
+      ],
+      "bd_issue_id": "kanjo-0l4.8"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P09",
+      "phase_ref": "P09",
+      "parent_feature": "feat-settings-screen",
+      "title": "P09 アクセシビリティ・入力検証・変更系フェンス・外部送信ゼロ・JS バンドル予算の保証確認",
+      "description": "dev-graph P09 projection (tasks/feat-settings-screen/sys-settings-p09.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P08"
+      ],
+      "bd_issue_id": "kanjo-0l4.9"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P10",
+      "phase_ref": "P10",
+      "parent_feature": "feat-settings-screen",
+      "title": "P10 独立最終レビュー",
+      "description": "dev-graph P10 projection (tasks/feat-settings-screen/sys-settings-p10.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P09"
+      ],
+      "bd_issue_id": "kanjo-0l4.10"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P11",
+      "phase_ref": "P11",
+      "parent_feature": "feat-settings-screen",
+      "title": "P11 再現可能な証跡索引の作成",
+      "description": "dev-graph P11 projection (tasks/feat-settings-screen/sys-settings-p11.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P10"
+      ],
+      "bd_issue_id": "kanjo-0l4.11"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P12",
+      "phase_ref": "P12",
+      "parent_feature": "feat-settings-screen",
+      "title": "P12 算出規則・API・migration・未決事項の docs 最終同期",
+      "description": "dev-graph P12 projection (tasks/feat-settings-screen/sys-settings-p12.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P11"
+      ],
+      "bd_issue_id": "kanjo-0l4.12"
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P13",
+      "phase_ref": "P13",
+      "parent_feature": "feat-settings-screen",
+      "title": "P13 単一 PR での配信と migration 0051-0053 適用とクローズアウト",
+      "description": "dev-graph P13 projection (tasks/feat-settings-screen/sys-settings-p13.md)",
+      "depends_on": [
+        "SYS-SETTINGS-P12"
+      ],
+      "bd_issue_id": "kanjo-0l4.13"
+    }
+  ]
+}

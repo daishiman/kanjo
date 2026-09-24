@@ -1,0 +1,1235 @@
+{
+  "feature_package_id": "feature-package/feat-settings-screen",
+  "parent_feature": "feat-settings-screen",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/00-requirements-definition.md",
+      "system-spec/completeness-findings.json",
+      "specs/spec-settings-screen.md",
+      "features/feat-settings-screen.md",
+      "features/feat-settings-screen.context.json"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "id": "SYS-SETTINGS-P01",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "要件ベースライン確定と未決事項 19 件の着手時整理",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p01",
+        "preparation"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P01",
+      "depends_on": [],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p01.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "受入 S1〜S5 と AT-01〜AT-22 が検証可能な文として docs に列挙され、各文に対応する spec の節番号が付いている。",
+        "goal-spec.json の open_items 19 件 (Q-1〜Q-12・R-1〜R-7) が docs に原文の意味を保って転記され、それぞれの resolution_owner task (主に SYS-SETTINGS-P02〜P05、migration 番号は SYS-SETTINGS-P05 と SYS-SETTINGS-P13) が明記されている。Q 系は Open risk (agent 推定・利用者未確認)、R 系は Blocker (既存実装との具体的な食い違い) として区分されている。",
+        "スコープ外 (取引データの復元形式変更、仕分けルール/ベンダー記憶の意味変更、共通シェルの作り直し、外部 LLM・外部送信、複数テナント化・専用アプリ、バックアップ保持期間変更、バックアップからの全データ復元、既存 API の削除、既存表 account_norm_map・cash_overrides の削除・書き換え) が docs に明記されている。",
+        "readiness_pin.source_pin.source_digest と specs/spec-settings-screen.md の source_lineage.source_digest の測定時点差異 (agent 未再計算) が事実として docs に記録され、fail-closed の対象にしていない。"
+      ],
+      "verification": [
+        "pnpm lint"
+      ],
+      "rollback": "docs の追記を revert する。コードと表の変更を伴わない。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P01",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p01.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P01"
+      },
+      "secondary_workstreams": [
+        "quality"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P02",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "settingsScreen・取引先ルール照合/適用・現金上書き解決・10 API・migration 0051-0053 のワークストリーム設計決定記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p02",
+        "preparation"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P02",
+      "depends_on": [
+        "SYS-SETTINGS-P01"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p02.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "packages/core/src/settings-screen.ts (新設) の settingsScreen の入出力と BR-01〜BR-31 の算出規則、norm-rules.ts (新設) の取引先ルール照合キー (NFKC→lowercase→trim) と適用順 (手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類)、cash.ts の現金上書き解決 (resolveCashOverride: null=上書きしない/0=0円で上書き) が docs に書かれている。",
+        "10 API (GET/PUT /api/settings/screen, GET /api/settings/history, GET /api/settings/export, POST /api/settings/restore/preview, POST /api/settings/restore, GET /api/backups, GET /api/backups/:date/compare, POST /api/backups/:date/restore/preview, POST /api/backups/:date/restore) の応答形・zod 許可リストが spec の API 契約と一致している。",
+        "migration 0051_settings_norm_rules.sql・0052_settings_cash_overrides.sql・0053_settings_change_log.sql (いずれも追加のみ) の設計と、番号が予定番号であり着手時に origin/main と突き合わせる旨が docs に明記されている。",
+        "既存 account_norm_map・cash_overrides 表を初回の写しの元として読むだけに留め、削除・書き換えをしない設計 (Q-2/Q-4/R-1/R-2 関連) が docs に明記されている。",
+        "変更履歴 (append-only) と revision = max(changed_at) の算出規則、baseSavedAt による 409 判定 (BR-22) の設計が docs に明記されている。"
+      ],
+      "verification": [
+        "pnpm lint"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P02",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p02.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P02"
+      },
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api",
+        "data",
+        "security"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P03",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "算出契約・API 契約・migration 契約・変更フェンス整合の独立レビュー",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p03",
+        "design-review"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P03",
+      "depends_on": [
+        "SYS-SETTINGS-P02"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p03.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "レビュー指摘が docs に列挙され、全件が解消済みか理由付きで持ち越されている。",
+        "PUT /api/settings/screen・POST /api/settings/restore・POST /api/backups/:date/restore が canonicalMutationFence の内側にあり、GET/preview 系がフェンス対象外であることが確認されている。",
+        "Q-1 (名義 API を PUT /api/settings/screen の 1 回の保存へ統合するか既存 owner-labels API と分離するか)・Q-2 (旧 PUT の互換維持と新表・revision の同期方式) が未決のまま実装へ渡され、agent 推定 (本書は 1 回保存へ統合し、旧経路は互換のため残す) の値として実装する前提であることがレビュー結果として明記されている。",
+        "R-1 (cash_overrides の空欄 0 潰れ)・R-2 (account_norm_map の二重正本)・R-6 (toCsv の式注入無害化が既存 CSV テストに与える影響) の 3 件について、実装 (P05) で具体的な対処が必須である Blocker として引き継がれている。"
+      ],
+      "verification": [
+        "pnpm lint"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P03",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p03.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P03"
+      },
+      "secondary_workstreams": [
+        "backend",
+        "security",
+        "data"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P04",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "core 不変条件・API 契約・migration・DOM の失敗テスト先行作成",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p04",
+        "test-design"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P04",
+      "depends_on": [
+        "SYS-SETTINGS-P03"
+      ],
+      "write_scope": [
+        "packages/core/test/settings-screen.test.ts",
+        "packages/core/test/settings-json.test.ts",
+        "packages/api/src/routes/settings-screen.test.ts",
+        "packages/web/src/pages/settings/settings.dom.test.tsx",
+        "packages/web/src/pages/settings/view-model.test.ts"
+      ],
+      "deploy_unit": "N/A: テストコードは配布物に含まれない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p04.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "core 不変条件 (settingsScreen の算出、取引先ルールの適用順 手動編集>仕分けルール>集計ルール(取引先)>自動分類、resolveCashOverride の null/0 区別、validateOwnerLabels 共有、統計最小月数 3〜24・既定 6、diffSettings、validateSettingsJson) の失敗テストが packages/core/test/settings-screen.test.ts・settings-json.test.ts にあり、現行実装 (settings-screen.ts/settings-json.ts/norm-rules.ts が存在しない) で失敗する。",
+        "10 API の統合テストが packages/api/src/routes/settings-screen.test.ts にあり、401・fence の 409 (baseSavedAt 不一致)・不正値の 400・未知キー拒否・migration 未適用の 503 を検査し、現行実装で失敗する。",
+        "DOM テスト packages/web/src/pages/settings/settings.dom.test.tsx が節ナビ 8 項目・読込/空/失敗の各状態・保存バー・未保存件数を検査し、現行実装で失敗する。",
+        "R-6 (toCsv の式注入無害化) を先行して失敗テスト化し、既存の集計マトリクス CSV・取引 CSV のテスト (負数の文字列表記を含む) が無害化後も期待どおりであることを同一テスト内で確認する構成にする。",
+        "R-7 (既存 backup-restore.dom.test.tsx が POST /api/restore への合流を固定している) について、qa-settings-decision-010 (設定だけ戻す) に合わせて書き換える対象として失敗させるところまでを本 task で行い、書き換え後のテストが緑になるのは P05 とする。",
+        "migration 0051〜0053 が既存 account_norm_map・cash_overrides・settings 関連行を書き換えないことを検査する migration テストがある。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test"
+      ],
+      "rollback": "テストの追加を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P04",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p04.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P04"
+      },
+      "secondary_workstreams": [
+        "backend",
+        "frontend"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P05",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "settings-screen.ts・settings-json.ts・norm-rules.ts・10 API・migration 0051-0053・/settings 画面の最終実装",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p05",
+        "mutation"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "frontend",
+      "build_target_kind": "application-code",
+      "phase_ref": "P05",
+      "depends_on": [
+        "SYS-SETTINGS-P04"
+      ],
+      "write_scope": [
+        "packages/core/src/settings-screen.ts",
+        "packages/core/src/settings-json.ts",
+        "packages/core/src/norm-rules.ts",
+        "packages/core/src/classify.ts",
+        "packages/core/src/cash.ts",
+        "packages/core/src/exports.ts",
+        "packages/core/src/types.ts",
+        "packages/core/src/fingerprint.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/settings-screen.ts",
+        "packages/api/src/routes/settings.ts",
+        "packages/api/src/routes/backups.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/import-active.ts",
+        "packages/api/src/import-lifecycle.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/index.ts",
+        "migrations/0051_settings_norm_rules.sql",
+        "migrations/0052_settings_cash_overrides.sql",
+        "migrations/0053_settings_change_log.sql",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/settings/",
+        "packages/web/src/pages/Settings.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/analysis-query-invalidation.ts"
+      ],
+      "deploy_unit": "web ビルドと Worker と D1 migration (0051_settings_norm_rules.sql・0052_settings_cash_overrides.sql・0053_settings_change_log.sql の追加のみ)",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p05.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "packages/core/src/settings-screen.ts (新設) の settingsScreen が BR-01〜BR-31 を満たし、P04 の core テストが緑である。",
+        "packages/core/src/norm-rules.ts (新設) の取引先ルール照合・適用が 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類 の順で動き、勘定科目ルールは取込時のみ・取引先ルールは集計時のみに適用され、保存済み明細を書き換えない。",
+        "packages/core/src/cash.ts の resolveCashOverride が null (上書きしない) と 0 (0 円で上書き) を区別して 1 か所で解決する (R-1 の 0 潰れを解消する)。",
+        "10 API が既存 authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の内側で動き、許可リスト外のクエリと上限超過に 400 を返す。PUT /api/settings/screen が baseSavedAt の 409 を返す。",
+        "migration 0051〜0053 が追加のみで、runtimeSchemaGuard の EXPECTED_D1_MIGRATION に反映される。既存 account_norm_map・cash_overrides・settings 表は 1 行も書き換えない。",
+        "/settings 画面が spec §7 の構成要素 (節ナビ 8 項目含む) を全て描画し、Settings.tsx は互換の re-export だけになる。",
+        "Q-1 (名義の保存経路) は PUT /api/settings/screen へ統合し、既存 GET/PUT /api/settings/owner-labels は家計収支画面向けに互換で残す。Q-2 (旧書込み経路の互換) は旧 PUT /api/settings・PUT /api/settings/owner-labels・POST /api/restore が新表と変更履歴へ同じ意味で書き、revision を進める形で実装する (いずれも未決のまま Open risk として記録する)。",
+        "R-2 (account_norm_map の二重正本) は旧 PUT が新表 settings_norm_rules と同期して書く実装で解消する。R-3/R-4 (バックアップ日付 UTC/JST・保持削除の先頭 10 文字比較) は JST の日付にそろえ、backups/pre-restore/ を保持削除の対象から除外する実装で解消する。R-5 (.failed.json の重複) は GET /api/backups の一覧生成で同一日付をマージする実装で解消する。R-6 (toCsv 無害化) は先頭が =,+,-,@ のセルにのみ無害化を適用する実装で解消する。R-7 (backup-restore.dom.test.tsx との衝突) は同テストを『バックアップからの復元は設定だけを戻す』前提に書き換えて緑にする。",
+        "Q-3 (名義 4 欄の並び・例文)・Q-6 (旧 NightlyBackups の全データ復元を画面から外す)・Q-7 (最新行の復元ボタンを有効にする)・Q-8 (レポート出力ボタンの文言と中身)・Q-9 (旧形式バックアップの設定部分の読み方)・Q-10 (夜間バックアップのファイル名を JST 日付にする)・Q-11 (変更履歴表示は集計ルールのみ)・Q-12 (Q-12 列挙の agent 推定値群) は、本書で具体化した値のまま実装し、いずれも confirmed 扱いにせず Open risk として記録する。",
+        "packages/web/src/routeMetadata.ts の設定の task/taskDetail 文言を更新し、既存の画像外機能 (パスワード変更・利用者管理・名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・HTML 版初期移行) を 1 つも削除しない。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm typecheck"
+      ],
+      "rollback": "本 task のコミットを revert する。migration 0051〜0053 は追加のみの表なので既存行の書き換えは無く、表が残っても既存画面は動く。配信済みなら直前のビルドへ戻し、表の削除は行わない。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P05",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p05.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P05"
+      },
+      "secondary_workstreams": [
+        "backend",
+        "api",
+        "data",
+        "security"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P06",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "全テストと型検査と lint の実行記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p06",
+        "test-run"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P06",
+      "depends_on": [
+        "SYS-SETTINGS-P05"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 実行記録のみで配布物を持たない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p06.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "P05 の最終コードに対して pnpm test と pnpm typecheck と pnpm lint が緑である。",
+        "既存の診断・概要・家計収支・総収支・決算書・明細仕分け・予算・AI 分析の数値テストが緑である (R-6 の toCsv 無害化による既存 CSV テストへの影響が無いことを含む)。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P06",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p06.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P06"
+      }
+    },
+    {
+      "id": "SYS-SETTINGS-P07",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "受入基準 S1 から S5（AT-01〜AT-22）の検証",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p07",
+        "acceptance"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P07",
+      "depends_on": [
+        "SYS-SETTINGS-P06"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 検証記録のみで配布物を持たない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p07.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "受入 S1〜S5・AT-01〜AT-22 の各項目に合否と証跡の所在が記録されている。",
+        "S2 (取引先ルールの優先順位・現金上書きの空欄/0/全期間/月指定・既存の勘定科目正規化の回帰 0 件) が実測値で確認されている。",
+        "S3 (baseSavedAt の 409・変更履歴の追記のみ・元に戻すが直前保存値へ戻す) が実測値で確認されている。",
+        "S4 (JSON 書き出し→復元の一致・取引件数不変・不正 JSON の拒否・夜間バックアップの状態つき一覧・比較・設定だけの復元) が実測値で確認されている。",
+        "AT-22 (外部送信 0 件) が fetch の監視で確認されている。既知の逸脱・未実施・一部適合が 1 件でも残る受入項目は PASS にしない。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm --filter @kanjo/web lint"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P07",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p07.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P07"
+      },
+      "secondary_workstreams": [
+        "frontend"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P08",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "旧 Settings.tsx 参照・現金上書き重複判定・account_norm_map/cash_overrides 表書き換え有無の読取専用監査",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p08",
+        "audit"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P08",
+      "depends_on": [
+        "SYS-SETTINGS-P07"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 読取専用監査のみ",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p08.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "packages/web/src/pages/Settings.tsx (457 行) が互換の re-export 1 行だけであり、旧実装への参照が repository 内で 0 件である。",
+        "現金上書き・取引先ルールの算出ロジックが packages/core 以外で再実装されていない (api / web に重複判定が無い)。",
+        "migration 0051〜0053 適用前後で既存 account_norm_map・cash_overrides・settings 表の行数と内容が変わらないこと (UPDATE・DELETE が 0 件) が確認されている。",
+        "P06 / P07 の証跡が最終コードに対応し、既知逸脱・未実施・一部適合が PASS に含まれていない。"
+      ],
+      "verification": [
+        "rg による旧 pages/Settings.tsx 参照と重複判定ロジックの検査",
+        "P06 / P07 の証跡と git diff の照合"
+      ],
+      "rollback": "監査記録に誤りがあれば docs の追記だけを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P08",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p08.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P08"
+      },
+      "secondary_workstreams": [
+        "documentation"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P09",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "アクセシビリティ・入力検証・変更系フェンス・外部送信ゼロ・JS バンドル予算の保証確認",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P09",
+      "depends_on": [
+        "SYS-SETTINGS-P08"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 保証確認の記録のみで配布物を持たない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p09.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "build:bundle 直後の js-budget が予算内である (/settings は既存の lazy route のまま初期 JS に含まれない)。",
+        "統計最小月数 3〜24 (既定 6)、名義表示名・メモ n/100、設定 JSON サイズ上限の境界が 400 で拒否される (BR-群)。zod と migration の CHECK 制約が一致していることが確認されている。",
+        "PUT /api/settings/screen・POST /api/settings/restore・POST /api/backups/:date/restore が canonicalMutationFence に登録され、フェンス違反が 409 になる。preview 系エンドポイントはフェンス対象外であることが確認されている。",
+        "外部への送信が 0 件である (fetch の宛先が同一オリジンの /api だけ、AT-22)。",
+        "R-6 の toCsv 無害化が実運用データ (=,+,-,@ 始まりのセル) で正しく働き、375px 幅で崩れないことが確認されている。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/web build:bundle",
+        "pnpm --filter @kanjo/web js-budget"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P09",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p09.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P09"
+      },
+      "secondary_workstreams": [
+        "security",
+        "frontend"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P10",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "独立最終レビュー",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p10",
+        "independent-review"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P10",
+      "depends_on": [
+        "SYS-SETTINGS-P09"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p10.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "scope_out (取引データの復元形式変更、仕分けルール/ベンダー記憶の意味変更、共通シェルの作り直し、外部 LLM・外部送信、複数テナント化・専用アプリ、バックアップ保持期間変更、バックアップからの全データ復元、既存 API の削除、既存表の削除・書き換え) の侵犯が 0 件である。",
+        "受入 S1〜S5・AT-01〜AT-22 の全項目が合格で記録されている。",
+        "Q-1〜Q-12・R-1〜R-7 の 19 件全てについて、実装で採用した値または対処と、confirmed ではなく agent 推定/対処である旨が docs に記録されている。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P10",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p10.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P10"
+      }
+    },
+    {
+      "id": "SYS-SETTINGS-P11",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "再現可能な証跡索引の作成",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p11",
+        "evidence"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P11",
+      "depends_on": [
+        "SYS-SETTINGS-P10"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 索引のみで配布物を持たない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p11.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "受入 S1〜S5・AT-01〜AT-22 の各項目から、証跡のファイルと再現コマンドへ辿れる。"
+      ],
+      "verification": [
+        "pnpm lint (既存の文書検査が緑のままであることを確認する)"
+      ],
+      "rollback": "索引の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P11",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p11.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P11"
+      },
+      "secondary_workstreams": [
+        "quality"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P12",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "算出規則・API・migration・未決事項の docs 最終同期",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p12",
+        "documentation-sync"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P12",
+      "depends_on": [
+        "SYS-SETTINGS-P11"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p12.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/data-schema.md に settings_norm_rules・settings_cash_overrides・settings_change_log の 3 表と、account_norm_map・cash_overrides からの写し規則 (BR-22 系) が記されている。",
+        "docs/ui-decisions.md に画面の文言・状態遷移・節ナビ 8 項目・説明パネルの表示規則が記されている。",
+        "open_items 19 件 (Q-1〜Q-12 は Open risk、R-1〜R-7 は Blocker として対処済み) の最終的な採用値または対処、および confirmed ではない旨が docs に明記されている (本 task は値を新たに決めない)。",
+        "migration 0051〜0053 の番号が予定番号であり、着手時と本 task 完了時点で origin/main と突き合わせた結果が docs に記されている。"
+      ],
+      "verification": [
+        "pnpm lint",
+        "pnpm test"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P12",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p12.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P12"
+      },
+      "secondary_workstreams": [
+        "operations"
+      ]
+    },
+    {
+      "id": "SYS-SETTINGS-P13",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "parent_feature": "feat-settings-screen",
+      "title": "単一 PR での配信と migration 0051-0053 適用とクローズアウト",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p13",
+        "release"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "workstream_kind": "operations",
+      "build_target_kind": "application-code",
+      "phase_ref": "P13",
+      "depends_on": [
+        "SYS-SETTINGS-P12"
+      ],
+      "write_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "deploy_unit": "web ビルドと Worker と D1 migration (単一 PR で同時に配信する)",
+      "source_lineage": [
+        "docs/settings-screen/design-decisions.md",
+        "specs/spec-settings-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-settings-screen/sys-settings-p13.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "着手時に origin/main を fetch し直し、0051〜0053 が空き番号であることを再確認した上で PR が default branch へ merge され、CI の Migrate と Deploy が緑である (Blocker: migration 番号 0051〜0053 は予定番号であり、main が進んで埋まっていた場合は次の空き番号へ繰り上げ、schema-guard.ts の EXPECTED_D1_MIGRATION と本書の参照を揃える)。",
+        "配信後に /settings の集計ルール・現金上書き・変更履歴が同じ settingsScreen / norm-rules / cash から出て、値がずれていない。",
+        "既存の画像外機能 (パスワード変更・利用者管理・名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・HTML 版初期移行) が配信後も 1 つも消えていない。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck"
+      ],
+      "rollback": "PR を revert して直前のビルドへ戻す。migration 0051〜0053 は追加のみの表なので削除しない。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-SETTINGS-P13",
+        "file_path": "tasks/feat-settings-screen/sys-settings-p13.md",
+        "parent_feature": "feat-settings-screen",
+        "feature_package_id": "feature-package/feat-settings-screen",
+        "phase_ref": "P13"
+      },
+      "secondary_workstreams": [
+        "quality"
+      ]
+    }
+  ]
+}

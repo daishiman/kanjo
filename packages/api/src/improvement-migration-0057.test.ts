@@ -1,8 +1,8 @@
 /**
- * 0054 改善リクエスト画面 (spec-improvement-screen AC-013 / SYS-IMPSCR-P04)。
+ * 0057 改善リクエスト画面 (spec-improvement-screen AC-013 / SYS-IMPSCR-P04)。
  *
- * 仕様は番号を 0053 と書くが、0053 は取込画面が先に使ったため 0054 で当てる (内容は仕様どおり)。
- * 0053 までを実際に流した DB に旧画面の依頼 (wontfix を含む) を置き、そこへ 0054 を当てる。
+ * 仕様は番号を 0053 と書くが、0053 は取込画面、0054〜0056 は設定画面が先に使ったため 0057 で当てる (内容は仕様どおり)。
+ * 0056 までを実際に流した DB に旧画面の依頼 (wontfix を含む) を置き、そこへ 0057 を当てる。
  * 表を作り直す migration なので、行・画像のキー・トークンのハッシュが 1 件も落ちないことを固定する。
  */
 import { readFileSync, readdirSync } from 'node:fs';
@@ -13,7 +13,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { splitMigrationStatements } from './migration-test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
-const TARGET = '0054_improvement_request_screen.sql';
+const TARGET = '0057_improvement_request_screen.sql';
 
 let mf: Miniflare;
 let d1: D1Database;
@@ -32,7 +32,7 @@ const KEPT = `id, user_id, title, body, route, screenshot_key, screenshot_size, 
 beforeAll(async () => {
   mf = new Miniflare(
     convertV4MiniflareOptions({
-      name: 'improvement-migration-0054',
+      name: 'improvement-migration-0057',
       modules: true,
       script: 'export default { fetch() { return new Response("test") } }',
       d1Databases: ['DB'],
@@ -103,7 +103,7 @@ const activities = async () =>
       .all<Record<string, unknown>>()
   ).results;
 
-describe('0054 改善リクエスト画面', () => {
+describe('0057 改善リクエスト画面', () => {
   it('既存の行は 1 件も落ちず、id・画像のキー・トークンのハッシュを含む列の値は変わらない', async () => {
     const after = (
       await d1.prepare(`SELECT ${KEPT} FROM improvement_requests ORDER BY id`).all<Record<string, unknown>>()
