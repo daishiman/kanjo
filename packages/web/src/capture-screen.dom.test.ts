@@ -165,7 +165,8 @@ describe('撮影用複製のプライバシー', () => {
     const out = svg();
     expect(out).toContain('width:640px;height:300px');
     expect(out).toContain('図: ***');
-    expect(out).toContain('.chart { background-image: none; color: red; }');
+    // 規則の cssText は jsdom の版で波括弧の内側の空白が違う (26 は詰め、29 とブラウザは空ける)
+    expect(out).toMatch(/\.chart \{\s*background-image: none; color: red;\s*\}/);
     expect(out).toContain('background-image:none;mask-image:none');
     for (const secret of ['HEADSECRET', 'INLINESECRET', 'IMAGESETSECRET', 'IMAGESECRET', 'CANVASSECRET']) {
       expect(out).not.toContain(secret);

@@ -66,6 +66,19 @@ function drag(from: [number, number], to: [number, number], within: ParentNode =
 
 const original = { create: URL.createObjectURL, revoke: URL.revokeObjectURL };
 
+// jsdom 26 (lockfile の版) には PointerEvent が無く、fireEvent.pointer* は素の Event になって
+// clientX が落ち、座標が NaN になる。無いときだけ MouseEvent に pointerId を足したもので補う
+if (typeof window.PointerEvent === 'undefined') {
+  class PointerEventStub extends MouseEvent {
+    readonly pointerId: number;
+    constructor(type: string, init: PointerEventInit = {}) {
+      super(type, init);
+      this.pointerId = init.pointerId ?? 0;
+    }
+  }
+  window.PointerEvent = PointerEventStub as unknown as typeof PointerEvent;
+}
+
 beforeEach(() => {
   resetCaptureHandoffForTest();
   // jsdom の URL は object URL を作れない。縮小画像の表示に要るので、この試験の間だけ足す
