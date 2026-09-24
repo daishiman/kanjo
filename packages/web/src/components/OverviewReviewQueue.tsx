@@ -109,10 +109,11 @@ function ReviewDetailBody({
             <UiIcon name={REVIEW_KIND_ICON[item.kind]} className="review-detail-icon" />
             <span>{REVIEW_KIND_STATUS_LABEL[item.kind]}</span>
           </span>
-          <strong>{item.content || REVIEW_KIND_LABEL[item.kind]}</strong>
+          <strong data-capture-mask="">{item.content || REVIEW_KIND_LABEL[item.kind]}</strong>
         </span>
         <strong
           className={`review-detail-amount num ${item.amount < 0 ? 'pos' : item.amount > 0 ? 'neg' : ''}`}
+          data-capture-mask=""
         >
           {yenS(item.amount)}
         </strong>

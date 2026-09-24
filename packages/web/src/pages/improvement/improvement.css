@@ -1,0 +1,676 @@
+/*
+ * 改善リクエスト画面 (specs/spec-improvement-screen.md、design/FINAL-UI/images/20-improvement.png)。
+ *
+ * 色・角丸・影・文字の大きさはトークンだけを使う (生の色を書かない)。
+ * 800px 以下では一覧と詳細、作成フォームの左右を縦に積む。
+ */
+
+.improvement-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* 下端の選択中バーに最後の行が隠れないようにする */
+  padding-bottom: 88px;
+}
+
+.improvement-page > * {
+  min-width: 0;
+}
+
+.improvement-page h2 {
+  margin: 0 0 8px;
+  font-size: var(--fs-lg);
+}
+
+.improvement-page h3 {
+  margin: 0 0 6px;
+  font-size: var(--fs-sm);
+}
+
+.improvement-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.improvement-howto {
+  color: var(--primary);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+
+/* -------- 作成フォーム -------- */
+
+.improvement-create-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 16px 24px;
+}
+
+.improvement-create-left,
+.improvement-create-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.improvement-field-label {
+  display: block;
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.improvement-required {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.improvement-thumb {
+  display: block;
+  max-width: 100%;
+  max-height: 220px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  object-fit: contain;
+}
+
+.improvement-shot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.improvement-shot-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+}
+
+.improvement-shot-empty .sub,
+.improvement-note {
+  margin: 0;
+}
+
+.improvement-note {
+  display: block;
+  padding: 8px 10px;
+  border: 1px solid var(--warn);
+  border-radius: var(--radius);
+  background: var(--warn-soft);
+  font-size: var(--fs-sm);
+}
+
+.improvement-privacy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.improvement-privacy legend {
+  padding: 0 4px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.improvement-body-input {
+  width: 100%;
+  min-height: 9rem;
+  padding: 10px 12px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.improvement-body-input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.improvement-count {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.improvement-count.is-over {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.improvement-mask {
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+}
+
+.improvement-mask .sub {
+  margin: 0 0 6px;
+}
+
+.improvement-mask ul {
+  margin: 0 0 8px;
+  padding-left: 1.2em;
+  font-size: var(--fs-sm);
+}
+
+.improvement-disclosure summary {
+  color: var(--primary);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+
+.improvement-disclosure-body {
+  padding-top: 6px;
+  font-size: var(--fs-sm);
+}
+
+.improvement-disclosure-body h4 {
+  margin: 6px 0 2px;
+  font-size: var(--fs-xs);
+}
+
+.improvement-disclosure-body ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.improvement-submit {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.improvement-submit-btn {
+  width: 100%;
+}
+
+.improvement-reason {
+  flex: 1 1 16rem;
+  margin: 0;
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+
+.improvement-submit-btn[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* -------- 一覧と詳細 -------- */
+
+.improvement-panes {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.improvement-panes > * {
+  min-width: 0;
+}
+
+.improvement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.improvement-search input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.improvement-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 24px 8px;
+}
+
+.improvement-state-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.improvement-state .sub {
+  margin: 0;
+}
+
+.improvement-table-wrap {
+  overflow-x: auto;
+}
+
+.improvement-table {
+  width: 100%;
+  font-size: var(--fs-sm);
+}
+
+.improvement-table th,
+.improvement-table td {
+  white-space: nowrap;
+}
+
+.improvement-table .improvement-summary-cell {
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.improvement-table tbody tr:hover {
+  background: var(--row-hover);
+}
+
+.improvement-table tr.is-selected {
+  background: var(--surface-alt);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.improvement-row-select {
+  font-family: var(--font-mono);
+}
+
+.improvement-no-match {
+  display: block;
+  margin: 0;
+  padding: 24px 8px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.improvement-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.improvement-pager-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* 状態バッジ。色だけに頼らず文字ラベルを必ず出す */
+.improvement-status {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid currentcolor;
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.improvement-status.is-open {
+  background: var(--surface-alt);
+  color: var(--ink);
+}
+
+.improvement-status.is-progress {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.improvement-status.is-done {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.improvement-status.is-reconfirm {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* -------- 詳細 -------- */
+
+.improvement-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.improvement-detail.is-empty {
+  justify-content: center;
+  min-height: 12rem;
+  text-align: center;
+}
+
+.improvement-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.improvement-detail-head h2 {
+  margin: 0;
+}
+
+.improvement-detail-id {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.improvement-number {
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+}
+
+.improvement-detail-summary {
+  margin: 0;
+  font-weight: 600;
+}
+
+.improvement-meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 12px;
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.improvement-meta dt {
+  color: var(--ink-soft);
+}
+
+.improvement-meta dd {
+  margin: 0;
+}
+
+.improvement-detail-section {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.improvement-detail-body {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.improvement-detail-section .improvement-thumb {
+  margin-bottom: 8px;
+}
+
+.improvement-diag {
+  width: 100%;
+  font-size: var(--fs-sm);
+}
+
+.improvement-diag th {
+  width: 8rem;
+  color: var(--ink-soft);
+  font-weight: 400;
+  text-align: left;
+}
+
+.improvement-timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.improvement-timeline li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0 6px 14px;
+  border-left: 2px solid var(--line);
+  font-size: var(--fs-sm);
+}
+
+.improvement-timeline time {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.improvement-related {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+}
+
+.improvement-related li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.improvement-related span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.improvement-ops {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.improvement-copy-notice {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+.improvement-preview-note {
+  margin: 0;
+}
+
+.improvement-status-change {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.improvement-status-change select {
+  flex: 1 1 8rem;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.improvement-detail .improvement-reason {
+  margin-top: 8px;
+}
+
+/* 添付画像の拡大 */
+.improvement-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: var(--scrim);
+}
+
+.improvement-zoom-inner {
+  /* <dialog open> の既定 (絶対配置・枠線・中央寄せの余白) を外し、外側の flex で中央に置く */
+  position: static;
+  margin: 0;
+  border: 0;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 100%;
+  max-height: 100%;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-overlay);
+}
+
+.improvement-zoom-inner img {
+  display: block;
+  max-width: min(90vw, 1200px);
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+/* クリップボードに書けなかったときの手動コピー欄 */
+.improvement-prompt {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  box-sizing: border-box;
+}
+
+/* -------- 選択中バー (下端に固定) -------- */
+
+.improvement-selection-bar {
+  position: sticky;
+  bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+}
+
+.improvement-selection-label {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+.improvement-selection-number {
+  font-family: var(--font-mono);
+}
+
+.improvement-selection-summary {
+  flex: 1 1 10rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.improvement-selection-bar > .improvement-copy-notice {
+  flex: 0 1 17rem;
+}
+
+.improvement-selection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.improvement-copy-target select {
+  padding: 6px 8px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+/* -------- 知らせ (右下) -------- */
+
+.improvement-toast {
+  position: fixed;
+  right: 16px;
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(26rem, calc(100vw - 32px));
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+  font-size: var(--fs-sm);
+}
+
+.improvement-toast.is-ok {
+  border-color: var(--good);
+  background: var(--good-soft);
+}
+
+.improvement-toast.is-ng {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+/* -------- 狭い画面 -------- */
+
+@media (max-width: 800px) {
+  .improvement-create-grid,
+  .improvement-panes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .improvement-toast {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+  }
+}

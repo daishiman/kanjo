@@ -46,924 +46,577 @@
     "database": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-settings-database-web-003",
+        "qa_ref": "qa-imp-database-web-001",
         "serves_goals": [
-          "G2",
           "G3",
-          "G5"
+          "G4"
         ],
         "qa_refs": [
-          "qa-settings-database-web-evidence-001",
-          "qa-settings-database-web-002",
-          "qa-settings-database-web-004",
-          "qa-settings-decision-001",
-          "qa-settings-decision-003",
-          "qa-settings-decision-008"
+          "qa-imp-database-web-evidence-001",
+          "qa-imp-decision-001",
+          "qa-imp-decision-003",
+          "qa-imp-decision-007"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、database ではスマートフォン向け専用アプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、database ではタブレット向け専用アプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、database ではWindows 向けデスクトップアプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、database ではLinux 向けデスクトップアプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、database ではmacOS 向けデスクトップアプリの端末内に設定と変更履歴を複製し、サーバとどう同期・統合するかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       }
     },
     "auth": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-settings-auth-web-003",
+        "qa_ref": "qa-imp-auth-web-001",
         "serves_goals": [
-          "G3",
-          "G5"
+          "G4"
         ],
         "qa_refs": [
-          "qa-settings-auth-web-evidence-001",
-          "qa-settings-auth-web-002",
-          "qa-settings-auth-web-004"
+          "qa-imp-auth-web-evidence-001",
+          "qa-imp-decision-003"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、auth ではスマートフォン向け専用アプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、auth ではその端末の安全な資格情報の保管場所 (キーチェーン等) にセッションを置く方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、auth ではタブレット向け専用アプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、auth ではその端末の安全な資格情報の保管場所 (キーチェーン等) にセッションを置く方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth ではWindows 向けデスクトップアプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth ではその端末の安全な資格情報の保管場所 (キーチェーン等) にセッションを置く方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth ではLinux 向けデスクトップアプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth ではその端末の安全な資格情報の保管場所 (キーチェーン等) にセッションを置く方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではmacOS 向けデスクトップアプリの端末でのセッション保持と、設定の復元操作に対する再認証の方式を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではその端末の安全な資格情報の保管場所 (キーチェーン等) にセッションを置く方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       }
     },
     "ui-ux": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-settings-ui-ux-web-003",
+        "qa_ref": "qa-imp-ui-ux-web-001",
         "serves_goals": [
           "G1",
-          "G3",
-          "G4"
+          "G2"
         ],
         "qa_refs": [
-          "qa-settings-ui-ux-web-evidence-001",
-          "qa-settings-ui-ux-web-002",
-          "qa-settings-ui-ux-web-004",
-          "qa-settings-decision-001",
-          "qa-settings-decision-002",
-          "qa-settings-decision-003",
-          "qa-settings-decision-004",
-          "qa-settings-decision-006",
-          "qa-settings-decision-007",
-          "qa-settings-decision-008",
-          "qa-settings-decision-009",
-          "qa-settings-decision-010",
-          "qa-settings-target-platforms-001"
+          "qa-imp-ui-ux-web-evidence-001",
+          "qa-imp-decision-001",
+          "qa-imp-decision-002",
+          "qa-imp-decision-003",
+          "qa-imp-decision-007"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux ではスマートフォン向け専用アプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux では撮影パネルと作成フォームの配置をその端末の画面の大きさと操作体系に合わせて決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux ではタブレット向け専用アプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux では撮影パネルと作成フォームの配置をその端末の画面の大きさと操作体系に合わせて決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux ではWindows 向けデスクトップアプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux では撮影パネルと作成フォームの配置をその端末の画面の大きさと操作体系に合わせて決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux ではLinux 向けデスクトップアプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux では撮影パネルと作成フォームの配置をその端末の画面の大きさと操作体系に合わせて決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux ではmacOS 向けデスクトップアプリの画面規約 (ナビゲーション・ファイル選択・確認ダイアログ) に合わせて節ナビと保存バーを設計し直す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux では撮影パネルと作成フォームの配置をその端末の画面の大きさと操作体系に合わせて決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       }
     },
     "security": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-settings-security-web-003",
+        "qa_ref": "qa-imp-security-web-001",
         "serves_goals": [
-          "G4",
-          "G5"
+          "G2",
+          "G4"
         ],
         "qa_refs": [
-          "qa-settings-security-web-evidence-001",
-          "qa-settings-security-web-002",
-          "qa-settings-security-web-004",
-          "qa-settings-decision-010"
+          "qa-imp-security-web-evidence-001",
+          "qa-imp-decision-004",
+          "qa-imp-decision-002"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、security ではスマートフォン向け専用アプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、security ではその OS の画面収録の権限と、撮影した画像の端末内の保管を扱う必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、security ではタブレット向け専用アプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、security ではその OS の画面収録の権限と、撮影した画像の端末内の保管を扱う必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、security ではWindows 向けデスクトップアプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、security ではその OS の画面収録の権限と、撮影した画像の端末内の保管を扱う必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、security ではLinux 向けデスクトップアプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、security ではその OS の画面収録の権限と、撮影した画像の端末内の保管を扱う必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、security ではmacOS 向けデスクトップアプリの端末に書き出した設定 JSON とバックアップの保存場所・暗号化・他アプリからの読み取り防止を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、security ではその OS の画面収録の権限と、撮影した画像の端末内の保管を扱う必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       }
     },
     "infrastructure": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-settings-infrastructure-web-003",
+        "qa_ref": "qa-imp-infrastructure-web-001",
         "serves_goals": [
           "G4"
         ],
         "qa_refs": [
-          "qa-settings-infrastructure-web-evidence-001",
-          "qa-settings-infrastructure-web-002",
-          "qa-settings-infrastructure-web-004",
-          "qa-settings-decision-007"
+          "qa-imp-infrastructure-web-evidence-001",
+          "qa-imp-decision-003",
+          "qa-imp-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではスマートフォン向け専用アプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではアプリの配布経路 (ストア・署名・自動更新) を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向け専用アプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure ではアプリの配布経路 (ストア・署名・自動更新) を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではWindows 向けデスクトップアプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではアプリの配布経路 (ストア・署名・自動更新) を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではLinux 向けデスクトップアプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではアプリの配布経路 (ストア・署名・自動更新) を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure ではmacOS 向けデスクトップアプリの配布経路 (ストア・署名・更新) と、端末側のバックアップの取り方を決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure ではアプリの配布経路 (ストア・署名・自動更新) を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       }
     },
     "backend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-settings-backend-web-003",
+        "qa_ref": "qa-imp-backend-web-001",
         "serves_goals": [
-          "G2",
           "G3",
-          "G4",
-          "G5"
+          "G4"
         ],
         "qa_refs": [
-          "qa-settings-backend-web-evidence-001",
-          "qa-settings-backend-web-002",
-          "qa-settings-backend-web-004",
-          "qa-settings-decision-001",
-          "qa-settings-decision-003",
-          "qa-settings-decision-005",
-          "qa-settings-decision-006",
-          "qa-settings-decision-007",
-          "qa-settings-decision-008",
-          "qa-settings-decision-010"
+          "qa-imp-backend-web-evidence-001",
+          "qa-imp-decision-001",
+          "qa-imp-decision-003",
+          "qa-imp-decision-006"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、backend ではスマートフォン向け専用アプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、backend ではその端末からの API 呼び出しをネイティブのトークン保管で認証する方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、backend ではタブレット向け専用アプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、backend ではその端末からの API 呼び出しをネイティブのトークン保管で認証する方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend ではWindows 向けデスクトップアプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend ではその端末からの API 呼び出しをネイティブのトークン保管で認証する方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend ではLinux 向けデスクトップアプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend ではその端末からの API 呼び出しをネイティブのトークン保管で認証する方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではmacOS 向けデスクトップアプリからの設定の同期とオフライン中の変更の競合解決 (baseSavedAt の扱い) を API に足す必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではその端末からの API 呼び出しをネイティブのトークン保管で認証する方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       }
     },
     "frontend": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-settings-frontend-web-003",
+        "qa_ref": "qa-imp-frontend-web-001",
         "serves_goals": [
           "G1",
           "G3"
         ],
         "qa_refs": [
-          "qa-settings-frontend-web-evidence-001",
-          "qa-settings-frontend-web-002",
-          "qa-settings-frontend-web-004",
-          "qa-settings-decision-004",
-          "qa-settings-decision-006"
+          "qa-imp-frontend-web-evidence-001",
+          "qa-imp-decision-002",
+          "qa-imp-decision-007"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend ではスマートフォン向け専用アプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、frontend ではタブレット向け専用アプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend ではWindows 向けデスクトップアプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend ではLinux 向けデスクトップアプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend ではmacOS 向けデスクトップアプリの UI フレームワークで設定の下書き・未保存件数・並べ替えを実装し直し、web と同じ core を組み込む必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       }
     },
     "maintenance-ops": {
       "web": {
         "state": "確定",
-        "qa_ref": "qa-settings-maintenance-ops-web-003",
+        "qa_ref": "qa-imp-maintenance-ops-web-001",
         "serves_goals": [
-          "G3",
-          "G4",
-          "G5"
+          "G1",
+          "G4"
         ],
         "qa_refs": [
-          "qa-settings-maintenance-ops-web-evidence-001",
-          "qa-settings-maintenance-ops-web-002",
-          "qa-settings-maintenance-ops-web-004",
-          "qa-settings-decision-007",
-          "qa-settings-decision-008"
+          "qa-imp-maintenance-ops-web-evidence-001",
+          "qa-imp-decision-008"
         ]
       },
       "mobile": {
         "state": "対象外",
-        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops ではスマートフォン向け専用アプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops では配布したアプリの版ごとの不具合報告と更新の運用を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "tablet": {
         "state": "対象外",
-        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops ではタブレット向け専用アプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops では配布したアプリの版ごとの不具合報告と更新の運用を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-windows": {
         "state": "対象外",
-        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops ではWindows 向けデスクトップアプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops では配布したアプリの版ごとの不具合報告と更新の運用を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-linux": {
         "state": "対象外",
-        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops ではLinux 向けデスクトップアプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops では配布したアプリの版ごとの不具合報告と更新の運用を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       },
       "desktop-macos": {
         "state": "対象外",
-        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops ではmacOS 向けデスクトップアプリの版ごとに設定 JSON の形式の互換を保ち、端末ごとのバックアップの失敗をどう知らせるかを決める必要があった。対象を web のみとする利用者決定 (qa-settings-target-platforms-001) によりその検討は発生しない。",
-        "qa_ref": "qa-settings-target-platforms-001"
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops では配布したアプリの版ごとの不具合報告と更新の運用を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。",
+        "qa_ref": "qa-imp-decision-005"
       }
     }
   },
   "qa_log": [
     {
-      "id": "qa-settings-decision-001",
-      "question": "『集計ルール (カテゴリの正規化マップ)』は何を正規化するか。既存の正規化マップは freee 勘定科目の表記 → 集計用の科目名 (取込時に適用) だが、画像の例はスターバックス / スタバ / Starbucks → カフェ・外食 という取引先名 → カテゴリで、既存の仕分けルールやベンダー記憶と役割が近い。",
-      "answer": "両方を 1 つの一覧で扱う。種別列 (勘定科目 / 取引先) を足し、両方の正規化を同じ表で管理する (利用者は推奨の『既存の意味を保つ』ではなくこちらを選択)。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり (推奨外を選択)",
+      "id": "qa-imp-decision-001",
+      "question": "画像の状態タブ (受付 / 対応中 / 完了 / 再確認) を現行の 4 状態 (未対応 / 対応中 / 対応済み / 対応しない) とどう対応させるか。",
+      "answer": "受付 / 対応中 / 完了 / 再確認 の 4 状態にする。再確認は『利用者の確認待ち』(開発側が直したので利用者が確かめる段階)。既存の対応しない (wontfix) は完了へ移し、理由をアクティビティに残す。30 日削除の起点は完了のまま。",
+      "provenance": "AskUserQuestion / 選択肢 3 件と推奨案を提示し、利用者が『再確認=利用者の確認待ち (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:24:29Z",
+      "answered_at": "2026-09-23T13:05:47Z",
       "required_info_items": [
         "domain-model",
         "product-goal"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[0]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「集計ルール（カテゴリの正規化マップ）」は何を正規化しますか？ 既存の正規化マップは『freee 勘定科目の表記 → 集計用の科目名』(取込時に適用)ですが、画像の例は『スターバックス / スタバ / Starbucks → カフェ・外食』という取引先名 → カテゴリです（既存の仕分けルールやベンダー記憶と役割が近い）。 【選択肢】(1)『既存の意味を保つ (推奨)』— account_norm_map を『元の表記 → 正規化後のカテゴリ』として画像の見た目にする。正規化後は select（既存の科目・カテゴリ候補から選ぶ）、並び順・有効/無効・更新日時・更新者の列を追加のみの migration で足す。取引先名の表記ゆれは既存の仕分けルールが担当のまま。 (2)『取引先名→カテゴリに変える』— 画像の例どおり、取引先名の表記ゆれをカテゴリへまとめる新しいルール表を作る。既存の仕分けルール・ベンダー記憶と役割が重なるため、優先順位の整理と移行が必要になり範囲が大きい。 (3)『両方を1つの一覧で扱う』— 種類列（勘定科目 / 取引先）を足して、両方の正規化を同じ表で管理する。UI は画像に近いが、適用箇所が2系統になり検証が重い。"
-        }
       ]
     },
     {
-      "id": "qa-settings-decision-002",
-      "question": "『名義』の表示名は、画像の 2 項目 (個人 / 事業) に対し既存は 4 名義 (事業・配偶者・家族・未設定)。設定画面でどう扱うか。",
-      "answer": "4 名義すべて出す (推奨)。画像の 2 欄の並びと部品で 4 名義を編集でき、家計収支画面の OwnerLabelsCard と同じ API・core の validateOwnerLabels を共有する。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "id": "qa-imp-decision-002",
+      "question": "画像の作成フォームには件名欄が無く本文 (0/1000) だけがある。現行の件名 120 字＋本文 4000 字をどうするか。",
+      "answer": "件名欄を廃止し、一覧の概要は本文の先頭行から core で自動生成する (最大 40 字)。本文は新規と編集で 1000 字に制限し、1000 字を超える既存の本文は読めるまま保つ。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案を提示し、利用者が『本文の先頭から自動生成 (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:24:29Z",
+      "answered_at": "2026-09-23T13:05:47Z",
       "required_info_items": [
-        "domain-model",
-        "product-goal"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[1]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「名義」の表示名は、画像の2項目（個人 / 事業）に対し既存は4名義（事業・配偶者・家族・未設定）です。設定画面でどう扱いますか？ 【選択肢】(1)『4名義すべて出す (推奨)』— 画像の2欄の並びと部品を使い、既存の4名義（事業・配偶者・家族・未設定）をすべて設定画面で編集できるようにする。家計収支画面の OwnerLabelsCard と同じ API・検証（core の validateOwnerLabels）を共有する。 (2)『画像どおり2欄だけ』— 『個人』= 家族（または未設定）、『事業』= 事業 の2つだけを設定画面に出す。配偶者などは家計収支画面で編集する。"
-        }
+        "context-of-use",
+        "domain-model"
       ]
     },
     {
-      "id": "qa-settings-decision-003",
-      "question": "『現金上書き』をどう作るか。既存は月ごとの入金・支出の値で、どの集計にも効いていない。画像は現金の支払い / 受け取りそれぞれに上書き値・適用範囲 (全期間)・メモ (100 字)、空欄 = 上書きしない / 0 = 0 円で上書き。",
-      "answer": "画像どおり＋集計へ反映 (推奨)。支払い・受け取りの 2 行に上書き値 (空欄と 0 を区別)・適用範囲 (全期間 / 月指定)・メモを持たせ、core の現金集計に実際に効かせる。既存の月ごとの値は『月指定』の行として追加のみの migration で引き継ぐ。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "id": "qa-imp-decision-003",
+      "question": "詳細パネルの『削除』をどう扱うか (物理削除 / 論理削除)。",
+      "answer": "論理削除にし、完了トーストの『元に戻す』で同じ番号のまま戻す。削除から 30 日後に夜間処理で本文・画像・履歴を完全消去する。削除中の依頼は一覧・件数・agent 経路のどこからも読まない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案を提示し、利用者が『論理削除＋元に戻す (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:24:29Z",
+      "answered_at": "2026-09-23T13:05:47Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[2]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「現金上書き」をどう作りますか？ 既存は月ごとの入金・支出の値で、しかも現状どの集計にも効いていません（保存・出力のみ）。画像は『現金の支払い / 受け取り』それぞれに上書き値・適用範囲（全期間）・メモ(100字)、空欄=上書きしない / 0=0円で上書き。 【選択肢】(1)『画像どおり＋集計へ反映 (推奨)』— 支払い・受け取りの2行に上書き値（空欄と0を区別）・適用範囲（全期間 / 月指定）・メモを持たせ、core の現金集計に実際に効かせる。既存の月ごとの値は『月指定』の行として引き継ぐ（追加のみの migration）。 (2)『画像どおり、集計反映は別件』— 見た目・保存・空欄と0の区別までは作るが、集計への反映は今回は行わず後続の課題にする。 (3)『月ごとのまま見た目だけ』— 既存の月ごとの入金・支出の仕組みを保ち、画像の表の見た目に寄せるだけにする。"
-        }
       ]
     },
     {
-      "id": "qa-settings-decision-004",
-      "question": "画像に無い既存の設定機能 (パスワード変更・利用者管理・金融機関の名義割当・仕分けルール・科目の候補・手動編集した明細・ベンダー記憶・未記帳月・HTML 版からの初期移行) はどこに置くか。",
-      "answer": "節ナビに節を足して残す (推奨)。画像の 6 節の後ろに『アカウント』(パスワード・利用者管理) と『その他の管理』(名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・初期移行) を足し、機能は 1 つも消さない。画像の 6 節は画像どおりに作る。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "id": "qa-imp-decision-004",
+      "question": "画像の『自動マスキング (口座情報・取引先名・金額・個人名・メールアドレス・電話番号・住所)』をどこまで掛けるか。",
+      "answer": "画像も本文も診断情報もマスクする。撮影時に画面の金額・取引先名・名義・口座などを伏字にしてから画像にし、本文と診断は保存前にマスクする。ブラウザとサーバの 2 つの境界で同じ core の規則を掛ける。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案を提示し、利用者が『画像も本文も診断もマスク (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:24:29Z",
+      "answered_at": "2026-09-23T13:05:47Z",
       "required_info_items": [
-        "information-priority",
-        "product-goal"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01R6CJR4FUhg2JPXKFni2JGY の questions[3]、提示 2026-09-22T07:52:41Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】画像に無い既存の設定機能（パスワード変更・利用者管理・金融機関の名義割当・仕分けルール・科目の候補・手動編集した明細・ベンダー記憶・未記帳月・HTML版からの初期移行）はどこに置きますか？ 【選択肢】(1)『節ナビに節を足して残す (推奨)』— 画像の6節の後ろに『アカウント』（パスワード・利用者管理）と『その他の管理』（名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・初期移行）を足し、機能は1つも消さない。画像の6節は画像どおりに作る。 (2)『画像の6節だけにして他画面へ移す』— 設定画面は画像どおり6節のみ。残りは明細仕分け画面・アカウントメニュー等へ移す。移動先ごとの改修が必要で範囲が広がる。"
-        }
-      ]
-    },
-    {
-      "id": "qa-settings-decision-005",
-      "question": "集計ルールの『取引先』種別の行 (例: スタバ → カフェ・外食) は、いつ・どの優先順位で効かせるか。",
-      "answer": "集計時に適用・手動と仕分けルールの次 (推奨)。保存済みの明細は書き換えず集計時に適用する。優先順位は 手動編集 > 仕分けルール > 集計ルール (取引先) > 自動分類。照合は NFKC・大小文字を揃えた完全一致。行の並び順は同じ元表記が重なった時の優先度。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T08:26:39Z",
-      "required_info_items": [
-        "domain-model"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[0]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】集計ルールの『取引先』種別の行（例: スタバ → カフェ・外食）は、いつ・どの優先順位で効かせますか？ 【選択肢】(1)『集計時に適用・手動と仕分けルールの次 (推奨)』— 保存済みの明細は書き換えず、集計時に適用するので『元に戻す』が安全。優先順位は 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類。照合は NFKC・大小文字を揃えた完全一致。行の並び順は同じ元表記が重なった時の優先度。 (2)『取込時にカテゴリを書き込む』— 勘定科目の正規化と同じく取込時に適用し、明細のカテゴリを確定させる。変更したら過去分の再計算が要る。 (3)『仕分けルールより優先』— 集計時に適用し、手動編集以外では最優先にする。既存の仕分けルールの結果が変わる可能性がある。"
-        }
-      ]
-    },
-    {
-      "id": "qa-settings-decision-006",
-      "question": "『復元』と『設定のエクスポート (JSON)』の範囲は。現在の JSON 出力は取引を含む全データで、復元は HTML 版からの初期移行 (全データ置換) だけ。",
-      "answer": "設定だけを出力・復元 (推奨)。集計ルール・名義・統計・現金上書きだけを版番号つき JSON で出し、同じ形だけを復元で受ける (厳密な形の検証・サイズ上限・復元前に現在の設定を自動バックアップ・差分プレビューと確認)。取引は消えない。全データの初期移行は『その他の管理』に残す。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T08:26:39Z",
-      "required_info_items": [
-        "api-contract",
         "domain-model",
         "security-posture"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[1]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「復元」と「設定のエクスポート(JSON)」の範囲は？ 現在の JSON 出力は設定だけでなく取引を含む全データで、復元は HTML 版からの初期移行（全データを置き換え）だけです。 【選択肢】(1)『設定だけを出力・復元 (推奨)』— 集計ルール・名義・統計・現金上書きだけを版番号つき JSON で出力し、同じ形だけを復元で受ける（厳密な形の検証・サイズ上限・復元前に現在の設定を自動でバックアップ・差分プレビューと確認）。取引は消えない。全データの初期移行は『その他の管理』に残す。 (2)『全データを出力・復元』— 取引を含む全データを出力・復元する。復元で取引も置き換わるため影響が大きい。"
-        }
       ]
     },
     {
-      "id": "qa-settings-decision-007",
-      "question": "自動バックアップをどうするか。画像は『毎日 午前2:00』・ステータス (最新 / 成功)・メモ・比較・復元。現状は毎日 3:00 (JST) に全データを R2 へ保存、30 日保持、失敗はログのみ。",
-      "answer": "2:00 に変更＋状態・メモ・比較を足す (推奨)。cron を JST 2:00 に変え、各バックアップに状態 (成功 / 失敗)・メモ・設定部分の要約を持たせ、失敗も一覧に出す。『比較』はその日の設定と現在の設定の差分を表示する。中身は従来どおり全データ。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
+      "id": "qa-imp-decision-005",
+      "question": "対象プラットフォームをどこまでにするか (web / モバイル・タブレット・デスクトップ専用アプリ)。",
+      "answer": "web のみ。狭い幅はレスポンシブ web で対応し、モバイル・タブレット・Windows / Linux / macOS の専用アプリは提供しない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案を提示し、利用者が『web のみ (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:26:39Z",
+      "answered_at": "2026-09-23T13:06:50Z",
+      "required_info_items": [
+        "context-of-use",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-imp-decision-006",
+      "question": "詳細パネルの『関連する依頼』をどう決めるか (手動で紐付ける / 自動で導出する)。",
+      "answer": "同じ関連ページの他の依頼を新しい順に最大 3 件、core で自動導出する。手動の紐付けは作らない。削除中の依頼は含めない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案を提示し、利用者が『同じ関連ページから自動 (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-23T13:06:50Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-imp-decision-007",
+      "question": "画像の IMP-024 形式の番号と、キャプチャパネルの『範囲を選択する』をどう実装するか。",
+      "answer": "番号は利用者ごとの連番にし、削除しても再利用しない (既存行は作成順に採番)。撮影は画面全体と範囲選択の両方を実装する。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案を提示し、利用者が『利用者ごと連番＋範囲選択も実装 (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-23T13:06:50Z",
+      "required_info_items": [
+        "context-of-use",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-imp-decision-008",
+      "question": "夜間 scheduledMaintenance の D1 予算は 49/49 (Free の上限 50、1 本は必ず残す) で満杯。削除した依頼を 30 日後に行と履歴ごと消す DELETE を 1 本足すにはどうするか (DB トリガで既存 UPDATE に連動 / 他 job の枠を 1 本回す / 一覧を開いたときに消す)。",
+      "answer": "他 job の枠を 1 本回す。回す元は audit_header_retention とする。この job は削除の前後で件数と容量を 2 回読むが、読んだ値はログに書くだけで判定には使わない (容量上限を持つのは detail 層だけ)。そこで削除後の 1 回だけを読み、削除前の件数は削除後の件数と消した件数の和で出す。これで 3→2 本になり、improvement_retention を 3→4 本にする。合計は 49 のまま変えず、新しい Cron も足さない。",
+      "provenance": "AskUserQuestion / 選択肢 3 件 (DB トリガで連動 (推奨) / 他 job の枠を 1 本回す / 一覧を開いたときに消す) を提示し、利用者が『他 job の枠を 1 本回す』を選択。回す元の job (audit_header_retention の削除前の容量の読み取り) は、利用者の選択を受けて repo を調べ、判定に使っていない読み取りを特定したもの。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-23T13:16:38Z",
       "required_info_items": [
         "infra-topology",
         "ops-runbook"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[2]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】自動バックアップをどうしますか？ 画像は『毎日 午前2:00』・ステータス（最新/成功）・メモ・比較・復元。現状は毎日 3:00(JST) に全データを R2 へ保存、30日保持、失敗はログのみです。 【選択肢】(1)『2:00に変更＋状態・メモ・比較を足す (推奨)』— cron を JST 2:00 に変え、各バックアップに状態（成功/失敗）・メモ・設定部分の要約を持たせる。失敗も一覧に出す。『比較』はその日の設定と現在の設定の差分を表示。中身は従来どおり全データ。 (2)『3:00のまま、表示を実際に合わせる』— 実行時刻は変えず、説明文を『午前3:00』にする。状態・メモ・比較は足す。"
-        }
       ]
     },
     {
-      "id": "qa-settings-decision-008",
-      "question": "右パネルの『最終更新 (更新者)』と『このルールを元に戻す』は何を基準にするか。",
-      "answer": "変更履歴表で直前の保存値へ (推奨)。設定の変更を追記のみの履歴表 (変更前・後・更新者・日時) に残し、『元に戻す』はそのルールの直前の保存値を下書きへ戻す (保存で確定)。更新者は利用者名、復元や移行で入った値は『システム』。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T08:26:39Z",
-      "required_info_items": [
-        "data-persistence",
-        "security-posture"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_017h7b4GCCbCPCw944pbShTE の questions[3]、提示 2026-09-22T08:25:32Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】右パネルの『最終更新（更新者）』と『このルールを元に戻す』は何を基準にしますか？ 【選択肢】(1)『変更履歴表で直前の保存値へ (推奨)』— 設定の変更を追記のみの履歴表に（変更前・後・更新者・日時）残し、『元に戻す』はそのルールの直前の保存値を下書きへ戻す（保存で確定）。更新者は利用者名、復元や移行で入った値は『システム』。 (2)『未保存の編集だけを戻す』— 履歴は持たず、行に更新日時・更新者の列だけ足す。『元に戻す』は最後に保存した値への取消しになる。"
-        }
-      ]
-    },
-    {
-      "id": "qa-settings-target-platforms-001",
-      "question": "設定画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
-      "answer": "対象にしない (web のみ、推奨)。専用アプリは作らず、設定画面は 375px 幅でも節ナビと表が崩れないようにする。U1-U9 の scope.out にも『web 以外の専用アプリ』を置き、利用者が承認した (appr-foundation-settings-001)。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T08:31:09Z",
-      "required_info_items": [
-        "target-platforms"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01CAGSHVBkmvg3jtokPUQJQW の questions[0]、提示 2026-09-22T08:26:59Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】対象プラットフォームはこれまでの画面と同じく web（レスポンシブ、スマホ幅でも崩れない）のみでよいですか？ 【選択肢】(1)『web のみ (推奨)』— スマホ・タブレット・デスクトップの専用アプリは作らない。設定画面は 375px 幅でも節ナビと表が崩れないようにする。 (2)『専用アプリも検討する』— web 以外のプラットフォームも仕様の対象にする。"
-        },
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "回答文中の『U1-U9 承認』への言及は、回答受領 (08:31:09Z) より後の承認 appr-foundation-settings-001 (08:37:17Z) を先取りした記述で誤り。回答そのものは『web のみ (推奨)』の選択であり、承認とは独立に成立する。"
-        }
-      ]
-    },
-    {
-      "id": "qa-settings-decision-009",
-      "question": "『AI分析の対象月数 (最小)』の既定値は画像では 12 か月、実装では 6 か月 (範囲 3〜24)。どうするか。",
-      "answer": "既定は 6 のまま (推奨)。保存済みの値が無い利用者の挙動を変えない。画像の 12 は入力例として扱い、説明文 (満たない期間では傾向分析が実行されない・長いと精度が上がる) は画像どおりにする。",
-      "provenance": "AskUserQuestion / 選択肢と推奨案・説明提示あり",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T08:31:09Z",
-      "required_info_items": [
-        "domain-model"
-      ],
-      "corrections": [
-        {
-          "corrected_at": "2026-09-22T09:56:07Z",
-          "note": "提示時の問いと選択肢の原文 (逐語。セッション履歴の AskUserQuestion 入力 toolu_01CAGSHVBkmvg3jtokPUQJQW の questions[1]、提示 2026-09-22T08:26:59Z から復元。本文の question は要約だったため、中立性の検証用に原文をここへ残す): 【問い】「AI分析の対象月数（最小）」の既定値は画像では 12 か月、実装では 6 か月（範囲 3〜24）です。どうしますか？ 【選択肢】(1)『既定は 6 のまま (推奨)』— 保存済みの値が無い利用者の挙動を変えない。画像の 12 は入力例として扱い、説明文（満たない期間では傾向分析が実行されない・長いと精度が上がる）は画像どおりにする。 (2)『既定を 12 に変える』— 画像に合わせる。値を保存していない利用者は、取引が 6〜11 か月しか無いと傾向分析が止まる。"
-        }
-      ]
-    },
-    {
-      "id": "qa-settings-ui-ux-web-evidence-001",
-      "question": "web の設定画面の ui-ux について、既存コードで何が観測できるか。",
-      "answer": "現行 /settings (packages/web/src/pages/Settings.tsx) は .card を縦に並べるだけで、節ナビ・説明パネル・下部の保存バー・未保存件数が無い。ルートは routeMetadata.ts:140-151 (ナビ群『管理』)。共通ヘッダ (Layout.tsx:415-488) に期間タブ (PeriodPicker)・最終更新・検索・ダウンロード・ヘルプがあり、バッジの文言は『防衛ライン』。フッタ (Layout.tsx:492-519) は既存。予算画面に保存バー (BudgetSaveBar)・下書き・離脱確認の先例がある。",
-      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "id": "qa-imp-ui-ux-web-evidence-001",
+      "question": "ui-ux の web について、現行の実装と画像の差分は何か。",
+      "answer": "現行の /improvement (packages/web/src/pages/Improvement.tsx 255 行) は見出しが『改善要望』で、一覧だけを持つ。投稿は components/ImprovementRequestButton.tsx のモーダルで、件名 120 字＋本文 4000 字を入力する。一覧に検索・状態別の件数タブ・ページングが無く、詳細にアクティビティ・関連する依頼・削除が無い。プライバシー確認とマスク対象の説明も無い。design/FINAL-UI/images/20-improvement.png は、問いの見出し・作成フォーム・一覧・詳細パネル・キャプチャの浮動パネル・選択中バー・コピー完了トーストを 1 画面に並べている。",
+      "provenance": "repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-22T08:39:27Z"
+      "answered_at": "2026-09-23T13:17:45Z"
     },
     {
-      "id": "qa-settings-ui-ux-web-002",
-      "question": "web の設定画面の ui-ux で、利用者が決めていない具体値は何か。",
-      "answer": "具体値の推定: 節ナビは sticky で幅 7〜8rem、説明パネルは 16〜18rem。『未保存』は変更したフィールド単位で数える (行の追加・削除は 1 行 1 項目)。メモの上限 100 字は数えて『n/100』と出す。バックアップ表は最新 1 件に『最新』、成功に『成功』、失敗に『失敗』のバッジ。ヒント文は画像の文言を使う。",
-      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-ui-ux-web-001",
-      "question": "web の設定画面の ui-ux 要件は何か。",
-      "answer": "web の設定画面の UI/UX 要件: パンくず『管理 / 設定』、期間タブ、見出し『設定』と問い『集計ルールと復元設定を、安全に管理しますか？』と説明文 2 行。左に節ナビ (集計ルール・名義・統計・現金上書き・データ・バックアップ、続けてアカウント・その他の管理) を置き、選択中の節を強調し、クリックでその節へ移る。集計ルールの表は チェックボックス・並べ替えハンドル・種別 (勘定科目 / 取引先)・元の表記 (入力値)・正規化後のカテゴリ select・削除 の列と『+ ルールを追加』。行を選ぶと右の『この設定の説明』に 元の表記・正規化後のカテゴリ・このルールが影響するもの・最終更新 (日時と更新者)・『このルールを元に戻す』・設定のヒント を出す (閉じられる)。名義 4 欄 (例文つき)、統計の月数入力と説明、現金上書きの 2 行 (上書き値・適用範囲・メモ 0/100) と 空欄 / 0 の凡例、データの 4 ボタン (設定 JSON・集計マトリクス CSV・取引 CSV・レポート HTML、各説明つき)、復元 (ファイル選択・警告・『設定を復元』は選ぶまで無効)、バックアップ表 (日付・サイズ・ステータス・メモ・比較・復元) と自動バックアップの説明。下部固定の保存バーに『未保存 N 項目』『変更をリセット』『設定を保存』。破壊的操作 (削除・リセット・復元・バックアップから戻す) は必ず確認ダイアログを経る。375px 幅では節ナビを上部の横並びにし、説明パネルは表の下へ回し、横スクロールは表の容器の中だけにする。情報の優先: 未保存件数と保存 > 集計ルール > 復元・バックアップ > 他の節。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-imp-ui-ux-web-001",
+      "question": "ui-ux の web の方針を次の内容で確定してよいか。",
+      "answer": "画像どおりに、上段に作成フォーム、下段に一覧と詳細の 2 ペインを置く (狭い幅では縦に積む)。情報の優先度は task 頻度 × 失敗コストで決める。失敗コストが最も大きいのは個人情報の送信なので、プライバシー確認 2 つとマスク対象の説明を送信ボタンの直前に置き、2 つとも未チェックなら送信できない。状態は色だけでなく文字で示す。削除は完了トーストの『元に戻す』で戻せる。空の状態と、読み込み失敗時の再読み込みも描く。",
+      "provenance": "8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:39:27Z",
+      "answered_at": "2026-09-23T13:16:38Z",
       "required_info_items": [
         "context-of-use",
         "information-priority",
-        "product-goal",
-        "target-platforms"
+        "product-goal"
       ]
     },
     {
-      "id": "qa-settings-frontend-web-evidence-001",
-      "question": "web の設定画面の frontend について、既存コードで何が観測できるか。",
-      "answer": "Settings.tsx は 457 行の 1 ファイルで、各節が PUT /api/settings を個別に送る (:58-67)。予算画面は pages/budget/ 配下に分割され、draft.ts (useBudgetDraft、localStorage キー kanjo:budget:draft:{userId}:{start}、v1、TTL 30 日、800ms debounce、pagehide flush)、BudgetSaveBar、view-model.ts の文言関数、409 時の再取得 (BudgetPage.tsx:194-237)、離脱確認 (:250-280) を持つ。共通部品 SelectionCheckbox・ConfirmDialog/usePendingConfirm・CategoryPicker・DataTable・AccessibleTabs・PageHeader がある。ログアウト時の下書き消去は Layout.tsx:151-152。",
-      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "id": "qa-imp-frontend-web-evidence-001",
+      "question": "frontend の web について、現行の実装と画像の差分は何か。",
+      "answer": "現行 web は pages/Improvement.tsx 1 ファイルに一覧と詳細を持つ。撮影は capture-screen.ts が DOM を複製して [data-capture-hide] の要素を落とし、ScreenshotAnnotator.tsx と annotate-image.ts で注釈を付ける。診断は diagnostics-buffer.ts が集め、API 呼び出しは api.ts:1332-1410 にある。Layout.tsx:523-527 に右下の浮動ボタンがあり、ルーティングは AuthenticatedApp.tsx:63 と routeMetadata.ts:370,385 に置かれている。",
+      "provenance": "repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-22T08:39:27Z"
+      "answered_at": "2026-09-23T13:17:45Z"
     },
     {
-      "id": "qa-settings-frontend-web-002",
-      "question": "web の設定画面の frontend で、利用者が決めていない具体値は何か。",
-      "answer": "具体値の推定: 下書きキーは kanjo:settings:draft:{userId}、v1、TTL 30 日、debounce 800ms (予算と同値)。並べ替えはドラッグと上下ボタンの併用で、ドラッグ用ライブラリは足さない (HTML の drag and drop とボタン)。節ナビは IntersectionObserver で現在節を追う。",
-      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-frontend-web-001",
-      "question": "web の設定画面の frontend 要件は何か。",
-      "answer": "web の設定画面のフロントエンド要件: pages/settings/ 配下へ分割 (ページ本体・節ナビ・節ごとの部品・説明パネル・保存バー・draft・view-model)。全節の編集を 1 つの下書き (useSettingsDraft) に集め、未保存件数を数え、localStorage へ自動保存・復元し、ログアウトで消す。保存は 1 回の PUT (baseSavedAt つき) で、409 は『他の画面で更新されました』を出して再取得する。変更をリセットと離脱 (beforeunload・アプリ内リンク) の前に確認する。表示用の値 (影響するもの・未保存件数の数え方・空欄 / 0 の表記) は core の settingsScreen から受け、web で計算し直さない。チェックボックスは SelectionCheckbox、カテゴリ select は既存のカテゴリ候補、並べ替えはキーボードでも行える (上下移動ボタン)。データの出力 3 種は選択中の期間を付ける (ExportMenu の withPeriod と同じ)。画像外の既存部品 (PasswordChangeForm・UserAdmin・ClassificationSettings・VendorMemorySettings・未記帳月・初期移行) はアカウント / その他の管理の節へそのまま移す。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-imp-frontend-web-001",
+      "question": "frontend の web の方針を次の内容で確定してよいか。",
+      "answer": "pages/improvement/ に分割し、core を呼ぶのは view-model だけにする。選択中の依頼・タブ・検索・ページは URL の検索パラメータを正本にする。変更後は TanStack Query を invalidate する。撮影は既存の DOM 複製に伏字を加えて範囲選択も付け、撮影コードは遅延読み込みにして初期 JS 予算を守る。撮影した画像と本文は端末に保存せず、メモリにだけ持つ。",
+      "provenance": "8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:39:27Z",
+      "answered_at": "2026-09-23T13:16:38Z",
       "required_info_items": [
+        "context-of-use",
         "frontend-arch"
       ]
     },
     {
-      "id": "qa-settings-backend-web-evidence-001",
-      "question": "web の設定画面の backend について、既存コードで何が観測できるか。",
-      "answer": "routes/settings.ts: GET /settings (:89-111) は statMinMonths・normMap・unrecordedExpMonths・cashOverrides を返し、PUT /settings (:113-264、素の zValidator) は normMap を全件置換して recomputeFromDeals を伴い、cashOverrides は月単位の upsert/削除。GET/PUT /settings/owner-labels (:735-800) は 4 名義必須で core の validateOwnerLabels を使う。GET /backups・/backups/:date (:703-725)。出力は routes/analytics.ts:826-886、復元は routes/imports.ts:1924 POST /restore (形だけ検査、import writer lease)。予算の PUT /api/budget-plans は revisionOf (MAX(updated_at)) と baseSavedAt で 409、publicJsonValidator を使う。core の cashOverride はどの集計にも効いていない。normalizeAccount は core/normalize.ts:23。",
-      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "id": "qa-imp-backend-web-evidence-001",
+      "question": "backend の web について、現行の実装と画像の差分は何か。",
+      "answer": "現行 api は packages/api/src/routes/improvement.ts に、POST /improvements (multipart, L130)・一覧 GET (L242)・詳細 GET :id (L254)・画像 GET :id/screenshot (L267)・指示文 POST :id/prompt (L311)・コピー記録 POST :id/copied (L359)・状態 POST :id/status (L374)・agent 用 GET :id/agent/data (L443) と :id/agent/screenshot (L472) を持つ。DELETE は無く、一覧に検索・件数・ページングも無い。指示文は improvement/contract.ts の buildImprovementPrompt (L185) が組み立てる。",
+      "provenance": "repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-22T08:39:27Z"
+      "answered_at": "2026-09-23T13:17:45Z"
     },
     {
-      "id": "qa-settings-backend-web-002",
-      "question": "web の設定画面の backend で、利用者が決めていない具体値は何か。",
-      "answer": "具体値の推定: 設定 JSON は {format:'kanjo-settings', version:1, exportedAt, normRules[], ownerLabels, statMinMonths, cashOverrides[]}。取引先ルールの照合キーは NFKC → 大文字小文字の畳み込み → 前後空白除去。recomputeFromDeals は勘定科目ルールが変わった保存のときだけ走らせる。",
-      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-backend-web-001",
-      "question": "web の設定画面の backend 要件は何か。",
-      "answer": "web の設定画面のバックエンド要件: core に settingsScreen (画面の表示値・影響するもの・未保存件数の基準)、集計ルールの照合と適用 (勘定科目は取込時の normalizeAccount と同じ意味、取引先は集計時に 手動 > 仕分けルール > 集計ルール > 自動、NFKC・大小文字を揃えた完全一致、並び順優先、無効行は不適用)、現金上書きの解決 (空欄 = 不適用 / 0 = 0 円 / 全期間 / 月指定)、設定 JSON の検証と差分 (版番号つき) を純関数で置く。API: GET /api/settings/screen (画面の全値と savedAt)、PUT /api/settings/screen (全節の変更を baseSavedAt つきで 1 回に受け、古ければ 409、変更履歴を同じ batch で追記)、GET /api/settings/history?ruleId= (元に戻す用の直前値)、GET /api/settings/export (設定のみ JSON)、POST /api/settings/restore/preview (差分) と POST /api/settings/restore (復元前に現在の設定を R2 へ退避して置換、更新者はシステム)、GET /api/backups に状態・メモ・要約、GET /api/backups/:date/compare (現在の設定との差分)。既存 API (PUT /settings・owner-labels・/restore) は互換のため残す。scheduled は JST 2:00 に実行し、成否を R2 の customMetadata に残す。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-imp-backend-web-001",
+      "question": "backend の web の方針を次の内容で確定してよいか。",
+      "answer": "一覧 (検索・件数タブ・10 件ずつ)、詳細 (履歴と関連する依頼 3 件)、作成、状態の変更 (遷移の可否は core が判定)、再発行、コピー記録、削除、復元を zod で検証する。判定と導出は core の improvement-screen に置き、API は結果を JSON に写すだけにする。",
+      "provenance": "8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:39:27Z",
+      "answered_at": "2026-09-23T13:16:38Z",
       "required_info_items": [
         "api-contract",
         "domain-model"
       ]
     },
     {
-      "id": "qa-settings-database-web-evidence-001",
-      "question": "web の設定画面の database について、既存コードで何が観測できるか。",
-      "answer": "account_norm_map (0000_init.sql:58) は (user_id, raw, norm) のみ。cash_overrides (0000_init.sql:56) は (user_id, month, revenue, expense)。analysis_settings (0019) は stat_min_months (既定 6)。owner_labels (0045)。rules (0000→0001) は sort_order を持つ。最新 migration は 0050_budget_plans.sql で、schema-guard.ts:4 の EXPECTED_D1_MIGRATION と一致 (0016・0017 は欠番)。監査表 audit_log (0033) の action は delete/undo/import_resolution のみ。夜間バックアップ (store.ts:1382 loadBackupPayload) は owner_labels を含まない。",
-      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "id": "qa-imp-database-web-evidence-001",
+      "question": "database の web について、現行の実装と画像の差分は何か。",
+      "answer": "migrations/0029_improvement_requests.sql の improvement_requests 表は、id TEXT PK・user_id・title (1..120)・body (1..4000)・route・status (CHECK open/in_progress/done/wontfix)・screenshot_key・screenshot_size・diagnostics_json・diagnostics_omitted・token_hash UNIQUE・token_expires_at・token_fetch_count・copied_at・copied_target・done_at・purged_at・created_at・updated_at を持つ。連番・論理削除・履歴の列や表は無い。最新の migration は 0052_cash_entry_owner_soft_delete.sql で、schema-guard.ts:4 の EXPECTED_D1_MIGRATION と deletion-schema.test.ts:63 が最新番号を固定している。BACKUP_SNAPSHOT_SQL (store.ts:796) はこの表を含まない。",
+      "provenance": "repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-22T08:39:27Z"
+      "answered_at": "2026-09-23T13:17:45Z"
     },
     {
-      "id": "qa-settings-database-web-002",
-      "question": "web の設定画面の database で、利用者が決めていない具体値は何か。",
-      "answer": "具体値の推定: migration 番号は 0051 (集計ルール)・0052 (現金上書き)・0053 (変更履歴) の 3 本、または 0051 の 1 本。変更履歴の保持は無期限 (件数は少ない)。",
-      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-database-web-001",
-      "question": "web の設定画面の database 要件は何か。",
-      "answer": "web の設定画面のデータベース要件: 追加のみの migration で、(1) 集計ルールの新表 (種別 勘定科目 / 取引先・元の表記・正規化後・並び順・有効・更新時刻・更新者) を設け、既存 account_norm_map の行は初回に種別『勘定科目』として同じ意味で写し、既存表は 1 行も書き換えない (取込時の正規化の読み手は新表の勘定科目行を読む)、(2) 現金上書きの新表 (種別 支払い / 受け取り・上書き値 NULL 可・適用範囲 全期間 / 月・対象月・メモ 100 字・更新時刻・更新者) を設け、既存 cash_overrides の月ごとの値は『月指定』の行として写す、(3) 設定の変更履歴表 (追記のみ: 対象・キー・変更前・変更後・更新者・日時・由来 画面 / 復元 / 移行) を設ける。どの表も主キーの先頭は利用者とし利用者で区切る。新表は設定 JSON の書き出しと復元、夜間バックアップ、JSON snapshot の無効化の対象に加え、owner_labels もバックアップに含める。schema-guard の期待番号を上げる。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-imp-database-web-001",
+      "question": "database の web の方針を次の内容で確定してよいか。",
+      "answer": "0053 で表を作り直す (状態の CHECK を open/in_progress/done/reconfirm に変え、wontfix は done へ移して履歴に理由を残す)。利用者ごとの連番 (UNIQUE(user_id, seq)、採番表で再利用しない。既存行は作成順に採番)、deleted_at、件名の NULL 許容、履歴表 (ON DELETE CASCADE) を足す。既存の行・画像・トークンは保つ。バックアップの対象外。EXPECTED_D1_MIGRATION を 0053 に進める。",
+      "provenance": "8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:39:27Z",
+      "answered_at": "2026-09-23T13:16:38Z",
       "required_info_items": [
         "data-persistence",
         "domain-model"
       ]
     },
     {
-      "id": "qa-settings-auth-web-evidence-001",
-      "question": "web の設定画面の auth について、既存コードで何が観測できるか。",
-      "answer": "ミドルウェア順は authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence (index.ts:105-109)。authGuard (auth.ts:245) は Access JWT かセッション Cookie を検証し userId=TENANT_ID('default') と actor を set する。adminGuard (auth.ts:319-) がある。/api/settings は CANONICAL_MUTATION_ROUTES (canonical-mutation-fence.ts:159-163) に登録済み。POST /restore は admin 限定ではない。",
-      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "id": "qa-imp-auth-web-evidence-001",
+      "question": "auth の web について、現行の実装と画像の差分は何か。",
+      "answer": "auth.ts:41 の役割は admin|member で、adminGuard (auth.ts:309-317) がある。改善要望の API は authGuard 配下の /api/* にあり、クエリを userId で絞っている。agent 経路はトークン (接頭辞 imp_、ハッシュで保存、24 時間・20 回まで) で認証する。認証の既定はセッション Cookie (HttpOnly・Secure・SameSite=Strict) である。",
+      "provenance": "repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-22T08:39:27Z"
+      "answered_at": "2026-09-23T13:17:45Z"
     },
     {
-      "id": "qa-settings-auth-web-002",
-      "question": "web の設定画面の auth で、利用者が決めていない具体値は何か。",
-      "answer": "具体値の推定: 更新者の表示名は actor のメールアドレスのローカル部。restore 系は import writer lease と同じ直列化を取る。",
-      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-auth-web-001",
-      "question": "web の設定画面の auth 要件は何か。",
-      "answer": "web の設定画面の認証要件: 新しい設定 API はすべて既存の authGuard・パスワード変更強制・スキーマ確認・canonicalMutationFence の内側に置き、未認証は 401。変更系 (PUT screen・restore・restore/preview を除く) は CANONICAL_MUTATION_ROUTES に登録する。変更履歴の更新者は authGuard が set する actor から取り、クライアントから受けない。設定の復元とバックアップからの復元は現行の /restore と同じ権限とし、権限を広げない。アカウント節 (パスワード変更・利用者管理) の権限判定は既存のまま (利用者管理は admin のみ描画)。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-imp-auth-web-001",
+      "question": "auth の web の方針を次の内容で確定してよいか。",
+      "answer": "既存のセッション Cookie と authGuard をそのまま使う。全クエリを user_id で絞り、他の利用者の依頼は 404 にする。再発行すると旧トークンは即失効し、削除中の依頼には agent 経路からも届かない。",
+      "provenance": "8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:39:27Z",
+      "answered_at": "2026-09-23T13:16:38Z",
       "required_info_items": [
-        "auth-model"
-      ]
-    },
-    {
-      "id": "qa-settings-security-web-evidence-001",
-      "question": "web の設定画面の security について、既存コードで何が観測できるか。",
-      "answer": "CSRF 専用ミドルウェアは無く、SameSite=Strict の Cookie (auth.ts:131)・fetch の Content-Type: application/json 固定 (api-client.ts:42-47)・secureHeaders の CSP (form-action 'self'、frame-ancestors 'none') に頼る。bodyLimit は /api/auth/*・balances・ai にだけある。publicJsonValidator (public-validation.ts) は zod の詳細を外に出さない。エラー応答は {error:{code,message}}、onError は requestId を付け明細内容をログに出さない。/restore の body は形の検査のみで上限なし。フッタに『取込データは外部送信しません』。",
-      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-security-web-002",
-      "question": "web の設定画面の security で、利用者が決めていない具体値は何か。",
-      "answer": "具体値の推定: 本文上限は画面の PUT 64KB、復元 256KB、集計ルールは 500 行まで。CSV の式注入対策は既存の CSV 出力に既にあるかを実装時に確かめる。",
-      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-security-web-001",
-      "question": "web の設定画面の security 要件は何か。",
-      "answer": "web の設定画面のセキュリティ要件: 設定系の新 API は publicJsonValidator で形を検査し、値の規則は core を正本にする (zod は形だけ)。本文サイズ上限を掛ける (画面の PUT と復元)。復元は版番号・形式名・全フィールドの型と範囲・件数上限を厳密に検査し、未知のキーは拒否し、1 つでも不正なら何も変えない。取引先・元の表記・メモは表示時にエスケープされる (React の既定) ことを保ち、CSV 出力はセルの先頭が = + - @ のときに式注入を防ぐ。エラーは詳細を返さずログにも設定値を出さない。外部送信は 0 件。バックアップ・変更履歴に秘密情報を入れない。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T08:39:27Z",
-      "required_info_items": [
+        "auth-model",
         "security-posture"
       ]
     },
     {
-      "id": "qa-settings-infrastructure-web-evidence-001",
-      "question": "web の設定画面の infrastructure について、既存コードで何が観測できるか。",
-      "answer": "packages/api/wrangler.jsonc: R2 は FILES → kanjo-files、D1 は DB、cron は \"0 18 * * *\" (JST 03:00)。nightlyBackup (index.ts:171-196) は loadBackupPayload を R2 backups/YYYY-MM-DD.json に put し 30 日より古いものを削除。scheduled は :390-393。失敗はログのみ (:239-249)。R2 list は 1000 件のページングを考慮していない (30 件保持なので実害なし)。",
-      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
+      "id": "qa-imp-security-web-evidence-001",
+      "question": "security の web について、現行の実装と画像の差分は何か。",
+      "answer": "packages/core/src/improvement.ts の redactSecrets (L128) は、URL のクエリ値・セッション Cookie・秘匿キーの値・メールアドレス・10 桁以上の連続数字を伏せる。金額・電話 (10 桁未満)・住所・個人名・取引先名は伏せない。画像は capture-screen.ts が [data-capture-hide] の要素を落とすだけで、画面の文字を伏せない。画像の上限は 2MB。DiagnosticEnvironment は userAgent・language・viewport・route・capturedAt だけを持ち、識別子を足さない決まりである。取引先名は transactions.partner、名義の表示名は owner_labels (0045) に利用者ごとにある。",
+      "provenance": "repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。",
       "basis": "observed-fact",
-      "answered_at": "2026-09-22T08:39:27Z"
+      "answered_at": "2026-09-23T13:17:45Z"
     },
     {
-      "id": "qa-settings-infrastructure-web-002",
-      "question": "web の設定画面の infrastructure で、利用者が決めていない具体値は何か。",
-      "answer": "具体値の推定: 失敗マーカーは backups/YYYY-MM-DD.failed.json (本文は理由コードのみ)。要約は集計ルール件数・名義の設定有無・統計の月数・現金上書きの件数。",
-      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-infrastructure-web-001",
-      "question": "web の設定画面の infrastructure 要件は何か。",
-      "answer": "web の設定画面のインフラ要件: cron を JST 2:00 (\"0 17 * * *\") に変える (wrangler.jsonc の 1 行)。バックアップの R2 オブジェクトに customMetadata として 状態・メモ・設定部分の要約・形式の版 を持たせ、失敗した回も状態『失敗』の小さなマーカーを残して一覧に出す。保持 30 日は据え置く。復元前の自動退避は同じ R2 の別プレフィックス (backups/pre-restore/) に置き、同じ保持規則で消す。新しいバインディングは足さない。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
+      "id": "qa-imp-security-web-001",
+      "question": "security の web の方針を次の内容で確定してよいか。",
+      "answer": "同じ core の規則をブラウザとサーバの両方で掛ける。対象は金額・電話・住所・口座・メール・秘匿値と、辞書による取引先名 (transactions.partner) と個人名 (owner_labels)。撮影用の複製では data-capture-mask を付けた要素を伏字にする。画像はマジックバイトで JPEG/PNG か確かめ、2MB 以下に限る。診断のセッション ID はページを読み込むたびに乱数で作り、画面には末尾 4 桁だけ出す。",
+      "provenance": "8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T08:39:27Z",
+      "answered_at": "2026-09-23T13:16:38Z",
       "required_info_items": [
-        "infra-topology"
-      ]
-    },
-    {
-      "id": "qa-settings-maintenance-ops-web-evidence-001",
-      "question": "web の設定画面の maintenance-ops について、既存コードで何が観測できるか。",
-      "answer": "設定変更の監査記録は無い (audit-log.ts:248 の action は delete/undo/import_resolution に限る)。夜間バックアップの失敗は画面に出る経路が無い。既存テストに settings-restore.dom.test.tsx・backup-restore.dom.test.tsx・owner-labels.integration.test.ts がある。前例 (予算) は docs/budget-screen/ に設計判断と証拠、spec-reflection-receipt を置く。verify:full は 4175 の vite を前提とする。",
-      "provenance": "既存コードの読解 (HEAD 0ed2d8c、Explore 調査)",
-      "basis": "observed-fact",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-maintenance-ops-web-002",
-      "question": "web の設定画面の maintenance-ops で、利用者が決めていない具体値は何か。",
-      "answer": "具体値の推定: 設定 JSON の版を上げるときは core に移行関数を置き、古い版の復元を 1 世代まで受ける。",
-      "provenance": "アシスタントの推定 (利用者確認も検証可能な出典も経ていない具体値。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T08:39:27Z"
-    },
-    {
-      "id": "qa-settings-maintenance-ops-web-001",
-      "question": "web の設定画面の maintenance-ops 要件は何か。",
-      "answer": "web の設定画面の保守運用要件: 設定の変更は変更履歴表に残り、誰がいつ何を変えたかを画面と API で辿れる。バックアップの失敗は一覧に『失敗』として出て、利用者が気づける。migration は追加のみで、失敗時は Deploy の再実行で戻せる手順 (既存の運用) に従う。docs/settings-screen/ に設計判断 (集計ルールの 2 種別と適用順・現金上書きの意味・設定 JSON の形式と版・バックアップの状態) と画面の証拠を残し、docs/data-schema.md と docs/ui-decisions.md を更新する。既存テストは緑のまま保ち、新しい core・API・DOM のテストを足す。",
-      "provenance": "利用者が正本として指示した画像 design/FINAL-UI/images/18-settings.png と、利用者承認 (appr-foundation-settings-001) の U1-U9、決定 qa-settings-decision-001〜009・qa-settings-target-platforms-001 から、利用者が決めていない具体値を除いて書き起こした要件。除いた値は同じ章の -002 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T08:39:27Z",
-      "required_info_items": [
-        "ops-runbook"
-      ]
-    },
-    {
-      "id": "qa-settings-decision-010",
-      "question": "設定画面の『バックアップ』節で、ある日のバックアップを『復元』したとき、何を戻しますか？ 【提示した選択肢 (逐語)】(1)『設定だけ戻す (Recommended)』— 集計ルール・名義・統計・現金上書きだけをその日の値へ戻し、取引は消さない。『比較』の差分と同じ範囲で、設定 JSON の復元と同じ経路 (差分プレビュー→確認→直前に現在の設定を退避) を通す。U3 G4『取引は消えない』と一致する。 (2)『全データを戻す』— 取引も含めてその日の状態へ置き換える (既存 /api/restore と同じ意味)。取引が消えうるので、G4『取引は消えない』の書き換えと強い確認が必要になる。",
-      "answer": "設定だけ戻す (推奨)。",
-      "provenance": "AskUserQuestion / 選択肢 2 件の文面を question に逐語で保存 (推奨案を選択)",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T09:40:36Z",
-      "required_info_items": [
-        "api-contract",
         "domain-model",
         "security-posture"
       ]
     },
     {
-      "id": "qa-settings-ui-ux-web-004",
-      "question": "web の設定画面の ui-ux で、利用者が選んでいない仕組みの選択は何か。",
-      "answer": "仕組みの選択の推定 (UI/UX): 375px 幅では節ナビを上部の横並びにし、説明パネルは表の下へ回し、横スクロールは表の容器の中だけにする。行の削除とバックアップからの復元にも確認ダイアログを挟む。情報の優先順位は 未保存件数と保存 > 集計ルール > 復元・バックアップ > 他の節 (task 頻度 × 失敗コストによる推定)。",
-      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T09:45:25Z"
+      "id": "qa-imp-infrastructure-web-evidence-001",
+      "question": "infrastructure の web について、現行の実装と画像の差分は何か。",
+      "answer": "夜間の scheduledMaintenance (0 18 * * *) は 8 job を Promise.allSettled で並べ、scheduled-maintenance-budget.ts の SCHEDULED_MAINTENANCE_D1_PLAN が合計 49 本 (上限 50、SCHEDULED_D1_QUERY_PLAN_MAX 49) を宣言している。improvement_retention は 3 本で、完了から 30 日を過ぎた依頼の画像・診断・トークンを消し、本文と状態は残す。audit_header_retention は 3 本 (削除前の件数と容量・削除・削除後の件数と容量) である。画像は R2 (FILES) の improvements/<userId>/<requestId>.jpg に置かれる。",
+      "provenance": "repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-23T13:17:45Z"
     },
     {
-      "id": "qa-settings-ui-ux-web-003",
-      "question": "web の設定画面の ui-ux 要件のうち、利用者の決定・承認に遡れるものは何か。",
-      "answer": "web の設定画面の UI/UX 要件 (画像・G1・決定 001〜004・006〜010 に基づく): パンくず『管理 / 設定』、期間タブ、見出し『設定』と問い『集計ルールと復元設定を、安全に管理しますか？』と説明文。左の節ナビは画像の 6 節 (集計ルール・名義・統計・現金上書き・データ・バックアップ) の後ろに『アカウント』『その他の管理』を足し、画像外の既存機能を 1 つも消さない (決定 004)。集計ルールは勘定科目と取引先を 1 つの一覧で扱い、種別の列を持つ (決定 001)。表は チェックボックス・並べ替えハンドル・元の表記・正規化後のカテゴリ・削除 と『+ ルールを追加』。右の『この設定の説明』は 元の表記・正規化後のカテゴリ・影響するもの・最終更新と更新者・『このルールを元に戻す』(直前の保存値へ、決定 008)・設定のヒント。名義は 4 名義すべて (決定 002)。統計は最小月数の入力と説明で既定 6 (決定 009)。現金上書きは支払い・受け取りの 2 行に 上書き値 (空欄と 0 を区別)・適用範囲・メモ (決定 003)。データは 設定 JSON・集計マトリクス CSV・取引 CSV・レポート HTML の 4 種 (決定 006)。復元は設定だけ (決定 006)。バックアップ表は 日付・サイズ・ステータス・メモ・比較・復元 で、復元は設定だけを戻す (決定 007・010)。下部の保存バーに 未保存 N 項目・変更をリセット・設定を保存。リセット・復元・離脱の前に確認する (G3・G4)。375px 幅でも崩れない (G1)。",
-      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "id": "qa-imp-infrastructure-web-001",
+      "question": "infrastructure の web の方針を次の内容で確定してよいか。",
+      "answer": "新しい Cron は足さず、夜間 0 18 * * * の improvement_retention に完全消去を相乗りさせる。予算は audit_header_retention の削除前の容量の読み取りを外して 3→2 本にし、improvement_retention を 3→4 本にする (合計 49 のまま)。R2 のキーの形は変えない。",
+      "provenance": "8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T09:45:25Z",
-      "required_info_items": [
-        "context-of-use",
-        "information-priority",
-        "product-goal",
-        "target-platforms"
-      ]
-    },
-    {
-      "id": "qa-settings-frontend-web-004",
-      "question": "web の設定画面の frontend で、利用者が選んでいない仕組みの選択は何か。",
-      "answer": "仕組みの選択の推定 (frontend): 下書きの hook 名は useSettingsDraft。ログアウトで下書きを消す (Layout.tsx の先例)。409 のときは『他の画面で更新されました』を出して再取得する。並べ替えはキーボードでも行える上下移動ボタンを併設する。期間の付け方は ExportMenu の withPeriod と同じにする。既存部品 (PasswordChangeForm・UserAdmin・ClassificationSettings・VendorMemorySettings・未記帳月・初期移行) はそのまま移す。",
-      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T09:45:25Z"
-    },
-    {
-      "id": "qa-settings-frontend-web-003",
-      "question": "web の設定画面の frontend 要件のうち、利用者の決定・承認に遡れるものは何か。",
-      "answer": "web の設定画面のフロントエンド要件 (I1・I4・G3・C2・決定 004・006 に基づく): Settings.tsx を pages/settings/ 配下へ分割し、見出し・期間タブ・節ナビ・各節・説明パネル・保存バーの構成にする (I1)。全節の編集を 1 つの下書きに集め、未保存件数を数え、localStorage へ自動保存・復元し、リセットと離脱の前に確認する。予算画面の先例 (draft.ts・BudgetSaveBar) にならう (I4)。保存は baseSavedAt つきの 1 回の PUT で、競合は 409 で検出する (G3)。表示用の値は core の算出から受ける (I2)。色はトークンだけ、部品は共通部品 (PageHeader・Button・ConfirmDialog・PeriodPicker・SelectionCheckbox・DataTable・CategoryPicker) を使う (C2)。出力 3 種は選択中の期間で出す (G4)。画像外の既存機能はアカウント / その他の管理の節へ移して残す (決定 004)。",
-      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T09:45:25Z",
-      "required_info_items": [
-        "frontend-arch"
-      ]
-    },
-    {
-      "id": "qa-settings-backend-web-004",
-      "question": "web の設定画面の backend で、利用者が選んでいない仕組みの選択は何か。",
-      "answer": "仕組みの選択の推定 (backend): パスは GET /api/settings/screen、PUT /api/settings/screen、GET /api/settings/history?ruleId=、GET /api/settings/export、POST /api/settings/restore/preview、POST /api/settings/restore、GET /api/backups (状態・メモ・要約を追加)、GET /api/backups/:date/compare、POST /api/backups/:date/restore/preview、POST /api/backups/:date/restore。バックアップ本文から設定部分を取り出して設定 JSON と同じ検証と置換に渡す。算出の名前は settingsScreen。recomputeFromDeals は勘定科目ルールが変わった保存に限る。成否は R2 の customMetadata に残す。",
-      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T09:45:25Z"
-    },
-    {
-      "id": "qa-settings-backend-web-003",
-      "question": "web の設定画面の backend 要件のうち、利用者の決定・承認に遡れるものは何か。",
-      "answer": "web の設定画面のバックエンド要件 (G2〜G5・I2・I3・I5・I6・決定 001・003・005〜008・010 に基づく): core に設定画面の算出、集計ルールの照合と適用、現金上書きの解決、設定 JSON の検証と差分を純関数で置く (I2)。集計ルールは勘定科目を従来どおり取込時に、取引先を集計時に 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類 の順で適用し、照合は NFKC・大小文字を揃えた完全一致、同じ元表記は並び順で優先、無効の行は効かない (決定 005・G2)。現金上書きは 空欄 = 上書きしない / 0 = 0 円 と 全期間 / 月指定 を区別し、core の現金集計に効かせる (決定 003)。API は 画面の取得、全節の変更を baseSavedAt つきで 1 回に受けて古ければ 409 にし変更履歴を追記する保存 (G3・決定 008)、元に戻す用の直前値、設定のみ JSON の書き出し、差分プレビューと確認を経て復元直前に現在の設定を退避する設定の復元 (決定 006)、状態・メモ・要約つきのバックアップ一覧と現在の設定との比較 (決定 007)、バックアップからの設定だけの復元 (設定の復元と同じ経路、取引は消さない、決定 010) を持つ。夜間バックアップは JST 2:00 に実行し、成否を残す (決定 007)。既存の API と機能は消さない (G5)。",
-      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T09:45:25Z",
-      "required_info_items": [
-        "api-contract",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-settings-database-web-004",
-      "question": "web の設定画面の database で、利用者が選んでいない仕組みの選択は何か。",
-      "answer": "仕組みの選択の推定 (database): 集計ルール・現金上書き・変更履歴の 3 表を新設し、主キーの先頭を利用者にする。変更履歴には由来 (画面 / 復元 / 移行) を持たせる。取込時の正規化の読み手を新表の勘定科目行へ寄せる。新表を設定 JSON・夜間バックアップ・JSON snapshot の無効化の対象に加え、owner_labels もバックアップに含める。",
-      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T09:45:25Z"
-    },
-    {
-      "id": "qa-settings-database-web-003",
-      "question": "web の設定画面の database 要件のうち、利用者の決定・承認に遡れるものは何か。",
-      "answer": "web の設定画面のデータベース要件 (C3・G2・G3・G5・決定 001・003・008 に基づく): migration は追加のみで 0050 の次の番号から、既存行の書き換えは 0 件、schema-guard の期待番号を合わせる (C3)。集計ルールは種別 (勘定科目 / 取引先) を持つ 1 つの一覧で、元の表記・正規化後・並び順・有効・更新日時・更新者を持つ (決定 001・G2・決定 008)。既存の科目正規化マップの値は初回に種別『勘定科目』として同じ意味で引き継ぐ (G5)。現金上書きは 支払い / 受け取り・上書き値 (空欄と 0 を区別)・適用範囲 (全期間 / 月指定)・メモを持ち、既存の月ごとの値は『月指定』として追加のみで引き継ぐ (決定 003)。設定の変更は追記のみの変更履歴に 変更前・変更後・更新者・日時 を残し、復元や移行で入った値の更新者は『システム』とする (決定 008・G3)。",
-      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T09:45:25Z",
-      "required_info_items": [
-        "data-persistence",
-        "domain-model"
-      ]
-    },
-    {
-      "id": "qa-settings-auth-web-004",
-      "question": "web の設定画面の auth で、利用者が選んでいない仕組みの選択は何か。",
-      "answer": "仕組みの選択の推定 (auth): 変更履歴の更新者は authGuard が set する actor から取り、要求本文の値を使わない。表示名は actor のメールアドレスのローカル部。設定の復元とバックアップからの復元の権限は既存 /restore と同じに留める。復元系は取込の洗替えと重ならないよう既存の直列化に揃える。差分プレビューは POST だが読むだけなのでフェンス対象から外す。",
-      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T09:45:25Z"
-    },
-    {
-      "id": "qa-settings-auth-web-003",
-      "question": "web の設定画面の auth 要件のうち、利用者の決定・承認に遡れるものは何か。",
-      "answer": "web の設定画面の認証・認可要件 (G5・C4・O5 に基づく): 設定系の新 API はすべて既存の認証・パスワード変更強制・スキーマ確認・canonicalMutationFence の内側に置き、未認証は 401 にする (G5・O5)。書込み API (全節の保存・設定の復元・バックアップからの設定の復元) はすべて CANONICAL_MUTATION_ROUTES に登録する。読むだけの API (画面の取得・元に戻す用の直前値・書き出し・差分プレビュー・比較・一覧) は登録しない (C4・O5)。画像外の既存機能 (パスワード変更・利用者管理) の権限は変えない (G5)。",
-      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T09:45:25Z",
-      "required_info_items": [
-        "auth-model"
-      ]
-    },
-    {
-      "id": "qa-settings-security-web-004",
-      "question": "web の設定画面の security で、利用者が選んでいない仕組みの選択は何か。",
-      "answer": "仕組みの選択の推定 (security): 本文上限は画面の PUT 64KB、復元 256KB、集計ルールは 500 行まで。未知のキーを拒否する。値の規則は core を正本にし zod は形だけを見る。取引先名・メモは React の既定のエスケープで表示し、CSV 出力はセル先頭の = + - @ を無害化する (ASVS V1.2.10)。エラー応答とログに設定値を出さない。バックアップ・変更履歴に秘密情報を入れない。",
-      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T09:45:25Z"
-    },
-    {
-      "id": "qa-settings-security-web-003",
-      "question": "web の設定画面の security 要件のうち、利用者の決定・承認に遡れるものは何か。",
-      "answer": "web の設定画面のセキュリティ要件 (G4・G5・C4・S4 に基づく): 設定系の新 API は公開向けの入力検証で詳細を外に出さず、本文サイズ上限を掛ける (G5・C4)。設定の復元は同じ形の版番号つき JSON だけを受け、厳密に形を検証し、サイズ上限を掛け、差分プレビューと確認を経て、復元直前に現在の設定を退避する (G4)。不正な JSON は何も変えずに拒否する (S4)。バックアップからの復元も同じ検証を通し、取引は消えない (決定 010)。外部送信は 0 件 (G5)。",
-      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T09:45:25Z",
-      "required_info_items": [
-        "security-posture"
-      ]
-    },
-    {
-      "id": "qa-settings-infrastructure-web-004",
-      "question": "web の設定画面の infrastructure で、利用者が選んでいない仕組みの選択は何か。",
-      "answer": "仕組みの選択の推定 (infrastructure): cron 式は UTC 評価なので \"0 17 * * *\"。状態・メモ・要約・形式の版は R2 オブジェクトの customMetadata に置く。失敗した回は backups/YYYY-MM-DD.failed.json の小さなマーカー (本文は理由コードのみ) を残す。復元前の自動退避は別プレフィックス backups/pre-restore/ に置き、同じ保持規則で消す。新しいバインディングは足さない。R2 の list は 1000 件ごとに cursor で続きを取る。",
-      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T09:45:25Z"
-    },
-    {
-      "id": "qa-settings-infrastructure-web-003",
-      "question": "web の設定画面の infrastructure 要件のうち、利用者の決定・承認に遡れるものは何か。",
-      "answer": "web の設定画面のインフラ要件 (決定 007・C5・U7 に基づく): 夜間バックアップを毎日 JST 2:00 に実行し、各回に 状態 (成功 / 失敗)・メモ・設定部分の要約 を持たせ、失敗した回も一覧に出す (決定 007)。バックアップの中身は従来どおり全データ (決定 007)。cron の変更は wrangler.jsonc の 1 行で、保持 30 日は据え置く (C5・U7 対象外)。",
-      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
-      "basis": "user-decision",
-      "answered_at": "2026-09-22T09:45:25Z",
+      "answered_at": "2026-09-23T13:16:38Z",
       "required_info_items": [
         "infra-topology"
       ]
     },
     {
-      "id": "qa-settings-maintenance-ops-web-004",
-      "question": "web の設定画面の maintenance-ops で、利用者が選んでいない仕組みの選択は何か。",
-      "answer": "仕組みの選択の推定 (maintenance-ops): docs/settings-screen/ に設計判断 (集計ルールの 2 種別と適用順・現金上書きの意味・設定 JSON の形式と版・バックアップの状態) と画面の証拠を置き、docs/data-schema.md と docs/ui-decisions.md を更新する。migration が途中で止まったときは Deploy の再実行で収束させる既存の手順に従う。設定 JSON の版を上げるときは core に移行関数を置き、古い版の復元を 1 世代まで受ける。設定だけの誤りは設定 JSON の復元か『元に戻す』で直し、D1 Time Travel は障害時の最後の手段に残す。",
-      "provenance": "アシスタントの推定 (利用者が選んでいない仕組みの選択。実装時に確かめる)",
-      "basis": "agent-inference",
-      "answered_at": "2026-09-22T09:45:25Z"
+      "id": "qa-imp-maintenance-ops-web-evidence-001",
+      "question": "maintenance-ops の web について、現行の実装と画像の差分は何か。",
+      "answer": "品質ゲートは pnpm lint・typecheck・test・skills:test・初期 JS 予算 (build:bundle の直後に js-budget)・verify:full (4175 の vite が前提) で、CI の headless Chrome は pointer:none である。改善要望の運用文書は docs/improvement-request.md と architecture/arch-improvement-request-pipeline.md にある。夜間 job の結果は index.ts で job ごとの JSON ログとして出る。",
+      "provenance": "repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-23T13:17:45Z"
     },
     {
-      "id": "qa-settings-maintenance-ops-web-003",
-      "question": "web の設定画面の maintenance-ops 要件のうち、利用者の決定・承認に遡れるものは何か。",
-      "answer": "web の設定画面の保守運用要件 (決定 007・008・C3・S5・O5 に基づく): 設定の変更は追記のみの変更履歴で、誰がいつ何を変えたかを辿れる (決定 008)。夜間バックアップの失敗は一覧に『失敗』として出て、利用者が気づける (決定 007)。migration は追加のみ (C3)。既存の設定機能のテストは緑のまま保ち、verify:full を緑にする (S5・O5)。",
-      "provenance": "利用者が決めた・承認したものだけから書き起こした要件。出所は 画像 design/FINAL-UI/images/18-settings.png (利用者が正本と指示)、U1-U9 (appr-foundation-settings-001)、決定 qa-settings-decision-001〜010 と qa-settings-target-platforms-001。仕組みの選択 (パス・保存先の形・部品名・具体値) は同じ章の -002 と -004 (agent-inference) に分けた。",
+      "id": "qa-imp-maintenance-ops-web-001",
+      "question": "maintenance-ops の web の方針を次の内容で確定してよいか。",
+      "answer": "core・API・DOM のテストに加え、lint・typecheck・test・skills:test・JS 予算・verify:full をすべて緑にする。0053 は表を作り直すので、適用前にバックアップを取る手順を runbook に書く。docs/improvement-request.md を更新する。",
+      "provenance": "8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。",
       "basis": "user-decision",
-      "answered_at": "2026-09-22T09:45:25Z",
+      "answered_at": "2026-09-23T13:16:38Z",
       "required_info_items": [
         "ops-runbook"
       ]
@@ -971,68 +624,15 @@
   ],
   "approval_log": [
     {
-      "id": "appr-foundation-settings-001",
-      "note": "設定画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/18-settings.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択 (2026-09-22T08:37:17Z、回答受領直後の実測時刻)。範囲外: 取引データの復元形式の変更・仕分けルール/ベンダー記憶の意味変更・共通シェルの作り直し・外部送信・web 以外の専用アプリ・バックアップ保持30日の変更。basis=user-decision。"
+      "id": "appr-foundation-imp-001",
+      "note": "改善リクエスト画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/20-improvement.png を正本とする。先立つ 7 決定 (状態=受付/対応中/完了/再確認で再確認は利用者の確認待ち・wontfix は完了へ移す / 件名欄を廃止し概要は本文先頭から自動生成・本文 1000 字 / 削除=論理削除＋元に戻す / マスク=画像・本文・診断の全て / 対象=web のみ / 関連する依頼=同じ関連ページから自動 / 番号=利用者ごと連番＋範囲選択の撮影も実装) を含む。提示は U1-U3・U5・U6 を保存する文面のまま、U4 の測定・U7・U8・U9 は項目ごとに縮めた形で示し、選択肢『この内容で承認 / 修正して再提示』から承認を選択。承認の受領直後に実測した時刻 2026-09-23T13:10:18Z (承認時刻の上界)。basis=user-decision。"
+    },
+    {
+      "id": "appr-foundation-imp-002",
+      "note": "改善リクエスト画面サイクルの要件定義について、appr-foundation-imp-001 で縮めた形で示した U4 の O1〜O4 と各測定方法、U7 の範囲内 8 項目と範囲外 5 項目、U8 の C1〜C4、U9 の I1〜I6 を、今回は spec-state.json に保存した文面のまま (逐語・省略なし) 示した。利用者は AskUserQuestion の選択肢『この逐語で承認 (推奨) / 修正して再提示』から承認を選択した。U1〜U3・U5・U6 は appr-foundation-imp-001 で保存文面のまま示しており、これで U1〜U9 の全項目を逐語で示したことになる。承認の受領直後に実測した時刻は 2026-09-23T13:16:38Z (承認時刻の上界)。basis=user-decision。"
     }
   ],
-  "reopen_log": [
-    {
-      "category": "ui-ux",
-      "platform": "web",
-      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-ui-ux-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
-      "from": "確定",
-      "reopened_at": "2026-09-22T09:42:50Z"
-    },
-    {
-      "category": "frontend",
-      "platform": "web",
-      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-frontend-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
-      "from": "確定",
-      "reopened_at": "2026-09-22T09:42:50Z"
-    },
-    {
-      "category": "backend",
-      "platform": "web",
-      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-backend-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。 加えて medium 指摘: バックアップからの復元の API と範囲が未定義。利用者の決定 qa-settings-decision-010 (設定だけ戻す) を反映する。",
-      "from": "確定",
-      "reopened_at": "2026-09-22T09:42:50Z"
-    },
-    {
-      "category": "database",
-      "platform": "web",
-      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-database-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
-      "from": "確定",
-      "reopened_at": "2026-09-22T09:42:50Z"
-    },
-    {
-      "category": "auth",
-      "platform": "web",
-      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-auth-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。 加えて high 指摘: 『変更系 (PUT screen・restore・restore/preview を除く) は CANONICAL_MUTATION_ROUTES に登録する』は字面上、保存と復元の書込み API 本体をフェンスから外し、承認済みの O5・C4 と矛盾する。",
-      "from": "確定",
-      "reopened_at": "2026-09-22T09:42:50Z"
-    },
-    {
-      "category": "security",
-      "platform": "web",
-      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-security-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
-      "from": "確定",
-      "reopened_at": "2026-09-22T09:42:50Z"
-    },
-    {
-      "category": "infrastructure",
-      "platform": "web",
-      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-infrastructure-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
-      "from": "確定",
-      "reopened_at": "2026-09-22T09:42:50Z"
-    },
-    {
-      "category": "maintenance-ops",
-      "platform": "web",
-      "reason": "完成度評価 (2026-09-22、総合 FAIL) の medium 指摘: 主根拠 qa-settings-maintenance-ops-web-001 は basis=user-decision と申告しているが、利用者が選んでいない仕組みの選択 (API パス・保存先の形・部品名など) を含み、根拠の申告が実態より強い。利用者の決定・承認に遡れる内容だけの主根拠へ差し替え、それ以外は agent-inference の補助根拠へ分ける。",
-      "from": "確定",
-      "reopened_at": "2026-09-22T09:42:50Z"
-    }
-  ],
+  "reopen_log": [],
   "category_aggregate": {
     "database": "確定",
     "auth": "確定",
@@ -1045,23 +645,43 @@
   },
   "targets": [
     {
-      "target_id": "wcag22-dragging-movements",
+      "target_id": "wcag22-use-of-color",
       "category": "ui-ux"
     },
     {
-      "target_id": "mdn-beforeunload",
+      "target_id": "react-router-searchparams",
       "category": "frontend"
     },
     {
-      "target_id": "hono-body-limit",
+      "target_id": "tanstack-query-invalidation",
+      "category": "frontend"
+    },
+    {
+      "target_id": "mdn-canvas-toblob",
+      "category": "frontend"
+    },
+    {
+      "target_id": "hono-zod-validator",
       "category": "backend"
     },
     {
-      "target_id": "mdn-string-normalize",
-      "category": "backend"
+      "target_id": "owasp-asvs",
+      "category": "security"
+    },
+    {
+      "target_id": "owasp-file-upload-cheat-sheet",
+      "category": "security"
     },
     {
       "target_id": "cloudflare-d1-migrations",
+      "category": "database"
+    },
+    {
+      "target_id": "sqlite-alter-table",
+      "category": "database"
+    },
+    {
+      "target_id": "cloudflare-d1-foreign-keys",
       "category": "database"
     },
     {
@@ -1069,320 +689,418 @@
       "category": "infrastructure"
     },
     {
-      "target_id": "cloudflare-r2-workers-api",
+      "target_id": "cloudflare-d1-limits",
       "category": "infrastructure"
     },
     {
-      "target_id": "owasp-asvs-encoding",
-      "category": "security"
-    },
-    {
-      "target_id": "cloudflare-d1-time-travel",
+      "target_id": "vitest-expect",
       "category": "maintenance-ops"
     }
   ],
   "requirements_foundation": {
-    "essential_purpose": "設定画面を、『集計ルールと復元設定を、安全に管理しますか？』という問いに 1 画面で答え切る場にする。利用者は左の節ナビ (集計ルール・名義・統計・現金上書き・データ・バックアップ、続けてアカウント・その他の管理) で目的の節へ移り、集計ルール (勘定科目と取引先の表記ゆれを 1 つの一覧で正規化後のカテゴリへまとめる) を行ごとに編集・並べ替え・一括削除し、右の『この設定の説明』でそのルールが何に影響し、いつ誰が変えたかを確かめて直前の保存値へ戻せる。名義の表示名・統計の最小月数・現金上書き (空欄と 0 円を区別) を同じ下書きで編集し、下部の保存バーで未保存の件数を見て 1 回で保存する。設定だけを JSON で書き出して別の日に復元でき、毎晩 2:00 の自動バックアップを状態・メモ付きで一覧し、現在の設定と比べてから戻せる。設定の変更で集計・分析・レポートの前提が黙って壊れないこと、戻せない操作が 0 件であることを本質とする。",
-    "background": "現行の /settings (packages/web/src/pages/Settings.tsx、457 行の 1 ファイル) はカードを縦に並べるだけで、節ナビ・説明パネル・保存バーが無く、節ごとに PUT /api/settings を別々に送る。下書き・未保存件数・409 競合の検出が無い。科目正規化マップ (account_norm_map、0000_init.sql) は (user_id, raw, norm) のみで並び順・有効フラグ・更新日時・更新者を持たず、正規化後はテキスト入力である。デザイン (design/FINAL-UI/images/18-settings.png、AUDIT.md『抽象的な分類に寄りすぎ。正規化、名義、最低月数、現金上書き、復元を具体化』) は取引先名の表記ゆれ (スターバックス / スタバ / Starbucks → カフェ・外食) も同じ一覧で扱う。名義の表示名は 4 名義 (事業・配偶者・家族・未設定) の API (GET/PUT /api/settings/owner-labels) があるが編集 UI は家計収支画面にしかない。現金補正 (cash_overrides) は月ごとの入金・支出だけで、空欄は 0 に潰れ、メモ・適用範囲が無く、core のどの集計にも効いていない。JSON 書き出しは取引を含む全データで、復元は HTML 版からの初期移行 (全データ置換、形の検査のみ・サイズ上限なし) しかない。夜間バックアップ (cron 0 18 * * * = JST 3:00、R2 backups/YYYY-MM-DD.json、30 日保持) は状態・メモを持たず失敗はログにしか出ない。設定変更の監査記録は無い。",
+    "essential_purpose": "改善リクエスト画面を、『画面の文脈を保ったまま、改善を共有しますか？』という問いに 1 画面で答え切る場にする。使っていて困ったことを、そのとき見えていた画面 (個人情報を伏せた画像) と診断情報ごと 1 画面で送り、送った依頼の状態・履歴・関連する依頼を同じ画面で追い、Claude Code / Codex がそのまま着手できる指示文として取り出す。送る前に何が伏せられるかを利用者が確かめられ、送った後も誤って消した依頼を戻せることで、改善の経路から個人情報と記録の欠けを無くす。",
+    "background": "改善要望は 2026-09-02 のサイクルで実装済みである (migrations/0029_improvement_requests.sql、packages/core/src/improvement.ts、packages/api/src/routes/improvement.ts、packages/web/src/pages/Improvement.tsx 255 行、投稿は components/ImprovementRequestButton.tsx のモーダル)。現行は見出しが『改善要望』で、件名 120 字＋本文 4000 字を入力し、状態は未対応/対応中/対応済み/対応しない。一覧に検索・状態別の件数タブ・ページングが無く、詳細にアクティビティ履歴・関連する依頼・削除が無い。番号は内部 id (TEXT) のみ。マスクは秘匿値・メール・10 桁以上の数字・URL クエリだけで、画像そのものは伏せない。プライバシーの確認も無い。design/FINAL-UI/images/20-improvement.png がこれらを 1 画面に並べた完成形を示したため、画面を作り直す。",
     "goals": [
       {
         "id": "G1",
-        "text": "/settings を 18-settings.png どおりの画面にする。パンくず『管理 / 設定』、期間タブ、見出し『設定』と問い『集計ルールと復元設定を、安全に管理しますか？』と説明文、左の節ナビ (集計ルール・名義・統計・現金上書き・データ・バックアップ、続けてアカウント・その他の管理)、集計ルールの表 (チェックボックス・並べ替えハンドル・元の表記・正規化後のカテゴリ select・削除・+ルールを追加)、右の『この設定の説明』(元の表記・正規化後のカテゴリ・影響するもの・最終更新と更新者・このルールを元に戻す・設定のヒント)、名義・統計・現金上書き・データ (4 種の出力)・復元・バックアップの各節、下部の保存バー (未保存 N 項目・変更をリセット・設定を保存) を描く。375px 幅でも崩れない。"
+        "text": "/improvement を 20-improvement.png どおりの画面にする。問いの見出しと説明・使い方リンク、共通の期間、作成フォーム (スクリーンショット任意と撮り直し/差し替え/削除、本文 0/1000、プライバシー確認 2 つ必須、自動マスキングの対象の説明、送信)、一覧 (ID・内容・関連ページの検索、すべて/受付/対応中/完了/再確認の件数タブ、選択、ID・関連ページ・概要・状態・作成日・更新日の表、10 件ずつのページング)、詳細パネル (IMP 番号と状態、本文、添付画像と拡大、マスク済み診断情報、アクティビティ、関連する依頼、状態の変更・再発行・Claude Code 用 / Codex 用のコピー・削除)、空状態、読み込み失敗と再読み込み、画面キャプチャの浮動パネル (キャプチャする・範囲を選択する)、選択中バー、コピー完了トーストを描く。"
       },
       {
         "id": "G2",
-        "text": "設定の意味を core の 1 か所で決める。集計ルールは種別 (勘定科目 / 取引先) を持つ 1 つの一覧で、勘定科目は従来どおり取込時に、取引先は集計時に 手動編集 > 仕分けルール > 集計ルール(取引先) > 自動分類 の順で適用し、照合は NFKC・大小文字を揃えた完全一致、同じ元表記は並び順で優先する。無効の行は効かない。現金上書きは支払い・受け取りそれぞれ空欄=上書きしない / 0=0 円で上書き を区別し、適用範囲 (全期間 / 月指定) で core の現金集計に実際に効かせる。名義 4 つの表示名と統計の最小月数 (既定 6、範囲 3〜24) を同じ core の規則で検証する。"
+        "text": "送る前と保存の前に個人情報を伏せる。撮影時に画面の金額・取引先名・名義・口座などを伏字にしてから画像にし、本文と診断情報は口座情報・取引先名・金額・個人名・メール・電話・住所・秘匿値を保存前にマスクする。ブラウザとサーバの 2 つの境界で同じ core の規則を掛ける。"
       },
       {
         "id": "G3",
-        "text": "設定を安全に保存する。全節の編集を 1 つの下書きに集め、未保存の件数を数え、localStorage へ自動保存・復元し、リセットと離脱の前に確認する。保存は baseSavedAt つきの 1 回の PUT で、他所の更新と競合したら 409 で上書きを防ぐ。設定の変更は追記のみの変更履歴表に 変更前・変更後・更新者・日時 を残し、右パネルの最終更新・更新者と『このルールを元に戻す』(直前の保存値を下書きへ戻す) はそこから導く。復元や移行で入った値の更新者は『システム』とする。"
+        "text": "画面の数字と判定を core の 1 か所から導く。状態の体系と遷移、概要の切り出し、IMP 番号の表示、検索・件数タブ・ページング、関連する依頼、アクティビティの表示、診断情報の表示用要約 (OS・ブラウザ・画面サイズ・利用環境・伏せたセッション ID)、マスク規則を core の純関数に置き、API は JSON に写すだけ、web は描くだけにする。"
       },
       {
         "id": "G4",
-        "text": "設定を持ち出し・戻せるようにする。設定のエクスポートは集計ルール・名義・統計・現金上書きだけを版番号つき JSON で出し、復元は同じ形だけを受ける (厳密な形の検証・サイズ上限・差分プレビューと確認・復元直前に現在の設定を自動退避)。取引は消えない。マトリクス CSV・取引 CSV・レポート HTML は選択中の期間で出す。自動バックアップは毎日 JST 2:00 に実行し、各回に 状態 (成功 / 失敗)・メモ・設定部分の要約 を持たせて失敗も一覧に出し、『比較』でその日の設定と現在の設定の差分を見てから『復元』できる。"
-      },
-      {
-        "id": "G5",
-        "text": "既存のデータと安全性を壊さない。migration は追加のみで既存行の書き換えは 0 件、既存の設定値は初回に同じ意味で引き継ぐ。設定系の変更 API は認証・パスワード変更強制・スキーマ確認・canonicalMutationFence の内側に置き、公開向けの入力検証 (詳細を外に出さない) と本文サイズ上限を掛ける。外部送信は 0 件で、画像に無い既存の設定機能 (パスワード変更・利用者管理・名義割当・仕分けルール・科目候補・手動編集・ベンダー記憶・未記帳月・HTML 版からの初期移行) は 1 つも消さない。"
+        "text": "依頼と添付を安全に保つ。利用者ごとの分離、入力検証 (本文 1000 字・プライバシー確認 2 つ・画像の形式と大きさ)、削除は論理削除で『元に戻す』で戻し 30 日後に夜間処理で本文・画像・履歴を完全消去、使い捨てトークンの再発行、夜間バックアップへ添付を入れない不変条件を API と DB の両方で守る。"
       }
     ],
     "objectives": [
       {
         "id": "O1",
-        "text": "設定画面が画像の全構成要素を描画する。",
+        "text": "改善リクエスト画面が画像の全構成要素を描画する (共通シェルの文言を除く)。",
         "serves": [
           "G1"
         ],
         "serves_goals": [
           "G1"
         ],
-        "measure": "DOM テストで、パンくず・期間タブ・問いの見出し・節ナビ 8 項目・集計ルール表の全列と操作・説明パネルの全欄・名義 4 欄・統計・現金上書き 2 行・出力 4 種・復元・バックアップ表 (日付・サイズ・ステータス・メモ・比較・復元)・保存バーが描画され、読込・空・失敗の状態テストが緑である。375px の画面で横スクロールは表の容器の中だけである。"
+        "measure": "DOM テストで、問いの見出し・作成フォームの全項目と本文の文字数・プライバシー確認 2 つが未チェックのとき送信不可・マスキングの説明・一覧の検索/5 つの件数タブ/表/ページング・詳細パネルの全区画・空状態・読み込み失敗と再読み込み・キャプチャ浮動パネル・選択中バー・コピー完了トーストの存在を確認し、全て通る。"
       },
       {
         "id": "O2",
-        "text": "集計ルールと現金上書きの意味が core の純関数 1 か所で決まり、画面・API・集計が同じ結果を出す。",
+        "text": "保存される本文・診断・画像に個人情報が残らない。",
         "serves": [
           "G2"
         ],
         "serves_goals": [
           "G2"
         ],
-        "measure": "core の単体テストで、取引先ルールの優先順位 (手動 > 仕分けルール > 集計ルール > 自動)・NFKC 照合・並び順優先・無効行の不適用、現金上書きの 空欄 / 0 / 全期間 / 月指定 の 4 通りが期待値どおりで、既存の勘定科目正規化の結果が変わらない (回帰 0 件)。"
+        "measure": "core の単体テストで 7 種 (口座・取引先名・金額・個人名・メール・電話・住所) と秘匿値の各例がマスクされ、DOM テストで撮影用の複製から金額・取引先名・名義の文字が伏字になり、API テストでクライアントのマスクを飛ばした投稿もサーバで同じ規則が掛かることが通る。"
       },
       {
         "id": "O3",
-        "text": "保存が 1 回にまとまり、競合と取り消しが安全に扱える。",
+        "text": "画面の導出が core の 1 か所に集まる。",
         "serves": [
           "G3"
         ],
         "serves_goals": [
           "G3"
         ],
-        "measure": "API 結合テストで、古い baseSavedAt の PUT が 409 を返して行が変わらず、保存ごとに変更履歴が追記され (更新・削除は 0 件)、『元に戻す』が直前の保存値を返す。DOM テストで未保存件数・下書きの復元・リセットと離脱の確認が動く。"
+        "measure": "core の improvement-screen の単体テストが状態遷移・概要・IMP 番号・検索・件数・ページング・関連・アクティビティ・診断要約を固定し、web と api に同じ計算の重複が無い (grep で 0 件)。"
       },
       {
         "id": "O4",
-        "text": "設定の書き出し・復元・バックアップが安全に往復する。",
+        "text": "削除・分離・保持期限・既存ゲートを守る。",
         "serves": [
-          "G4"
+          "G4",
+          "G1"
         ],
         "serves_goals": [
-          "G4"
+          "G4",
+          "G1"
         ],
-        "measure": "書き出した JSON を復元すると設定が一致し取引件数は不変、形の違う JSON・上限超過・版違いは 4xx で拒否され何も変わらない。復元前の自動退避が 1 件増える。scheduled のテストで 2:00 の実行が状態つきで保存され、失敗も一覧に出る。比較が差分を返す。"
-      },
-      {
-        "id": "O5",
-        "text": "既存データと安全性の回帰が 0 件である。",
-        "serves": [
-          "G5"
-        ],
-        "serves_goals": [
-          "G5"
-        ],
-        "measure": "migration が追加のみで既存行の書き換え 0 件、既存の設定値が初回に引き継がれる。設定系の新 API が CANONICAL_MUTATION_ROUTES に登録され、未認証 401・本文上限超過 413・不正入力で詳細を返さない。外部送信 0 件。既存の設定機能の DOM テストが引き続き緑。"
+        "measure": "API テストで削除→元に戻すで同じ id と番号が戻ること、削除中の行が一覧と件数に 0 件、他の利用者の依頼が 404、30 日経過の完全消去で R2 の画像と履歴が消えること、BACKUP_SNAPSHOT_SQL に改善リクエストの表が無いことが通り、pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。"
       }
     ],
     "success_criteria": [
-      "S1 (G1): /settings で 18-settings.png の構成要素がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件である。375px で崩れない。",
-      "S2 (G2): 同じ入力で画面の説明パネルの『影響するもの』・集計結果・エクスポートが同じ core の関数から出る。取引先ルールの優先順位と現金上書きの空欄 / 0 の区別がテストで固定される。既存の勘定科目正規化の結果の回帰が 0 件である。",
-      "S3 (G3): 全節の変更が 1 回の保存で確定し、競合は 409 で検出され、変更履歴は追記のみで、『元に戻す』は直前の保存値に戻る。",
-      "S4 (G4): 設定のみの JSON の書き出し→復元で設定が一致し取引は不変、不正な JSON は何も変えずに拒否される。自動バックアップが JST 2:00 に状態つきで残り、比較と復元ができる。",
-      "S5 (G5): migration は追加のみで既存行の書き換え 0 件、外部送信 0 件、画像外の既存設定機能は 1 つも消えない。verify:full が緑である。"
+      "S1 (G1): /improvement で 20-improvement.png の構成要素 (共通シェルの文言を除く) がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件である。",
+      "S2 (G2): 送信された画像・本文・診断情報に、口座情報・取引先名・金額・個人名・メールアドレス・電話番号・住所・秘匿値が 1 件も残らない。",
+      "S3 (G3): 状態・概要・番号・検索・件数・ページング・関連・アクティビティ・診断要約・マスクが core だけで計算され、API と web はその結果を写すだけである。",
+      "S4 (G4): 他の利用者の依頼の取得・変更・削除・復元が 404、不正な入力 (空の本文、1000 字超、プライバシー確認の欠け、候補外の状態、形式外・2MB 超の画像) が 400 になり、削除した依頼は『元に戻す』で同じ番号のまま戻る。"
     ],
     "stakeholders": [
-      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 取込のたびに増える取引先の表記ゆれや勘定科目の違いを 1 か所でまとめ、名義の呼び方・分析の最小月数・現金の扱いを決め、その設定を壊しても前日の状態や書き出したファイルから確実に戻したい。どの設定が何に効いているかを変更前に知りたい。",
-      "SH2 保守者 (同一人物、および Claude Code などのコーディングエージェント): 集計ルールの適用順・現金上書きの意味・設定の書き出し形式が core の純関数と docs・テストで 1 か所に固定され、設定画面・集計・バックアップの解釈がずれないこと。"
+      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 使っていて困ったことを、その画面を離れずに、個人情報を心配せずに送りたい。送った依頼がいまどうなっているかを一覧で追い、対応済みのものを確かめたい。",
+      "SH2 開発兼運用者 (Claude Code / Codex で改善する): 依頼を、画面と診断情報つきの指示文として取り出し、追加の説明なしに着手したい。受付から完了までの状態を変え、その経緯を履歴に残したい。"
     ],
     "scope": {
       "in": [
-        "設定画面 (18-settings.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと pages/settings/ 配下への分割、節ナビ・説明パネル・保存バー",
-        "集計ルール (勘定科目 / 取引先の種別・並び順・有効・更新日時・更新者) の追加のみの migration と、取引先ルールの集計時適用を core に置くこと",
-        "現金上書き (支払い / 受け取り・空欄と 0 の区別・適用範囲・メモ) の追加のみの migration と core の現金集計への反映",
-        "名義 4 つの表示名を設定画面から編集 (既存 API と core の検証を共有)",
-        "設定画面の下書き・未保存件数・自動保存・リセットと離脱の確認・baseSavedAt による 409",
-        "設定の変更履歴表 (追記のみ) と、説明パネルの最終更新・更新者・元に戻す",
-        "設定のみの版番号つき JSON の書き出し・復元 (厳密な検証・サイズ上限・差分プレビュー・復元前の自動退避)、出力 3 種の期間連動",
-        "夜間バックアップの JST 2:00 への変更、状態・メモ・設定要約の保存、失敗の一覧表示、比較",
-        "画像外の既存設定機能を『アカウント』『その他の管理』の節として残すこと",
-        "system-spec / specs / architecture / features / tasks / docs への反映"
+        "改善リクエスト画面 (20-improvement.png の構成要素と読込 / 空 / 失敗の各状態) の作り直しと、Improvement.tsx の pages/improvement/ 配下への分割。見出しを『改善リクエスト』に揃える",
+        "作成フォームの画面内への配置 (件名欄を廃止し本文 1000 字、概要は本文 1 行目から core で最大 40 字を切り出す)、プライバシー確認 2 つの必須化、自動マスキングの対象の説明",
+        "画面キャプチャの浮動パネル (キャプチャする・範囲を選択する)。右下の『改善を送る』から、どの画面でもパネルを出し、撮影後に /improvement の作成フォームへ画像と関連ページを持って移る。撮り直しは関連ページへ戻ってパネルを出す",
+        "撮影用 DOM 複製の伏字 (金額・取引先名・名義・口座など) と、本文・診断情報のマスク規則の拡張 (取引先名は利用者自身の取引先の辞書、金額・電話・住所・個人名の規則)",
+        "状態を受付 / 対応中 / 完了 / 再確認 (利用者の確認待ち) に改め、既存の対応しない (wontfix) は完了へ移して理由をアクティビティに残す。30 日削除の起点は完了のまま",
+        "利用者ごとの連番 (IMP-024 表示、削除しても再利用しない)、アクティビティ履歴の表、論理削除の列を足す migration 0053 と、削除・復元・一覧の検索/件数/ページングの API",
+        "詳細パネル (マスク済み診断の表示用要約、関連する依頼 = 同じ関連ページの他の依頼を新しい順に最大 3 件、状態の変更、再発行、Claude Code 用 / Codex 用のコピー、削除)、選択中バー、コピー完了トースト",
+        "core の純関数 improvement-screen と API の拡張、夜間の完全消去の相乗り"
       ],
       "out": [
-        "取引データそのものの復元形式の変更 (HTML 版からの初期移行は現状のまま『その他の管理』に残す)",
-        "既存の仕分けルール・ベンダー記憶の意味の変更",
-        "共通シェル (サイドバー・ヘッダ・フッタ) の作り直し",
-        "外部 LLM・外部サービスへの送信",
-        "複数テナント化、web 以外の専用アプリ",
-        "バックアップの保持期間 (30 日) の変更"
+        "共通シェルの文言 (取引ライン / 最終更新 / 月次クローズ / フッター) の変更。画像の文言は期待値にしない",
+        "改善を起点とした自動修正・自動 PR 作成、外部の課題管理サービスへの連携 (2026-09-02 サイクルの範囲外を維持)",
+        "関連する依頼の手動紐付け (自動導出だけにする)",
+        "複数利用者間での依頼の共有と権限分離 (単一利用者の運用を維持)",
+        "モバイル・タブレット・デスクトップ専用アプリ (レスポンシブ web で狭い幅に対応する)"
       ]
     },
     "constraints": [
-      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle と R2、web は React 18 + react-router-dom 7 + TanStack Query 5)。算出は core に置き api/web へ重複実装しない。",
-      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、共通部品 (PageHeader・Button・ConfirmDialog・PeriodPicker・SelectionCheckbox・DataTable・CategoryPicker) を使う。",
-      "C3 データ: migration は追加のみで 0050 の次の番号から。既存行の書き換えはしない。schema-guard の EXPECTED_D1_MIGRATION を合わせる。",
-      "C4 安全: 設定系の変更 API は canonicalMutationFence に登録し、公開向け入力検証 (publicJsonValidator) と本文サイズ上限を掛ける。外部送信 0 件。",
-      "C5 運用: 単一テナント (TENANT_ID=default) の前提を変えない。cron の変更は wrangler.jsonc の 1 行で、R2 の保持 30 日は据え置く。"
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle と R2 (FILES)、web は React 18 + react-router-dom 7 + TanStack Query 5)。判定と導出は core に置き api/web は写すだけにする。",
+      "C2 データ: D1 の migration は 0053 から採番する。既存の improvement_requests の行・R2 の画像・トークンを失わない。1000 字を超える既存の本文は読めるまま保つ (新規と編集だけ 1000 字で検証)。論理削除の列を足した後、全ての読み取り経路が削除中の行を読まない。",
+      "C3 運用: 夜間の scheduled 処理 (0 18 * * *) の予算内に完全消去を相乗りさせ、新しい Cron を増やさない。改善リクエストの表を BACKUP_SNAPSHOT_SQL へ入れない。単一利用者の運用。",
+      "C4 品質とプライバシー: 撮影はブラウザ内で完結させ外部へ画面を送らない。初期 JS 予算・verify:full・skills:test を緑のまま保つ。public repository のため実データをテストと成果物へ含めない。"
     ],
     "concrete_intents": [
       {
         "id": "I1",
-        "text": "Settings.tsx を pages/settings/ 配下へ分割し、見出し・期間タブ・節ナビ・各節・説明パネル・保存バーの構成に作り直す。画像外の既存機能はアカウント / その他の管理の節へ移す。",
+        "text": "Improvement.tsx を pages/improvement/ 配下へ分割し、問いの見出し・作成フォーム・一覧・詳細パネル・空/失敗の状態・選択中バーの構成に作り直す。選択中の依頼・タブ・検索・ページを URL に保つ。",
         "serves": [
-          "G1",
-          "G5"
+          "G1"
         ]
       },
       {
         "id": "I2",
-        "text": "core に設定画面の算出 (仮称 settingsScreen) と、集計ルールの照合・適用 (勘定科目 / 取引先)・現金上書きの解決・設定 JSON の検証と差分を新設する。",
-        "serves": [
-          "G2",
-          "G4"
-        ]
-      },
-      {
-        "id": "I3",
-        "text": "集計ルールと現金上書きの列追加・変更履歴表の追加のみの migration と、GET / PUT の設定 API (baseSavedAt つき・409・変更履歴の追記) を作り、canonicalMutationFence に登録する。",
-        "serves": [
-          "G2",
-          "G3",
-          "G5"
-        ]
-      },
-      {
-        "id": "I4",
-        "text": "下書きの localStorage 自動保存・復元・未保存件数・リセットと離脱の確認を予算画面の先例 (draft.ts・BudgetSaveBar) にならって作る。",
+        "text": "core に improvement-screen を新設し、状態の体系と許される遷移、概要の切り出し、IMP 番号の表示、検索・件数タブ・ページング、関連する依頼、アクティビティの表示、診断情報の表示用要約を純関数で導く。",
         "serves": [
           "G3"
         ]
       },
       {
-        "id": "I5",
-        "text": "設定のみの JSON 書き出し・復元 API (版番号・厳密検証・サイズ上限・差分プレビュー・復元前退避) と、出力 3 種の期間連動を作る。",
+        "id": "I3",
+        "text": "マスク規則を拡張し (取引先名の辞書・金額・電話・住所・個人名)、撮影用 DOM 複製の伏字を実装し、ブラウザとサーバの両方で同じ規則を掛ける。",
         "serves": [
-          "G4",
-          "G5"
+          "G2"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "migration 0053 で状態の CHECK の張り替え (wontfix→done の移し替え)、利用者ごとの連番、論理削除の列、アクティビティの表を足し、削除・復元・状態変更・再発行で履歴を書く API と夜間の完全消去を実装する。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "画面キャプチャの浮動パネル (全体と範囲選択) を作り、右下の『改善を送る』から撮影して作成フォームへ移る流れにする。",
+        "serves": [
+          "G1",
+          "G2"
         ]
       },
       {
         "id": "I6",
-        "text": "夜間バックアップを JST 2:00 にし、R2 の customMetadata に状態・メモ・設定要約を持たせ、失敗も記録する。一覧 API に状態・メモ、比較 API に差分を足す。",
+        "text": "入力検証 (本文 1000 字・プライバシー確認 2 つ・状態の候補・画像の形式と大きさ) を core と API の zod で揃え、他の利用者の依頼を 404 にする。",
         "serves": [
           "G4"
         ]
       }
     ],
     "confirmed": true,
-    "approval_ref": "appr-foundation-settings-001"
+    "approval_ref": "appr-foundation-imp-002"
   },
-  "decisions": [],
+  "decisions": [
+    {
+      "id": "D-imp-008",
+      "question": "夜間 scheduledMaintenance の D1 予算は 49/49 (Free の 1 invocation あたり 50 クエリ、1 本は必ず残す) で満杯。削除した改善リクエストを 30 日後に行と履歴ごと消す DELETE を 1 本足すにはどうするか。",
+      "status": "confirmed",
+      "options": [
+        {
+          "id": "db-trigger",
+          "label": "DB トリガで既存 UPDATE に連動させる",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "month",
+            "tco": "D1 Free の範囲内で月額 0 円。構築は migration 0053 にトリガ 1 本。運用は、トリガが暗黙に行を消すことを runbook とテストで周知し続ける費用。撤退はトリガの DROP だけ。"
+          },
+          "free_tier_limits": "D1 Free: 1 invocation あたり 50 クエリ。トリガ内の文は呼び出し元の 1 文に含まれ、予算の本数を増やさない。",
+          "goal_fit": "G4 (30 日後の完全消去) を、夜間予算の本数を変えずに満たす。",
+          "security_fit": "消去の条件が SQL の中に隠れるため、コードレビューで保持期限の実装を追いにくい。",
+          "pros": [
+            "予算の本数が変わらない",
+            "他の job に手を入れない"
+          ],
+          "cons": [
+            "消去がアプリのコードに現れず、テストもトリガの存在を前提にする"
+          ],
+          "risks": [
+            "表の作り直し (0053 の CHECK 張り替え) でトリガを落とすと、消去が黙って止まる"
+          ],
+          "lock_in": "低 (SQLite 標準のトリガ)",
+          "ops_burden": "中 (見えない副作用の周知)",
+          "evidence_refs": [
+            "https://www.sqlite.org/lang_createtrigger.html",
+            "https://developers.cloudflare.com/d1/platform/limits/"
+          ]
+        },
+        {
+          "id": "borrow-slot",
+          "label": "他 job の枠を 1 本回す",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "month",
+            "tco": "D1 Free の範囲内で月額 0 円。構築は audit_header_retention の読み取りを 1 本減らす改修と、そのテストの更新。運用費は増えない。撤退は元の読み取りを戻すだけ。"
+          },
+          "free_tier_limits": "D1 Free: 1 invocation あたり 50 クエリ。合計 49 本を維持し、余裕 1 本は変わらない。",
+          "goal_fit": "G4 の完全消去をアプリのコードとテストに明示したまま満たす。",
+          "security_fit": "保持期限の実装がコードに現れ、レビューとテストで追える。",
+          "pros": [
+            "消去の条件がコードとテストに現れる",
+            "新しい Cron を足さない"
+          ],
+          "cons": [
+            "audit_header_retention のログから、削除前の容量 (bytes) が消える"
+          ],
+          "risks": [
+            "今後 job を足すたびに、同じように枠を削る判断を迫られる"
+          ],
+          "lock_in": "低",
+          "ops_burden": "低",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/limits/",
+            "https://developers.cloudflare.com/workers/configuration/cron-triggers/"
+          ]
+        },
+        {
+          "id": "on-read",
+          "label": "一覧を開いたときに消す",
+          "cost_model": {
+            "category": "free",
+            "amount": 0,
+            "currency": "JPY",
+            "billing_period": "month",
+            "tco": "D1 Free の範囲内で月額 0 円。構築は一覧 API に消去の文を足すだけ。運用は、画面を開かない利用者のデータが期限を過ぎても残ることの説明。"
+          },
+          "free_tier_limits": "リクエストごとの D1 クエリ上限 (Free で 50) の中で、一覧の読み取りに消去の文が加わる。",
+          "goal_fit": "画面を開かなければ消えないため、G4 の『30 日後に完全消去』を期限どおりには守れない。",
+          "security_fit": "読み取りの経路に削除の副作用が入り、GET が安全な操作でなくなる。",
+          "pros": [
+            "夜間予算に触れない"
+          ],
+          "cons": [
+            "保持期限が利用者の操作に依存する",
+            "GET に書き込みが入る"
+          ],
+          "risks": [
+            "長く開かれないアカウントで、削除した依頼の本文と画像が期限を過ぎて残る"
+          ],
+          "lock_in": "低",
+          "ops_burden": "中",
+          "evidence_refs": [
+            "https://developers.cloudflare.com/d1/platform/limits/"
+          ]
+        }
+      ],
+      "recommendation": {
+        "option_id": "db-trigger",
+        "rationale": "夜間予算の本数と既存 job の両方に手を入れずに済むため、提示時点では DB トリガを推奨とした。",
+        "comparison_basis": {
+          "goal_fit": "db-trigger と borrow-slot は G4 を期限どおり満たす。on-read は利用者の操作に依存し、満たせない。",
+          "tco": "3 案とも D1 Free の範囲内で月額 0 円。構築費は borrow-slot が最も大きい (既存 job の改修とテスト)。",
+          "security": "borrow-slot は保持期限がコードに現れる。db-trigger は SQL に隠れる。on-read は GET に副作用が入る。",
+          "operations": "db-trigger は 0053 の表の作り直しでトリガを落とす危険がある。borrow-slot は監査ヘッダの削除前の容量ログを失う。",
+          "lock_in": "3 案とも低い (SQLite 標準・アプリ内の改修)。"
+        },
+        "caveats": [
+          "この推奨は、公式ドキュメントの照合 (latest_checked_at) より前に、repo の予算表 (scheduled-maintenance-budget.ts の SCHEDULED_D1_QUERY_PLAN_MAX=49) だけを根拠に示した。本 record は利用者の選択の後に起こしたもので、latest_checked_at は後から D1 の上限 (Free で 1 invocation あたり 50 クエリ) を照合した実測時刻である。照合の結果、推奨の前提は変わらなかった。",
+          "選ばれた borrow-slot では、audit_header_retention のログから削除前の bytes が消える。削除前の件数は、削除後の件数と消した件数の和で出し続ける。",
+          "回す元を audit_header_retention にしたのは、利用者の選択を受けて repo を調べた結果の推定である。読んだ値が判定に使われていないことは index.ts と audit-log.ts で確かめた。",
+          "選択の時点で利用者に示したのは 3 案のラベルと『(推奨)』の印だけで、本 record の比較 (各案の運用リスク、選ばれた案では監査ヘッダのログから削除前の bytes が消えること) は示していない。比較は選択の後に書いた。"
+        ],
+        "confidence": "medium",
+        "latest_checked_at": "2026-09-23T13:21:40Z"
+      },
+      "serves_goals": [
+        "G4"
+      ],
+      "user_decision": {
+        "option_id": "borrow-slot",
+        "confirmed_at": "2026-09-23T13:16:38Z",
+        "note": "AskUserQuestion で 3 案 (DB トリガ連動 (推奨) / 他 job の枠を 1 本回す / 一覧を開いたときに消す) を示し、利用者は推奨でない『他 job の枠を 1 本回す』を選んだ。confirmed_at は回答を受け取った直後に実測した時刻で、選択時刻の上界である。qa-imp-decision-008 と同じ決定。"
+      }
+    }
+  ],
   "knowledge_candidates": [],
   "design_applications": {
     "ui-ux": {
-      "text": "Information Design card を適用した。文脈先行: 利用者は取込のたびに増える表記ゆれを直し、失敗すると集計が黙って変わる。優先順位の明示化: task 頻度 × 失敗コストで、保存バーの未保存件数 > 集計ルールの表 > 復元・バックアップ > 他の節と順位を置いた。グループ化と近接: 画像の 6 節を節ナビで束ね、画像外の既存機能は『アカウント』『その他の管理』へ下げて束を崩さない。加工: 現金上書きの空欄と 0 を凡例の文で言い分け、バックアップの状態を色だけでなく文字のバッジで示す。削減は行わず、画像外の機能を消さない理由 (決定 004) を残した。",
-      "recorded_at": "2026-09-22T09:45:25Z",
+      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付ける』を改善リクエスト画面の段の順序に適用した。最も頻度が高いのは『困ったその場で 1 件送る』なので、作成フォームを一覧より上に置き、どの画面からでも右下の『改善を送る』から撮影して同じフォームへ届くようにする。失敗コストが最も高いのは『個人情報を含んだまま送る』と『誤って消す』である。前者に対してはプライバシー確認 2 つとマスク対象の説明を送信ボタンの直前に置き、確認の欠けたまま送れないようにする。後者に対しては完了トーストに『元に戻す』を置く。一覧と詳細は左右に並べ、選んだ依頼の状態・履歴・関連する依頼を一覧から目を離さずに追えるようにする。",
+      "recorded_at": "2026-09-23T13:17:45Z",
       "basis": "agent-inference"
     },
     "frontend": {
-      "text": "Clean Architecture card と Information Design card を適用した。Dependency Rule: 未保存件数・影響するもの・空欄 / 0 の表記は core の純関数が決め、web はその結果を描くだけにして数え方を持たない。Boundary data: 画面へ渡す値は API の応答 (画面用の単純な形) に閉じ、D1 の行の形を持ち込まない。Information Design の加工: 保存値 (null と 0) と表示値 (空欄と『0 円』) を分け、形式の比較選定では集計ルールを表 (その場編集・並べ替え) にした。",
-      "recorded_at": "2026-09-22T09:45:25Z",
+      "text": "Clean Architecture card の依存方向を、web が状態の遷移・概要・番号・件数・関連の計算を持たない構成に適用した。Improvement.tsx と ImprovementRequestButton.tsx が部品の中に抱えている整形を pages/improvement/ に分け、core の improvement-screen を呼ぶのは view-model だけにする。URL の検索パラメータ (選択中の id・タブ・検索語・ページ) を表示条件の正本にするので、同じ URL を開けば同じ一覧と詳細が出る。Information Design card の『加工』(保存値と表示値を同一視しない) は view-model の出力に当てた。連番 24 は IMP-024、status の done は『完了』、ISO 時刻は日付の表示、セッション ID は末尾 4 桁へ写す。どれも core の関数が返した値を描くだけで、部品の中では変換しない。『形式の比較選定』は一覧に当てた。表 (並べ替え・絞り込み・選択に強い) とカード (視覚要素が主のとき強い) を比べ、ID・関連ページ・状態・日付の 6 列で見比べて選ぶ用途なので表を採った。撮影と範囲選択のコードは最初の描画に要らないので、遅延読み込みにする。",
+      "recorded_at": "2026-09-23T13:33:08Z",
       "basis": "agent-inference"
     },
     "backend": {
-      "text": "API Design Patterns・Clean Architecture・DDD の 3 card を適用した。Concurrency and consistency: 全節の保存は baseSavedAt を版として受け、古ければ 409 で何も書かない。Resource and operation semantics: 差分プレビューは読むだけ、復元は書込みと分ける。Dependency Rule: 取引先ルールの照合と現金上書きの解決は入出力を持たないので core に置き、route は D1/R2 から組んだ入力を渡して結果を書くだけにする。DDD の Ubiquitous Language: 『集計ルール』『現金上書き』『元に戻す』を画面・API・テストで同じ語と意味に揃える。",
-      "recorded_at": "2026-09-22T09:45:25Z",
+      "text": "Clean Architecture card の Dependency Rule を、状態の遷移・概要・IMP 番号・検索・件数タブ・ページング・関連する依頼・アクティビティ・診断の表示用要約の置き場所に適用した。これらは入出力を持たない計算なので、core の improvement-screen 1 か所に置く。api は D1 と R2 の読み書きだけを担う。API Design Patterns card の『Resource and operation semantics』と『Error model』は、新しい経路の意味づけに当てた。削除は DELETE /api/improvements/:id で論理削除、復元は POST /api/improvements/:id/restore にする。どちらも同じ状態へ何度送っても結果が変わらない (冪等) ようにする。他の利用者の id と存在しない id はどちらも 404、zod の検証に落ちた入力は 400 にして、欄ごとの理由を返す。DDD card の『Aggregate』と『Domain Event』は、依頼と履歴の書き方に当てた。依頼の行と、状態の変更・再発行・削除・復元の履歴 1 行は、同じ D1 batch で書く。履歴は起きた事実として追記するだけで、書き換えない。",
+      "recorded_at": "2026-09-23T13:33:08Z",
       "basis": "agent-inference"
     },
     "database": {
-      "text": "DDD card を適用した。Aggregate: 利用者 1 人の設定 (集計ルール・名義・統計・現金上書き) を 1 回の保存で守る整合性の単位とし、変更と変更履歴の追記を同じ batch に入れる。Domain Event: 変更履歴は『設定が変わった』という過去の事実を追記だけで残し、元に戻すはその事実を読むだけで行を消さない。Entity / Value Object: 集計ルールの行は識別子で追い (元に戻す・更新者)、現金上書きの値は空欄と 0 を区別する値として扱う。",
-      "recorded_at": "2026-09-22T09:45:25Z",
+      "text": "DDD card の『Entity / Value Object』を、0053 で足す列の選び方に適用した。改善リクエストは利用者ごとの連番で追う Entity なので、連番を列に持ち、削除しても採番表の最後の番号を戻さない。一方、概要 (本文の先頭 40 字)・IMP 番号の表示形・件数・関連する依頼は、他の値から決まる導出値なので保存しない。同じ card の『Domain Event』は履歴の表に当てた。状態の変更・再発行・削除・復元は起きた事実なので、1 件ずつ行として追記し、書き換えない。件名の列は、既存行の値を失わないよう残し、新規行では NULL にする。",
+      "recorded_at": "2026-09-23T13:43:22Z",
       "basis": "agent-inference"
     },
     "auth": {
-      "text": "Secure by Design card を適用した。Least privilege / deny by default: 新しい書込み API はすべて明示登録し、登録漏れが素通りにならないよう『書込みは登録・読むだけは除外』の規則で分けた。Threat modeling: 資産は設定と取引、境界は認証の内側、悪用は他者の更新を上書きすることで、baseSavedAt の 409 がこれを防ぐ。Defense in depth: 認証・パスワード変更強制・スキーマ確認・書込みフェンスの 4 層の内側に置き、1 層の漏れを全体の漏れにしない。",
-      "recorded_at": "2026-09-22T09:45:25Z",
+      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、新しい削除・復元・一覧の検索の経路の置き場所に適用した。新しい経路はすべて authGuard 配下の /api/* に置き、各クエリの条件に user_id を必ず含める。そのため、他の利用者の依頼を指す id は、存在しても存在しなくても同じ 404 になる。agent 経路はトークンのハッシュだけで照合し、再発行した時点で古いハッシュを上書きして即座に失効させる。",
+      "recorded_at": "2026-09-23T13:17:45Z",
       "basis": "agent-inference"
     },
     "security": {
-      "text": "Secure by Design card を適用した。Secure defaults: 復元は何も変えずに拒否する側へ倒し、1 つでも不正なら全体を捨てる。Data lifecycle: 設定の書き出しは取引を含めない最小の形にし、復元直前の退避は同じ保持 30 日で消す。Assurance: 形の違う JSON・上限超過・版違いを 4xx で拒否し何も変わらないことを、悪用ケースのテストで確かめる。",
-      "recorded_at": "2026-09-22T09:45:25Z",
+      "text": "Secure by Design card の『Defense in depth』を、マスクの掛け方に適用した。マスク規則は core の 1 か所に置き、ブラウザ (送信前の表示と撮影用の複製) とサーバ (保存前) の独立した 2 層で同じ関数を呼ぶ。そのため、クライアントのマスクを飛ばした投稿にもサーバで同じ規則が掛かる。取引先名と個人名は正規表現では拾えないので、利用者自身の transactions.partner と owner_labels から辞書を作って伏せる。辞書は保存せず、リクエストのたびに作る。同じ card の『Data lifecycle』は、保存から消去までに当てた。画像はマジックバイトで JPEG/PNG か確かめ、2MB 以下に限る。完了から 30 日で添付・診断・トークンを消し、論理削除から 30 日で行と履歴と R2 の画像を完全に消す。夜間バックアップ (BACKUP_SNAPSHOT_SQL) には改善リクエストの表を入れない。",
+      "recorded_at": "2026-09-23T13:33:08Z",
       "basis": "agent-inference"
     },
     "infrastructure": {
-      "text": "本章に引かれる deep knowledge card は無い (resource-map の read_when に infrastructure を含む card が無い)。そのため card の適用は主張せず、上流指針 (Google SRE の operations・reliability) の反映を doctrine の節にだけ記録した。本章の確定内容 (JST 2:00・状態とメモ・失敗の一覧化・保持 30 日据え置き) は決定 007 と C5 から直接来ている。",
-      "recorded_at": "2026-09-22T09:45:25Z",
+      "text": "本章が引く design card は 0 件である (resource-map の read_when に infrastructure を名指す card が無い)。そのため、本章の設計判断は上流指針の Google SRE (reliability / operations) に接地させ、上流指針の節に記した。ここでは、その判断を card に帰属させないことだけを明記する。夜間の D1 予算 49/49 の配分は決定 D-imp-008 (他 job の枠を 1 本回す) による。",
+      "recorded_at": "2026-09-23T13:33:08Z",
       "basis": "agent-inference"
     },
     "maintenance-ops": {
-      "text": "Clean Code card を適用した。Intention-revealing names: 変更履歴・元に戻す・失敗の状態を、画面・API・docs で同じ語にする。Executable examples: 集計ルールの適用順と現金上書きの 4 通り、復元の拒否を、内部構造ではなく観測できる結果としてテストに置く。Continuous refactoring: 457 行の Settings.tsx を節ごとに分け、既存機能のテストを緑のまま小さく移す。",
-      "recorded_at": "2026-09-22T09:45:25Z",
+      "text": "Clean Code card の『Appropriate abstraction / DRY』を、判定の置き場所と検証の配分に適用した。状態の遷移・概要・番号・件数・関連・マスクは同じ知識なので core に 1 つだけ置き、web と api に同じ計算が無いことを grep で 0 件と確かめる (O3)。同じ card の『Executable examples』は、テストに当てた。core の単体テストが上の判定を例で固定する。API テストは境界 (404・400・論理削除・完全消去・バックアップの対象外) の観測できる結果だけを見て、DOM テストは画像の構成要素の存在と操作だけを見る。『Continuous refactoring』は分割の進め方に当てた。Improvement.tsx は一度に書き換えず、pages/improvement/ へ部品ごとに移す。1 回ごとに lint・typecheck・test を緑にしてから次へ進む。",
+      "recorded_at": "2026-09-23T13:33:08Z",
       "basis": "agent-inference"
     }
   },
   "hearing_progress": {
-    "loop_count": 1,
+    "loop_count": 4,
     "next_question": null,
     "complete": true
   },
   "doctrine_applications": {
     "ui-ux": {
       "presentation": {
-        "text": "設定画面では、画像の並べ替えハンドルに上下移動ボタンを併設してドラッグ無しでも順序を変えられる形へ反映した (WCAG 2.2 SC 2.5.7)。ステータスの『成功』『失敗』『最新』は色だけでなく文字のバッジで示し、空欄と 0 の違いは凡例の文で説明する。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "状態を色だけで伝えない規則を、受付 / 対応中 / 完了 / 再確認の 4 状態と件数タブ・表の状態列・詳細の状態表示に反映した。どの状態にも必ず文字ラベルを添える。送信を止める理由 (プライバシー確認の欠け・本文の超過) は、送信ボタンの近くに文で示す。削除と『元に戻す』、コピー完了も文で結果を伝える。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       }
     },
     "frontend": {
       "application-architecture": {
-        "text": "設定画面のフロントエンドでは、全節の編集を 1 つの下書きに集めて 1 回の保存で送る container と、節ごとの表示部品を分ける形へ反映した。下書きは端末の localStorage に利用者単位で閉じ、ログアウトで消し、サーバの状態 (問い合わせのキャッシュ) とは混ぜない。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "pages/improvement/ を ImprovementPage・view-model・作成フォーム・一覧・詳細パネル・撮影パネル・選択中バー・トーストに分け、core を呼ぶのは view-model だけにする形へ反映した。撮影パネルは Layout の右下の『改善を送る』から開き、撮った画像と関連ページをメモリ上の受け渡しで /improvement の作成フォームへ渡す。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       },
       "presentation": {
-        "text": "設定画面のフロントエンドでは、未保存があるときだけ beforeunload で離脱確認を出し (独自文言はブラウザが出さないので画面内の保存バーで件数を先に見せる)、アプリ内リンクでは確認ダイアログで同じ判断を求める形へ反映した。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "狭い幅では作成フォーム・一覧・詳細を縦に積み、表を横スクロールの容器に入れる形へ反映した。範囲選択はポインタのドラッグとキーボード (矢印キーで矩形を動かし Enter で確定) の両方で操作でき、選んだ範囲を文字でも示す。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       }
     },
     "backend": {
       "application-architecture": {
-        "text": "設定画面のバックエンドでは、取引先ルールの適用を保存済み明細の書換えではなく集計時の純関数へ置く形へ反映した。ルールを消せば次の集計から元に戻るので、recomputeFromDeals は勘定科目ルールが変わった保存に限る。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "routes/improvement.ts から一覧の絞り込みと件数の計算を外し、core の improvement-screen を唯一の計算元にする形へ反映した。状態の変更・再発行・削除・復元の各経路は、core が許した遷移だけを D1 batch 1 つで書き (依頼の行と履歴の行を同じ batch に入れる)、結果を JSON に写す。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       },
       "data-access": {
-        "text": "設定画面のバックエンドでは、全節の変更・変更履歴の追記・JSON snapshot の無効化を 1 つの D1 batch にまとめ、baseSavedAt が古ければ 409 で何も書かない形へ反映した。復元は差分プレビューと本適用を分け、本適用の直前に現在の設定を R2 へ退避する。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "削除中の行を読まない条件 (deleted_at IS NULL) を、improvement_requests を読む全経路 (一覧・件数・詳細・画像・指示文・コピー記録・状態・agent の 2 経路・関連する依頼) に掛ける形へ反映した。経路の一覧を仕様に持ち、経路ごとの API テストで条件の抜けを検出する。取引先名の辞書は、作成時に利用者自身の transactions.partner だけを 1 本のクエリで読む。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       }
     },
     "database": {
       "data-access": {
-        "text": "設定画面のデータベースでは、集計ルール・現金上書き・変更履歴の 3 表の主キー先頭を利用者にし、読み手は必ず利用者で絞る形へ反映した。既存の account_norm_map と cash_overrides は初回の写しの元として読むだけで、行を消さない。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "新しい列と表の書き込み元を 1 経路ずつに限る形へ反映した。seq は作成時に採番表と同じ batch でだけ付ける。deleted_at は削除で付けて復元でだけ外し、夜間の完全消去は読むだけで行を消す。履歴の行は作成・状態の変更・再発行・削除・復元の各経路が依頼の行と同じ batch で書き、依頼の行が消えると ON DELETE CASCADE で一緒に消える。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "設定画面のデータベースでは、migration を追加のみにして d1_migrations で二重適用を防ぎ、schema-guard の期待番号を上げる形へ反映した。写しの migration が途中で止まっても旧表は残るので、Deploy の再実行で収束する。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "0053 では表を作り直す (新しい表を作り、行を写し、古い表を消し、名前を変える)。これで既存の行・画像のキー・トークンのハッシュを 1 件も落とさず、wontfix の行だけを done と履歴 1 行に移す形へ反映した。適用前には D1 のバックアップを取る手順を runbook に置く。schema-guard.ts の EXPECTED_D1_MIGRATION を 0053 のファイル名へ進め、migration 前の D1 では Worker が新しい経路を動かさないようにする。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       }
     },
     "auth": {
       "authentication": {
-        "text": "設定画面の認証では、新しい設定 API をすべて既存のセッション検証とパスワード変更強制の内側に置き、未認証は 401 にする形へ反映した。変更履歴の更新者はセッションの actor から決め、要求本文の値を使わない。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "削除・復元・一覧の検索を、既存のセッション Cookie (HttpOnly・Secure・SameSite=Strict) の認証だけで通す形へ反映した。agent 経路のトークンは再発行で旧ハッシュを上書きし、削除中・完全消去済みの依頼では 404 を返す。新しい資格情報の種類は増やさない。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       },
       "security": {
-        "text": "設定画面の認可では、設定の保存と復元を書込みフェンスへ登録して取込の洗替えと重ならないようにし、復元の権限は既存の /restore と同じに留める形へ反映した (ASVS V8 認可)。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "他の利用者の依頼を指す id を、取得・画像・指示文・コピー記録・状態の変更・再発行・削除・復元のどれでも 404 にそろえる形へ反映した。存在するかどうかを応答の違いから推測させない。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       }
     },
     "security": {
       "security": {
-        "text": "設定画面では、復元 JSON の厳密な検証 (未知キー拒否・件数と長さの上限・全か無か) と本文上限 413 を入れ、CSV 出力を RFC 4180 のエスケープとセル先頭の式文字の無害化で守る形へ反映した (ASVS 5.0 V1.2.10・V2 入力検証)。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "改善リクエストの入力面を 5 つの境界で閉じる形へ反映した。本文 (1 字以上 1000 字以下、既存の超過分は読むだけ)、プライバシー確認 2 つ (両方 true)、状態 (4 候補のうち core が許す遷移だけ)、画像 (マジックバイトで JPEG/PNG・2MB 以下)、診断 (60 件・32KB) の 5 つである。保存前に core のマスクを掛け、口座・取引先名・金額・個人名・メール・電話・住所・秘匿値を残さない。診断のセッション ID は認証のセッションとは別の、ページを読み込むたびに作る乱数にし、表示は末尾 4 桁だけにする。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       }
     },
     "infrastructure": {
       "operations": {
-        "text": "設定画面のインフラでは、夜間バックアップを JST 2:00 (UTC 17:00) の cron へ移し、各回の成否・メモ・要約を R2 の customMetadata に残して、ログを見なくても画面から運用状態を確かめられる形へ反映した。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "完全消去を、新しい cron を足さず既存の 0 18 * * * の improvement_retention に相乗りさせる形へ反映した。D1 クエリは improvement_retention を 3→4 本 (期限の検索・添付を消す UPDATE・削除中の行の DELETE・孤立画像の照合)、audit_header_retention を 3→2 本 (削除・削除後の件数と容量) にする。SCHEDULED_MAINTENANCE_D1_PLAN の合計 49 は変えない (qa-imp-decision-008)。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       },
       "reliability": {
-        "text": "設定画面のインフラでは、失敗した回も失敗マーカーとして残し、復元前の自動退避を別プレフィックスへ置いて保持 30 日で消す形へ反映した。R2 の list は 1000 件ごとに cursor で続きを取る前提で書く。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "完全消去は他の夜間 job と Promise.allSettled で独立させ、失敗しても他の job とバックアップを止めない形へ反映した。R2 の削除に成功した行だけを D1 で消し、失敗した行は翌晩もう一度対象になる。1 晩に 500 件を超えた分は翌晩に続けて消す。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       }
     },
     "maintenance-ops": {
       "operations": {
-        "text": "設定画面の保守運用では、設定の変更を追記のみの履歴で辿れ、バックアップの失敗を画面で知らせ、設定の誤りは D1 全体を上書きせずに設定 JSON の復元か直前値へ戻す手順で直す形へ反映した (障害時の最後の手段として D1 Time Travel を残す)。",
-        "recorded_at": "2026-09-22T08:44:53Z",
+        "text": "0053 の適用手順 (D1 のバックアップ→migration→Worker のデプロイ) と、失敗したときの戻し方を runbook に置く形へ反映した。夜間の完全消去の結果 (対象件数・消した件数・失敗件数) は、既存の job ごとの JSON ログに本文・利用者 ID・R2 のキーを載せずに出す。",
+        "recorded_at": "2026-09-23T13:17:45Z",
         "basis": "agent-inference"
       }
     }

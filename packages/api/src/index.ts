@@ -349,6 +349,7 @@ export async function scheduledMaintenance(
         job: 'improvement_retention',
         selected: improvement.value.selected,
         purged: improvement.value.purged,
+        erased: improvement.value.erased,
         failed: improvement.value.failed,
         orphans: improvement.value.orphans,
         orphanScanned: improvement.value.orphanScanned,

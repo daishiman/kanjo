@@ -1,0 +1,1314 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-improvement-screen/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-improvement-screen",
+  "parent_feature": "feat-improvement-screen",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-IMPSCR-P01": "beads",
+    "SYS-IMPSCR-P02": "beads",
+    "SYS-IMPSCR-P03": "beads",
+    "SYS-IMPSCR-P04": "beads",
+    "SYS-IMPSCR-P05": "beads",
+    "SYS-IMPSCR-P06": "beads",
+    "SYS-IMPSCR-P07": "beads",
+    "SYS-IMPSCR-P08": "beads",
+    "SYS-IMPSCR-P09": "beads",
+    "SYS-IMPSCR-P10": "beads",
+    "SYS-IMPSCR-P11": "beads",
+    "SYS-IMPSCR-P12": "beads",
+    "SYS-IMPSCR-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-IMPSCR-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と持ち越し事項・推定値の確認担当の割り当て",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p01",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "improvement-screen 純関数・マスクの 2 境界・migration 0053・削除と復元・夜間消去・画面分割のワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P01"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "削除と復元の契約・読取経路・マスクの 2 境界・入力検証・URL 契約の独立レビュー",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P02"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 境界値・マスク・API 契約・migration 0053・夜間予算・DOM の失敗テスト先行作成",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P03"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/improvement-screen.test.ts",
+        "packages/core/test/improvement-highlights-contract.test.ts",
+        "packages/api/src/improvement-screen.integration.test.ts",
+        "packages/api/src/improvement-migration-0053.test.ts",
+        "packages/api/src/improvement-redaction.test.ts",
+        "packages/api/src/improvement-retention.test.ts",
+        "packages/api/src/improvement-lifecycle.test.ts",
+        "packages/api/src/improvement-backup-exclusion.test.ts",
+        "packages/api/src/scheduled-maintenance-budget.test.ts",
+        "packages/api/src/audit-log-d8.test.ts",
+        "packages/api/src/schema-guard.test.ts",
+        "packages/web/src/pages/improvement/improvement-screen.dom.test.tsx",
+        "packages/web/src/improvement-capture.dom.test.tsx"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "improvement-screen 純関数・マスクの拡張・migration 0053・削除と復元・夜間の完全消去・改善リクエスト画面の分割と撮影パネルの最終実装",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P04"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/improvement-screen.ts",
+        "packages/core/src/improvement.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/improvement.ts",
+        "packages/api/src/improvement/",
+        "packages/api/src/improvement-orphan-sweep.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/scheduled-maintenance-budget.ts",
+        "packages/api/src/audit-log.ts",
+        "migrations/0053_improvement_request_screen.sql",
+        "packages/web/src/api.ts",
+        "packages/web/src/capture-screen.ts",
+        "packages/web/src/pages/Improvement.tsx",
+        "packages/web/src/pages/improvement/",
+        "packages/web/src/components/ImprovementRequestButton.tsx",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/AuthenticatedApp.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/styles.css",
+        "packages/web/package.json",
+        "packages/web/src/improvement-capture.dom.test.tsx",
+        "packages/web/src/common-shell-routes.dom.test.tsx",
+        "package.json"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと型検査と lint と skill テストの実行記録",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P05"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 S1 から S5 の検証",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P06"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "導出とマスクの重複・削除中の行の読取漏れ・旧参照の読取専用監査",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p08",
+        "audit"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P07"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・マスク・入力検証・他人の依頼の拒否・撮影のブラウザ内完結・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P08"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P09"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P10"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/evidence.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "状態・番号・マスク・削除と復元・夜間消去の規則表と docs/improvement-request.md・runbook の最終同期",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P11"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/rules.md",
+        "docs/improvement-screen/design-decisions.md",
+        "docs/improvement-request.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPSCR-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信と migration 0053 の適用とクローズアウト",
+      "project_id": "feature-package-feat-improvement-screen",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "improvement",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:14:59Z",
+      "updated_at": "2026-09-23T14:14:59Z",
+      "depends_on": [
+        "SYS-IMPSCR-P12"
+      ],
+      "related_nodes": [
+        "arch-improvement-screen-auth",
+        "arch-improvement-screen-backend",
+        "arch-improvement-screen-database",
+        "arch-improvement-screen-frontend",
+        "arch-improvement-screen-infrastructure",
+        "arch-improvement-screen-maintenance-ops",
+        "arch-improvement-screen-security",
+        "arch-improvement-screen-ui-ux",
+        "spec-improvement-screen"
+      ],
+      "resource_scope": [
+        "docs/improvement-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-improvement-screen",
+      "feature_package_id": "feature-package/feat-improvement-screen",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-improvement-screen/sys-impscr-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-improvement-screen/plan-findings.json",
+        "evaluated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-improvement-screen/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+        "imported_at": "2026-09-23T14:14:59Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-improvement-screen/sys-impscr-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T14:07:26Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

@@ -727,7 +727,7 @@ describe('概況の情報設計と状態の整合', () => {
     expect(review.querySelector('.monthly-close-action-icon')).toBeTruthy();
     expect(review.querySelector('.monthly-close-action-label')?.textContent).toBe('月次レビューを記録する');
 
-    const improve = await screen.findByRole('button', { name: '改善要望' });
+    const improve = await screen.findByRole('button', { name: '改善を送る' });
     expect(improve.querySelector('.action-icon')).toBeTruthy();
     expect(improve.querySelector('.improve-trigger-label')?.textContent).toBe('改善を送る');
   });

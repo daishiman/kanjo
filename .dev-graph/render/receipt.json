@@ -4,25 +4,25 @@
   "status": "pass",
   "output": ".dev-graph/render/index.html",
   "scope": "all",
-  "graph_revision": 4,
   "counts": {
     "nodes": 23,
     "edges": 21,
     "feature_progress": {
-      "feat-settings-screen": {
+      "feat-improvement-screen": {
         "done": 0,
         "total": 13
       }
     }
   },
   "registration": {
-    "feature_package_id": "feature-package/feat-settings-screen",
-    "path": ".dev-graph/plans/feature-package-feat-settings-screen/dev-graph-registration-receipt.json",
+    "feature_package_id": "feature-package/feat-improvement-screen",
+    "path": ".dev-graph/plans/feature-package-feat-improvement-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+    "source_digest": "sha256:976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
   },
-  "input_sha256": "fe93ba1321016d9e77e7283a042071e4cf4f46b13317763c239ec7635ceaaa4c",
-  "output_sha256": "997ac24fd4565f9692efb0a2d4f6d9f54ec707b2856ebbf7f980385e76940f9a",
-  "rendered_at": "2026-09-22T11:33:56Z"
+  "input_sha256": "5394d066e43a361c2c50099f08fb1714ac407d3ac6ddd14820e0b931f6a38df1",
+  "output_sha256": "cdd3202f174171798a4113c660617b1e3d09a5d72c7a74a387c1595267efcbf4",
+  "rendered_at": "2026-09-23T14:30:42Z",
+  "graph_revision": 4
 }

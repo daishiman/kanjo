@@ -40,12 +40,12 @@ writeFileSync(
   { mode: 0o600 },
 );
 
-function run(command, args) {
+function run(command, args, timeout = 60_000) {
   const result = spawnSync(command, args, {
     cwd: projectRoot,
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
-    timeout: 60_000,
+    timeout,
   });
   if (result.status !== 0) {
     process.stderr.write(result.stdout);
@@ -166,7 +166,7 @@ try {
     '--file',
     seedSqlPath,
   ]);
-  run('pnpm', ['--filter', '@kanjo/web', 'build']);
+  run('pnpm', ['--filter', '@kanjo/web', 'build'], 120_000);
 
   server = spawn(
     'pnpm',
