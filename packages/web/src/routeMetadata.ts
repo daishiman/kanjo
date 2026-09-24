@@ -382,7 +382,7 @@ export function routeContentWidth(pathname: string): 'reading' | 'data' {
 export function routePageTitle(pathname: string): string {
   const tab = ANALYSIS_TABS.find((candidate) => candidate.path === pathname);
   if (tab) return `${tab.label} | 支出分析 | Focus Ledger`;
-  if (pathname === '/improvement') return '改善要望 | Focus Ledger';
+  if (pathname === '/improvement') return '改善リクエスト | Focus Ledger';
   const route = APP_ROUTES.find((candidate) =>
     candidate.path === '/'
       ? pathname === '/'

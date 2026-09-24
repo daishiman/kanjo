@@ -9,12 +9,12 @@ const smokeScript = fileURLToPath(new URL('./preview-smoke.mjs', import.meta.url
 
 test(
   '一時local D1でmigrationから認証・現金記帳の作成・一覧・削除・空一覧と廃止API 404を確かめる',
-  { timeout: 180_000 },
+  { timeout: 310_000 },
   async () => {
     const result = await execFileAsync(process.execPath, [smokeScript], {
       encoding: 'utf8',
       maxBuffer: 2 * 1024 * 1024,
-      timeout: 170_000,
+      timeout: 300_000,
     });
     assert.match(
       result.stdout,

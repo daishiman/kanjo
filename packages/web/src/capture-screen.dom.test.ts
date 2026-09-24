@@ -13,7 +13,7 @@
  *   - アニメーションを止める規則が、ページ側 CSS より後ろにある
  * 後ろに無いと後勝ちで負けるため、順序まで見ないと退行を捕まえられない。
  */
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { buildCaptureSvg } from './capture-screen.js';
 
 /** 入場アニメーション付きの画面を模した DOM を作る */
@@ -119,5 +119,59 @@ describe('撮影対象の組み立て', () => {
     setupPage();
     document.body.append(document.createElement('script'));
     expect(svg()).not.toContain('<script');
+  });
+});
+
+describe('撮影用複製のプライバシー', () => {
+  it('印のない本文・可視属性・入力値にも core の規則を掛け、印のある固有名詞は伏せる', () => {
+    document.body.innerHTML = `
+      <p title="contact@example.test">請求額 ¥12,345 / contact@example.test</p>
+      <div data-capture-mask><span>架空取引先</span></div>
+      <input value="090-1234-5678" aria-label="口座番号 1234567" />
+      <textarea>東京都千代田区丸の内1-1</textarea>
+      <a href="/transactions?account=1234567" data-label="架空取引先" data-private="架空取引先">明細を見る</a>`;
+
+    const out = svg();
+    expect(out).toContain('明細を見る');
+    expect(out).toContain('***');
+    for (const secret of [
+      '¥12,345',
+      'contact@example.test',
+      '架空取引先',
+      '090-1234-5678',
+      '1234567',
+      '東京都千代田区丸の内1-1',
+    ]) {
+      expect(out).not.toContain(secret);
+    }
+    expect(out).not.toContain('data-private');
+    expect(out).not.toContain('data-label');
+    expect(out).not.toContain('href=');
+    // 撮影用の複製だけを加工し、画面と入力は変えない。
+    expect(document.querySelector('input')?.getAttribute('value')).toBe('090-1234-5678');
+  });
+
+  it('canvas と画像の画素、CSS の URL を複製へ持ち込まず配置を残す', () => {
+    const style = document.createElement('style');
+    style.textContent = '.chart { background-image: url("data:image/png;base64,HEADSECRET"); color: red; }';
+    document.head.append(style);
+    document.body.innerHTML = `
+      <div style="background-image:url('data:image/svg+xml,<svg><text>(INLINESECRET)</text></svg>');mask-image:image-set('data:image/png;base64,IMAGESETSECRET')">
+        <img src="data:image/png;base64,IMAGESECRET" alt="グラフ" />
+        <canvas width="640" height="300">CANVASSECRET</canvas>
+      </div>`;
+    const toDataUrl = vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL');
+
+    const out = svg();
+    expect(out).toContain('width:640px;height:300px');
+    expect(out).toContain('図: ***');
+    expect(out).toContain('.chart { background-image: none; color: red; }');
+    expect(out).toContain('background-image:none;mask-image:none');
+    for (const secret of ['HEADSECRET', 'INLINESECRET', 'IMAGESETSECRET', 'IMAGESECRET', 'CANVASSECRET']) {
+      expect(out).not.toContain(secret);
+    }
+    expect(out).not.toContain('data:image');
+    expect(toDataUrl).not.toHaveBeenCalled();
+    toDataUrl.mockRestore();
   });
 });

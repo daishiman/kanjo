@@ -6,7 +6,7 @@ import { installDiagnostics } from './diagnostics-buffer.js';
 import { LoginPage } from './pages/Login.js';
 import { PasswordChangePage } from './pages/PasswordChange.js';
 
-// 収集は最初の描画より前に始める。エラーは改善要望ボタンを押す「前」に起きているため、
+// 収集は最初の描画より前に始める。エラーは「改善を送る」ボタンを押す前に起きているため、
 // useEffect まで待つと肝心の1件目を取り逃がす。二重 install は buffer 側が弾く
 installDiagnostics();
 

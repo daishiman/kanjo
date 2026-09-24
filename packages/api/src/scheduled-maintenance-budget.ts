@@ -90,12 +90,12 @@ export const SCHEDULED_MAINTENANCE_D1_PLAN = planScheduledMaintenanceD1Queries({
   r2_cleanup: 20,
   // stale rate-limit削除(1) + 期限切れ一時資格情報の明示失効(1)。
   password_login_rate_limit_cleanup: 2,
-  // due scan(1) + R2成功IDの集合更新(1) + orphan照合(1)。
-  improvement_retention: 3,
+  // due scan(1) + 添付の集合更新(1) + 論理削除30日超の完全消去(1) + orphan照合(1)。
+  improvement_retention: 4,
   // expired sweep(6) + bytes(1) + capacity候補(1) + early sweep(4)。
   deletion_undo_retention: 12,
-  // before metrics + expired delete + after metrics。
-  audit_header_retention: 3,
+  // expired delete(RETURNINGで消したbyteを受け取る) + after metrics。beforeはafter+削除分から復元する。
+  audit_header_retention: 2,
   // headerと同じ3本 + capacity候補 + delete + final metrics。
   audit_detail_retention: 6,
   // 手動編集の削除 + 30日超の現金明細の削除(1 batch 2文)。

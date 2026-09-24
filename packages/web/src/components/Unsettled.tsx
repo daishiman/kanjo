@@ -92,16 +92,20 @@ export function UnsettledPanel() {
                     {m.month}
                     {m.overdue > 0 && <span className="sub"> 期日超過{yen(m.overdue)}を含む</span>}
                   </th>
-                  <td className="num" data-label="入る予定">
+                  <td className="num" data-label="入る予定" data-capture-mask="">
                     {m.receipt ? yen(m.receipt) : '—'}
                   </td>
-                  <td className="num" data-label="出る予定">
+                  <td className="num" data-label="出る予定" data-capture-mask="">
                     {m.payment ? yen(m.payment) : '—'}
                   </td>
-                  <td className={`num ${m.net < 0 ? 'neg' : 'pos'}`} data-label="差引">
+                  <td className={`num ${m.net < 0 ? 'neg' : 'pos'}`} data-label="差引" data-capture-mask="">
                     {yenS(m.net)}
                   </td>
-                  <td className={`num ${m.running < 0 ? 'neg' : 'pos'}`} data-label="予定差引の累計">
+                  <td
+                    className={`num ${m.running < 0 ? 'neg' : 'pos'}`}
+                    data-label="予定差引の累計"
+                    data-capture-mask=""
+                  >
                     {yenS(m.running)}
                   </td>
                 </tr>
@@ -133,9 +137,11 @@ export function UnsettledPanel() {
                 {row.status === 'overdue' && <span className="sub"> {row.daysOverdue}日</span>}
               </td>
               <td>{row.deal.io === 'expense' ? '未払' : '未入金'}</td>
-              <td>{row.deal.partner || '—'}</td>
+              <td data-capture-mask="">{row.deal.partner || '—'}</td>
               <td>{row.deal.accountNorm}</td>
-              <td className="num">{yen(row.remaining)}</td>
+              <td className="num" data-capture-mask="">
+                {yen(row.remaining)}
+              </td>
             </tr>
           ))}
         </DataTable>

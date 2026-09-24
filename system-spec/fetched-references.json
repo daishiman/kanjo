@@ -2,123 +2,134 @@
   "references": [
     {
       "target_id": "wcag22-use-of-color",
-      "retrieved_at": "2026-09-21T15:22:57Z",
+      "retrieved_at": "2026-09-23T13:20:54Z",
       "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
-      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
-      "official_host": "w3.org",
+      "official_publisher": "W3C",
+      "official_host": "www.w3.org",
+      "version": "2.2",
       "last_updated": "2025-09-16",
-      "latest_checked_at": "2026-09-21T15:22:57Z",
-      "summary": "達成基準 1.4.1 は、色を情報・操作・応答の促し・要素の区別の唯一の視覚手段にしないことを求める。取込ファイルのステータスと結果カードは色に文字とアイコンを併記する根拠。"
-    },
-    {
-      "target_id": "tanstack-query-invalidation",
-      "retrieved_at": "2026-09-21T22:28:30Z",
-      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation",
-      "official_publisher": "TanStack",
-      "official_host": "tanstack.com",
-      "version": "@tanstack/react-query 5.103.2",
-      "latest_checked_at": "2026-09-21T22:28:30Z",
-      "summary": "公式ガイド Query Invalidation。queryClient.invalidateQueries はクエリを stale にし、useQuery などで表示中のものは背景で再取得する。queryKey は前方一致で、['imports'] は ['imports', {page: 1}] なども対象になる。exact: true や predicate で絞れる。確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する方針の根拠。版は packages/react-query/package.json の 5.103.2 (v5 系)。"
+      "latest_checked_at": "2026-09-23T13:20:54Z",
+      "summary": "WCAG 2.2 の達成基準 1.4.1 は、情報の伝達・操作の指示・応答の促し・視覚要素の区別に、色を唯一の視覚的手段として使わないことを求める。色の違いには、テキストのラベル・アイコン・模様などの補助的な手がかりを添える必要がある。色覚特性のある人、弱視の人、モノクロ表示の利用者が色だけに依存した情報を受け取れなくなることを防ぐのが目的である。"
     },
     {
       "target_id": "react-router-searchparams",
-      "retrieved_at": "2026-09-21T15:22:57Z",
+      "retrieved_at": "2026-09-23T13:20:54Z",
       "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
-      "official_publisher": "React Router (Shopify / Remix team)",
+      "official_publisher": "Remix (Shopify)",
       "official_host": "reactrouter.com",
       "version": "8.4.0",
-      "latest_checked_at": "2026-09-21T15:22:57Z",
-      "summary": "useSearchParams は現在の URL の URLSearchParams と更新関数を返し、更新はナビゲーションになる。選択中の取込履歴を URL の検索パラメータに持つ根拠。"
+      "latest_checked_at": "2026-09-23T13:20:54Z",
+      "summary": "useSearchParams は現在の URLSearchParams と、それを更新する関数の組を返す。setSearchParams は文字列・オブジェクト・配列・URLSearchParams を受け取り、呼び出すとナビゲーションが発生する。関数形式の更新も使えるが、React の setState のようなキューイングはされない。searchParams は安定した参照なので useEffect の依存配列に入れてよい。"
     },
     {
-      "target_id": "mdn-xhr-upload-progress",
-      "retrieved_at": "2026-09-21T15:22:57Z",
-      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload",
-      "official_publisher": "Mozilla (MDN Web Docs)",
+      "target_id": "tanstack-query-invalidation",
+      "retrieved_at": "2026-09-23T13:20:54Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation",
+      "official_publisher": "TanStack",
+      "official_host": "tanstack.com",
+      "version": "v5",
+      "latest_checked_at": "2026-09-23T13:22:10Z",
+      "summary": "invalidateQueries は対象のクエリを stale にし、設定された staleTime を上書きする。対象のうち画面で使われている (アクティブな) クエリはバックグラウンドで再取得される。queryKey は前方一致で照合されるため、['todos'] で始まるクエリをまとめて無効化できる。完全一致だけにするには exact: true を、独自条件には predicate 関数を使う。"
+    },
+    {
+      "target_id": "mdn-canvas-toblob",
+      "retrieved_at": "2026-09-23T13:20:54Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob",
+      "official_publisher": "Mozilla (MDN)",
       "official_host": "developer.mozilla.org",
-      "last_updated": "2025-08-26",
-      "latest_checked_at": "2026-09-21T15:22:57Z",
-      "summary": "XMLHttpRequest.upload は loadstart / progress / abort / load / loadend 等のイベントでアップロードの進捗を知らせ、リスナーは send() より前に付ける。取込ファイル一覧の『アップロード中 n%』とキャンセル (abort) の根拠。"
-    },
-    {
-      "target_id": "hono-body-limit",
-      "retrieved_at": "2026-09-21T15:38:36Z",
-      "source_url": "https://hono.dev/docs/middleware/builtin/body-limit",
-      "official_publisher": "Hono (honojs)",
-      "official_host": "hono.dev",
-      "version": "4.13.8",
-      "latest_checked_at": "2026-09-21T15:38:36Z",
-      "summary": "公式ドキュメントの Body Limit (hono/body-limit) は Content-Length があればその値で判定し、無ければ本文をストリームで読みながら数えて、上限を超えた時点でエラーハンドラを実行する (例は 413)。版は最新リリース 4.13.8 (2026-09-15) に対する確認。取込の検査要求の合計 30MB を Content-Length の有無に依らず本文を読み切る前に止める根拠。"
-    },
-    {
-      "target_id": "owasp-asvs",
-      "retrieved_at": "2026-09-21T22:28:30Z",
-      "source_url": "https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x14-V5-File-Handling.md",
-      "official_publisher": "OWASP Foundation",
-      "official_host": "github.com",
-      "version": "5.0.0",
-      "latest_checked_at": "2026-09-21T22:28:30Z",
-      "summary": "OWASP ASVS 5.0.0 (v5.0.0 タグに固定) V5 File Handling。5.2.1: 性能低下やサービス拒否を起こさずに処理できる大きさのファイルだけを受け付ける。5.2.3: 圧縮ファイル (zip・docx など) は展開する前に、展開後の最大サイズと最大ファイル数の両方を検査する。取込の合計 30MB・1 ファイル 25MB・xlsx / ZIP のエントリ数 1,000 件と展開後 60MB の上限の根拠。"
+      "last_updated": "2026-02-12",
+      "latest_checked_at": "2026-09-23T13:20:54Z",
+      "summary": "toBlob() は canvas の画像を Blob に変換し、結果をコールバックで非同期に受け取る。type で画像形式を指定でき、既定は image/png である。quality は 0〜1 の値で、image/jpeg と image/webp にだけ効く。canvas に他サイトから読み込んだ内容が含まれると SecurityError が発生しうる。"
     },
     {
       "target_id": "hono-zod-validator",
-      "retrieved_at": "2026-09-21T15:22:57Z",
-      "source_url": "https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md",
-      "official_publisher": "Hono (honojs)",
-      "official_host": "github.com",
-      "version": "0.9.1",
-      "latest_checked_at": "2026-09-21T15:22:57Z",
-      "summary": "@hono/zod-validator の最新 0.9.1。検査 ID・取り込むファイル項目・前回データを残す・強制再取込を受ける確定要求の契約を zod で検証する根拠。"
+      "retrieved_at": "2026-09-23T13:21:07Z",
+      "source_url": "https://hono.dev/docs/guides/validation",
+      "official_publisher": "Hono",
+      "official_host": "hono.dev",
+      "version": "4.13.8",
+      "latest_checked_at": "2026-09-23T13:22:20Z",
+      "summary": "@hono/zod-validator の zValidator は、第1引数に検証対象 (json/form/query/param/header/cookie)、第2引数に zod スキーマを取る。検証済みの値はハンドラ内で c.req.valid('json') などで取得し、検証に失敗すると 400 が返る。json や form の検証では対応する Content-Type ヘッダが必須で、無いと空オブジェクト {} が渡される。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-23T13:21:59Z",
+      "source_url": "https://owasp.org/projects/asvs",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "owasp.org",
+      "version": "5.0.0",
+      "latest_checked_at": "2026-09-23T13:22:10Z",
+      "summary": "ASVS は、XSS や SQL インジェクションなどの脆弱性を防ぐためのアプリケーションの技術的なセキュリティ制御を検証する基準であり、開発者向けの安全な開発の要件一覧でもある。最新の安定版は 5.0.0 である。個々の要件は v5.0.0-1.2.5 のように版を含めた ID で参照することが推奨されている。"
+    },
+    {
+      "target_id": "owasp-file-upload-cheat-sheet",
+      "retrieved_at": "2026-09-23T13:21:07Z",
+      "source_url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "cheatsheetseries.owasp.org",
+      "last_updated": "2026-09-18",
+      "latest_checked_at": "2026-09-23T13:22:20Z",
+      "summary": "許可する拡張子は業務に必要な最小限に絞る (画像アップロードなら1種類など)。利用者が送る Content-Type は簡単に偽装できるので信用せず、追加の検証を行う。ファイルシグネチャ (マジックバイト) の検査は Content-Type の検証と組み合わせて使い、単独では使わない。サーバーを守るため適切なファイルサイズの上限を設け、画像は書き換えて悪意ある内容を壊す手法が有効である。"
     },
     {
       "target_id": "cloudflare-d1-migrations",
-      "retrieved_at": "2026-09-21T15:22:57Z",
+      "retrieved_at": "2026-09-23T13:21:07Z",
       "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-06-08",
-      "latest_checked_at": "2026-09-21T15:22:57Z",
-      "summary": "D1 の migration は migrations フォルダの番号付き .sql を順に適用し、適用済みを d1_migrations 表に記録する。import_inspections 等を 0050 以降の新番号で追加する根拠。"
+      "latest_checked_at": "2026-09-23T13:21:07Z",
+      "summary": "D1 の migration は migrations/ フォルダの .sql ファイルとして置き、ファイル名に含まれる版番号で順序が決まる。適用済みの migration は d1_migrations 表に記録され、migrations_dir と migrations_table の設定で場所と名前を変えられる。Wrangler のコマンドで migration の作成・未適用分の一覧表示・適用を行う。外部キー制約によるエラーを避けるには、PRAGMA defer_foreign_keys = true で適用中の制約検査を一時的に遅らせる。"
     },
     {
-      "target_id": "cloudflare-workers-limits",
-      "retrieved_at": "2026-09-21T15:37:45Z",
-      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "target_id": "sqlite-alter-table",
+      "retrieved_at": "2026-09-23T13:21:22Z",
+      "source_url": "https://www.sqlite.org/lang_altertable.html",
+      "official_publisher": "SQLite",
+      "official_host": "www.sqlite.org",
+      "last_updated": "2026-06-04",
+      "latest_checked_at": "2026-09-23T13:21:22Z",
+      "summary": "ALTER TABLE で直接できないスキーマ変更は、12 手順で表を作り直して行う。手順は、PRAGMA foreign_keys=OFF → トランザクション開始 → 既存のインデックス・トリガ・ビューの把握 → 新しい形の new_X を CREATE → INSERT INTO new_X SELECT ... FROM X → DROP TABLE X → ALTER TABLE new_X RENAME TO X → インデックス・トリガ・ビューの作り直し → PRAGMA foreign_key_check → COMMIT → PRAGMA foreign_keys=ON である。旧表を先にリネームする方法は、トリガ・ビュー・外部キーの参照を壊すおそれがあるため、新表を作ってからリネームする。"
+    },
+    {
+      "target_id": "cloudflare-d1-foreign-keys",
+      "retrieved_at": "2026-09-23T13:21:22Z",
+      "source_url": "https://developers.cloudflare.com/d1/sql-api/foreign-keys/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-09-05",
-      "latest_checked_at": "2026-09-21T15:37:45Z",
-      "summary": "Workers の request body 上限は Free/Pro 100MB。1 isolate のメモリは JavaScript heap と WebAssembly の割当を含めて 128MB まで。Paid の HTTP の CPU 時間は既定 30 秒。1 要求の合計 30MB・展開後 1 ファイル 60MB の上限と、1 ファイルずつ順に検査して R2 へ置く処理 (ピーク約 90MB) をこの範囲に収める根拠。"
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-09-23T13:21:22Z",
+      "summary": "D1 は、すべてのクエリと migration で外部キー制約を既定で強制する。PRAGMA defer_foreign_keys = on にすると、トランザクションの終わりまで外部キー制約の違反を一時的に許容でき、表の作り直しなどのスキーマ変更に使える。親行の更新・削除時の動作として、CASCADE (関連する子行も削除)、RESTRICT (直ちに違反を返す)、SET NULL (値を NULL にする) などを指定できる。"
     },
     {
-      "target_id": "cloudflare-cron-triggers",
-      "retrieved_at": "2026-09-21T15:22:57Z",
+      "target_id": "cloudflare-workers-cron-triggers",
+      "retrieved_at": "2026-09-23T13:21:22Z",
       "source_url": "https://developers.cloudflare.com/workers/configuration/cron-triggers/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-09-04",
-      "latest_checked_at": "2026-09-21T15:22:57Z",
-      "summary": "Cron Triggers は wrangler 設定の triggers.crons に書き UTC で動く。期限切れの仮置きを既存の夜間保守 (0 18 * * *) で片づける根拠。"
+      "latest_checked_at": "2026-09-23T13:21:22Z",
+      "summary": "Cron Triggers で Worker を定期実行するには scheduled ハンドラを実装する。cron 式は Wrangler 設定の triggers.crons 配列に書く。Cron Triggers は UTC 基準で実行される (0 18 * * * は UTC 18:00)。設定の変更が反映されるまで最大 15 分ほどかかる。"
     },
     {
-      "target_id": "cloudflare-r2-object-lifecycles",
-      "retrieved_at": "2026-09-21T15:22:57Z",
-      "source_url": "https://developers.cloudflare.com/r2/buckets/object-lifecycles/",
+      "target_id": "cloudflare-d1-limits",
+      "retrieved_at": "2026-09-23T13:21:40Z",
+      "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
       "last_updated": "2026-04-21",
-      "latest_checked_at": "2026-09-21T15:22:57Z",
-      "summary": "R2 のライフサイクルは接頭辞と経過日数で削除でき、削除は通常 24 時間以内に完了する。仮置き接頭辞の後始末は夜間保守を正とし、ライフサイクルは 1 日単位の補助にとどまる判断の根拠。"
+      "latest_checked_at": "2026-09-23T13:21:40Z",
+      "summary": "1 回の Worker invocation で実行できる D1 クエリ数の上限は、Workers Free で 50、Workers Paid で 1000 である。そのほかの上限は、SQL 文の長さ 100,000 バイト、1 クエリのバインドパラメータ 100 個、クエリの実行時間 30 秒、行・文字列・BLOB の大きさ 2MB である。D1 の各データベースは単一スレッドでクエリを順に処理するため、クエリが短いほどスループットが上がる。"
     },
     {
       "target_id": "vitest-expect",
-      "retrieved_at": "2026-09-21T15:22:57Z",
+      "retrieved_at": "2026-09-23T13:21:40Z",
       "source_url": "https://vitest.dev/api/expect.html",
-      "official_publisher": "Vitest (VoidZero)",
+      "official_publisher": "Vitest",
       "official_host": "vitest.dev",
       "version": "5.0.1",
-      "latest_checked_at": "2026-09-21T15:22:57Z",
-      "summary": "Vitest 5.0.1 の expect は Chai と Jest 互換の構文でアサーションを作る。取込の境界テスト (上限ちょうどと 1 超過、他人の検査 ID 等) を固定する根拠。"
+      "latest_checked_at": "2026-09-23T13:21:40Z",
+      "summary": "toBe は Object.is で同一性を比較し、toEqual はオブジェクトを再帰的に比較する。toStrictEqual は undefined のキーや配列の疎性まで厳密に比較する。toThrow は関数が投げたエラーを検証し、resolves / rejects で Promise の解決値や拒否理由を取り出して検証できる。expect.assertions() でテスト中のアサーション数を指定でき、expect.soft() は失敗しても実行を続けて最後にまとめて報告する。"
     }
   ]
 }

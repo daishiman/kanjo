@@ -57,15 +57,15 @@ const entry = (message: string, detail = ''): DiagnosticEntry => ({
 
 /** 画面のマスク処理を通さず、生の秘匿値をそのまま multipart で投げる */
 async function postRaw(fields: {
-  title?: string;
   body?: string;
   route?: string;
   entries?: DiagnosticEntry[];
   omittedCount?: number;
 }): Promise<{ id: string }> {
   const form = new FormData();
-  form.set('title', fields.title ?? '架空の不具合');
   form.set('body', fields.body ?? '本文');
+  form.set('privacyConfirmed', 'true');
+  form.set('privacyConsented', 'true');
   form.set('route', fields.route ?? '/');
   form.set(
     'diagnostics',
@@ -210,8 +210,9 @@ describe('サーバ側の再マスク', () => {
 
   it('診断が壊れた JSON でも 201 になり、拒否したことを返す', async () => {
     const form = new FormData();
-    form.set('title', '架空の不具合');
     form.set('body', '診断が壊れている');
+    form.set('privacyConfirmed', 'true');
+    form.set('privacyConsented', 'true');
     form.set('route', '/');
     form.set('diagnostics', '{ これは JSON ではない');
     const res = await app.request(
@@ -223,12 +224,13 @@ describe('サーバ側の再マスク', () => {
     expect(((await res.json()) as { diagnosticsRejected: boolean }).diagnosticsRejected).toBe(true);
   });
 
-  it('上限を超える件名・本文は 400 で断り、黙って切り詰めない', async () => {
+  it('上限を超える本文は 400 で断り、黙って切り詰めない', async () => {
     // 画面側の入力欄が maxLength で止めるので、ここへ来るのは直接投稿だけ。
     // 勝手に切ると「送ったはずの説明が消える」ため、受け取らないほうを選ぶ
     const form = new FormData();
-    form.set('title', 'あ'.repeat(400));
     form.set('body', 'い'.repeat(9000));
+    form.set('privacyConfirmed', 'true');
+    form.set('privacyConsented', 'true');
     form.set('route', '/');
     const res = await app.request(
       '/api/improvements',

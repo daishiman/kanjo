@@ -1,16 +1,12 @@
 {
   "renderer": "render-graph-html.py (dev-graph 0.1.11)",
-  "rendered_at": "2026-09-21T23:27:23Z",
   "scope": "all nodes",
-  "graph_revision": 4,
   "input": ".dev-graph/state/graph.json",
-  "input_sha256": "a4df228ff33212092a3d40d2da63510c7ee81a6fc4545ec1b60566d6b34d8611",
   "output": ".dev-graph/render/index.html",
-  "output_sha256": "50e791e8991c52ea50e96422e90d310bd53dbaa0bae26e99db1ea4a622a080fd",
   "nodes": 23,
   "edges": 21,
   "feature_progress": {
-    "feat-import-screen": {
+    "feat-improvement-screen": {
       "done": 0,
       "total": 13
     }
@@ -19,14 +15,14 @@
   "svg": 1,
   "inline_scripts": 2,
   "registration_receipt": {
-    "path": ".dev-graph/plans/feature-package-feat-import-screen/dev-graph-registration-receipt.json",
+    "path": ".dev-graph/plans/feature-package-feat-improvement-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+    "source_digest": "sha256:976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
   },
   "beads_linked_nodes": 14,
-  "live_trial": "headless Chrome (--headless=new) screenshot で SVG DAG と SYS-IMPORT-P01..P13・arch-import-screen-* 8 件・'active · feature · 0/13' の表示を確認",
-  "known_display_issue": "長い title (P02/P05/P09・arch-import-screen-* 等) がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
+  "live_trial": "headless Chrome (--headless=new) の screenshot と dump-dom で SVG DAG・SYS-IMPSCR-P01..P13・arch-improvement-screen-* 8 件・'active · feature · 0/13' の表示を確認",
+  "known_display_issue": "長い title がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
   "checks": {
     "input_digest": true,
     "output_digest": true,
@@ -37,5 +33,9 @@
     "svg": true,
     "inline_script": true
   },
-  "note": "renderer は receipt を書かないため、本 receipt は render-graph-html.py の stdout と registration receipt から再作成し digest を実ファイルと照合した"
+  "note": "renderer は receipt を書かないため、本 receipt は render-graph-html.py の stdout と registration receipt から再作成し digest を実ファイルと照合した",
+  "input_sha256": "5394d066e43a361c2c50099f08fb1714ac407d3ac6ddd14820e0b931f6a38df1",
+  "output_sha256": "cdd3202f174171798a4113c660617b1e3d09a5d72c7a74a387c1595267efcbf4",
+  "rendered_at": "2026-09-23T14:30:42Z",
+  "graph_revision": 4
 }

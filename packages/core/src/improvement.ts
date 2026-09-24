@@ -29,13 +29,23 @@ export interface DiagnosticEntry {
   detail: string;
 }
 
-/** 実行環境。UAとビューポートだけ。ここに識別子を足さない */
+/**
+ * 実行環境。UAとビューポートが中心で、ここに識別子を足さない。
+ *
+ * 例外は sessionId だけ (qa-imp-security-web-001)。これはページを読み込むたびに作る乱数で、
+ * 認証のセッションとも利用者とも結び付かない。同じ読み込みの中で出た複数の依頼を束ねる目的に限り、
+ * 表示は末尾 4 桁に絞る (improvement-screen.ts の summarizeDiagnosticEnvironment)。
+ * origin は利用環境 (本番かローカルか) を導くためのもので、人を指さない。
+ * どちらも旧来の保存値には無いので省略可にする。
+ */
 export interface DiagnosticEnvironment {
   userAgent: string;
   language: string;
   viewport: string;
   route: string;
   capturedAt: string;
+  sessionId?: string;
+  origin?: string;
 }
 
 export interface DiagnosticPayload {
@@ -79,9 +89,20 @@ export const IMPROVEMENT_TOKEN_MAX_FETCH = 20;
 export const IMPROVEMENT_SCREENSHOT_MAX_BYTES = 2 * 1024 * 1024;
 
 export const IMPROVEMENT_TITLE_MAX = 120;
+/** DB の CHECK と同じ保存上限。1000 字を超える既存の本文を読めるまま保つために据え置く */
 export const IMPROVEMENT_BODY_MAX = 4000;
+/** 新規の本文の上限 (qa-imp-decision-002)。数え方は zod の max と同じ UTF-16 の長さ */
+export const IMPROVEMENT_NEW_BODY_MAX = 1000;
 
-const MASK = '***';
+/** 伏字。既存の保存値と同じ文字にして、二度掛けても変わらない (冪等) ようにする */
+export const IMPROVEMENT_MASK = '***';
+const MASK = IMPROVEMENT_MASK;
+
+/** 住所の起点にする都道府県名。「京都府」は「東京都」の部分一致より先に長い名前で当てる */
+const PREFECTURES =
+  '北海道|東京都|京都府|大阪府|青森県|岩手県|宮城県|秋田県|山形県|福島県|茨城県|栃木県|群馬県|埼玉県|千葉県|神奈川県|' +
+  '新潟県|富山県|石川県|福井県|山梨県|長野県|岐阜県|静岡県|愛知県|三重県|滋賀県|兵庫県|奈良県|和歌山県|鳥取県|' +
+  '島根県|岡山県|広島県|山口県|徳島県|香川県|愛媛県|高知県|福岡県|佐賀県|長崎県|熊本県|大分県|宮崎県|鹿児島県|沖縄県';
 
 /**
  * 秘匿値のマスク規則。
@@ -108,8 +129,24 @@ const MASK_RULES: readonly { re: RegExp; to: string }[] = [
   },
   // メールアドレス
   { re: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, to: MASK },
-  // 10桁以上の連続数字(口座番号・カード番号・電話)。日付や金額はこの桁数に達しない
-  { re: /\b\d[\d-]{9,}\b/g, to: MASK },
+  // 数字 10 桁以上 (ハイフン区切り可。口座番号・カード番号・電話)。数えるのは数字だけなので、日付 (2026-09-24 は 8 桁) は当たらない
+  { re: /\b\d(?:-?\d){9,}\b/g, to: MASK },
+  /*
+   * ここから下は画面の本文向けの規則 (qa-imp-decision-004)。利用者が本文に明細を書き写す経路がある。
+   * 電話: 市外局番から始まる区切り付きの形。10 桁以上の規則より短い固定電話 (03-123-4567 等) も拾う。
+   */
+  { re: /(?<![\d-])(?:\+81[-\s]?|0)\d{1,4}-\d{1,4}-\d{3,4}(?![\d-])/g, to: MASK },
+  // 口座: 「口座」「口座番号」に続く数字。普通預金の口座番号は 7 桁で、上の 10 桁の規則に届かない
+  { re: /(口座(?:番号)?[:：]?\s*)\d[\d-]{3,}/g, to: `$1${MASK}` },
+  // 金額: 円記号付き・「円」付き・3 桁区切り。HTTP の状態コード (500 など) は区切りも単位も無いので当たらない
+  { re: /[¥￥]\s?\d[\d,]*(?:\.\d+)?/g, to: MASK },
+  { re: /\d[\d,]*(?:\.\d+)?\s?(?:万円|円)/g, to: MASK },
+  { re: /(?<![\d,.])\d{1,3}(?:,\d{3})+(?![\d,])/g, to: MASK },
+  // 住所: 都道府県名に市区町村が続く形を、番地まで空白・句読点の手前で伏せる。都道府県名だけの言及は残す
+  {
+    re: new RegExp(`(?:${PREFECTURES})[^\\s、。,，]{0,12}?[市区町村郡][^\\s、。,，]*`, 'g'),
+    to: MASK,
+  },
 ];
 
 /** URL のクエリ値を落とす。パスとキー名は残す(どこで何を指定して失敗したかが要るため) */
@@ -131,13 +168,48 @@ export function redactSecrets(text: string): string {
   return out;
 }
 
+/**
+ * 取引先名・個人名の辞書 (qa-imp-decision-004)。
+ *
+ * 規則では当てられない固有名詞を、利用者自身のデータから作った語の一覧で伏せる。
+ * 長い語から当てる (「山田太郎」を「山田」より先に)。1 文字の語は普通の文字まで伏せてしまうので採らない。
+ * 辞書はリクエストのたびに作って捨て、保存しない。
+ */
+export interface MaskDictionary {
+  readonly terms: readonly string[];
+}
+
+export const EMPTY_MASK_DICTIONARY: MaskDictionary = Object.freeze({ terms: Object.freeze([]) });
+
+export function buildMaskDictionary(words: Iterable<string | null | undefined>): MaskDictionary {
+  const set = new Set<string>();
+  for (const word of words) {
+    const term = (word ?? '').trim();
+    if (term.length < 2 || term.includes(MASK)) continue;
+    set.add(term);
+  }
+  return { terms: [...set].sort((a, b) => b.length - a.length || (a < b ? -1 : a > b ? 1 : 0)) };
+}
+
+/** 規則と辞書の両方で伏せる。辞書が空なら redactSecrets と同じ結果になる */
+export function redactPersonalInfo(text: string, dictionary: MaskDictionary = EMPTY_MASK_DICTIONARY): string {
+  let out = redactSecrets(text);
+  for (const term of dictionary.terms) {
+    if (out.includes(term)) out = out.split(term).join(MASK);
+  }
+  return out;
+}
+
 /** 表示・保存の前に1件を正規化する。長さ切り詰めとマスクをここに集約する */
-export function normalizeDiagnosticEntry(entry: DiagnosticEntry): DiagnosticEntry {
+export function normalizeDiagnosticEntry(
+  entry: DiagnosticEntry,
+  dictionary: MaskDictionary = EMPTY_MASK_DICTIONARY,
+): DiagnosticEntry {
   return {
     at: entry.at,
     kind: entry.kind,
-    message: redactSecrets(entry.message).slice(0, DIAGNOSTIC_MAX_MESSAGE),
-    detail: redactSecrets(entry.detail).slice(0, DIAGNOSTIC_MAX_DETAIL),
+    message: redactPersonalInfo(entry.message, dictionary).slice(0, DIAGNOSTIC_MAX_MESSAGE),
+    detail: redactPersonalInfo(entry.detail, dictionary).slice(0, DIAGNOSTIC_MAX_DETAIL),
   };
 }
 
@@ -165,6 +237,7 @@ export interface TrimResult {
 export function trimDiagnostics(
   entries: readonly DiagnosticEntry[],
   limits: { maxEntries?: number; maxBytes?: number } = {},
+  dictionary: MaskDictionary = EMPTY_MASK_DICTIONARY,
 ): TrimResult {
   const maxEntries = limits.maxEntries ?? DIAGNOSTIC_MAX_ENTRIES;
   const maxBytes = limits.maxBytes ?? DIAGNOSTIC_MAX_BYTES;
@@ -173,7 +246,7 @@ export function trimDiagnostics(
   // 新しいものほど原因に近い。末尾から詰めて、入らなくなった時点で止める
   for (let i = entries.length - 1; i >= 0; i -= 1) {
     if (kept.length >= maxEntries) break;
-    const normalized = normalizeDiagnosticEntry(entries[i]);
+    const normalized = normalizeDiagnosticEntry(entries[i], dictionary);
     const size = diagnosticEntryBytes(normalized);
     if (bytes + size > maxBytes) break;
     bytes += size;
@@ -184,16 +257,26 @@ export function trimDiagnostics(
 }
 
 /** 受信した診断payloadをサーバ側でもう一度マスク・切り詰めする。omittedCountは合算する */
-export function sanitizeDiagnosticPayload(payload: DiagnosticPayload): DiagnosticPayload {
-  const trimmed = trimDiagnostics(payload.entries);
+export function sanitizeDiagnosticPayload(
+  payload: DiagnosticPayload,
+  dictionary: MaskDictionary = EMPTY_MASK_DICTIONARY,
+): DiagnosticPayload {
+  const trimmed = trimDiagnostics(payload.entries, {}, dictionary);
+  const env = payload.environment;
+  const environment: DiagnosticEnvironment = {
+    userAgent: redactPersonalInfo(env.userAgent, dictionary).slice(0, 300),
+    language: redactPersonalInfo(env.language, dictionary).slice(0, 40),
+    viewport: redactPersonalInfo(env.viewport, dictionary).slice(0, 40),
+    route: redactPersonalInfo(env.route, dictionary).slice(0, 200),
+    capturedAt: env.capturedAt,
+  };
+  // セッション ID は英数字とハイフンだけを残す (乱数以外の値が入り込む経路を塞ぐ)
+  const sessionId = (env.sessionId ?? '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 64);
+  if (sessionId) environment.sessionId = sessionId;
+  const origin = redactSecrets(env.origin ?? '').slice(0, 200);
+  if (origin) environment.origin = origin;
   return {
-    environment: {
-      userAgent: redactSecrets(payload.environment.userAgent).slice(0, 300),
-      language: redactSecrets(payload.environment.language).slice(0, 40),
-      viewport: redactSecrets(payload.environment.viewport).slice(0, 40),
-      route: redactSecrets(payload.environment.route).slice(0, 200),
-      capturedAt: payload.environment.capturedAt,
-    },
+    environment,
     entries: trimmed.entries,
     omittedCount: Math.max(0, payload.omittedCount) + trimmed.omittedCount,
   };
@@ -327,21 +410,26 @@ export function mintAgentToken(prefix: string): string {
 /** 改善要望のトークン prefix。AI分析の kjo_ と取り違えないよう別にする */
 export const IMPROVEMENT_TOKEN_PREFIX = 'imp_';
 
-/** 改善要望の対応状態 */
-export type ImprovementStatus = 'open' | 'in_progress' | 'done' | 'wontfix';
+/**
+ * 改善リクエストの対応状態 (qa-imp-decision-001)。
+ * reconfirm は「開発側が直したので利用者が確かめる段階」。旧 wontfix は migration 0054 で done へ移した。
+ * 遷移の可否は improvement-screen.ts の IMPROVEMENT_TRANSITIONS が正本。
+ */
+export type ImprovementStatus = 'open' | 'in_progress' | 'done' | 'reconfirm';
 
+/** 件数タブと選択肢の並び (画像の「受付 / 対応中 / 完了 / 再確認」) */
 export const IMPROVEMENT_STATUS_VALUES: readonly ImprovementStatus[] = [
   'open',
   'in_progress',
   'done',
-  'wontfix',
+  'reconfirm',
 ];
 
 export const IMPROVEMENT_STATUS_LABEL: Record<ImprovementStatus, string> = {
-  open: '未対応',
+  open: '受付',
   in_progress: '対応中',
-  done: '対応済み',
-  wontfix: '対応しない',
+  done: '完了',
+  reconfirm: '再確認',
 };
 
 /** スクリーンショットのR2キー。ユーザ配下に閉じ、添付と同じ命名規則に合わせる */

@@ -50,7 +50,11 @@ import type {
 import {
   type Owner as CoreOwner,
   DIAGNOSIS_ACTION_STATUSES,
+  type ImprovementActivityView,
+  type ImprovementDiagnosticsSummary,
+  type ImprovementListItem,
   type ImprovementStatus,
+  type ImprovementTab,
   OWNER_VALUES,
   type OwnerLabels,
   PAYMENT_METHOD_LABEL,
@@ -1447,11 +1451,14 @@ export interface AiInventoryResponse {
   counterparties: number;
 }
 
-/* -------- 改善要望(system-spec D5〜D9) -------- */
+/* -------- 改善リクエスト(system-spec D5〜D9 / specs/spec-improvement-screen.md) -------- */
 
 export interface ImprovementRequestView {
   id: string;
-  title: string;
+  /** 利用者ごとの連番。表示は formatImprovementNumber で IMP-024 にする */
+  seq: number;
+  /** 旧い依頼だけが持つ件名。新規は null(本文から要約を導く) */
+  title: string | null;
   body: string;
   route: string;
   status: ImprovementStatus;
@@ -1468,63 +1475,102 @@ export interface ImprovementRequestView {
   purgedAt: string | null;
   /** 添付が消える予定時刻。未完了は null(調査中に証跡を消さない) */
   attachmentExpiresAt: string | null;
+  deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface ImprovementCreateResponse {
   request: ImprovementRequestView;
+  number: string;
   /** トークン原文を含む指示文。作成時のこの1回だけ返る */
   prompt: string;
-  /** 画像を受け付けなかった理由。null は問題なし */
-  screenshotRejected: 'too_large' | 'unsupported_type' | null;
   diagnosticsRejected: boolean;
+}
+
+export interface ImprovementListResponse {
+  items: ImprovementListItem[];
+  counts: Record<ImprovementTab, number>;
+  page: number;
+  pageSize: number;
+  total: number;
 }
 
 export interface ImprovementDetailResponse {
   request: ImprovementRequestView;
+  number: string;
+  summary: string;
+  routeLabel: string;
+  diagnosticsSummary: ImprovementDiagnosticsSummary | null;
+  activities: ImprovementActivityView[];
+  related: ImprovementListItem[];
+  allowedTransitions: ImprovementStatus[];
   diagnostics: DiagnosticPayload | null;
 }
 
-export const listImprovements = () => api<{ requests: ImprovementRequestView[] }>('/improvements');
+export function listImprovements(query: { q?: string; tab?: ImprovementTab; page?: number } = {}) {
+  const params = new URLSearchParams();
+  if (query.q) params.set('q', query.q);
+  if (query.tab && query.tab !== 'all') params.set('tab', query.tab);
+  if (query.page && query.page > 1) params.set('page', String(query.page));
+  const qs = params.toString();
+  return api<ImprovementListResponse>(`/improvements${qs ? `?${qs}` : ''}`);
+}
 
-export const getImprovement = (id: string) => api<ImprovementDetailResponse>(`/improvements/${id}`);
+export const getImprovement = (id: string) =>
+  api<ImprovementDetailResponse>(`/improvements/${encodeURIComponent(id)}`);
 
 /**
- * 改善要望の投稿。スクリーンショットは multipart で送るため apiUpload を使う。
- * 画像が無くても投稿は成立する(撮影の失敗は投稿の失敗ではない)。
+ * 改善リクエストの送信。スクリーンショットは multipart で送るため apiUpload を使う。
+ * 画像が無くても送信は成立する(撮影の失敗は送信の失敗ではない)。
+ * 確認 2 つは画面の検査を通ったときだけ 'true' で送る。サーバも同じ検査をやり直す。
  */
 export function createImprovement(input: {
-  title: string;
   body: string;
   route: string;
   diagnostics: DiagnosticPayload;
   screenshot: File | null;
+  privacyConfirmed: boolean;
+  privacyConsented: boolean;
 }): Promise<ImprovementCreateResponse> {
   const form = new FormData();
-  form.set('title', input.title);
   form.set('body', input.body);
   form.set('route', input.route);
   form.set('diagnostics', JSON.stringify(input.diagnostics));
+  form.set('privacyConfirmed', String(input.privacyConfirmed));
+  form.set('privacyConsented', String(input.privacyConsented));
   if (input.screenshot) form.set('screenshot', input.screenshot);
   return apiUpload<ImprovementCreateResponse>('/improvements', form);
 }
 
 /** 指示文の作り直し。前に配った指示文はこの時点で失効する */
 export const reissueImprovementPrompt = (id: string) =>
-  api<{ prompt: string; expiresAt: string }>(`/improvements/${id}/prompt`, { method: 'POST' });
+  api<{ prompt: string; expiresAt: string }>(`/improvements/${encodeURIComponent(id)}/prompt`, {
+    method: 'POST',
+  });
 
 export const markImprovementCopied = (id: string, target: 'claude_code' | 'codex') =>
-  api<{ ok: true; copiedAt: string }>(`/improvements/${id}/copied`, {
+  api<{ ok: true; copiedAt: string }>(`/improvements/${encodeURIComponent(id)}/copied`, {
     method: 'POST',
     body: JSON.stringify({ target }),
   });
 
+/** 許されない遷移は 409。画面は allowedTransitions だけを選ばせるので、409 は他の端末との競合 */
 export const setImprovementStatus = (id: string, status: ImprovementStatus) =>
-  api<{ request: ImprovementRequestView }>(`/improvements/${id}/status`, {
-    method: 'POST',
-    body: JSON.stringify({ status }),
-  });
+  api<{ request: ImprovementRequestView; activity: ImprovementActivityView | null }>(
+    `/improvements/${encodeURIComponent(id)}/status`,
+    { method: 'POST', body: JSON.stringify({ status }) },
+  );
+
+/** 論理削除。30 日以内なら restoreImprovement で同じ番号のまま戻せる */
+export const deleteImprovement = (id: string) =>
+  api<{ id: string; deletedAt: string }>(`/improvements/${encodeURIComponent(id)}`, { method: 'DELETE' });
+
+export const restoreImprovement = (id: string) =>
+  api<{ request: ImprovementRequestView; number: string }>(
+    `/improvements/${encodeURIComponent(id)}/restore`,
+    { method: 'POST' },
+  );
 
 /** スクリーンショットの取得先。R2 の公開URLではなく必ず Worker を通す */
 export const improvementScreenshotUrl = (id: string) => `/api/improvements/${id}/screenshot`;

@@ -3784,7 +3784,7 @@ label.check {
   margin: 12px 10px;
 }
 
-/* ===== 改善要望(モーダル前に撮影 → 指示文の受け渡し) ===== */
+/* ===== 改善リクエスト(撮影パネル → 指示文の受け渡し) ===== */
 
 /*
  * 右下に固定する浮きボタン。
@@ -3844,114 +3844,6 @@ label.check {
     box-shadow: var(--shadow-floating-action-compact);
   }
 }
-/* 撮影中の告知は読み上げ用。視覚的には trigger のラベル変化で足りる */
-.improve-capturing {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
-
-/* ネイティブ <dialog>。焦点の閉じ込めと Escape はブラウザ側が持つ */
-.improve-modal {
-  width: min(720px, calc(100vw - 32px));
-  max-height: calc(100vh - 48px);
-  padding: 20px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--ink);
-  overflow-y: auto;
-  box-shadow: var(--shadow-overlay);
-}
-.improve-modal::backdrop {
-  background: var(--scrim);
-}
-.improve-modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.improve-modal h2 {
-  margin: 0;
-  font-size: var(--fs-lg);
-}
-.improve-modal label {
-  font-size: var(--fs-sm);
-  font-weight: 650;
-}
-.improve-modal input[type="text"],
-.improve-modal input:not([type]),
-.improve-modal textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid var(--control-border);
-  border-radius: var(--radius);
-  font: inherit;
-}
-.improve-attach {
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--bg);
-}
-.improve-attach h3 {
-  margin: 0 0 6px;
-  font-size: var(--fs-sm);
-}
-.improve-attach label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 400;
-}
-/* プレビューは「何が送られるか」を確かめる用途。原寸は要らない */
-.improve-preview,
-.improvement-shot {
-  display: block;
-  max-width: 100%;
-  max-height: 320px;
-  margin-bottom: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  object-fit: contain;
-}
-.improvement-shot {
-  max-height: 520px;
-}
-.improve-prompt {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--bg);
-  font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: var(--fs-xs);
-}
-.improve-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-.improve-actions button {
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  font: inherit;
-  cursor: pointer;
-}
-.improve-actions button:hover {
-  background: var(--bg);
-}
-.improve-copied {
-  color: var(--good);
-  font-size: var(--fs-sm);
-}
 .improve-note {
   margin: 6px 0 0;
   color: var(--ink-soft);
@@ -3959,6 +3851,27 @@ label.check {
 }
 
 /* ---- スクリーンショットへの書き込み ---- */
+.improve-annotate-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.improve-annotate-tools legend {
+  float: left;
+  margin-right: 4px;
+  padding: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+/* マスクは塗る道具なので、枠やペンと見分けられるよう指先を変える */
+.improve-annotate-canvas.is-mask {
+  cursor: cell;
+}
 .improve-annotate-canvas {
   position: relative;
   display: block;
@@ -4007,6 +3920,138 @@ label.check {
 .improve-annotate-actions button[disabled] {
   color: var(--ink-soft);
   cursor: default;
+}
+
+/* 道具の列と「拡大して書き込む」を1行に並べる。狭い画面では折り返す */
+.improve-annotate-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 6px;
+}
+.improve-annotate-bar .improve-annotate-tools {
+  margin: 0;
+}
+/* 色の見本。枠・ペン・文字の色を選ぶ。値は design tokens(annotate-image.ts の ANNOTATION_COLORS と同じ)
+   押された色は太い枠で示す。色だけで区別しないよう、ボタンには色名の文字も出す */
+.improve-annotate-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.improve-annotate-color[aria-pressed="true"] {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+  font-weight: 700;
+}
+.improve-annotate-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--annotate-halo);
+  box-shadow: 0 0 0 1px var(--line);
+  background: var(--swatch);
+}
+.improve-annotate-color.is-red,
+.improve-annotate-text-input.is-red {
+  --swatch: var(--annotate-stroke);
+}
+.improve-annotate-color.is-blue,
+.improve-annotate-text-input.is-blue {
+  --swatch: var(--income);
+}
+.improve-annotate-color.is-green,
+.improve-annotate-text-input.is-green {
+  --swatch: var(--good);
+}
+.improve-annotate-color.is-orange,
+.improve-annotate-text-input.is-orange {
+  --swatch: var(--warn-fill);
+}
+.improve-annotate-color.is-black,
+.improve-annotate-text-input.is-black {
+  --swatch: var(--ink);
+}
+/* マスクを選んでいる間は色を選べない。押せないことが見て分かるよう薄くする */
+.improve-annotate-colors[disabled] .improve-annotate-color {
+  opacity: 0.5;
+}
+.improve-annotate-colors .improve-note {
+  margin: 0;
+}
+/* 文字の道具で押した場所に出す入力欄。焼き込む文字と同じ色・大きさで、押した点が左上になる */
+.improve-annotate-canvas.is-text {
+  cursor: text;
+}
+.improve-annotate-canvas.is-move {
+  cursor: grab;
+}
+.improve-annotate-canvas.is-move.is-moving {
+  cursor: grabbing;
+}
+.improve-annotate-text-input {
+  position: absolute;
+  z-index: 1;
+  min-width: 8em;
+  max-width: calc(100% - 8px);
+  padding: 2px 4px;
+  border: 1px dashed var(--swatch);
+  border-radius: 4px;
+  background: var(--annotate-halo);
+  color: var(--swatch);
+  /* 焼き込みは TYPOGRAPHY.fontHead で描く。入力中と焼き込み後で字形が変わらないよう揃える */
+  font-family: var(--font-head);
+  font-weight: 700;
+  line-height: 1.2;
+  user-select: text;
+  cursor: text;
+}
+/* 拡大して書き込むダイアログ。縮小画像では細かい場所を塗れないので、画面いっぱいに開く */
+.improve-annotate-dialog {
+  width: calc(100vw - 32px);
+  max-width: none;
+  height: calc(100dvh - 32px);
+  max-height: none;
+  padding: 12px 20px 16px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-overlay);
+  overflow: auto;
+}
+.improve-annotate-dialog::backdrop {
+  background: var(--scrim);
+}
+.improve-annotate-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.improve-annotate-dialog-head h3 {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+.improve-annotate-dialog-head h3:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: 4px;
+}
+/* 拡大表示では、表示枠を画像の大きさに縮める。枠が画像より広いと、canvas と画像の位置がずれる。
+   画像は見出し・道具・操作の行を除いた高さに収め、縦長の画面では幅に収める */
+.improve-annotate.is-expanded .improve-annotate-canvas {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+.improve-annotate.is-expanded .improve-annotate-canvas img {
+  width: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 200px);
 }
 
 /* ---- 一緒に送られる情報 ---- */
@@ -5663,7 +5708,12 @@ label.check {
     margin: 0;
   }
   .improve-trigger {
-    display: none;
+    /* アイコンレール内には文言が収まらないため、本文の右下で入口を保つ */
+    left: auto;
+    right: 14px;
+    bottom: 14px;
+    width: auto;
+    padding: 10px 16px;
   }
   .header {
     align-content: center;

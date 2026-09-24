@@ -67,11 +67,15 @@ describe('financial visualization real-browser gate', () => {
     if (!hasChrome) return;
     const port = await reservePort();
     origin = `http://127.0.0.1:${port}`;
-    server = spawn('pnpm', ['exec', 'vite', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
-      cwd: WEB_ROOT,
-      detached: process.platform !== 'win32',
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
+    server = spawn(
+      'pnpm',
+      ['exec', 'vite', '--host', '127.0.0.1', '--port', String(port), '--strictPort', '--force'],
+      {
+        cwd: WEB_ROOT,
+        detached: process.platform !== 'win32',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    );
     server.stdout?.resume();
     server.stderr?.resume();
     await waitForVite();

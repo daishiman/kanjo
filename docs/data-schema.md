@@ -260,9 +260,10 @@ Release A/Bの適用順序・復旧契約は
 
 password login throttleの既定は15分window / 5回目から15分lock / 7日後stale cleanupで、
 1 requestは成功・失敗とも最大2 D1 queries。nightly scheduledは`updated_at`のindexから
-最大100件を1 queryで消去する。夜間7 jobの同一invocation予算は中央SSOTで46 queries
-（backup 1 + R2 cleanup 20 + password throttle 1 + improvement 3 + undo 12 + audit header 3 + audit detail 6）
-に固定し、backupを先に確定して残る6 jobを並列実行する。全jobを記録後、1件でもjob-level rejectなら
+最大100件を1 queryで消去する。夜間8 jobの同一invocation予算は中央SSOT
+（`packages/api/src/scheduled-maintenance-budget.ts`）で49 queries
+（backup 1 + R2 cleanup 20 + password throttle 2 + improvement 4 + undo 12 + audit header 2 + audit detail 6 + cash soft delete 2）
+に固定し、backupを先に確定して残る7 jobを並列実行する。全jobを記録後、1件でもjob-level rejectなら
 内容を含まないgeneric errorをCronへ返す。
 validation、安全なfallback、非secret override名は`packages/api/src/login-rate-limit.ts`を正本とする。
 
@@ -720,3 +721,26 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - **既存の行は 1 行も書き換えない**(`CREATE TABLE` と `ALTER TABLE ... ADD COLUMN` のみ)。0053 より前の `import_runs` の行は新しい列が NULL のまま読まれ、履歴にはファイル単位の記録として出る。`packages/api/src/import-migration-0053.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。
 - 検査の行は確定時に消す。期限切れの検査と古いレート制限の枠は、検査を新しく作る要求のついでに `purgeExpiredImportRows` が消す。24 時間を過ぎた R2 の仮置きは、夜間保守の `runImportStagingCleanup` が 1 回 500 件まで消す (この job は D1 を 1 本も使わない)。D1 の片づけをリクエスト側へ寄せたのは、夜間保守の D1 クエリ枠 (Free の 1 回 50 本、安全枠 49 本) が既に他の job で埋まっていたためで、判断は `docs/import-screen/design-decisions.md` の OI-08 に残す。
 - 配信は Migrate → Deploy の順にする。0053 の前の Worker は新しい表を読めない。
+
+## 改善リクエスト画面の番号・論理削除・アクティビティ(0054 / feat-improvement-screen)
+
+`migrations/0054_improvement_request_screen.sql` が `improvement_requests` を作り直し、2 表を足す。画面仕様の正本は `specs/spec-improvement-screen.md`、規則の一覧は [`improvement-screen/rules.md`](improvement-screen/rules.md)。仕様は番号を 0053 と書くが、0053 は取込画面が先に使ったため 0054 に繰り下げた(内容は仕様のとおり。判断は `docs/improvement-screen/design-decisions.md`)。
+
+`improvement_requests` の変更点(SQLite は CHECK を後から替えられないので、0026 と同じ手順で作り直す):
+
+| 列 | 変更 | 意味 |
+|---|---|---|
+| `seq` | 追加・NOT NULL・`UNIQUE (user_id, seq)` | 利用者ごとの連番。`IMP-007` の形で表示する。削除しても再利用しない。既存行は作成順 (`created_at`, `id`) で 1 から振る |
+| `title` | NULL を許す | 件名の入力は廃止。既存行の値は残し、新規行は NULL |
+| `status` | CHECK を `open` / `in_progress` / `done` / `reconfirm` に | 旧 `wontfix` は `done` へ移し、`done_at` が NULL なら移行時刻を入れる(夜間の添付削除の起点を失わないため) |
+| `deleted_at` | 追加 | 論理削除の時刻。NULL は削除中でない。30 日を過ぎた行を夜間 job が画像・履歴ごと消す |
+| `body` | 変更なし | DB の CHECK は 4000 字のまま据え置き、API が 1000 字で止める |
+
+`improvement_request_counters`: 主キー `user_id`、`last_seq`。作成時に依頼の行と同じ batch でだけ進める。削除しても戻さない。
+
+`improvement_request_activities`(1 行 1 事実の追記専用): `request_id` は `ON DELETE CASCADE`。`kind` は `created` / `status_changed` / `reissued` / `deleted` / `restored` / `migrated_wontfix`。本文・トークン・診断は入れない。移行時に既存行ぶんの `created` と、旧 `wontfix` の行ぶんの `migrated_wontfix` を書く。
+
+- 索引: `idx_improvement_requests_user` (`user_id`, `created_at`)、`idx_improvement_requests_purge` (`status`, `done_at`) WHERE `purged_at IS NULL`、`idx_improvement_requests_deleted` (`deleted_at`) WHERE `deleted_at IS NOT NULL`、`idx_improvement_request_activities_request` (`request_id`, `created_at`)。
+- 3 表とも `BACKUP_SNAPSHOT_SQL` の列挙対象に入れない(0029 からの禁止事項を引き継ぐ)。
+- 既存の行・画像のキー・トークンのハッシュは 1 件も落とさない。`packages/api/src/improvement-migration-0054.test.ts` が件数・`seq`・`wontfix` の移行・履歴を固定する。
+- 配信は Migrate → Deploy の順にする。0054 の前の Worker を戻すと、作成(`seq` NOT NULL)・削除中の行の扱い・`reconfirm` の表示が壊れる。巻き戻しの手順は [`improvement-request.md`](improvement-request.md) の 2.4。
