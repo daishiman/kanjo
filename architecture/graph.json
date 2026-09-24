@@ -3807,7 +3807,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/ui-ux.md",
         "source_version": "0.1.14",
         "source_digest": "55d1437d6fba626dd898122b48d66e5e981a95dfc2f5a71af1dff3e7e7de94b0",
         "imported_at": "2026-09-23T13:47:00Z"
@@ -3828,7 +3828,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/frontend.md",
         "source_version": "0.1.14",
         "source_digest": "1153b45360c5786d15aee28f19d9d684aa3155b8d44ae0b83e6b9a354c5101c6",
         "imported_at": "2026-09-23T13:47:00Z"
@@ -3849,7 +3849,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/backend.md",
         "source_version": "0.1.14",
         "source_digest": "13f0f32a2b6dfc894e328acfe9efd46454e5b6642111f6088ac9bd61366a5d95",
         "imported_at": "2026-09-23T13:47:00Z"
@@ -3870,7 +3870,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/database.md",
         "source_version": "0.1.14",
         "source_digest": "c982ad2a18786c75d0d9c1f523c1adb00d6c5cc0fdabfeada0219c68af5950b3",
         "imported_at": "2026-09-23T13:47:00Z"
@@ -3891,7 +3891,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/auth.md",
         "source_version": "0.1.14",
         "source_digest": "e97adcfd5be8331dcdc57c615ade418260e0a9f530e410024e38c455ae8f61da",
         "imported_at": "2026-09-23T13:47:00Z"
@@ -3912,7 +3912,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/security.md",
         "source_version": "0.1.14",
         "source_digest": "46502737710bfbffc42ed88bf9f2404279b72b5fdf193e1ec7af50260cf43ade",
         "imported_at": "2026-09-23T13:47:00Z"
@@ -3933,7 +3933,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/infrastructure.md",
         "source_version": "0.1.14",
         "source_digest": "7c10807c3331802623de4fae6013177370c39b9dae5377ecd19f48cd1a1cadf2",
         "imported_at": "2026-09-23T13:47:00Z"
@@ -3954,7 +3954,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/maintenance-ops.md",
         "source_version": "0.1.14",
         "source_digest": "d0a9ec61c38694ac6f85838678d0a9f3adcdb9070a6e9e77b03db4189b4cbfdc",
         "imported_at": "2026-09-23T13:47:00Z"
@@ -4144,6 +4144,174 @@
       "referenced_by": [
         "feat-settings-screen"
       ]
+    },
+    {
+      "id": "arch-guide-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "使い方 — /api/guide を既存の authGuard と mustChangePasswordFence の配下の /api/* に置き、userId の Dataset だけを読み、新しい権限・資格情報を作らない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "6750698bc3023d6fde3c45b95ce211667ad33ca8372193ffeb5475baf684061f",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "使い方 — core に guide-screen・信頼度の段階関数・shiftedPeriod・防衛ラインの算出期間の定数を置き、GET /api/guide は loadScoped の結果を core に渡して { screen } に写すだけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "d0cb72d133251ca361263ca8bebba44f3d9a531a938fceab8f5234c89a1d7847",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "使い方 — DB の表と列は足さず、ガイド本文は core の定数として版管理し、数値は既存の loadDataset の読み取りから毎回導く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "262454a435c86a72714c047a24f18f51d84e187fbc5bb2a0e40d210dc847e07b",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "使い方 — Guide.tsx を pages/guide/ に分け、トピックと検索語を URL に置き、数字と文言は view-model 経由で core の guide-screen から受け取る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "91756674aaa74956621cba80f0cbd496d790626d431d0e24ed476ea7c725b49f",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "使い方 — 新しい Worker・binding・cron・環境変数を足さず、/api/guide は既存の api Worker に載せ、画面は遅延 chunk にして初期 JS 110KiB の予算を守る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "00053ca510de65ebd9915185fd8438088ba8875359d36ba66752c54b25ce906f",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "使い方 — check:guide-screen (KANJO_VISUAL_SCOPE=guide) を verify:full に足し、境界値と防衛ラインの説明文をテストで固定し、記録は docs/guide-screen/ に置き、check-glossary のため用語と目安で全用語を出し続ける",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "cc113059f1c56ef51d31fd20416c85d51894eaba0cb8c8af7f351e8acafe56e6",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "使い方 — topic は許可リスト・q は 100 字で切り検索はサーバへ送らず、フッタは明細を送らない事実に限って AI 送信の補足を 3 か所に残し、CSP は変えない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "c0921d456f4e06dc42879df45252b78dd5acec3ccf9b7dfccf3103e60f9f82cd",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "使い方 — 問いの見出しの下に 4 ステップと元画面への戻り道を置き、総収支を実データで読み解かせ、信頼度は段階＋%・ヘッダは防衛ラインのまま・フッタは事実どおりにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "37aa1d855046a7d5b432aacf16f2c36fddccf269a12ab678d3f5139f71a78333",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
     }
   ]
 }

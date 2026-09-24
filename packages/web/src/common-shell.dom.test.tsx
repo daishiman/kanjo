@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import { AI_DATA_NOTICE } from '@kanjo/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -179,10 +180,14 @@ describe('全画面共通シェル', () => {
   it('信頼の前提と確認先を全画面のフッターに残す', () => {
     renderLayout('/');
     const footer = screen.getByRole('contentinfo');
-    // AI分析は利用者の手で集計データを外へ渡す。「外部送信しません」では嘘になるので、
-    // 「自動では送らない」「AI実行時は渡す」の2つを並べて残す (spec-ai-analysis-screen)
-    expect(footer.textContent).toContain('アプリからは自動送信しません');
-    expect(footer.textContent).toContain('AI実行時は確認した集計データを選択したAIへ渡します');
+    // 取込データは外へ送らない。AI 実行時に集計データを渡すことは 1 文目の title と
+    // プライバシー欄で補う (spec-guide-screen、qa-guide-decision-011)
+    const trust = within(footer).getByText('取込データは外部送信しません');
+    expect(trust.closest('span')?.getAttribute('title')).toBe(`${AI_DATA_NOTICE}。`);
+    expect(footer.textContent).not.toContain('アプリからは自動送信しません');
+    expect(screen.getByText(/取り込んだ明細は収支管理と復元のためにだけ使用します。/).textContent).toContain(
+      AI_DATA_NOTICE,
+    );
     expect(footer.textContent).toContain('税務上の正本はfreee');
     expect(footer.textContent).toContain('毎晩バックアップ');
     expect(within(footer).getByRole('link', { name: 'データ出典' })).toBeTruthy();

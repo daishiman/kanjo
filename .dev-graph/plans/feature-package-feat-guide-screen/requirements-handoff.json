@@ -1,0 +1,301 @@
+{
+  "feature_id": "feat-guide-screen",
+  "feature_package_id": "feature-package/feat-guide-screen",
+  "graph_revision": 3,
+  "graph_snapshot_digest": "88f509652793e9015d4022278c6d537fea241faace4bb7140fbe03902daafb0a",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "graph_canonical_digest": "sha256:20cff16554309f103bc47c1762043ce8fc36ae0047adf021e7a047dd74d14eef",
+  "graph_canonical_digest_note": "registration receipt の graph_digest_after と同方式 (canonical JSON)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-guide-screen/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-guide-screen/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-guide-screen/task-graph.json"
+  },
+  "plan_validated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-GUIDE-P01",
+    "SYS-GUIDE-P02",
+    "SYS-GUIDE-P03",
+    "SYS-GUIDE-P04",
+    "SYS-GUIDE-P05",
+    "SYS-GUIDE-P06",
+    "SYS-GUIDE-P07",
+    "SYS-GUIDE-P08",
+    "SYS-GUIDE-P09",
+    "SYS-GUIDE-P10",
+    "SYS-GUIDE-P11",
+    "SYS-GUIDE-P12",
+    "SYS-GUIDE-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-guide-screen/sys-guide-p01.md",
+    "tasks/feat-guide-screen/sys-guide-p02.md",
+    "tasks/feat-guide-screen/sys-guide-p03.md",
+    "tasks/feat-guide-screen/sys-guide-p04.md",
+    "tasks/feat-guide-screen/sys-guide-p05.md",
+    "tasks/feat-guide-screen/sys-guide-p06.md",
+    "tasks/feat-guide-screen/sys-guide-p07.md",
+    "tasks/feat-guide-screen/sys-guide-p08.md",
+    "tasks/feat-guide-screen/sys-guide-p09.md",
+    "tasks/feat-guide-screen/sys-guide-p10.md",
+    "tasks/feat-guide-screen/sys-guide-p11.md",
+    "tasks/feat-guide-screen/sys-guide-p12.md",
+    "tasks/feat-guide-screen/sys-guide-p13.md"
+  ],
+  "task_artifact_digests": {
+    "tasks/feat-guide-screen/sys-guide-p01.md": "sha256:2121b7933aca8b12bbef919f15ce786cb22151431d5a3fc922063dc91012ebc9",
+    "tasks/feat-guide-screen/sys-guide-p02.md": "sha256:79a6e78608b6d7cd87eb40af87e29fa570bfacc0420d2b4697abaa267d26a4e3",
+    "tasks/feat-guide-screen/sys-guide-p03.md": "sha256:dfaed7a7e2f7d6cba0d1c3577ee9be6c2ac8ff778e21345ffdffd7d35a10b6c7",
+    "tasks/feat-guide-screen/sys-guide-p04.md": "sha256:2b76f39dbcc58444ccef53d8836c62c2d6e848d85c99e2ef0128346bd17c5430",
+    "tasks/feat-guide-screen/sys-guide-p05.md": "sha256:e12254107cb26d21acbdedbeb6b50ffaeb3e9ec3cfb18cd8cb11d0890c1bd102",
+    "tasks/feat-guide-screen/sys-guide-p06.md": "sha256:0454c233e9d7f4ee5a16e54f3c57c9afb2aa193ae2bba02ca363166822a5c8b1",
+    "tasks/feat-guide-screen/sys-guide-p07.md": "sha256:147589b36d347f80768ee6cb1e2d4600c26323a0adf7074d62acead48b499d9b",
+    "tasks/feat-guide-screen/sys-guide-p08.md": "sha256:33c6fc4deb9fd46820dd6ad6ef273c76c795bdc9d6914f4a9d364aeaadcd9b05",
+    "tasks/feat-guide-screen/sys-guide-p09.md": "sha256:35802cb1d63c08641aef72fc91581865e2a9da5239055ab6a23885ea9628ae20",
+    "tasks/feat-guide-screen/sys-guide-p10.md": "sha256:b0e54ec5abb6cb3de6e806c9a8a60fd72711f1d6534866cd1e8ee6313897ebb1",
+    "tasks/feat-guide-screen/sys-guide-p11.md": "sha256:11b0d70c073cafc2ade9e96d57793aaacf896d2e9c9aefa9c9812834a63111b3",
+    "tasks/feat-guide-screen/sys-guide-p12.md": "sha256:424c5538dcf9d68244908683c3e046e3e15129d02eaebe086c30ed949191728d",
+    "tasks/feat-guide-screen/sys-guide-p13.md": "sha256:5395260565b4610d9c4e5b1e377d9351f728b5772058e92fa530509ca5b53b3b"
+  },
+  "requirements_document": {
+    "path": ".dev-graph/requirements/feat-guide-screen/requirements.md",
+    "sha256": "sha256:3ec334c0cc26997bafa94da2759e99537bbaeebbfc74053b554b787dcba55275",
+    "scope": ".dev-graph/requirements/feat-guide-screen/scope.json",
+    "trace_plan": ".dev-graph/requirements/feat-guide-screen/trace-plan.json"
+  },
+  "requirements_decisions": [
+    "RD-GD-001"
+  ],
+  "carried_findings": [
+    {
+      "id": "OI-1",
+      "source": "goal-spec.open_items",
+      "severity": "medium",
+      "summary": "信頼度を出す画面の列挙",
+      "status": "resolved",
+      "resolution": "RD-GD-001 (basis=user, 2026-09-23)",
+      "remediation_owner": [
+        "SYS-GUIDE-P01"
+      ]
+    },
+    {
+      "id": "OI-2",
+      "source": "goal-spec.open_items",
+      "severity": "medium",
+      "summary": "概況 confidenceClass の 80/60 色境界",
+      "status": "resolved",
+      "resolution": "RD-GD-001 (段階の境界へ揃える)",
+      "remediation_owner": [
+        "SYS-GUIDE-P01",
+        "SYS-GUIDE-P05"
+      ]
+    },
+    {
+      "id": "R-1",
+      "source": "goal-spec.open_items",
+      "summary": "直近3か月の直書き3か所",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P05"
+      ]
+    },
+    {
+      "id": "R-2",
+      "source": "goal-spec.open_items",
+      "summary": "common-shell.dom.test.tsx:182-185 の旧フッタ期待",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P04",
+        "SYS-GUIDE-P05"
+      ]
+    },
+    {
+      "id": "R-3",
+      "source": "goal-spec.open_items",
+      "summary": "shiftedPeriod の移設と呼出元",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P05"
+      ]
+    },
+    {
+      "id": "R-4",
+      "source": "goal-spec.open_items",
+      "summary": "check:guide-screen の追加と verify:full 組込",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P05"
+      ]
+    },
+    {
+      "id": "R-5",
+      "source": "goal-spec.open_items",
+      "summary": "architecture resource_scope に feature 外 (docs/cash-screen, scripts/check-glossary.mjs, migrations)",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P12"
+      ]
+    },
+    {
+      "id": "Q-1",
+      "source": "goal-spec.open_items",
+      "summary": "/api/guide 応答細部・loadCloseStatus items (agent 推定)",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P02"
+      ]
+    },
+    {
+      "id": "Q-2",
+      "source": "goal-spec.open_items",
+      "summary": "トピック id・行き先・1024px・ステッパー (agent 推定)",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P05"
+      ]
+    },
+    {
+      "id": "Q-3",
+      "source": "goal-spec.open_items",
+      "summary": "検索対象・正規化・0件文言・URL既定・q 100字・期間定義文 (agent 推定)",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P05"
+      ]
+    },
+    {
+      "id": "Q-4",
+      "source": "goal-spec.open_items",
+      "summary": "AI補足文言・段階関数/定数名・範囲外・閾値共有 (agent 推定)",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P02"
+      ]
+    },
+    {
+      "id": "Q-5",
+      "source": "goal-spec.open_items",
+      "summary": "DOM テストのファイル名 (agent 推定)",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P04"
+      ]
+    },
+    {
+      "id": "CF-confidence-screens",
+      "source": "completeness-findings",
+      "severity": "medium",
+      "summary": "信頼度を出す画面の未列挙",
+      "status": "resolved",
+      "resolution": "RD-GD-001",
+      "remediation_owner": [
+        "SYS-GUIDE-P01"
+      ]
+    },
+    {
+      "id": "CF-C06-B",
+      "source": "completeness-findings",
+      "severity": "medium",
+      "summary": "appr-foundation-guide-002/003 の提示文面の逐語記録なし",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P01",
+        "elicit/C01"
+      ]
+    },
+    {
+      "id": "CF-C06-A",
+      "source": "completeness-findings",
+      "severity": "medium",
+      "summary": "provenance『1問ずつ』と presented-options-009『1回4問』の食い違い",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P01",
+        "elicit/C01"
+      ]
+    },
+    {
+      "id": "CF-C06-C",
+      "source": "completeness-findings",
+      "severity": "low",
+      "summary": "decision-002/003/004/006 に superseded_by なし",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P12",
+        "elicit/C01"
+      ]
+    },
+    {
+      "id": "CF-backend-web-002",
+      "source": "completeness-findings",
+      "severity": "low",
+      "summary": "basis=user-decision に agent 導出の具体が混在",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P02"
+      ]
+    },
+    {
+      "id": "CF-official-host",
+      "source": "completeness-findings",
+      "severity": "low",
+      "summary": "tanstack-query・hono・owasp-asvs の official_host が github.com",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P12",
+        "doc-fetch/C02"
+      ]
+    },
+    {
+      "id": "RQ-F1",
+      "source": "requirements",
+      "severity": "medium",
+      "summary": "classify.dom.test.tsx:257,399-400 と overview-review-queue.dom.test.tsx:316,531,613 が旧表示『N%』を字面固定し、P04/P05 の write scope 外",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P04"
+      ]
+    },
+    {
+      "id": "RQ-F2",
+      "source": "requirements",
+      "severity": "low",
+      "summary": "R-5 の drift が graph の architecture node resource_scope に残存 (task lease へは影響なし)",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-GUIDE-P12",
+        "architecture 再 import"
+      ]
+    },
+    {
+      "id": "RQ-F3",
+      "source": "requirements (verifier)",
+      "severity": "info",
+      "summary": "registration receipt の graph_digest_after は canonical JSON 方式で現行 graph と一致。bytes 方式の snapshot との差は方式差で drift ではない",
+      "status": "resolved",
+      "resolution": "handoff に graph_canonical_digest を併記",
+      "remediation_owner": [
+        "なし (記録のみ)"
+      ]
+    }
+  ],
+  "remediation_owners": [
+    "SYS-GUIDE-P01",
+    "SYS-GUIDE-P02",
+    "SYS-GUIDE-P04",
+    "SYS-GUIDE-P05",
+    "SYS-GUIDE-P12",
+    "architecture 再 import",
+    "doc-fetch/C02",
+    "elicit/C01",
+    "なし (記録のみ)"
+  ]
+}

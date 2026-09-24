@@ -22,6 +22,7 @@ import type {
   DiagnosisData,
   DiagnosticPayload,
   FreeeCoverage,
+  GuideScreen,
   HouseholdCategoryDetail,
   HouseholdSummary,
   MatrixData,
@@ -1222,6 +1223,13 @@ export type TradeoffResponse = TradeoffScreenResponse;
 export interface StatementsResponse {
   /** 決算書画面の単一正本。Web は旧 PL / CF / BS を再集計しない。 */
   screen: StatementsScreen;
+}
+
+/* -------- 使い方 (spec-guide-screen) -------- */
+
+export interface GuideResponse {
+  /** 使い方画面の数値 (期間・総収支・最終更新・進捗)。本文は core の定数を web が直接読む */
+  screen: GuideScreen;
 }
 
 /** PUT /balances/liabilities の応答。保存後の基準月の BS */

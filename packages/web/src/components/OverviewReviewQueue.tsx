@@ -1,4 +1,5 @@
 /** Overview でだけ使う未処理明細の操作UI。共通シェルの初期JSに含めない。 */
+import { confidenceTierText } from '@kanjo/core';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -145,7 +146,7 @@ function ReviewDetailBody({
               <span>数値化できる根拠がありません</span>
             ) : (
               <>
-                <span className="num">{item.confidence}%</span>
+                <span className="num">{confidenceTierText(item.confidence)}</span>
                 <span
                   className="confidence-meter"
                   role="progressbar"

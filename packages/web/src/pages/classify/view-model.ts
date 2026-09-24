@@ -5,7 +5,7 @@
  * 通知文・件数文言・分割合計の文言をコンポーネントの中に散らすと、
  * 同じ意味の文が 2 通りに増えて、どちらが仕様どおりか分からなくなる。
  */
-import { matchesSuggestion } from '@kanjo/core';
+import { confidenceTierText, matchesSuggestion } from '@kanjo/core';
 import type { BulkItemBody, ClassifyRow, ClassifyStatus, Cls, Owner } from '../../api.js';
 
 /** 件数の文言。3 桁区切り (例: 1,024件) */
@@ -17,8 +17,8 @@ export const countText = (n: number): string => `${n.toLocaleString('ja-JP')}件
  */
 export const amountText = (v: number): string => `${Math.abs(Math.round(v)).toLocaleString('ja-JP')}円`;
 
-/** 信頼度。null は「—」(0% と区別する) */
-export const confidenceText = (v: number | null): string => (v == null ? '—' : `${v}%`);
+/** 信頼度。『段階＋%』(高 80 以上・中 50〜79・低 49 以下。境界は core の confidenceTier だけが持つ)。null は「—」(0% と区別する) */
+export const confidenceText = (v: number | null): string => confidenceTierText(v);
 
 /** 日付。YYYY/MM/DD */
 export const dateText = (iso: string): string => iso.slice(0, 10).replace(/-/g, '/');
@@ -137,7 +137,7 @@ export const outcomeText = (status: ClassifyStatus): string =>
 export const canSave = (row: ClassifyRow, input: EditInput): boolean =>
   !sameInput(inputFromRow(row), input) || row.status === 'unsorted';
 
-/** 履歴の 1 行。{日時} {由来} → {変更後}（信頼度 n%） */
+/** 履歴の 1 行。{日時} {由来} → {変更後}（信頼度 段階 n%） */
 export function historyText(h: {
   changedAt: string;
   sourceLabel: string;
@@ -145,7 +145,7 @@ export function historyText(h: {
   confidence: number | null;
 }): string {
   const when = `${dateText(h.changedAt)} ${h.changedAt.slice(11, 16)}`;
-  const tail = h.confidence == null ? '' : `（信頼度 ${h.confidence}%）`;
+  const tail = h.confidence == null ? '' : `（信頼度 ${confidenceTierText(h.confidence)}）`;
   return `${when} ${h.sourceLabel} → ${h.after ?? '(なし)'}${tail}`;
 }
 

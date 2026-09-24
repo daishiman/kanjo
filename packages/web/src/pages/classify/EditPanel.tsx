@@ -20,6 +20,7 @@ import {
   type EditInput,
   amountText,
   canSave,
+  confidenceText,
   dateText,
   draftSavedText,
   historyText,
@@ -256,6 +257,9 @@ export function EditPanel({
 
       <div className="classify-edit-group">
         <h3>信頼度の根拠</h3>
+        <p className="classify-edit-confidence">
+          信頼度 <span className="num">{confidenceText(row.confidence)}</span>
+        </p>
         <p className="sub">{row.basisText}</p>
       </div>
 

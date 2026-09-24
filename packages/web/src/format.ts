@@ -9,6 +9,12 @@ export const yen = (v: number | null | undefined): string =>
 export const yenS = (v: number | null | undefined): string =>
   v == null ? '—' : `${v < 0 ? '−' : ''}¥${Math.abs(Math.round(v)).toLocaleString('ja-JP')}`;
 
+/** 符号つきの円。0 は符号なし。マイナスは全角の −。 */
+export const signedYen = (value: number): string => {
+  const body = `¥${Math.abs(Math.round(value)).toLocaleString('ja-JP')}`;
+  return value > 0 ? `+${body}` : value < 0 ? `−${body}` : body;
+};
+
 /**
  * 万円 1 桁丸め（仕様 §3.2）。表は俯瞰なので万円、セル詳細だけが `yen` で円の実額を出す。
  * 桁区切りを付けるので総計（`1,139.4万`）も読める。

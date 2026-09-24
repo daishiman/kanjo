@@ -3,7 +3,7 @@ status: confirmed
 category: frontend
 aggregate: 確定
 spec_cells: [frontend.web, frontend.mobile, frontend.tablet, frontend.desktop-windows, frontend.desktop-linux, frontend.desktop-macos]
-serves_goals: [G1, G3]
+serves_goals: [G1, G2, G3]
 ---
 
 # フロントエンド (frontend)
@@ -15,12 +15,12 @@ serves_goals: [G1, G3]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-imp-frontend-web-001。裏付け質疑 (`qa_refs`): `qa-imp-frontend-web-evidence-001`, `qa-imp-decision-002`, `qa-imp-decision-007` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G3 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、frontend では撮影をその OS のスクリーンショット API で行うか、DOM の複製で行うかを決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-guide-frontend-web-002。裏付け質疑 (`qa_refs`): `qa-guide-frontend-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G3 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、frontend ではOS ネイティブの UI 部品でガイドの目次とステッパーを描く実装を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、frontend ではOS ネイティブの UI 部品でガイドの目次とステッパーを描く実装を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、frontend ではOS ネイティブの UI 部品でガイドの目次とステッパーを描く実装を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、frontend ではOS ネイティブの UI 部品でガイドの目次とステッパーを描く実装を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、frontend ではOS ネイティブの UI 部品でガイドの目次とステッパーを描く実装を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G1, G3]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 狭い幅では作成フォーム・一覧・詳細を縦に積み、表を横スクロールの容器に入れる形へ反映した。範囲選択はポインタのドラッグとキーボード (矢印キーで矩形を動かし Enter で確定) の両方で操作でき、選んだ範囲を文字でも示す。 |
-| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | pages/improvement/ を ImprovementPage・view-model・作成フォーム・一覧・詳細パネル・撮影パネル・選択中バー・トーストに分け、core を呼ぶのは view-model だけにする形へ反映した。撮影パネルは Layout の右下の『改善を送る』から開き、撮った画像と関連ページをメモリ上の受け渡しで /improvement の作成フォームへ渡す。 |
+| presentation | Apple Human Interface Guidelines | 画面設計・操作フロー・情報階層・アクセシビリティの上流原則 | https://developer.apple.com/design/human-interface-guidelines | 2026-07-12 | 目次を幅 1024px 未満で本文の上の横スクロールのタブへ変え、右カラムを本文の下へ積み、下部固定バーに安全領域の余白を足す形へ反映した。 |
+| application-architecture | Robert C. Martin — Clean Architecture | レイヤ境界・依存方向 (内向き)・ユースケース中心設計 | Clean Architecture (2017), the Dependency Rule | 2026-07-12 | pages/guide/ を view-model・目次・本文の節・右カラム・下部固定バーに分け、view-model だけが core を呼ぶ形へ反映した。旧 pages/Guide.tsx は再輸出 1 行にして lazy 読み込みの数を変えない。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,55 +37,31 @@ serves_goals: [G1, G3]
 
 ### Web (web)
 
-- 資するゴール: G1, G3
+- 資するゴール: G1, G2, G3
 
-#### 主たる接地根拠: `qa-imp-frontend-web-001`
-
-**問**
-
-frontend の web の方針を次の内容で確定してよいか。
-
-**答**
-
-pages/improvement/ に分割し、core を呼ぶのは view-model だけにする。選択中の依頼・タブ・検索・ページは URL の検索パラメータを正本にする。変更後は TanStack Query を invalidate する。撮影は既存の DOM 複製に伏字を加えて範囲選択も付け、撮影コードは遅延読み込みにして初期 JS 予算を守る。撮影した画像と本文は端末に保存せず、メモリにだけ持つ。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。 / 回答時刻: 2026-09-23T13:16:38Z)
-
-#### 裏付け質疑: `qa-imp-frontend-web-evidence-001`
+#### 主たる接地根拠: `qa-guide-frontend-web-002`
 
 **問**
 
-frontend の web について、現行の実装と画像の差分は何か。
+web の使い方画面をどう組むか (qa-guide-decision-008〜010 を反映した取り直し)。
 
 **答**
 
-現行 web は pages/Improvement.tsx 1 ファイルに一覧と詳細を持つ。撮影は capture-screen.ts が DOM を複製して [data-capture-hide] の要素を落とし、ScreenshotAnnotator.tsx と annotate-image.ts で注釈を付ける。診断は diagnostics-buffer.ts が集め、API 呼び出しは api.ts:1332-1410 にある。Layout.tsx:523-527 に右下の浮動ボタンがあり、ルーティングは AuthenticatedApp.tsx:63 と routeMetadata.ts:370,385 に置かれている。
+Guide.tsx を pages/guide/ 配下へ分割し、旧 pages/Guide.tsx は再輸出 1 行にする。core を import するのは view-model.ts だけにし、guide-sections.ts の現在値合成は core へ移す。選択中のトピックと検索語は URL (?topic=&q=) に保ち、/api/guide の問い合わせ鍵に期間を含める。信頼度を出す既存画面 (明細仕分けなど) は core の段階関数の結果を描くだけにする。防衛ラインを出す画面 (概要・予算・トレードオフ・ヘッダ) の表示と算出は変えない。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。 / 回答時刻: 2026-09-23T13:17:45Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 appr-foundation-guide-003 と決定 qa-guide-decision-001・005・007〜011 の範囲に収まる確定内容。qa-guide-frontend-web-001 の防衛ラインを新しい関数で描く前提 (qa-guide-decision-004・006) を利用者が覆したため、reopen 後に取り直した。answered_at は記録直前に実測した時刻。 / 回答時刻: 2026-09-23T13:14:47Z)
 
-#### 裏付け質疑: `qa-imp-decision-002`
+#### 裏付け質疑: `qa-guide-frontend-web-evidence-001`
 
 **問**
 
-画像の作成フォームには件名欄が無く本文 (0/1000) だけがある。現行の件名 120 字＋本文 4000 字をどうするか。
+frontend 章の裏付けとして、現行実装について何を観測したか。
 
 **答**
 
-件名欄を廃止し、一覧の概要は本文の先頭行から core で自動生成する (最大 40 字)。本文は新規と編集で 1000 字に制限し、1000 字を超える既存の本文は読めるまま保つ。
+ルートは packages/web/src/routeMetadata.ts:152-163 (id guide、path /guide)、遅延読み込みは AuthenticatedApp.tsx:39。現在値の合成は web 側 guide-sections.ts (GUIDE_CURRENT / buildGuideSections) にある。直近の画面 (pages/cash/) は view-model.ts だけが core を import し、旧 pages/Cash.tsx は再輸出 1 行で display-contract.test.tsx の REEXPORT が実体を解決する。データ取得は TanStack Query 5。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案を提示し、利用者が『本文の先頭から自動生成 (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。 / 回答時刻: 2026-09-23T13:05:47Z)
-
-#### 裏付け質疑: `qa-imp-decision-007`
-
-**問**
-
-画像の IMP-024 形式の番号と、キャプチャパネルの『範囲を選択する』をどう実装するか。
-
-**答**
-
-番号は利用者ごとの連番にし、削除しても再利用しない (既存行は作成順に採番)。撮影は画面全体と範囲選択の両方を実装する。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案を提示し、利用者が『利用者ごと連番＋範囲選択も実装 (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。 / 回答時刻: 2026-09-23T13:06:50Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-23T12:37:28Z)
 
 ## To-Be / Delta
 
@@ -93,22 +69,27 @@ frontend の web について、現行の実装と画像の差分は何か。
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: /improvement を 20-improvement.png どおりの画面にする。問いの見出しと説明・使い方リンク、共通の期間、作成フォーム (スクリーンショット任意と撮り直し/削除、本文 0/1000、プライバシー確認 2 つ必須、自動マスキングの対象の説明、送信)、一覧 (ID・内容・関連ページの検索、すべて/受付/対応中/完了/再確認の件数タブ、選択、ID・関連ページ・概要・状態・作成日・更新日の表、10 件ずつのページング)、詳細パネル (IMP 番号と状態、本文、添付画像と拡大、マスク済み診断情報、アクティビティ、関連する依頼、状態の変更・再発行・Claude Code 用 / Codex 用のコピー・削除)、空状態、読み込み失敗と再読み込み、画面キャプチャの浮動パネル (キャプチャする・範囲を選択する)、選択中バー、コピー完了トーストを描く。
-- **G3**: 画面の数字と判定を core の 1 か所から導く。状態の体系と遷移、概要の切り出し、IMP 番号の表示、検索・件数タブ・ページング、関連する依頼、アクティビティの表示、診断情報の表示用要約 (OS・ブラウザ・画面サイズ・利用環境・伏せたセッション ID)、マスク規則を core の純関数に置き、API は JSON に写すだけ、web は描くだけにする。
+- **G1**: /guide を 19-guide.png どおりの画面にする。問いの見出しと説明、共通の期間と前後移動、4 ステップ (取込む・整える・確認・計画) と各『元画面を開く』、使い方ガイド (左の目次 6 項目＋用語と目安、月次の流れステッパー、総収支の読み方 = 総収入 − 総支出 = 純収支 を選択期間の実データで、含まれるもの・振替は除外・freee の権限、期間の切り替えによる表示の違い表)、右カラム (このページの数値・関連ページ・ガイド内を検索)、よくある疑問と対処法 5 行 (データの出所・確認の条件・関連ページ)、下部固定バー (現在のトピックと主要な元画面へのボタン) を描く。
+- **G2**: 説明と計算を一致させる。信頼度を 高 (80 以上) / 中 (50〜79) / 低 (49 以下) の 3 段階＋% で全画面に見せる。防衛ラインの算出 (個人生活費と事業固定費の直近 3 か月平均) は変えず、ガイドの説明を実装どおりに書く。ガイドの文言は信頼度の段階と防衛ラインの算出を core の同じ定数から引く。
+- **G3**: 画面の数字と文言の対応を core の 1 か所から導く。ガイドの節・ステップ・よくある疑問・期間の表・このページの数値・関連ページ・検索を core の純関数 (guide-screen) に置き、API は JSON に写すだけ、web は描くだけにする。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | 改善リクエスト画面が画像の全構成要素を描画する (共通シェルの文言を除く)。 | DOM テストで、問いの見出し・作成フォームの全項目と本文の文字数・プライバシー確認 2 つが未チェックのとき送信不可・マスキングの説明・一覧の検索/5 つの件数タブ/表/ページング・詳細パネルの全区画・空状態・読み込み失敗と再読み込み・キャプチャ浮動パネル・選択中バー・コピー完了トーストの存在を確認し、全て通る。 |
-| O3 | 画面の導出が core の 1 か所に集まる。 | core の improvement-screen の単体テストが状態遷移・概要・IMP 番号・検索・件数・ページング・関連・アクティビティ・診断要約を固定し、web と api に同じ計算の重複が無い (grep で 0 件)。 |
-| O4 | 削除・分離・保持期限・既存ゲートを守る。 | API テストで削除→元に戻すで同じ id と番号が戻ること、削除中の行が一覧と件数に 0 件、他の利用者の依頼が 404、30 日経過の完全消去で R2 の画像と履歴が消えること、BACKUP_SNAPSHOT_SQL に改善リクエストの表が無いことが通り、pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
+| O1 | 使い方画面が画像の全構成要素を描画する。 | DOM テストで、問いの見出し・期間の前後移動・4 ステップと 4 つの元画面リンク・目次 7 項目・ステッパー・総収支の 3 枚 (実データの金額)・含まれるもの 3 枚・期間の表 4 行・このページの数値 4 項目・関連ページ 5 件・ガイド内検索・よくある疑問 5 行・下部固定バーの存在を確認し、全て通る。 |
+| O2 | 信頼度が 3 段階で全画面に出て、防衛ラインの説明が算出と一致する。 | core の単体テストが信頼度の段階境界 (49/50/79/80) を固定し、明細仕分けなど信頼度を出す画面の DOM テストが『段階＋%』で通る。ガイドと用語集の防衛ラインの説明が core の算出定数 (直近 3 か月) から導かれることを単体テストで固定し、防衛ラインの既存テストは値を変えずに通る。 |
+| O3 | ガイドの導出が core の 1 か所に集まる。 | core の guide-screen の単体テストが節・よくある疑問・期間の表・このページの数値・検索を固定し、web と api に同じ導出の重複が無い (guide-sections.ts の現在値合成は core へ移る)。 |
+| O4 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: Improvement.tsx を pages/improvement/ 配下へ分割し、問いの見出し・作成フォーム・一覧・詳細パネル・空/失敗の状態・選択中バーの構成に作り直す。選択中の依頼・タブ・検索・ページを URL に保つ。
-- **I2**: core に improvement-screen を新設し、状態の体系と許される遷移、概要の切り出し、IMP 番号の表示、検索・件数タブ・ページング、関連する依頼、アクティビティの表示、診断情報の表示用要約を純関数で導く。
-- **I5**: 画面キャプチャの浮動パネル (全体と範囲選択) を作り、右下の『改善を送る』から撮影して作成フォームへ移る流れにする。
+- **I1**: Guide.tsx を pages/guide/ 配下へ分割し、問いの見出し・期間・4 ステップ・目次と本文・右カラム・よくある疑問・下部固定バーの構成に作り直す。選択中のトピックと検索語を URL に保つ。
+- **I2**: core に guide-screen を新設し、節・ステップ・よくある疑問・期間の表・このページの数値 (選択中の期間・期間の定義・データの出所・最終更新)・関連ページ・ガイド内検索を純関数で導く。guide-sections.ts の現在値合成を core へ移す。
+- **I3**: GET /api/guide を追加し、選択期間の総収入・総支出・純収支 (振替除外)・最終更新・データの出所を core の guide-screen で JSON に写す。利用者ごとに分離し期間クエリを検証する。
+- **I4**: core に信頼度の段階関数 (高/中/低) を置き、信頼度を出す全画面を『段階＋%』表示にする。自動判定の閾値は変えない。
+- **I5**: 防衛ラインの算出 (個人生活費と事業固定費の直近 3 か月平均) を説明する文言を core の算出定数から引き、使い方画面と用語集の説明を実装どおりにする。defenseLine の算出と数値は変えない。
+- **I7**: 期間の前後移動 (shiftedPeriod) を core へ移し、決算書と使い方画面で共有する。
 
 ### 本章に効く確定意思決定
 
@@ -120,9 +101,9 @@ frontend の web について、現行の実装と画像の差分は何か。
 
 ### 本章での適用
 
-Clean Architecture card の依存方向を、web が状態の遷移・概要・番号・件数・関連の計算を持たない構成に適用した。Improvement.tsx と ImprovementRequestButton.tsx が部品の中に抱えている整形を pages/improvement/ に分け、core の improvement-screen を呼ぶのは view-model だけにする。URL の検索パラメータ (選択中の id・タブ・検索語・ページ) を表示条件の正本にするので、同じ URL を開けば同じ一覧と詳細が出る。Information Design card の『加工』(保存値と表示値を同一視しない) は view-model の出力に当てた。連番 24 は IMP-024、status の done は『完了』、ISO 時刻は日付の表示、セッション ID は末尾 4 桁へ写す。どれも core の関数が返した値を描くだけで、部品の中では変換しない。『形式の比較選定』は一覧に当てた。表 (並べ替え・絞り込み・選択に強い) とカード (視覚要素が主のとき強い) を比べ、ID・関連ページ・状態・日付の 6 列で見比べて選ぶ用途なので表を採った。撮影と範囲選択のコードは最初の描画に要らないので、遅延読み込みにする。
+Clean Architecture card の依存方向を、web が数値の合成と判定を持たない構成に適用した。現行の guide-sections.ts が web 側で現在値を合成しているのを core へ移し、pages/guide/ の view-model だけが core を呼んで描画用の形へ写す。選択トピックと検索語を URL の検索パラメータに持つので、同じ URL を開けば同じ節が開く。Information Design card の『残す・落とす・加工する』は、右カラムの『このページの数値』で選択中の期間・期間の定義・データの出所・最終更新の 4 項目だけを残し、計算の途中値は落とすことに当てた。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-23T13:33:08Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-23T13:15:27Z)
 
 ### Clean Architecture — deep knowledge card
 
@@ -216,6 +197,5 @@ Clean Architecture card の依存方向を、web が状態の遷移・概要・�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| react-router-searchparams | 8.4.0 | Remix (Shopify) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-23T13:20:54Z | 2026-09-23T13:20:54Z |
-| tanstack-query-invalidation | v5 | TanStack (tanstack.com) | https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation | 2026-09-23T13:20:54Z | 2026-09-23T13:22:10Z |
-| mdn-canvas-toblob | 2026-02-12 | Mozilla (MDN) (developer.mozilla.org) | https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob | 2026-09-23T13:20:54Z | 2026-09-23T13:20:54Z |
+| react-router-searchparams | 8.4.0 | React Router (Shopify / Remix team) (reactrouter.com) | https://reactrouter.com/api/hooks/useSearchParams | 2026-09-23T12:39:53Z | 2026-09-23T12:39:53Z |
+| tanstack-query-keys | 5.103.2 | TanStack (github.com) | https://github.com/TanStack/query/blob/main/packages/react-query/package.json | 2026-09-23T12:39:53Z | 2026-09-23T12:39:53Z |

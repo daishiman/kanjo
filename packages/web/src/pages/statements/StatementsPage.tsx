@@ -1,4 +1,3 @@
-import type { StatementsScreen } from '@kanjo/core';
 /**
  * 決算書画面のページ制御 (spec-statements-screen §1・§2)。
  *
@@ -10,14 +9,14 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { type StatementsResponse, api } from '../../api.js';
-import { Button } from '../../components/Button.js';
 import { KpiCard, PageHeader, PageState } from '../../components/Page.js';
+import { PeriodRange } from '../../components/PeriodRange.js';
 import { usePeriod } from '../../period.js';
 import { StatementsBs } from './StatementsBs.js';
 import { StatementsCf } from './StatementsCf.js';
 import { StatementsKpis } from './StatementsKpis.js';
 import { StatementsPl } from './StatementsPl.js';
-import { STATEMENTS_TABS, type StatementsTab, readStatementsUrl, shiftedPeriod } from './view-model.js';
+import { STATEMENTS_TABS, type StatementsTab, readStatementsUrl } from './view-model.js';
 import './statements.css';
 
 const TITLE = '損益・資金・残高は、整合していますか？';
@@ -25,30 +24,6 @@ const LEAD =
   '損益計算書・キャッシュフロー計算書・貸借対照表のつながりを確認し、決算の整合性をチェックしましょう。';
 
 type Patch = Partial<Record<'tab' | 'row' | 'ref', string | null>>;
-
-function PeriodRange({ screen }: { screen: StatementsScreen | undefined }) {
-  const { setSelection } = usePeriod();
-  const meta = screen?.period.navigation;
-  const previous = shiftedPeriod(meta, -1);
-  const next = shiftedPeriod(meta, 1);
-  const label = screen?.period.label ?? '全期間';
-  return (
-    <div className="stmt-range" aria-label="対象期間">
-      <Button
-        size="mini"
-        aria-label="前の期間へ"
-        disabled={!previous}
-        onClick={() => previous && setSelection(previous)}
-      >
-        ‹
-      </Button>
-      <span className="stmt-range-label">{label}</span>
-      <Button size="mini" aria-label="次の期間へ" disabled={!next} onClick={() => next && setSelection(next)}>
-        ›
-      </Button>
-    </div>
-  );
-}
 
 /** 節へ移る要求。リンクの遷移 state に載せ、行の選択など他の URL 更新ではフォーカスを動かさない */
 interface SectionFocusState {
@@ -157,7 +132,11 @@ export function StatementsPage() {
   const header = (
     <div className="stmt-intro">
       <PageHeader route="statements" title={TITLE} lead={LEAD} showTask={false} />
-      <PeriodRange screen={query.data?.screen} />
+      <PeriodRange
+        navigation={query.data?.screen.period.navigation}
+        label={query.isError ? '期間を取得できませんでした' : query.data?.screen.period.label}
+        loading={query.isLoading || query.isPlaceholderData}
+      />
     </div>
   );
 

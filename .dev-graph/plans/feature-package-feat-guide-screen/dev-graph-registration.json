@@ -1,0 +1,1311 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-guide-screen/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-guide-screen",
+  "parent_feature": "feat-guide-screen",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-GUIDE-P01": "beads",
+    "SYS-GUIDE-P02": "beads",
+    "SYS-GUIDE-P03": "beads",
+    "SYS-GUIDE-P04": "beads",
+    "SYS-GUIDE-P05": "beads",
+    "SYS-GUIDE-P06": "beads",
+    "SYS-GUIDE-P07": "beads",
+    "SYS-GUIDE-P08": "beads",
+    "SYS-GUIDE-P09": "beads",
+    "SYS-GUIDE-P10": "beads",
+    "SYS-GUIDE-P11": "beads",
+    "SYS-GUIDE-P12": "beads",
+    "SYS-GUIDE-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-GUIDE-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と信頼度を出す画面の列挙の確定",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p01",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "guide-screen・信頼度の段階関数・防衛ライン算出定数・shiftedPeriod の core 移設・GET /api/guide・フッタ文言のワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P01"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 1 か所導出・API 写像・利用者分離・フッタ文言の独立設計レビュー",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P02"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 不変条件・/api/guide 契約・DOM・共通シェル文言の失敗テスト先行作成",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P03"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/guide-screen.test.ts",
+        "packages/core/src/classify-status.test.ts",
+        "packages/core/src/period-shift.test.ts",
+        "packages/api/src/guide-screen.integration.test.ts",
+        "packages/web/src/pages/guide/guide-screen.dom.test.tsx",
+        "packages/web/src/pages/guide/view-model.test.ts",
+        "packages/web/src/guide.dom.test.tsx",
+        "packages/web/src/guide-sections.test.ts",
+        "packages/web/src/common-shell.dom.test.tsx",
+        "packages/web/src/statements-view-model.test.ts",
+        "packages/web/src/pages/classify/view-model.test.ts",
+        "packages/web/src/glossary.test.tsx"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "guide-screen.ts・信頼度の段階表示・防衛ライン算出定数・GET /api/guide・/guide 画面と check:guide-screen の最終実装",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P04"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/guide-screen.ts",
+        "packages/core/src/classify-status.ts",
+        "packages/core/src/analysis.ts",
+        "packages/core/src/period.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/guide/",
+        "packages/web/src/pages/Guide.tsx",
+        "packages/web/src/guide-sections.ts",
+        "packages/web/src/guide-sections.test.ts",
+        "packages/web/src/guide.dom.test.tsx",
+        "packages/web/src/glossary.ts",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/pages/statements/view-model.ts",
+        "packages/web/src/pages/statements/StatementsPage.tsx",
+        "packages/web/src/statements-view-model.test.ts",
+        "packages/web/src/pages/Overview.tsx",
+        "packages/web/src/components/OverviewReviewQueue.tsx",
+        "packages/web/src/pages/classify/view-model.ts",
+        "packages/web/src/pages/classify/view-model.test.ts",
+        "packages/web/src/pages/classify/TransactionTable.tsx",
+        "packages/web/src/pages/classify/EditPanel.tsx",
+        "packages/web/scripts/check-financial-visuals.mjs",
+        "packages/web/package.json",
+        "package.json"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと型検査と lint の実行記録",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P05"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 S1 から S4 の検証",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P06"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "旧 Guide.tsx・guide-sections.ts の参照と直書き定数 (信頼度 80/60・直近3か月) の残存の読取専用監査",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p08",
+        "audit"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P07"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・検索語の扱い・外部送信・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P08"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P09"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P10"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/evidence.md",
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "信頼度の段階・防衛ラインの説明・/api/guide・未決事項の docs 最終同期",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P11"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md",
+        "docs/guide-screen/evidence.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信とクローズアウト",
+      "project_id": "feature-package-feat-guide-screen",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "guide-screen",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-23T14:06:55Z",
+      "updated_at": "2026-09-23T14:06:55Z",
+      "depends_on": [
+        "SYS-GUIDE-P12"
+      ],
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "resource_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-guide-screen/sys-guide-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-guide-screen/plan-findings.json",
+        "evaluated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-guide-screen/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+        "imported_at": "2026-09-23T14:06:55Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-guide-screen/sys-guide-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

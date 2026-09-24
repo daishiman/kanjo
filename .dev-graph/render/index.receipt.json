@@ -1,12 +1,16 @@
 {
   "renderer": "render-graph-html.py (dev-graph 0.1.11)",
+  "rendered_at": "2026-09-23T14:38:05Z",
   "scope": "all nodes",
+  "graph_revision": 4,
   "input": ".dev-graph/state/graph.json",
+  "input_sha256": "f2584dff750153cb64c8823f99ab3f7c7b572e07b7523d300f3ecef629dc21d1",
   "output": ".dev-graph/render/index.html",
+  "output_sha256": "ea01075758f84eaf2c508de68dcab7197f127b23ae94178d4f97df76a281e4d4",
   "nodes": 23,
   "edges": 21,
   "feature_progress": {
-    "feat-improvement-screen": {
+    "feat-guide-screen": {
       "done": 0,
       "total": 13
     }
@@ -15,27 +19,9 @@
   "svg": 1,
   "inline_scripts": 2,
   "registration_receipt": {
-    "path": ".dev-graph/plans/feature-package-feat-improvement-screen/dev-graph-registration-receipt.json",
+    "path": ".dev-graph/plans/feature-package-feat-guide-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
-  },
-  "beads_linked_nodes": 14,
-  "live_trial": "headless Chrome (--headless=new) の screenshot と dump-dom で SVG DAG・SYS-IMPSCR-P01..P13・arch-improvement-screen-* 8 件・'active · feature · 0/13' の表示を確認",
-  "known_display_issue": "長い title がノード枠を超えて描画される (renderer の折返し未対応、内容は正しい)",
-  "checks": {
-    "input_digest": true,
-    "output_digest": true,
-    "nodes": true,
-    "edges": true,
-    "progress": true,
-    "external_refs_zero": true,
-    "svg": true,
-    "inline_script": true
-  },
-  "note": "renderer は receipt を書かないため、本 receipt は render-graph-html.py の stdout と registration receipt から再作成し digest を実ファイルと照合した",
-  "input_sha256": "5394d066e43a361c2c50099f08fb1714ac407d3ac6ddd14820e0b931f6a38df1",
-  "output_sha256": "cdd3202f174171798a4113c660617b1e3d09a5d72c7a74a387c1595267efcbf4",
-  "rendered_at": "2026-09-23T14:30:42Z",
-  "graph_revision": 4
+    "source_digest": "sha256:9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+  }
 }

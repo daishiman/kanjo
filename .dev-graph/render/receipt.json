@@ -1,28 +1,27 @@
 {
-  "schema_version": "1.0.0",
-  "verb": "render",
-  "status": "pass",
+  "renderer": "render-graph-html.py (dev-graph 0.1.11)",
+  "rendered_at": "2026-09-23T14:38:05Z",
+  "scope": "all nodes",
+  "graph_revision": 4,
+  "input": ".dev-graph/state/graph.json",
+  "input_sha256": "f2584dff750153cb64c8823f99ab3f7c7b572e07b7523d300f3ecef629dc21d1",
   "output": ".dev-graph/render/index.html",
-  "scope": "all",
-  "counts": {
-    "nodes": 23,
-    "edges": 21,
-    "feature_progress": {
-      "feat-improvement-screen": {
-        "done": 0,
-        "total": 13
-      }
+  "output_sha256": "ea01075758f84eaf2c508de68dcab7197f127b23ae94178d4f97df76a281e4d4",
+  "nodes": 23,
+  "edges": 21,
+  "feature_progress": {
+    "feat-guide-screen": {
+      "done": 0,
+      "total": 13
     }
   },
-  "registration": {
-    "feature_package_id": "feature-package/feat-improvement-screen",
-    "path": ".dev-graph/plans/feature-package-feat-improvement-screen/dev-graph-registration-receipt.json",
+  "external_refs": 0,
+  "svg": 1,
+  "inline_scripts": 2,
+  "registration_receipt": {
+    "path": ".dev-graph/plans/feature-package-feat-guide-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144"
-  },
-  "input_sha256": "5394d066e43a361c2c50099f08fb1714ac407d3ac6ddd14820e0b931f6a38df1",
-  "output_sha256": "cdd3202f174171798a4113c660617b1e3d09a5d72c7a74a387c1595267efcbf4",
-  "rendered_at": "2026-09-23T14:30:42Z",
-  "graph_revision": 4
+    "source_digest": "sha256:9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+  }
 }

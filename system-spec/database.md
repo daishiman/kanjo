@@ -3,7 +3,7 @@ status: confirmed
 category: database
 aggregate: 確定
 spec_cells: [database.web, database.mobile, database.tablet, database.desktop-windows, database.desktop-linux, database.desktop-macos]
-serves_goals: [G3, G4]
+serves_goals: [G2, G3]
 ---
 
 # データベース (database)
@@ -15,12 +15,12 @@ serves_goals: [G3, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-imp-database-web-001。裏付け質疑 (`qa_refs`): `qa-imp-database-web-evidence-001`, `qa-imp-decision-001`, `qa-imp-decision-003`, `qa-imp-decision-007` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G3, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内に依頼を保存するローカル DB と、サーバとの同期の方式を決める必要があった。対象を web のみとする利用者決定 (qa-imp-decision-005) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-guide-database-web-002。裏付け質疑 (`qa_refs`): `qa-guide-database-web-evidence-001` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G2, G3 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では端末内にガイド本文や期間の集計を持つローカル保存と同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database では端末内にガイド本文や期間の集計を持つローカル保存と同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database では端末内にガイド本文や期間の集計を持つローカル保存と同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内にガイド本文や期間の集計を持つローカル保存と同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内にガイド本文や期間の集計を持つローカル保存と同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-guide-target-platforms-001) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,8 +28,8 @@ serves_goals: [G3, G4]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 新しい列と表の書き込み元を 1 経路ずつに限る形へ反映した。seq は作成時に採番表と同じ batch でだけ付ける。deleted_at は削除で付けて復元でだけ外し、夜間の完全消去は読むだけで行を消す。履歴の行は作成・状態の変更・再発行・削除・復元の各経路が依頼の行と同じ batch で書き、依頼の行が消えると ON DELETE CASCADE で一緒に消える。 |
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 0054 では表を作り直す (新しい表を作り、行を写し、古い表を消し、名前を変える)。これで既存の行・画像のキー・トークンのハッシュを 1 件も落とさず、wontfix の行だけを done と履歴 1 行に移す形へ反映した。適用前には D1 のバックアップを取る手順を runbook に置く。schema-guard.ts の EXPECTED_D1_MIGRATION を 0054 のファイル名へ進め、migration 前の D1 では Worker が新しい経路を動かさないようにする。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 本サイクルは D1 への書き込みを 1 経路も足さない形へ反映した。使い方画面と防衛ラインが読むのは既存の明細と取込の記録だけで、読み取りも loadDataset の既存の経路を通る。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | migration を作らない形へ反映した。schema-guard.ts の EXPECTED_D1_MIGRATION は据え置き、巻き戻しは web と api のコードを戻すだけで済む。 |
 
 ## 確定内容 (質疑録)
 
@@ -37,67 +37,31 @@ serves_goals: [G3, G4]
 
 ### Web (web)
 
-- 資するゴール: G3, G4
+- 資するゴール: G2, G3
 
-#### 主たる接地根拠: `qa-imp-database-web-001`
-
-**問**
-
-database の web の方針を次の内容で確定してよいか。
-
-**答**
-
-0054 で表を作り直す (状態の CHECK を open/in_progress/done/reconfirm に変え、wontfix は done へ移して履歴に理由を残す)。利用者ごとの連番 (UNIQUE(user_id, seq)、採番表で再利用しない。既存行は作成順に採番)、deleted_at、件名の NULL 許容、履歴表 (ON DELETE CASCADE) を足す。既存の行・画像・トークンは保つ。バックアップの対象外。EXPECTED_D1_MIGRATION を 0054 に進める。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 8 カテゴリの web 方針を表で提示し、AskUserQuestion の選択肢『この8カテゴリで確定 (推奨) / 修正して再提示』から利用者が『この8カテゴリで確定』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。 / 回答時刻: 2026-09-23T13:16:38Z)
-
-#### 裏付け質疑: `qa-imp-database-web-evidence-001`
+#### 主たる接地根拠: `qa-guide-database-web-002`
 
 **問**
 
-database の web について、現行の実装と画像の差分は何か。
+使い方画面サイクルで DB に何を足すか (qa-guide-decision-009 を反映した取り直し)。
 
 **答**
 
-migrations/0029_improvement_requests.sql の improvement_requests 表は、id TEXT PK・user_id・title (1..120)・body (1..4000)・route・status (CHECK open/in_progress/done/wontfix)・screenshot_key・screenshot_size・diagnostics_json・diagnostics_omitted・token_hash UNIQUE・token_expires_at・token_fetch_count・copied_at・copied_target・done_at・purged_at・created_at・updated_at を持つ。連番・論理削除・履歴の列や表は無い。最新の migration は 0052_cash_entry_owner_soft_delete.sql で、schema-guard.ts:4 の EXPECTED_D1_MIGRATION と deletion-schema.test.ts:63 が最新番号を固定している。BACKUP_SNAPSHOT_SQL (store.ts:796) はこの表を含まない。
+DB の表と列は足さない。ガイド本文 (節・ステップ・よくある疑問・期間の表) は core の定数として版管理し DB に置かない。防衛ラインの算出 (個人生活費と事業固定費の直近 3 か月平均) は変えず、既存 Dataset から今までどおり導く。集計結果 (総収支・振替除外) も変えない。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: repo の現物 (該当ファイルと行) と design/FINAL-UI/images/20-improvement.png を読んで観測した事実。answered_at は記録直前に実測した時刻。 / 回答時刻: 2026-09-23T13:17:45Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 appr-foundation-guide-003 と決定 qa-guide-decision-001・005・007〜011 の範囲に収まる確定内容。qa-guide-database-web-001 の防衛ライン変更の前提 (qa-guide-decision-004) を利用者が覆したため、reopen 後に取り直した。answered_at は記録直前に実測した時刻。 / 回答時刻: 2026-09-23T13:14:47Z)
 
-#### 裏付け質疑: `qa-imp-decision-001`
+#### 裏付け質疑: `qa-guide-database-web-evidence-001`
 
 **問**
 
-画像の状態タブ (受付 / 対応中 / 完了 / 再確認) を現行の 4 状態 (未対応 / 対応中 / 対応済み / 対応しない) とどう対応させるか。
+database 章の裏付けとして、現行実装について何を観測したか。
 
 **答**
 
-受付 / 対応中 / 完了 / 再確認 の 4 状態にする。再確認は『利用者の確認待ち』(開発側が直したので利用者が確かめる段階)。既存の対応しない (wontfix) は完了へ移し、理由をアクティビティに残す。30 日削除の起点は完了のまま。
+集計の Dataset は packages/api/src/routes/analytics.ts:102-123 の loadScoped が loadDataset を 1 回だけ呼び (analytics-period.test.ts:19 で固定)、applyPeriod で期間を切る。最終更新は imports の committedAt の最大 (analytics.ts:225-228)。ガイド本文は DB に無く、packages/web/src/glossary.ts の定数と Guide.tsx の直書きである。防衛ラインは core/src/analysis.ts:1093 の defenseLine が Dataset.personal の直近 3 か月と事業固定費 (CV<0.6) から算出する。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢 3 件と推奨案を提示し、利用者が『再確認=利用者の確認待ち (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。 / 回答時刻: 2026-09-23T13:05:47Z)
-
-#### 裏付け質疑: `qa-imp-decision-003`
-
-**問**
-
-詳細パネルの『削除』をどう扱うか (物理削除 / 論理削除)。
-
-**答**
-
-論理削除にし、完了トーストの『元に戻す』で同じ番号のまま戻す。削除から 30 日後に夜間処理で本文・画像・履歴を完全消去する。削除中の依頼は一覧・件数・agent 経路のどこからも読まない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案を提示し、利用者が『論理削除＋元に戻す (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。 / 回答時刻: 2026-09-23T13:05:47Z)
-
-#### 裏付け質疑: `qa-imp-decision-007`
-
-**問**
-
-画像の IMP-024 形式の番号と、キャプチャパネルの『範囲を選択する』をどう実装するか。
-
-**答**
-
-番号は利用者ごとの連番にし、削除しても再利用しない (既存行は作成順に採番)。撮影は画面全体と範囲選択の両方を実装する。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案を提示し、利用者が『利用者ごと連番＋範囲選択も実装 (推奨)』を選択。answered_at は回答受領直後に実測した時刻で、選択時刻の上界である。 / 回答時刻: 2026-09-23T13:06:50Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-23T12:37:28Z)
 
 ## To-Be / Delta
 
@@ -105,27 +69,27 @@ migrations/0029_improvement_requests.sql の improvement_requests 表は、id TE
 
 ### 到達すべき状態 (To-Be)
 
-- **G3**: 画面の数字と判定を core の 1 か所から導く。状態の体系と遷移、概要の切り出し、IMP 番号の表示、検索・件数タブ・ページング、関連する依頼、アクティビティの表示、診断情報の表示用要約 (OS・ブラウザ・画面サイズ・利用環境・伏せたセッション ID)、マスク規則を core の純関数に置き、API は JSON に写すだけ、web は描くだけにする。
-- **G4**: 依頼と添付を安全に保つ。利用者ごとの分離、入力検証 (本文 1000 字・プライバシー確認 2 つ・画像の形式と大きさ)、削除は論理削除で『元に戻す』で戻し 30 日後に夜間処理で本文・画像・履歴を完全消去、使い捨てトークンの再発行、夜間バックアップへ添付を入れない不変条件を API と DB の両方で守る。
+- **G2**: 説明と計算を一致させる。信頼度を 高 (80 以上) / 中 (50〜79) / 低 (49 以下) の 3 段階＋% で全画面に見せる。防衛ラインの算出 (個人生活費と事業固定費の直近 3 か月平均) は変えず、ガイドの説明を実装どおりに書く。ガイドの文言は信頼度の段階と防衛ラインの算出を core の同じ定数から引く。
+- **G3**: 画面の数字と文言の対応を core の 1 か所から導く。ガイドの節・ステップ・よくある疑問・期間の表・このページの数値・関連ページ・検索を core の純関数 (guide-screen) に置き、API は JSON に写すだけ、web は描くだけにする。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O3 | 画面の導出が core の 1 か所に集まる。 | core の improvement-screen の単体テストが状態遷移・概要・IMP 番号・検索・件数・ページング・関連・アクティビティ・診断要約を固定し、web と api に同じ計算の重複が無い (grep で 0 件)。 |
-| O4 | 削除・分離・保持期限・既存ゲートを守る。 | API テストで削除→元に戻すで同じ id と番号が戻ること、削除中の行が一覧と件数に 0 件、他の利用者の依頼が 404、30 日経過の完全消去で R2 の画像と履歴が消えること、BACKUP_SNAPSHOT_SQL に改善リクエストの表が無いことが通り、pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
+| O2 | 信頼度が 3 段階で全画面に出て、防衛ラインの説明が算出と一致する。 | core の単体テストが信頼度の段階境界 (49/50/79/80) を固定し、明細仕分けなど信頼度を出す画面の DOM テストが『段階＋%』で通る。ガイドと用語集の防衛ラインの説明が core の算出定数 (直近 3 か月) から導かれることを単体テストで固定し、防衛ラインの既存テストは値を変えずに通る。 |
+| O3 | ガイドの導出が core の 1 か所に集まる。 | core の guide-screen の単体テストが節・よくある疑問・期間の表・このページの数値・検索を固定し、web と api に同じ導出の重複が無い (guide-sections.ts の現在値合成は core へ移る)。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: core に improvement-screen を新設し、状態の体系と許される遷移、概要の切り出し、IMP 番号の表示、検索・件数タブ・ページング、関連する依頼、アクティビティの表示、診断情報の表示用要約を純関数で導く。
-- **I4**: migration 0054 で状態の CHECK の張り替え (wontfix→done の移し替え)、利用者ごとの連番、論理削除の列、アクティビティの表を足し、削除・復元・状態変更・再発行で履歴を書く API と夜間の完全消去を実装する。
-- **I6**: 入力検証 (本文 1000 字・プライバシー確認 2 つ・状態の候補・画像の形式と大きさ) を core と API の zod で揃え、他の利用者の依頼を 404 にする。
+- **I2**: core に guide-screen を新設し、節・ステップ・よくある疑問・期間の表・このページの数値 (選択中の期間・期間の定義・データの出所・最終更新)・関連ページ・ガイド内検索を純関数で導く。guide-sections.ts の現在値合成を core へ移す。
+- **I3**: GET /api/guide を追加し、選択期間の総収入・総支出・純収支 (振替除外)・最終更新・データの出所を core の guide-screen で JSON に写す。利用者ごとに分離し期間クエリを検証する。
+- **I4**: core に信頼度の段階関数 (高/中/低) を置き、信頼度を出す全画面を『段階＋%』表示にする。自動判定の閾値は変えない。
+- **I5**: 防衛ラインの算出 (個人生活費と事業固定費の直近 3 か月平均) を説明する文言を core の算出定数から引き、使い方画面と用語集の説明を実装どおりにする。defenseLine の算出と数値は変えない。
+- **I7**: 期間の前後移動 (shiftedPeriod) を core へ移し、決算書と使い方画面で共有する。
 
 ### 本章に効く確定意思決定
 
-- **D-imp-008**: 夜間 scheduledMaintenance の D1 予算は 49/49 (Free の 1 invocation あたり 50 クエリ、1 本は必ず残す) で満杯。削除した改善リクエストを 30 日後に行と履歴ごと消す DELETE を 1 本足すにはどうするか。
-  - 採択: 他 job の枠を 1 本回す (`borrow-slot`)
-  - 目的適合: G4 の完全消去をアプリのコードとテストに明示したまま満たす。
+- (本章ゴールに効く確定 decision なし)
 
 ## 適用された設計知識
 
@@ -133,9 +97,9 @@ migrations/0029_improvement_requests.sql の improvement_requests 表は、id TE
 
 ### 本章での適用
 
-DDD card の『Entity / Value Object』を、0054 で足す列の選び方に適用した。改善リクエストは利用者ごとの連番で追う Entity なので、連番を列に持ち、削除しても採番表の最後の番号を戻さない。一方、概要 (本文の先頭 40 字)・IMP 番号の表示形・件数・関連する依頼は、他の値から決まる導出値なので保存しない。同じ card の『Domain Event』は履歴の表に当てた。状態の変更・再発行・削除・復元は起きた事実なので、1 件ずつ行として追記し、書き換えない。件名の列は、既存行の値を失わないよう残し、新規行では NULL にする。
+DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、使い方画面の本文と数値の置き場所に適用した。節・ステップ・よくある疑問・期間の表は表示の都合なので DB に持たず core の定数とする。防衛ラインは算出 (直近 3 か月平均) を変えないので、保存も列も増やさず、使い方画面が出す説明文も既存の明細から毎回導く値に対する説明にとどめる。こうして表・列を 1 つも足さずに、画面の数値が集計と同じ明細から出る。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-23T13:43:22Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-23T13:15:27Z)
 
 ### Domain-Driven Design — deep knowledge card
 
@@ -182,6 +146,4 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-d1-migrations | 2026-06-08 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/reference/migrations/ | 2026-09-23T13:21:07Z | 2026-09-23T13:21:07Z |
-| sqlite-alter-table | 2026-06-04 | SQLite (www.sqlite.org) | https://www.sqlite.org/lang_altertable.html | 2026-09-23T13:21:22Z | 2026-09-23T13:21:22Z |
-| cloudflare-d1-foreign-keys | 2026-04-21 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/sql-api/foreign-keys/ | 2026-09-23T13:21:22Z | 2026-09-23T13:21:22Z |
+| cloudflare-d1 | 2026-04-30 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/ | 2026-09-23T12:39:53Z | 2026-09-23T12:39:53Z |

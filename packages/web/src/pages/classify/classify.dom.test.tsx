@@ -250,11 +250,11 @@ describe('見出しと KPI', () => {
     install(rows);
     renderAt();
     await screen.findByText('取引一覧（4件）');
-    // 4 行ぶんを字面で固定する。要確認だけが文言を併記し、提案なしは 0% ではなく「—」になる
+    // 4 行ぶんを字面で固定する。段階＋% で出し (spec-guide-screen・RQ-F1)、要確認だけが文言を併記し、提案なしは 0% ではなく「—」になる
     const cells = Array.from(document.querySelectorAll('tbody tr')).map(
       (tr) => tr.querySelector('td[data-label="信頼度"]')?.textContent,
     );
-    expect(cells).toEqual(['92%', '68%要確認', '—', '92%']);
+    expect(cells).toEqual(['高 92%', '中 68%要確認', '—', '高 92%']);
   });
 
   it('AT-18 画面に「AI」の文字列が無い', async () => {
@@ -396,8 +396,8 @@ describe('取引一覧', () => {
     renderAt();
     await screen.findByText('取引一覧（2件）');
     expect(screen.getAllByText('食費 / 食料品').length).toBeGreaterThan(0);
-    expect(screen.getByText('92%')).toBeTruthy();
-    const reviewCell = screen.getByText('68%').closest('td');
+    expect(screen.getByText('高 92%')).toBeTruthy();
+    const reviewCell = screen.getByText('中 68%').closest('td');
     expect(reviewCell?.textContent).toContain('要確認');
   });
 

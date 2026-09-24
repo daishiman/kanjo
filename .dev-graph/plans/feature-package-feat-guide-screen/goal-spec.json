@@ -1,0 +1,260 @@
+{
+  "feature_id": "feat-guide-screen",
+  "repository_id": "github:daishiman/kanjo",
+  "run_id": "plan-feat-guide-screen-20260923T1350Z",
+  "artifact_kind": "feature",
+  "generated_at": "2026-09-23T13:50:09Z",
+  "identity_check": {
+    "graph_node_id": "feat-guide-screen",
+    "graph_node_id_matches_feature_id": true,
+    "artifact_kind_matches": true,
+    "feature_context_path": "features/feat-guide-screen.context.json",
+    "feature_context_sha256": "8189536d578ac9df7987e93d854c95d26c41a0043f10e4aaa02f60c9cafbe189",
+    "resolved_by": "C09 resolve-project-context と shasum による実測。"
+  },
+  "purpose": "利用者 (個人事業主とその家族の家計を 1 人で管理する本人) が、月次クローズの途中で画面の数字に迷ったとき『この数字を、どう読み・どこへ戻ればよいですか？』に /guide の 1 画面で答えを得られるようにする。今見ている数字が何を含み何を除くか・どの期間の・どこから来た値かを選択中の期間の実データで示し、つまずいたら該当の元画面へ 1 クリックで戻れるようにする。ガイドの節・現在値・信頼度の段階・防衛ラインの説明文は core の 1 か所から導き、説明と計算を画面ごとにずらさず、振替の二重計上・家計と事業の混同・信頼度や防衛ラインの誤解による判断ミスを無くす。",
+  "goal": "/guide が 19-guide.png の全構成要素 (問いの見出しと説明・期間と前後移動・4 ステップ (取込む・整える・確認・計画) と各『元画面を開く』・使い方ガイド (目次 6 項目＋『用語と目安』、月次の流れステッパー、総収支の読み方の 3 枚を選択期間の実データ (振替除外) で、含まれるもの 3 枚、期間の表 4 行)・右カラム (このページの数値 4 項目・関連ページ 5 件・ガイド内を検索)・よくある疑問と対処法 5 行・下部固定バー・読込 / 空 / 失敗) をトークンと共通部品で描画し、選択トピックと検索語が URL に残り、画面の数値と文言が core の guide-screen から出て API は { screen } に写すだけ・web は描くだけで、信頼度が 高 80 以上 / 中 50〜79 / 低 49 以下 の段階＋% で出て要確認の閾値 80 の自動判定は変わらず、防衛ラインの算出 (直近 3 か月平均) と値は変わらずにガイドと用語集の説明がその算出定数から組まれ、ヘッダは『防衛ライン』のまま・フッタ 1 文目が『取込データは外部送信しません』で AI 送信の補足が 3 か所にあり、/api/guide が利用者ごとに分離され、DB の表・列を 1 つも足さずに verify:full が緑の状態。",
+  "scope_in": [
+    "/guide の作り直し (19-guide.png の全構成要素と読込・空・失敗の各状態)。Guide.tsx (185 行) を packages/web/src/pages/guide/ 配下 (画面本体・view-model・4 ステップ・目次・本文の各節・右カラム・よくある疑問・下部固定バー) へ分割し、旧 pages/Guide.tsx は再輸出 1 行にする。core を import するのは view-model.ts だけ (I1、qa-guide-frontend-web-002)",
+    "目次 6 項目 (月次の流れ / 総収支 / 照合 / 仕分け / 予算 / データ出典) の末尾に『用語と目安』を置き、現行の用語集・略語・ベンチマーク・データ充足度を移す (qa-guide-decision-001)",
+    "選択トピックと検索語を URL (?topic=&q=) に保ち、/api/guide の問い合わせ鍵に期間を含める",
+    "packages/core/src/guide-screen.ts の新設。節・ステップ・よくある疑問・期間の表・このページの数値・関連ページ・ガイド内検索を純関数で導き、guide-sections.ts の現在値合成を core へ移す (I2)",
+    "GET /api/guide の新設。loadScoped の結果を core の guide-screen に渡して { screen } に写すだけにし、利用者ごとに分離し期間クエリを検証する (I3)",
+    "期間の前後移動 shiftedPeriod を pages/statements/view-model.ts から core へ移し、決算書と使い方画面で共有する (I7)",
+    "core の信頼度の段階関数 (高 80 以上 / 中 50〜79 / 低 49 以下) と、信頼度を出す画面の『段階＋%』表示。対象画面の列挙は requirements で確定する (I4、qa-guide-decision-008)",
+    "防衛ラインの算出期間 (直近 3 か月) を core の名前付き定数として公開し、使い方画面と用語集の説明文をその定数から組む。算出と値は変えない (I5、qa-guide-decision-009)",
+    "共通シェルのフッタ 1 文目を『取込データは外部送信しません』にし、AI 実行時に集計データを渡す補足をフッタの title・プライバシー欄・使い方画面の 3 か所に置く。ヘッダは『防衛ライン』のまま (I6、qa-guide-decision-010・011)",
+    "core 単体・API・DOM テストと、web の check:guide-screen の verify:full への組み込み、設計判断の記録 (docs/guide-screen/ を新設)"
+  ],
+  "scope_out": [
+    "利用規約・プライバシーの専用ページ (現行の details のまま文言の補足だけ行う)",
+    "ガイド本文の管理画面や DB 保存 (本文は core の定数として版管理する)",
+    "自動判定 (要確認の閾値 REVIEW_CONFIDENCE_THRESHOLD = 80・由来ごとの信頼度) の規則変更",
+    "防衛ラインの算出変更 (画像の過去年同月平均など。qa-guide-decision-009 で現行維持)",
+    "共通ヘッダの呼称変更 (画像の『取引ライン』。qa-guide-decision-010 で『防衛ライン』維持)",
+    "サイドバーの並び・バッジ・月次クローズ進捗の変更",
+    "DB の表・列・migration の追加 (C2)",
+    "モバイル・タブレット・デスクトップ専用アプリ",
+    "税務判断 (税務上の正本は freee。C4)"
+  ],
+  "acceptance": [
+    "S1 (G1): /guide で 19-guide.png の構成要素がすべて描画され、総収支の 3 枚が選択期間の実データ (振替除外) と一致し、色・余白・部品はトークンと共通部品経由で直書き色の lint が 0 件である。",
+    "S2 (G2): 信頼度 49/50/79/80 の境界が 低/中/中/高 になり、信頼度を出す画面で段階＋% が出る。防衛ラインの値は変わらず (直近 3 か月平均)、使い方画面と用語集の説明がその算出と一致する。自動判定 (要確認の閾値 80) の結果は変わらない。",
+    "S3 (G3): ガイドの節・よくある疑問・期間の表・このページの数値が core の guide-screen だけで導かれ、API と web はその結果を写すだけである。",
+    "S4 (G4): ヘッダは『防衛ライン』のまま、フッタが『取込データは外部送信しません』になり、AI 実行時に集計データを渡す補足がフッタ・プライバシー欄・使い方画面の 3 か所で読める。他の利用者のデータで /api/guide が数値を返さない。"
+  ],
+  "architecture_refs": [
+    "architecture/guide-ui-ux.md",
+    "architecture/guide-frontend.md",
+    "architecture/guide-backend.md",
+    "architecture/guide-database.md",
+    "architecture/guide-auth.md",
+    "architecture/guide-security.md",
+    "architecture/guide-infrastructure.md",
+    "architecture/guide-maintenance-ops.md",
+    "specs/spec-guide-screen.md"
+  ],
+  "readiness_pin": {
+    "checked_at": "2026-09-23T13:50:09Z",
+    "completeness_report": "system-spec/completeness-findings.json",
+    "verdict": "PASS",
+    "missing_sections": [],
+    "source_pin": {
+      "plugin": "system-spec-harness",
+      "version": "0.1.14",
+      "compile_entrypoint": "run-system-spec-compile",
+      "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+      "source_digest": "sha256:d0c85383d91b35ee536dedc2bbdd26dbed46939fb97c67bfb956dd8530a84306"
+    },
+    "status": "complete"
+  },
+  "notes": [
+    "purpose/goal/scope_in/scope_out/acceptance/architecture_refs は features/feat-guide-screen.context.json (updated_at=2026-09-23T13:44:19Z) の値をそのまま写した。",
+    "正本の優先順位は (1) system-spec/ 配下、(2) specs/spec-guide-screen.md、(3) 画像 19-guide.png。goal-spec は正本を再構成せず path/digest で引用する。",
+    "受入の詳細 (core 単体・API Contract tests・DOM・描画検査・grep 検査) は specs/spec-guide-screen.md の『テストと受入条件』を正本とし、複製しない。",
+    "選択は standard 相当 (dispatch 指示) として記録する。"
+  ],
+  "open_items": [
+    {
+      "id": "OI-1",
+      "status": "unresolved_precondition",
+      "item": "信頼度を出す画面の列挙。G2 は全画面に段階＋% を見せるとするが対象画面の一覧は未確定 (completeness-findings の medium)。明細仕分けの表 (classify/TransactionTable.tsx:103,142)・編集欄 (classify/EditPanel.tsx:258)・概況の確認待ち (components/OverviewReviewQueue.tsx:141-158) は対象見込み (agent 推定)。診断 ResultCards.tsx:33 と AI 画面 AiContextAnalysis.tsx:22 の『確度』は % を持たない列挙で、含めるか未確定。",
+      "note": "specs/spec-guide-screen.md §未決事項 を正本とする。requirements (SYS-GUIDE-P01) で確定する。",
+      "resolution_owner": "SYS-GUIDE-P01"
+    },
+    {
+      "id": "OI-2",
+      "status": "unresolved_precondition",
+      "item": "概況 Overview.tsx:209-210 の confidenceClass は 80 以上 good・60 以上 warning・それ未満 danger の色分けで (:328・:370 で使用)、新しい 50 境界と衝突する (55% が段階では中なのに色は danger)。色の境界を段階に合わせるか未確定。",
+      "note": "OI-1 と同時に SYS-GUIDE-P01 で決め、SYS-GUIDE-P05 で実装する。",
+      "resolution_owner": "SYS-GUIDE-P01"
+    },
+    {
+      "id": "R-1",
+      "status": "unresolved_precondition",
+      "item": "『直近3か月』が glossary.ts:45-49 (用語集の説明文)・guide-sections.ts:57-60 (現在値の合成)・analysis.ts:1095 (pMonths.slice(-3)) に直書きされている。core の名前付き定数へ寄せ、説明文をその定数から組む (値は変えない)。",
+      "note": "qa-guide-decision-009。check-glossary が GLOSSARY 本文を文字列で読む点に注意 (scripts/check-glossary.mjs は scope 外)。",
+      "resolution_owner": "SYS-GUIDE-P02 (設計) / SYS-GUIDE-P05 (実装)"
+    },
+    {
+      "id": "R-2",
+      "status": "unresolved_precondition",
+      "item": "common-shell.dom.test.tsx:182-185 が『アプリからは自動送信しません』を期待しており、フッタ 1 文目『取込データは外部送信しません』と AI 送信の補足 3 か所の期待へ書き換える。ヘッダの期待 (:154) は変えない。",
+      "note": "qa-guide-decision-010・011。",
+      "resolution_owner": "SYS-GUIDE-P04 (書換) / SYS-GUIDE-P05 (緑化)"
+    },
+    {
+      "id": "R-3",
+      "status": "unresolved_precondition",
+      "item": "shiftedPeriod は pages/statements/view-model.ts:121 にあり、StatementsPage.tsx:20,32-33 と statements-view-model.test.ts:93-100 が使う。core (period.ts) へ移し決算書の挙動を変えない。",
+      "note": "I7。",
+      "resolution_owner": "SYS-GUIDE-P02 (設計) / SYS-GUIDE-P05 (実装)"
+    },
+    {
+      "id": "R-4",
+      "status": "unresolved_precondition",
+      "item": "check:guide-screen (KANJO_VISUAL_SCOPE=guide node scripts/check-financial-visuals.mjs) を packages/web/package.json に足し、ルートの verify:full に組み込む。check-financial-visuals.mjs に guide スコープの応答を足す。",
+      "note": "qa-guide-maintenance-ops-web-001。前例は check:cash-screen。",
+      "resolution_owner": "SYS-GUIDE-P05"
+    },
+    {
+      "id": "R-5",
+      "status": "unresolved_precondition",
+      "item": "arch-guide-maintenance-ops の resource_scope に docs/cash-screen と scripts/check-glossary.mjs、arch-guide-database に migrations が含まれるが、feature の resource_scope の外である。task は docs/guide-screen を使い、これらを書き換えない。",
+      "note": "architecture 側の resource_scope の誤記の可能性。修正は architecture の再 import で行い、本 plan は変えない。",
+      "resolution_owner": "SYS-GUIDE-P12 (記録)"
+    },
+    {
+      "id": "Q-1",
+      "status": "agent_inference_unconfirmed",
+      "item": "/api/guide の応答の細部 (GuideScreen の period・totals・dataUpdatedAt・sources・closeStatus、qa-guide-backend-web-004)、loadCloseStatus に渡す items の取り方。",
+      "note": "agent 推定・利用者未確認。",
+      "resolution_owner": "SYS-GUIDE-P02"
+    },
+    {
+      "id": "Q-2",
+      "status": "agent_inference_unconfirmed",
+      "item": "トピック id の綴り (flow/totals/reconcile/classify/budget/sources/terms)、4 ステップと下部固定バーの行き先、目次の切替幅 1024px、ステッパーの塗り方。",
+      "note": "agent 推定・利用者未確認。",
+      "resolution_owner": "SYS-GUIDE-P05"
+    },
+    {
+      "id": "Q-3",
+      "status": "agent_inference_unconfirmed",
+      "item": "検索の対象と正規化 (全角半角・大小)、0 件の文言、URL の既定 (topic=flow) と q の 100 字切り詰め、データ 0 件の表示、期間の定義文。",
+      "note": "agent 推定・利用者未確認。",
+      "resolution_owner": "SYS-GUIDE-P05"
+    },
+    {
+      "id": "Q-4",
+      "status": "agent_inference_unconfirmed",
+      "item": "AI 送信の補足の文言『AI 実行時は、確認した集計データを選択した AI へ渡します』、段階関数と定数の名前、信頼度の範囲外 (-1・101・NaN) を『—』とする扱い、REVIEW_CONFIDENCE_THRESHOLD と高の下限を共有するか。",
+      "note": "agent 推定・利用者未確認。REVIEW_CONFIDENCE_THRESHOLD=80 自体は変えない。",
+      "resolution_owner": "SYS-GUIDE-P02"
+    },
+    {
+      "id": "Q-5",
+      "status": "agent_inference_unconfirmed",
+      "item": "DOM テストのファイル名 packages/web/src/pages/guide/guide-screen.dom.test.tsx。",
+      "note": "agent 推定・利用者未確認。",
+      "resolution_owner": "SYS-GUIDE-P04"
+    }
+  ],
+  "source_lineage": [
+    {
+      "source_kind": "feature_context",
+      "path": "features/feat-guide-screen.context.json",
+      "sha256": "8189536d578ac9df7987e93d854c95d26c41a0043f10e4aaa02f60c9cafbe189",
+      "note": "C09 preflight で実測した digest。graph_node_id=feat-guide-screen と --feature-id の一致を確認した。"
+    },
+    {
+      "source_kind": "feature_document",
+      "path": "features/feat-guide-screen.md",
+      "sha256": "e53146494789f4ab2c76db56a2a2818c397cf47d02256217ba27d5fabd7ddb95",
+      "note": "ファイルのバイト列の実測 digest。front matter は confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "specification",
+      "path": "specs/spec-guide-screen.md",
+      "sha256": "e17311f28373ec7b2ef2458d05a7ecf805aef872b2fab8ffa82e56fbaaafc49c",
+      "note": "ファイルのバイト列の実測 digest。features/feat-guide-screen.md front matter の source_lineage.source_digest と一致する。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "system_spec_requirements",
+      "path": "system-spec/00-requirements-definition.md",
+      "sha256": "f98f279826872e15be041b98f2eeae88e1b0254b3f33432e3a9ccf411047b129",
+      "version": "0.1.14",
+      "note": "specs/spec-guide-screen.md front matter の confirmation_evidence.evaluated_digest から引用 (import 時点 2026-09-23T13:27:15Z)。C08 の source_pin.source_digest (sha256:d0c85383...) は C08 の算出規則による別の digest であり、並記する。"
+    },
+    {
+      "source_kind": "completeness_evaluation",
+      "path": "system-spec/completeness-findings.json",
+      "sha256": "f98f279826872e15be041b98f2eeae88e1b0254b3f33432e3a9ccf411047b129",
+      "note": "verdict=PASS の完成度 evaluator 記録。digest は評価対象 (00-requirements-definition.md) の evaluated_digest の引用で、このファイル自体のハッシュではない。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/guide-ui-ux.md",
+      "sha256": "37aa1d855046a7d5b432aacf16f2c36fddccf269a12ab678d3f5139f71a78333",
+      "version": "0.1.14",
+      "note": "arch-guide-ui-ux。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/ui-ux.md) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/guide-frontend.md",
+      "sha256": "91756674aaa74956621cba80f0cbd496d790626d431d0e24ed476ea7c725b49f",
+      "version": "0.1.14",
+      "note": "arch-guide-frontend。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/frontend.md) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/guide-backend.md",
+      "sha256": "d0cb72d133251ca361263ca8bebba44f3d9a531a938fceab8f5234c89a1d7847",
+      "version": "0.1.14",
+      "note": "arch-guide-backend。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/backend.md) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/guide-database.md",
+      "sha256": "262454a435c86a72714c047a24f18f51d84e187fbc5bb2a0e40d210dc847e07b",
+      "version": "0.1.14",
+      "note": "arch-guide-database。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/database.md) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/guide-auth.md",
+      "sha256": "6750698bc3023d6fde3c45b95ce211667ad33ca8372193ffeb5475baf684061f",
+      "version": "0.1.14",
+      "note": "arch-guide-auth。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/auth.md) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/guide-security.md",
+      "sha256": "c0921d456f4e06dc42879df45252b78dd5acec3ccf9b7dfccf3103e60f9f82cd",
+      "version": "0.1.14",
+      "note": "arch-guide-security。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/security.md) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/guide-infrastructure.md",
+      "sha256": "00053ca510de65ebd9915185fd8438088ba8875359d36ba66752c54b25ce906f",
+      "version": "0.1.14",
+      "note": "arch-guide-infrastructure。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/infrastructure.md) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/guide-maintenance-ops.md",
+      "sha256": "cc113059f1c56ef51d31fd20416c85d51894eaba0cb8c8af7f351e8acafe56e6",
+      "version": "0.1.14",
+      "note": "arch-guide-maintenance-ops。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/maintenance-ops.md) から引用。confirmation_status=confirmed, evaluation_status=pass。"
+    }
+  ],
+  "checklist_summary": {
+    "feature_identity_matches": true,
+    "purpose_goal_scope_acceptance_nonempty": true,
+    "architecture_refs_resolved_in_repo": true,
+    "system_spec_source_confirmed_pass": true,
+    "lineage_has_path_version_digest": true,
+    "no_feature_split_or_task_generation": true
+  }
+}
