@@ -384,3 +384,22 @@ Q-1 は system-spec の承認済み契約と一貫する `done` に確定した�
 - `packages/core/test/import-screen.test.ts` が上限の境界、状態の優先順、操作、要約の数え方、結果、履歴の操作を固定する。境界 12 件は `IMPORT_LIMIT_BOUNDARY_CASES` として web と api のテストも読む。
 - `packages/web/src/pages/import/import-screen.dom.test.tsx` が画面の構成(節・列・ステッパー・下段グリッド)、`?run=<id>` の復元、検査 ID だけでの確定、選択解除、確定後の要約保持、「前回データを残す」の既定値と説明、ファイル名が HTML にならないことを固定する。
 - `packages/api/src/import-screen.integration.test.ts` が、検査で明細を書かないこと、他人・期限切れの検査 ID が同じ 404 になること、413・403・429、外部への送信 0 件、期限切れの行と夜間保守の片づけを固定する。`packages/api/src/import-limits-literal.test.ts` が上限の数値の書き写しを、`import-migration-0053.test.ts` が 0053 で既存の行が書き換わらないことを固定する。
+
+## 決定の更新(2026-09-23 / 使い方画面)
+
+`/guide`(使い方)を `design/FINAL-UI/images/19-guide.png` に合わせて作り直した。判断の正本は `specs/spec-guide-screen.md` と `architecture/guide-*.md`、判断の経緯は [`guide-screen/design-decisions.md`](guide-screen/design-decisions.md)、証跡は [`guide-screen/evidence.md`](guide-screen/evidence.md)。
+
+| 更新した判断 | これまで | 2026-09-23の決定 | 変更した理由 / 却下案 |
+|---|---|---|---|
+| 画面の構成 | 用語集と目安の説明だけ | **4 ステップ・目次 7 項目・月次の流れ・総収支・右カラム 3 枚・よくある疑問・下部固定バー** | 初めて使う人が「何から始め、毎月何をするか」を 1 画面で辿れなかった |
+| 総収支の数値 | 画面に数値を出さない | **総収支画面と同じ期間・同じ規則(振替除外)で API が集計**した値を出す | 説明用の例示金額は実データと食い違う。却下: 画面側で明細から再計算する(規則が 2 か所になる) |
+| 信頼度の表示 | 分類画面と要確認キューは % だけ | **『段階＋%』(高 80 以上・中 50〜79・低 49 以下)**。段階は core の 1 か所で導く | % だけでは良し悪しの境目が読めなかった。要確認の閾値 80 は変えない |
+| 期間の移動 | 決算書画面が独自の前後移動を持つ | **`PeriodRange` と core の `shiftedPeriod` を共有**する | 同じ操作が画面ごとに少しずつ違っていた |
+| AI 補足の文言 | フッタ・title・プライバシー欄に別々に書いていた | **core の `data-notice.ts` の `AI_DATA_NOTICE` 1 か所** | 文言のずれを防ぐ。本文表と同じモジュールに置くと初期 JS が 110KiB を超えたので分けた |
+
+### この決定を古びさせないために
+
+- `packages/core/src/guide-screen.test.ts` と `period-shift.test.ts` が説明・導出・期間の移動を、`classify-status.test.ts` が段階の境界 49/50/79/80 と要確認の閾値 80 を固定する。
+- `packages/web/src/pages/guide/guide-screen.dom.test.tsx` が構成・読込・失敗・検索 0 件・取込 0 件を、`common-shell.dom.test.tsx` がフッタの AI 補足 3 か所を固定する。
+- `packages/api/src/guide-screen.integration.test.ts` が総収支画面との一致・振替と他の利用者の除外・認可を固定する。
+- `pnpm --filter @kanjo/web run check:guide-screen`(`verify:full` に含む)が 360〜1600px と 200% 拡大で構成・列数・はみ出し・固定バーを実描画で確かめる。

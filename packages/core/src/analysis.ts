@@ -1077,7 +1077,7 @@ export function budgetOutlook(data: Dataset): BudgetOutlook {
 /* ======================== FR-08 防衛ライン ======================== */
 
 export interface DefenseLine {
-  /** 防衛ライン = 個人生活費の直近3ヶ月平均 + 事業固定費（CV<0.6科目）の直近3ヶ月平均 */
+  /** 防衛ライン = 個人生活費の直近 DEFENSE_LINE_RECENT_MONTHS か月平均 + 事業固定費（CV<0.6科目）の平均 */
   line: number;
   personalAvg: number;
   bizFixedAvg: number;
@@ -1090,9 +1090,18 @@ export interface DefenseLine {
   status: 'ok' | 'tight' | 'danger' | 'nodata';
 }
 
+/**
+ * 防衛ラインの個人生活費を平均する月数 (直近 N か月)。算出と説明文 (使い方・用語集) の正本。
+ * 値を変えると /defense-line の値も説明文も同時に変わる (qa-guide-decision-009)。
+ */
+export const DEFENSE_LINE_RECENT_MONTHS = 3;
+
+/** 防衛ラインの算出の説明。使い方画面と用語集が同じ文を使う */
+export const DEFENSE_LINE_BASIS = `個人生活費の直近${DEFENSE_LINE_RECENT_MONTHS}か月平均＋事業固定費の平均`;
+
 export function defenseLine(data: Dataset): DefenseLine {
   const pMonths = Object.keys(data.personal).sort();
-  const recent = pMonths.slice(-3);
+  const recent = pMonths.slice(-DEFENSE_LINE_RECENT_MONTHS);
   const personalAvg = recent.length
     ? mean(recent.map((m) => sum(Object.values(data.personal[m].expense))))
     : 0;

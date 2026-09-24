@@ -1,0 +1,210 @@
+{
+  "edges": [
+    {
+      "from": "SYS-GUIDE-P02",
+      "to": "SYS-GUIDE-P01",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P03",
+      "to": "SYS-GUIDE-P02",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P04",
+      "to": "SYS-GUIDE-P03",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P05",
+      "to": "SYS-GUIDE-P04",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P06",
+      "to": "SYS-GUIDE-P05",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P07",
+      "to": "SYS-GUIDE-P06",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P08",
+      "to": "SYS-GUIDE-P07",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P09",
+      "to": "SYS-GUIDE-P08",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P10",
+      "to": "SYS-GUIDE-P09",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P11",
+      "to": "SYS-GUIDE-P10",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P12",
+      "to": "SYS-GUIDE-P11",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-GUIDE-P13",
+      "to": "SYS-GUIDE-P12",
+      "type": "depends_on"
+    }
+  ],
+  "feature_package_id": "feature-package/feat-guide-screen",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と信頼度を出す画面の列挙の確定"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P01"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P02",
+      "title": "guide-screen・信頼度の段階関数・防衛ライン算出定数・shiftedPeriod の core 移設・GET /api/guide・フッタ文言のワークストリーム設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P02"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P03",
+      "title": "core 1 か所導出・API 写像・利用者分離・フッタ文言の独立設計レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P03"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P04",
+      "title": "core 不変条件・/api/guide 契約・DOM・共通シェル文言の失敗テスト先行作成"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P04"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P05",
+      "title": "guide-screen.ts・信頼度の段階表示・防衛ライン算出定数・GET /api/guide・/guide 画面と check:guide-screen の最終実装"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P05"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P06",
+      "title": "全テストと型検査と lint の実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P06"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P07",
+      "title": "受入基準 S1 から S4 の検証"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P07"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P08",
+      "lifecycle_role": "audit",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P08",
+      "title": "旧 Guide.tsx・guide-sections.ts の参照と直書き定数 (信頼度 80/60・直近3か月) の残存の読取専用監査"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P08"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・検索語の扱い・外部送信・JS バンドル予算の保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P09"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P10"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P11"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P12",
+      "title": "信頼度の段階・防衛ラインの説明・/api/guide・未決事項の docs 最終同期"
+    },
+    {
+      "depends_on": [
+        "SYS-GUIDE-P12"
+      ],
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "id": "SYS-GUIDE-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信とクローズアウト"
+    }
+  ],
+  "parent_feature": "feat-guide-screen",
+  "schema_version": "1.0.0"
+}

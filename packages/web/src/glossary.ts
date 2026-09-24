@@ -1,3 +1,5 @@
+import { DEFENSE_LINE_BASIS } from '@kanjo/core';
+
 /**
  * 用語辞書(単一の正本)。
  * - 画面上の用語ホバー(`<Term id="…">`)と「指標ガイド」ページの説明は、どちらもこの辞書から生成する(二重管理しない)。
@@ -44,9 +46,11 @@ export interface GlossaryEntry {
 export const GLOSSARY = {
   defenseLine: {
     term: '防衛ライン',
-    short:
-      '毎月最低これだけ出ていく金額。個人の生活費(直近3ヶ月平均)+事業の固定費。これより多く稼ぐ必要がある。',
-    desc: '個人生活費の直近3ヶ月平均+事業固定費。毎月最低これだけ出ていく=これ以上稼ぐ必要がある金額。',
+    // 算出の説明は core の DEFENSE_LINE_BASIS から組む (算出の月数を直したとき文言が取り残されないように)
+    // biome-ignore lint/style/useTemplate: check-glossary.mjs が short の先頭をシングルクォートの字面で読む
+    short: '毎月最低これだけ出ていく金額。' + DEFENSE_LINE_BASIS + '。これより多く稼ぐ必要がある。',
+    // biome-ignore lint/style/useTemplate: short と同じ組み方に揃える
+    desc: DEFENSE_LINE_BASIS + '。毎月最低これだけ出ていく=これ以上稼ぐ必要がある金額。',
     bench: '収入見込みが110%以上で「余裕」、100%未満は「要注意」',
     aliases: ['防衛ライン', '防衛線', '最低稼得基準額', '最低必要月商'],
   },

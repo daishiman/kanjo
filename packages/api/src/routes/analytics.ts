@@ -30,6 +30,7 @@ import {
   diagnosisWaterfall,
   findMetric,
   fullRange,
+  guideScreen,
   householdCategoryDetail,
   householdSummary,
   isCloseMonth,
@@ -56,6 +57,7 @@ import {
   subscriptionsScreen,
   toCsv,
   totalCashflowReport,
+  totalCashflowScreen,
   transactionExportRows,
   trendsReport,
   trendsScreen,
@@ -183,12 +185,7 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
     failedImports: failedRuns,
     vendorMemories,
   });
-  // サイドバーの「サブスク」バッジ。サブスク画面の KPI 5 枚目 (未判断の見直し候補) と同じ入口・同じ関数で数える。
-  // バッジは画面の期間タブを知らないので、既定の期間 (直近 1 年) で数える (spec §12.2)
-  const subscriptionCandidates = subscriptionsScreen(
-    await loadSubscriptionsInput(db, userId, { span: '1' }, { all, deals }),
-  ).kpis.reviewCandidates;
-  return { report, items, subscriptionCandidates };
+  return { report, items, cashflow: { deals, verdicts, exclusions, mfExclusions } };
 }
 
 /**
@@ -274,6 +271,40 @@ analyticsRoute.get('/overview', async (c) => {
   });
 });
 
+/**
+ * 使い方画面の数値 (選択期間・総収支・最終更新・データの出所・月次の流れの進捗)。
+ * 総収支は総収支画面と同じ totalCashflowScreen の summary.total (振替除外) を写し、新しい集計規則を足さない。
+ * 最終更新と進捗は /overview と同じ導出 (保留を除いた有効キュー → loadCloseStatus) で作る。
+ * 防衛ラインの値は計算しない (qa-guide-backend-web-004)。読み取りだけで D1 への書き込みは 0。
+ */
+analyticsRoute.get('/guide', async (c) => {
+  const { all, period } = await loadScoped(c);
+  const [sources, snoozes] = await Promise.all([loadReviewSources(c, all), loadSnoozes(c)]);
+  const effective = await applyReviewSnoozes(sources.items, snoozes);
+  const { closeStatus, dataUpdatedAt } = await loadCloseStatus(c, all, { items: effective.items });
+  // 期間の指定が無ければデータ全体。取込前で1か月も無いときだけ range が null になり、totals は 0
+  const range = period.applied ?? fullRange(all);
+  const { deals, verdicts, exclusions, mfExclusions } = sources.cashflow;
+  const total = range
+    ? totalCashflowScreen(
+        all,
+        deals,
+        verdicts,
+        exclusions,
+        range,
+        mfExclusions.map((row) => row.txId),
+      ).summary.total
+    : null;
+  return c.json({
+    screen: guideScreen({
+      period: { applied: period.applied, full: period.full, label: period.label },
+      totals: total ? { income: total.income, expense: total.expense } : null,
+      dataUpdatedAt,
+      closeStatus: all.months.length ? closeStatus : null,
+    }),
+  });
+});
+
 /** 全期間の未処理キュー。クエリを受け取らない (BR-002) */
 analyticsRoute.get('/review-queue', async (c) => {
   // 読み込みは loadScoped に一本化する。件数は期間に依存させないので all だけを使う
@@ -282,6 +313,18 @@ analyticsRoute.get('/review-queue', async (c) => {
   const { items, snoozed, snoozedCount } = await applyReviewSnoozes(sources.items, snoozes);
   // サイドバーの月次クローズカードも同じ有効キューで判定する。
   const { closeStatus } = await loadCloseStatus(c, all, { items });
+  // サイドバーの「サブスク」バッジだけがこの集計を使う。期間タブに依存しない直近 1 年で数える。
+  const subscriptionCandidates = subscriptionsScreen(
+    await loadSubscriptionsInput(
+      getDb(c.env.DB),
+      c.get('userId'),
+      { span: '1' },
+      {
+        all,
+        deals: sources.cashflow.deals,
+      },
+    ),
+  ).kpis.reviewCandidates;
   return c.json({
     total: items.length,
     counts: reviewQueueCounts(items),
@@ -289,7 +332,7 @@ analyticsRoute.get('/review-queue', async (c) => {
     items,
     snoozedItems: snoozed,
     closeStatus,
-    subscriptionCandidates: sources.subscriptionCandidates,
+    subscriptionCandidates,
   });
 });
 

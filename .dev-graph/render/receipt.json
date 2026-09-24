@@ -1,28 +1,27 @@
 {
-  "schema_version": "1.0.0",
-  "verb": "render",
-  "status": "pass",
-  "output": ".dev-graph/render/index.html",
-  "scope": "all",
+  "renderer": "render-graph-html.py (dev-graph 0.1.11)",
+  "rendered_at": "2026-09-23T14:38:05Z",
+  "scope": "all nodes",
   "graph_revision": 4,
-  "counts": {
-    "nodes": 23,
-    "edges": 21,
-    "feature_progress": {
-      "feat-budget-screen": {
-        "done": 0,
-        "total": 13
-      }
+  "input": ".dev-graph/state/graph.json",
+  "input_sha256": "f2584dff750153cb64c8823f99ab3f7c7b572e07b7523d300f3ecef629dc21d1",
+  "output": ".dev-graph/render/index.html",
+  "output_sha256": "ea01075758f84eaf2c508de68dcab7197f127b23ae94178d4f97df76a281e4d4",
+  "nodes": 23,
+  "edges": 21,
+  "feature_progress": {
+    "feat-guide-screen": {
+      "done": 0,
+      "total": 13
     }
   },
-  "registration": {
-    "feature_package_id": "feature-package/feat-budget-screen",
-    "path": ".dev-graph/plans/feature-package-feat-budget-screen/dev-graph-registration-receipt.json",
+  "external_refs": 0,
+  "svg": 1,
+  "inline_scripts": 2,
+  "registration_receipt": {
+    "path": ".dev-graph/plans/feature-package-feat-guide-screen/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067"
-  },
-  "input_sha256": "a9d3664bd8ad31888f6721a7fb7b9806b4aea3d25b6b6fab5ed64d66b5cfadcd",
-  "output_sha256": "5dc60435799558ba62a547173654770816df58cc6bddc3f36a2985d6374c0c81",
-  "rendered_at": "2026-09-21T15:00:09Z"
+    "source_digest": "sha256:9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62"
+  }
 }

@@ -1,0 +1,199 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/plan-feat-guide-screen-20260923T1350Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json は同一 feature_package_id (feature-package/feat-guide-screen) と parent_feature (feat-guide-screen) を一貫して持つ。goal-spec.json の open_items 12 件 (OI-1・OI-2、R-1〜R-5、Q-1〜Q-5) は P01 で Open risk (agent 推定・利用者未確認) と Blocker (既存実装との具体的な食い違い) に区分され、各件の resolution_owner (P01〜P05・P12) と task-specs の実際の記述が矛盾なく対応することを grep で確認した (12件全件が該当 phase に内容として出現)。REVIEW_CONFIDENCE_THRESHOLD=80 を変えない制約は P01/P02/P04/P05/P08 で一貫して記述され、DB 追加をしない制約 (C2, qa-guide-database-web-002) も全13 task-spec の『スコープ外』節で一貫している。P05 の Blocker (Overview.tsx confidenceClass、直近3か月の定数化、shiftedPeriod の core 移設) は P02 の設計決定を前提として矛盾なく実装対象に落とし込まれている。P08 の監査対象 (旧 Guide.tsx 参照・guide-sections.ts の現在値合成の残存・信頼度 80/60・直近3か月の直書き) は P05 の実装内容と一致し、P09 の外部送信ゼロ確認は goal-spec S4 および common-shell の記述と一致する。migration を作らない旨は P05/P08/P13 で一貫している。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-09-quality-assurance.md",
+        "task-specs/phase-13-release-deploy.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "P01..P13 exact-13 が揃い (validator phase_refs=P01..P13, violations=[])、各 task-spec は 111〜187 行の実質記述を持つ。task-specs/*.md 全13ファイルへの grep で TBD/TODO/placeholder/未定/xxx/FIXME の残存は0件、N/A 表記は全て理由付き (例: 'N/A: 本 phase の責務に含まれない') であり、空 section や title のみの擬似 task は検出されなかった。goal-spec.json の受入 S1〜S4 (4件) は P07 (受入検証)・P09 (保証確認)・P10 (最終確認)・P11 (証跡索引) へ写像されている。open_items 12件 (OI-1・OI-2、R-1〜R-5、Q-1〜Q-5) を個別に grep した結果、全件が resolution_owner に対応する phase (P01〜P05・P07・P09〜P13) の本文に内容として出現し、転記漏れは検出されなかった。P01 の Verification.Acceptance 項目でも open_items 全件の docs 転記と resolution_owner 割当を明文の受入条件としている。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-09-quality-assurance.md",
+        "task-specs/phase-11-evidence.md",
+        "task-specs/phase-12-documentation-operations.md",
+        "workstream-inventory.json"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json は同一 feature_package_id・parent_feature・repository_id (github:daishiman/kanjo) を持ち、feature-package.json の task_node_ids と task-graph.json の node id、system-build-handoff.json の execution_tasks.task_id が SYS-GUIDE-P01..P13 で完全一致する。staging-manifest.json 記載17ファイルおよび staging-manifest.json 自身の sha256 を独立に shasum -a 256 で再計算し全18件が manifest / handoff 記載値と一致した (差分0件)。staging-manifest.json#canonical_digest (sha256:9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62) と validate-system-plan.py の validated_digest も完全一致する。goal-spec.json の identity_check.feature_context_sha256 (8189536d578ac9df7987e93d854c95d26c41a0043f10e4aaa02f60c9cafbe189) は feature-package.json の source_feature_digest および system-build-handoff.json の identity.source_feature_digest と一致し、features/feat-guide-screen.context.json の実測 sha256 とも一致する。source_lineage の features/feat-guide-screen.md・specs/spec-guide-screen.md の記載 sha256 も実測 shasum と一致した。repo_identity は全ファイルで github:daishiman/kanjo に揃っている。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13 nodeはP01→P02→...→P13の単一直鎖 (depends_onは常に直前phase_refのみ1件、P01のdepends_on=[])。循環・後方edge・cross-feature task参照は検出されず (SYS-SETTINGS/SYS-CASH/SYS-TRADEOFF/SYS-BUDGET/SYS-ANALYSIS/SYS-CLASSIFY/feat-settings/feat-cash/feat-tradeoff/feat-budget/feat-analysis/feat-classify の grep結果は0件)、全edgeが同一feature_package_id/parent_feature (feature-package/feat-guide-screen) 内に閉じている。system-build-handoff.jsonのexecution_tasksも同じ直鎖・同じdepends_onを再掲しており矛盾はない。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<HOME>/.claude/plugins/cache/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<REPO_ROOT>",
+        "--staging",
+        ".dev-graph/staging/plan-feat-guide-screen-20260923T1350Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62\",\n  \"feature_package_id\": \"feature-package/feat-guide-screen\",\n  \"parent_feature\": \"feat-guide-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "a17abf4ee1a976b96e709ed0ed603cc6b930c8870ae239c9a0acdc83081e8c22"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "c196c0b50e544ed45f594d17cc0b0139a2168a1d9dd6e1b33f7b8285f3578e57"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "1c4b70c97ec83b351bc23d25fdc8b7a8662bcce23f95e5ef086a5a5376a90a89"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "32a5b2fc0ad24da1b15b6a8e661fd17a1863a51baecb213d8f6d2dda0678465c"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "b783f0753022565f48812af92c5632e48a553c48f5968f124e19c946b7130c8c"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "ef1648c37058b3a4f4ac8505c344a9ed30f794d961dc9f72733b5a575b529938"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "dbbba0e3d018c06dc910bf6228a40fa1d6cb2e48fb135cf9faf8f5be66ba296a"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "dff9a9bc7baeb734b501553a13b5afd42422799990f5ae3e8b8f5dd06583fa5a"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "3d387c78796e487b81366b524dc5158818accbdba23eeb24c7e4bc2e24126fed"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "bec7bbe0fdb3c4eff88bbb94909aaa8e52e750b5cc8e1f8e38ea63ef4c1075ab"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "03c3406ffd3ed5461e44eca252583749bb7fdd2f6ce861015206d65ab3c1b31e"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "90f634e9909e75be3eb277a6ed972ba06abfc9f6de3b2891fdd5a13e1fda06d2"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "f37689da28ba77271457022e04642d8706e8808aa5d6a83b47644a4545c10cfb"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "2d6fc5718edd6953139aee07358df2cf693596b2b015118fde2d8fb05165d8c1"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "d11e022a3b989ccc025213c1c659a108259d0d35adc496012d10263081e518d2"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "ceb1d51d535261f56264c0ff244a7b30b5ecd49fb26685c12db3dbb3493309d9"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "ad08f79cef5f059aafa42980ee4265b5a32dedef76a9a8e03c74b0ec4383661b"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "2943a21c020692773448f25108cca9e1944762d01cb71778826716105068ea74"
+    }
+  ],
+  "staleness_rule": "promotion 直前に staging 配下の各 evaluated_inputs path (staging-manifest.json 自身を含む18件) の current raw bytes から shasum -a 256 を再計算し、本 plan-findings.json の evaluated_inputs および validate-system-plan.py が返す validated_digest と全件完全一致することを再照合する。1バイトでも差分があれば、または staging-manifest.json#canonical_digest と evaluated_digest が不一致になれば、本 verdict は無効 (stale) とみなし promotion しない。",
+  "findings": [
+    {
+      "severity": "medium",
+      "bucket": "open_items_readiness",
+      "observation": "goal-spec.json の open_items 12件 (OI-1・OI-2, R-1〜R-5, Q-1〜Q-5) は staging 時点で unresolved_precondition / agent_inference_unconfirmed のままであり、信頼度を出す画面の最終列挙 (OI-1)・Overview.tsx confidenceClass の扱い (OI-2)・API 応答細部やトピック id など (Q-1〜Q-5) が未確定である。P01/P02 の resolution 前に P05 が着手すると write_scope (特に classify/TransactionTable.tsx・EditPanel.tsx・OverviewReviewQueue.tsx) が実際の決定内容と食い違う可能性があるため、P01/P02 完了時点で本 plan の write_scope・acceptance に矛盾が生じていないかを requirements 側で再確認することを推奨する。",
+      "evidence": [
+        "goal-spec.json#open_items",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-05-implementation.md"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "architecture_resource_scope_drift",
+      "observation": "goal-spec.json の open_items R-5 は、arch-guide-maintenance-ops の resource_scope に docs/cash-screen と scripts/check-glossary.mjs、arch-guide-database に migrations が含まれるが feature の resource_scope 外である旨を指摘している (architecture 側の誤記の可能性)。本 plan は P12 で記録するのみで書き換えを行わない方針であり plan 自体の欠陥ではないが、architecture の再 import 時にこの drift が解消されているかを別途確認する必要がある。",
+      "evidence": [
+        "goal-spec.json#open_items",
+        "task-specs/phase-12-documentation-operations.md"
+      ]
+    },
+    {
+      "severity": "low",
+      "bucket": "write_scope_breadth",
+      "observation": "P05 (SYS-GUIDE-P05) の write_scope は core/api/web にまたがる17ファイル超 (guide-screen.ts 新設に加え Overview.tsx・OverviewReviewQueue.tsx・classify/TransactionTable.tsx・classify/EditPanel.tsx 等) を含み、P01 で確定する信頼度表示対象画面の列挙次第で一部が不要または不足になり得る。P01 完了後に write_scope の過不足を requirements フェーズで再点検することを推奨する。",
+      "evidence": [
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-01-requirements.md"
+      ]
+    }
+  ]
+}

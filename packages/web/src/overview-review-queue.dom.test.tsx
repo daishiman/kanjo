@@ -313,7 +313,7 @@ describe('未処理件数の 3 か所一致 (AC-002)', () => {
     // 推奨と根拠 (FR-005) が選択中の明細に出る
     expect(panel.textContent).toContain('家計 / 書籍');
     expect(panel.textContent).toContain('過去 10 件中 9 件');
-    expect(panel.textContent).toContain('90%');
+    expect(panel.textContent).toContain('高 90%');
     fireEvent.click(within(panel).getByRole('button', { name: '後で確認' }));
 
     await waitFor(() => expect(counts()).toEqual({ badge: 3, card: 3, bar: 3 }));
@@ -528,7 +528,7 @@ describe('概況の情報設計と状態の整合', () => {
 
     const table = screen.getByRole('table', { name: '優先して確認する明細' });
     expect(within(table).getAllByText('家計 / 書籍')).toHaveLength(1);
-    expect(within(table).getByText('90%')).toBeTruthy();
+    expect(within(table).getByText('高 90%')).toBeTruthy();
 
     const breakdown = screen.getByRole('group', { name: '内訳の表示値' });
     const firstBreakdown = document.querySelector('.breakdown-list li');
@@ -610,7 +610,7 @@ describe('概況の情報設計と状態の整合', () => {
     expect(row?.querySelector('.review-item-button')).toBeTruthy();
     expect(row?.querySelector('.review-col-date')?.textContent).toBe('2026-09-05');
     expect(row?.querySelector('.review-col-recommendation')?.textContent).toBe('家計 / 書籍');
-    expect(row?.querySelector('.review-col-confidence')?.textContent).toContain('90%');
+    expect(row?.querySelector('.review-col-confidence')?.textContent).toContain('高 90%');
   });
 
   it('wide では Review workspace の要約・明細表・詳細を同時に提供する', async () => {

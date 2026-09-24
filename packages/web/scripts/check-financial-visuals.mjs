@@ -1464,6 +1464,33 @@ const cashEntries = {
   duplicates: [],
 };
 
+// 使い方 (KANJO_VISUAL_SCOPE=guide)。/api/guide は数値だけを返し、本文は core の定数を web が直接描く
+const guideFixture = {
+  screen: {
+    period: {
+      applied: { from: months.at(-12), to: months.at(-1) },
+      full: { from: months[0], to: months.at(-1) },
+      label: '匿名の直近1年',
+      definition: '匿名の直近1年の取引データを集計しています。',
+    },
+    totals: { income: 4_860_000, expense: 3_912_000, net: 948_000 },
+    dataUpdatedAt: '2026-08-20T03:00:00Z',
+    sources: '取込データ（freee・マネーフォワード）と現金入力',
+    closeStatus: {
+      month: months.at(-1),
+      steps: [
+        { key: 'import', label: '取込', done: true, count: null },
+        { key: 'classification', label: '仕分け', done: true, count: 0 },
+        { key: 'reconciliation', label: '照合', done: false, count: 3 },
+        { key: 'review', label: '確認', done: false, count: null },
+      ],
+      doneCount: 2,
+      total: 4,
+      reviewedAt: null,
+    },
+  },
+};
+
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
 const responseFor = (url) => {
   const requestUrl = new URL(url);
@@ -1504,6 +1531,7 @@ const responseFor = (url) => {
   if (path === '/api/ai/reports/anonymous-report-1') return aiReportDetail;
   if (path === '/api/ai/reports') return { reports: [aiReportRow], archivedCount: 0 };
   if (path === '/api/cash-entries') return cashEntries;
+  if (path === '/api/guide') return guideFixture;
   // 現金入力は担当者の表示名を読む。fixture に無いと proxy 先の API が Cookie 無しで 401 を返し、
   // 画面がログインへ切り替わる(描画の途中で切り替わるので、落ち方が実行ごとに変わる)
   if (path === '/api/settings/owner-labels') return { labels: {} };
@@ -2003,6 +2031,139 @@ try {
         failures.push(`${tag} Cash で実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`);
       console.log(
         `${tag} Cash 行=${metrics.rows} 本体=${metrics.pageWidth}/${metrics.viewportWidth}px タブ高=${metrics.tabHeights.join(',')}px`,
+      );
+    }
+  }
+  if (VISUAL_SCOPE === 'guide') {
+    // 使い方は図を持たないので、19-guide.png の構成要素・横のはみ出し・幅ごとの段組み・下部固定バーを実ブラウザで測る。
+    // 1024px 以上は本文と右カラムの 2 列・目次は左の縦並び、それ未満は 1 列・目次は横スクロールのタブ (guide.css)
+    const guideViewports = VIEWPORTS.filter(
+      ({ label, width, zoom }) =>
+        (zoom === 1 && [360, 390, 768, 1023, 1024, 1280, 1600].includes(width)) || label === 'zoom200',
+    );
+    for (const { label: viewportLabel, width, zoom } of guideViewports) {
+      const tag = zoom === 1 ? `${width}px` : viewportLabel;
+      await send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: width < 640,
+      });
+      await send('Emulation.setPageScaleFactor', { pageScaleFactor: zoom });
+      runtimeProblems.length = 0;
+      await send('Page.navigate', { url: `${BASE_URL}/guide` });
+      await waitFor(
+        "document.querySelector('.guide-stepper')?.getAttribute('aria-busy') === 'false' && [...document.querySelectorAll('.guide-stepper-state')].length === 4 && [...document.querySelectorAll('.guide-stepper-state')].every((node) => ['完了', '未完了'].includes(node.textContent.trim())) && [...document.querySelectorAll('.guide-total-value')].length === 3 && [...document.querySelectorAll('.guide-total-value')].every((node) => node.textContent.trim().includes('¥')) && Boolean(document.querySelector('.guide-bottom-bar'))",
+        `${tag} Guide`,
+      );
+      const metrics = JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          const box = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value && value.width > 0 && value.height > 0 ? value : null;
+          };
+          const viewportWidth = document.documentElement.clientWidth;
+          const main = box(document.querySelector('.guide-main'));
+          const aside = box(document.querySelector('.guide-aside'));
+          const toc = box(document.querySelector('.guide-toc'));
+          const panel = box(document.querySelector('.guide-panel'));
+          const steps = [...document.querySelectorAll('.guide-steps-list > li')].map(box).filter(Boolean);
+          const bar = box(document.querySelector('.guide-bottom-bar'));
+          return {
+            viewportWidth,
+            viewportHeight: window.innerHeight,
+            narrow: window.matchMedia('(max-width: 1023.98px)').matches,
+            phone: window.matchMedia('(max-width: 640px)').matches,
+            pageWidth: document.documentElement.scrollWidth,
+            title: document.querySelector('main h1')?.textContent?.trim() ?? '',
+            question: document.querySelector('main h2.page-question')?.textContent?.trim() ?? '',
+            stepTitles: [...document.querySelectorAll('.guide-step-title strong')].map((node) => node.textContent.trim()),
+            stepColumns: new Set(steps.map((value) => Math.round(value.left))).size,
+            tabs: [...document.querySelectorAll('.guide-toc [role="tab"]')].map((node) => node.textContent.trim()),
+            selected: document.querySelector('.guide-toc [aria-selected="true"]')?.textContent?.trim() ?? '',
+            stepper: [...document.querySelectorAll('.guide-stepper-state')].map((node) => node.textContent.trim()),
+            totals: [...document.querySelectorAll('.guide-total-value')].map((node) => node.textContent.trim()),
+            totalsWrapped: [...document.querySelectorAll('.guide-total-value')].filter((node) => {
+              const range = document.createRange();
+              range.selectNodeContents(node);
+              return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size > 1 || node.scrollWidth > node.clientWidth + 1;
+            }).length,
+            facts: document.querySelectorAll('.guide-facts dd').length,
+            related: document.querySelectorAll('.guide-related a').length,
+            search: Boolean(box(document.querySelector('.guide-search input'))),
+            faqRows: document.querySelectorAll('.guide-faq-table tbody tr').length,
+            asideBesideMain: Boolean(main && aside && aside.left >= main.right - 1),
+            tocBesidePanel: Boolean(toc && panel && panel.left >= toc.right - 1),
+            bar: bar ? { left: bar.left, right: bar.right, bottom: bar.bottom, height: bar.height } : null,
+            barText: document.querySelector('.guide-bottom-bar')?.textContent?.replace(/\\s+/g, ' ').trim() ?? '',
+            overflowing: [...document.querySelectorAll('main *')]
+              .filter((node) => !node.closest('.scroll-x') && !node.closest('.guide-toc'))
+              .filter((node) => {
+                const value = box(node);
+                return value && (value.left < -1 || value.right > viewportWidth + 1);
+              })
+              .slice(0, 3)
+              .map((node) => node.className || node.tagName),
+          };
+        })())`),
+      );
+      if (metrics.pageWidth > metrics.viewportWidth + 1)
+        failures.push(`${tag} Guide の本体が横にはみ出す(${metrics.pageWidth}/${metrics.viewportWidth}px)`);
+      if (metrics.overflowing.length)
+        failures.push(`${tag} Guide の要素が画面の外へ出る: ${metrics.overflowing.join(', ')}`);
+      if (metrics.title !== '使い方')
+        failures.push(`${tag} Guide のタイトルが「使い方」ではない: ${metrics.title}`);
+      if (metrics.question !== 'この数字を、どう読み・どこへ戻ればよいですか？')
+        failures.push(`${tag} Guide の問いの見出しが一致しない: ${metrics.question}`);
+      if (JSON.stringify(metrics.stepTitles) !== JSON.stringify(['取込む', '整える', '確認', '計画']))
+        failures.push(`${tag} Guide の 4 ステップが一致しない: ${metrics.stepTitles.join(' / ')}`);
+      // 段組みは guide.css の media query と同じ条件 (ページ倍率ではなく CSS の幅) で期待値を決める
+      const expectedStepColumns = metrics.phone ? 1 : metrics.narrow ? 2 : 4;
+      if (metrics.stepColumns !== expectedStepColumns)
+        failures.push(
+          `${tag} Guide の 4 ステップが ${expectedStepColumns} 列ではない(${metrics.stepColumns} 列)`,
+        );
+      if (
+        JSON.stringify(metrics.tabs) !==
+        JSON.stringify(['月次の流れ', '総収支', '照合', '仕分け', '予算', 'データ出典', '用語と目安'])
+      )
+        failures.push(`${tag} Guide の目次 7 項目が一致しない: ${metrics.tabs.join(' / ')}`);
+      if (metrics.selected !== '月次の流れ') failures.push(`${tag} Guide の既定の目次が月次の流れではない`);
+      if (JSON.stringify(metrics.stepper) !== JSON.stringify(['完了', '完了', '未完了', '未完了']))
+        failures.push(`${tag} Guide のステッパーが実進捗と一致しない: ${metrics.stepper.join(' / ')}`);
+      if (JSON.stringify(metrics.totals) !== JSON.stringify(['¥4,860,000', '¥3,912,000', '+¥948,000']))
+        failures.push(`${tag} Guide の総収支 3 枚が一致しない: ${metrics.totals.join(' / ')}`);
+      if (metrics.totalsWrapped)
+        failures.push(`${tag} Guide の総収支の金額が折り返す・はみ出す(${metrics.totalsWrapped} 枚)`);
+      if (metrics.facts !== 4 || metrics.related !== 5 || !metrics.search)
+        failures.push(
+          `${tag} Guide の右カラム (数値 ${metrics.facts}/4・関連 ${metrics.related}/5・検索 ${metrics.search}) が揃わない`,
+        );
+      if (metrics.faqRows !== 5)
+        failures.push(`${tag} Guide のよくある疑問が 5 行ではない(${metrics.faqRows} 行)`);
+      if (!metrics.narrow && (!metrics.asideBesideMain || !metrics.tocBesidePanel))
+        failures.push(`${tag} Guide の 2 列 (右カラム・左の目次) が並ばない`);
+      if (metrics.narrow && (metrics.asideBesideMain || metrics.tocBesidePanel))
+        failures.push(`${tag} Guide が 1024px 未満でも横に並んだまま`);
+      if (
+        !metrics.bar ||
+        metrics.bar.bottom > metrics.viewportHeight + 1 ||
+        metrics.bar.left < -1 ||
+        metrics.bar.right > metrics.viewportWidth + 1
+      )
+        failures.push(`${tag} Guide の下部固定バーが画面内に収まらない: ${JSON.stringify(metrics.bar)}`);
+      if (!metrics.barText.includes('現在のトピック') || !metrics.barText.includes('総収支を開く'))
+        failures.push(`${tag} Guide の下部固定バーの文言が一致しない: ${metrics.barText}`);
+      const screenshot = await send('Page.captureScreenshot', {
+        format: 'png',
+        fromSurface: true,
+        captureBeyondViewport: true,
+      });
+      writeFileSync(join(OUTPUT_DIR, `guide-${tag}.png`), Buffer.from(screenshot.data, 'base64'));
+      if (runtimeProblems.length)
+        failures.push(`${tag} Guide で実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`);
+      console.log(
+        `${tag} Guide 本体=${metrics.pageWidth}/${metrics.viewportWidth}px ステップ列=${metrics.stepColumns} 2列=${metrics.asideBesideMain}`,
       );
     }
   }

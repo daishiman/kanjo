@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-guide-screen",
+  "snapshot_digest": "sha256:88f509652793e9015d4022278c6d537fea241faace4bb7140fbe03902daafb0a",
+  "source_lineage": [
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md",
+    "specs/spec-guide-screen.md",
+    "architecture/guide-ui-ux.md",
+    "architecture/guide-frontend.md",
+    "architecture/guide-backend.md",
+    "architecture/guide-database.md",
+    "architecture/guide-auth.md",
+    "architecture/guide-security.md",
+    "architecture/guide-infrastructure.md",
+    "architecture/guide-maintenance-ops.md",
+    "features/feat-guide-screen.md"
+  ],
+  "plan_package": ".dev-graph/plans/feature-package-feat-guide-screen",
+  "plan_digest": "sha256:9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+  "requirements": [
+    {
+      "requirement_id": "REQ-GD-001",
+      "title": "ガイド内容の core guide-screen 単一導出",
+      "source_refs": [
+        "specs/spec-guide-screen.md",
+        "features/feat-guide-screen.md"
+      ],
+      "spec_anchor": "S3 / G3 / FR-2〜FR-14 / I2 / qa-guide-decision-001 / qa-guide-backend-web-002",
+      "statement": "packages/core/src/guide-screen.ts を新設し、節 7・4 ステップと行き先・よくある疑問 5 行・期間の表 4 行・このページの数値 4 項目・関連ページ 5 件・ガイド内検索を純関数で導く。guide-sections.ts の現在値合成も core へ移し、web・api に導出を残さない(grep で確認)。構成は guide-screen.test.ts の toEqual で固定する。",
+      "system_tasks": [
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P04",
+        "SYS-GUIDE-P05",
+        "SYS-GUIDE-P07",
+        "SYS-GUIDE-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-GD-002",
+      "title": "GET /api/guide の新設と利用者分離",
+      "source_refs": [
+        "specs/spec-guide-screen.md",
+        "features/feat-guide-screen.md"
+      ],
+      "spec_anchor": "S4 / G4 / API 契約 / I3 / O5 / qa-guide-auth-web-001 / qa-guide-backend-web-004",
+      "statement": "authGuard と mustChangePasswordFence の内側で loadScoped の 1 回の loadDataset から core guide-screen に渡し { screen } で返す。読み取り専用で防衛ラインは計算しない。壊れた期間は全期間に倒す。期間あり・なし・壊れた期間、totals の総収支一致、振替除外、0 件、他利用者 0 件、401、403 を contract test で固定する。",
+      "system_tasks": [
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P03",
+        "SYS-GUIDE-P04",
+        "SYS-GUIDE-P05",
+        "SYS-GUIDE-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-GD-003",
+      "title": "/guide 全構成要素の描画と URL の topic/q 保持",
+      "source_refs": [
+        "specs/spec-guide-screen.md",
+        "features/feat-guide-screen.md"
+      ],
+      "spec_anchor": "S1 / G1 / FR-1〜FR-17 / I1 / qa-guide-frontend-web-002 / qa-guide-ui-ux-web-002・003",
+      "statement": "pages/Guide.tsx を pages/guide/ 配下へ分割し旧ファイルは再輸出 1 行にする。19-guide.png の全構成要素と読込・空・失敗・検索 0 件をトークンと共通部品で描く。総収支 3 枚は選択期間の実データ(振替除外)。topic・q を URL に保ち再読込・共有で復元する。直書き色 0 件。",
+      "system_tasks": [
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P04",
+        "SYS-GUIDE-P05",
+        "SYS-GUIDE-P07",
+        "SYS-GUIDE-P09"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-GD-004",
+      "title": "信頼度の段階関数と『段階＋%』表示(RD-GD-001)",
+      "source_refs": [
+        "specs/spec-guide-screen.md",
+        "features/feat-guide-screen.md"
+      ],
+      "spec_anchor": "S2 / G2 / FR-16 / I4 / qa-guide-decision-005・008 / RD-GD-001 (basis=user, 2026-09-23)",
+      "statement": "core に段階関数を 1 つ置く(高 80 以上 / 中 50〜79 / 低 49 以下、範囲外・非数は『—』)。Overview.tsx:209-210,369-371(80/60 色境界を段階へ)・OverviewReviewQueue.tsx:141-157・classify/TransactionTable.tsx:142-144・classify/EditPanel.tsx:258(現行 % 無し、根拠欄へ追加)の 4 か所を『高 92%』形で描く。CONFIDENCE_LABEL(ResultCards/DetailPanel/AiContextAnalysis)と VendorMemory は対象外。REVIEW_CONFIDENCE_THRESHOLD=80 は不変。境界 49/50/79/80 と閾値=高の下限を core 単体テストで固定する。",
+      "system_tasks": [
+        "SYS-GUIDE-P01",
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P04",
+        "SYS-GUIDE-P05",
+        "SYS-GUIDE-P07",
+        "SYS-GUIDE-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-GD-005",
+      "title": "防衛ライン算出定数と説明文の一致",
+      "source_refs": [
+        "specs/spec-guide-screen.md",
+        "features/feat-guide-screen.md"
+      ],
+      "spec_anchor": "S2 / G2 / I5 / qa-guide-decision-009 / R-1",
+      "statement": "analysis.ts:1095 の直近 3 か月(pMonths.slice(-3))を core の名前付き定数へ置き換え値は変えない。使い方画面と glossary.ts:45-49 の説明文はその定数から組む。defenseLine 既存テストは値不変で通し、定数変更で説明文が変わることを固定する。check-glossary を通す。",
+      "system_tasks": [
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P04",
+        "SYS-GUIDE-P05",
+        "SYS-GUIDE-P07",
+        "SYS-GUIDE-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-GD-006",
+      "title": "共通シェルのフッタ文言と AI 送信補足 3 か所",
+      "source_refs": [
+        "specs/spec-guide-screen.md",
+        "features/feat-guide-screen.md"
+      ],
+      "spec_anchor": "S4 / G4 / FR-15 / I6 / qa-guide-decision-010・011 / R-2",
+      "statement": "ヘッダは『防衛ライン』のまま。フッタ 1 文目を『取込データは外部送信しません』にし、AI 送信の補足をフッタ title・プライバシー欄・使い方画面のデータ出典の 3 か所に置く。common-shell.dom.test.tsx:182-185 を P04 で書き換え P05 で緑にする。",
+      "system_tasks": [
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P03",
+        "SYS-GUIDE-P04",
+        "SYS-GUIDE-P05",
+        "SYS-GUIDE-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-GD-007",
+      "title": "shiftedPeriod の core 移設",
+      "source_refs": [
+        "specs/spec-guide-screen.md",
+        "features/feat-guide-screen.md"
+      ],
+      "spec_anchor": "FR-1 / I7 / R-3",
+      "statement": "shiftedPeriod を pages/statements/view-model.ts:121 から packages/core/src/period.ts へ移し決算書と使い方画面で共有する。決算書の挙動は不変。既存テストは core へ移すか再輸出で通す。全期間と端は null。",
+      "system_tasks": [
+        "SYS-GUIDE-P02",
+        "SYS-GUIDE-P04",
+        "SYS-GUIDE-P05",
+        "SYS-GUIDE-P06"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-GD-008",
+      "title": "非機能制約・非退行・描画検査・運用文書と配信",
+      "source_refs": [
+        "specs/spec-guide-screen.md",
+        "features/feat-guide-screen.md"
+      ],
+      "spec_anchor": "非機能要件 / O4 / C2 / R-4 / qa-guide-maintenance-ops-web-001 / qa-guide-database-web-002",
+      "statement": "初期 JS 110KiB 以内、CSP 不変、色だけで状態を伝えない、検索語をサーバへ送らない、DB の表・列・migration を足さない。check:guide-screen を追加し verify:full に組み込む。lint・typecheck・test・verify:full を exit 0。docs は docs/guide-screen/ のみ。単一 PR で配信する。",
+      "system_tasks": [
+        "SYS-GUIDE-P01",
+        "SYS-GUIDE-P05",
+        "SYS-GUIDE-P06",
+        "SYS-GUIDE-P08",
+        "SYS-GUIDE-P09",
+        "SYS-GUIDE-P11",
+        "SYS-GUIDE-P12",
+        "SYS-GUIDE-P13"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    }
+  ],
+  "cross_cutting_tasks": {
+    "SYS-GUIDE-P10": "独立最終レビュー (全要件横断)"
+  },
+  "requirements_decisions": [
+    {
+      "decision_id": "RD-GD-001",
+      "basis": "user",
+      "decided_on": "2026-09-23",
+      "resolves": [
+        "OI-1",
+        "OI-2",
+        "completeness-findings: 信頼度を出す画面の列挙 (medium)"
+      ],
+      "follows": "qa-guide-decision-008",
+      "in_scope": [
+        "packages/web/src/pages/Overview.tsx:209-210,369-371",
+        "packages/web/src/components/OverviewReviewQueue.tsx:141-157",
+        "packages/web/src/pages/classify/TransactionTable.tsx:142-144",
+        "packages/web/src/pages/classify/EditPanel.tsx:258 (見出し『信頼度の根拠』。現行は :259 の basisText のみで % は無い。ClassifyRow.confidence から段階＋% を追加する)"
+      ],
+      "excluded": [
+        "packages/web/src/pages/analysis/diagnosis/ResultCards.tsx:33",
+        "packages/web/src/pages/analysis/diagnosis/DetailPanel.tsx:90,111",
+        "packages/web/src/pages/ai/AiContextAnalysis.tsx:148",
+        "VendorMemory.tsx:227",
+        "REVIEW_CONFIDENCE_THRESHOLD=80 (不変)"
+      ],
+      "task_effects": {
+        "SYS-GUIDE-P01": "列挙は確定済み。design-decisions.md への転記と行番号の現物確認(ベースライン確認)のみ",
+        "SYS-GUIDE-P05": "write scope 26 件に確定 4 ファイル+classify/view-model.ts を含み、除外ファイル 0 件を照合済み",
+        "SYS-GUIDE-P04": "段階＋% の検査対象は確定 4 か所",
+        "SYS-GUIDE-P08": "web の 80/60 比較 0 件と除外 3 画面の非変更を監査"
+      }
+    }
+  ]
+}

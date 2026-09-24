@@ -44,19 +44,6 @@
   margin-bottom: 0;
 }
 
-.stmt-range {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-bottom: 0;
-}
-
-.stmt-range-label {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
 /* ---- KPI ---- */
 .stmt-kpis {
   margin-bottom: 0;
@@ -709,10 +696,6 @@
 @media (max-width: 639px) {
   .stmt-intro {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .stmt-range {
-    justify-content: flex-start;
   }
 }
 

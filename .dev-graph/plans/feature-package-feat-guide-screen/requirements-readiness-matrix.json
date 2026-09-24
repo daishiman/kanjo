@@ -1,0 +1,254 @@
+{
+  "feature_id": "feat-guide-screen",
+  "gates": {
+    "C08": "complete",
+    "C11": true,
+    "validate_system_plan": "pass"
+  },
+  "graph_revision": 3,
+  "graph_snapshot_digest": "88f509652793e9015d4022278c6d537fea241faace4bb7140fbe03902daafb0a",
+  "missing_sections": [],
+  "nodes": [
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P01",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P01",
+      "resource_scope_count": 1,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0",
+      "requirements_note": "RD-GD-001 により信頼度画面の列挙は確定済み。P01 は design-decisions.md への転記と行番号の現物確認(ベースライン確認)のみ"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P01"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P02",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P02",
+      "resource_scope_count": 1,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P02"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P03",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P03",
+      "resource_scope_count": 1,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P03"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P04",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P04",
+      "resource_scope_count": 12,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P04"
+      ],
+      "domain": "frontend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P05",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P05",
+      "resource_scope_count": 26,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0",
+      "requirements_note": "RD-GD-001 の確定 4 ファイルが write scope に 4/4 件含まれ、除外ファイルは 0 件",
+      "write_scope_check": {
+        "required_present": [
+          "packages/web/src/pages/Overview.tsx",
+          "packages/web/src/components/OverviewReviewQueue.tsx",
+          "packages/web/src/pages/classify/TransactionTable.tsx",
+          "packages/web/src/pages/classify/EditPanel.tsx"
+        ],
+        "excluded_present": []
+      }
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P05"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P06",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P06",
+      "resource_scope_count": 1,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P06"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P07",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P07",
+      "resource_scope_count": 1,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P07"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P08",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P08",
+      "resource_scope_count": 1,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P08"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P09",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P09",
+      "resource_scope_count": 1,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P09"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P10",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P10",
+      "resource_scope_count": 1,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P10"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P11",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P11",
+      "resource_scope_count": 2,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P11"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P12",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P12",
+      "resource_scope_count": 2,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-GUIDE-P12"
+      ],
+      "domain": "operations",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-GUIDE-P13",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P13",
+      "resource_scope_count": 1,
+      "source_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+      "source_version": "0.1.0"
+    }
+  ],
+  "plan_validated_digest": "9273432a11546de4cff49f065afa909d75d22b2eabad97f7dceb15abf2258f62",
+  "status": "pass",
+  "requirements_decisions": [
+    "RD-GD-001"
+  ],
+  "carried_findings_open": [
+    "R-1",
+    "R-2",
+    "R-3",
+    "R-4",
+    "R-5",
+    "Q-1",
+    "Q-2",
+    "Q-3",
+    "Q-4",
+    "Q-5",
+    "CF-C06-B",
+    "CF-C06-A",
+    "CF-C06-C",
+    "CF-backend-web-002",
+    "CF-official-host",
+    "RQ-F1",
+    "RQ-F2"
+  ]
+}
