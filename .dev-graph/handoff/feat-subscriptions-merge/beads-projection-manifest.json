@@ -1,0 +1,151 @@
+{
+  "feature": {
+    "graph_node_id": "feat-subscriptions-merge",
+    "title": "サブスク統合の是正 (登録済みの行の統合・取り消し) と書込みの順次処理",
+    "description": "dev-graph feature projection (features/feat-subscriptions-merge.md)",
+    "bd_issue_id": "kanjo-c2t"
+  },
+  "children": [
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P01",
+      "phase_ref": "P01",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P01 要件の基準線と着手時の確認事項 (0058 の空き・TanStack の型・問い合わせ数・overloaded の判定・照合順の数値変化) の確定",
+      "description": "dev-graph P01 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p01.md)",
+      "depends_on": [],
+      "bd_issue_id": "kanjo-c2t.1"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P02",
+      "phase_ref": "P02",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P02 resolveVendorMerges・統合と取り消しの db.batch・fence の登録・migration 0058・backup の mergedIntoName・画面の待ち行列の設計決定記録",
+      "description": "dev-graph P02 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p02.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P01"
+      ],
+      "bd_issue_id": "kanjo-c2t.2"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P03",
+      "phase_ref": "P03",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P03 名寄せの 1 か所導出・書込みの原子性・テナント分離と操作者の記録の独立設計レビュー",
+      "description": "dev-graph P03 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p03.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P02"
+      ],
+      "bd_issue_id": "kanjo-c2t.3"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P04",
+      "phase_ref": "P04",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P04 名寄せ・統合と取り消し・並行制御・選択と待ち行列の失敗テストの先行作成",
+      "description": "dev-graph P04 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p04.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P03"
+      ],
+      "bd_issue_id": "kanjo-c2t.4"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P05",
+      "phase_ref": "P05",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P05 migration 0058・resolveVendorMerges・統合と取り消しと操作履歴の API・既存書込みの revision・backup・選択バーと操作状態の画面の実装",
+      "description": "dev-graph P05 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p05.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P04"
+      ],
+      "bd_issue_id": "kanjo-c2t.5"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P06",
+      "phase_ref": "P06",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P06 全テストと型検査と lint の実行記録",
+      "description": "dev-graph P06 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p06.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P05"
+      ],
+      "bd_issue_id": "kanjo-c2t.6"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P07",
+      "phase_ref": "P07",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P07 受入基準 O1 から O4 と U5 の検証",
+      "description": "dev-graph P07 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p07.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P06"
+      ],
+      "bd_issue_id": "kanjo-c2t.7"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P08",
+      "phase_ref": "P08",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P08 旧い統合経路・名寄せを通らない照合・色の直書き・describeError を通る操作状態の文言の残存の読取専用監査",
+      "description": "dev-graph P08 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p08.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P07"
+      ],
+      "bd_issue_id": "kanjo-c2t.8"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P09",
+      "phase_ref": "P09",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P09 アクセシビリティ・ログの秘匿・D1 の問い合わせ数・JS バンドル予算の保証確認",
+      "description": "dev-graph P09 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p09.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P08"
+      ],
+      "bd_issue_id": "kanjo-c2t.9"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P10",
+      "phase_ref": "P10",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P10 独立最終レビュー",
+      "description": "dev-graph P10 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p10.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P09"
+      ],
+      "bd_issue_id": "kanjo-c2t.10"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P11",
+      "phase_ref": "P11",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P11 再現可能な証跡索引の作成",
+      "description": "dev-graph P11 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p11.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P10"
+      ],
+      "bd_issue_id": "kanjo-c2t.11"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P12",
+      "phase_ref": "P12",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P12 統合と取り消し・操作履歴の API・migration 0058・保持と掃除の docs 最終同期",
+      "description": "dev-graph P12 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p12.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P11"
+      ],
+      "bd_issue_id": "kanjo-c2t.12"
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P13",
+      "phase_ref": "P13",
+      "parent_feature": "feat-subscriptions-merge",
+      "title": "P13 単一 PR での配信 (Migrate 0058 の後に Deploy) とクローズアウト",
+      "description": "dev-graph P13 projection (tasks/feat-subscriptions-merge/sys-subsmerge-p13.md)",
+      "depends_on": [
+        "SYS-SUBSMERGE-P12"
+      ],
+      "bd_issue_id": "kanjo-c2t.13"
+    }
+  ]
+}

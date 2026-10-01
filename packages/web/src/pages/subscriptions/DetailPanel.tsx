@@ -1,5 +1,6 @@
 import { SUBS_CATEGORIES, type SubscriptionVendorDetail } from '@kanjo/core';
-import { type KeyboardEvent, forwardRef, useEffect, useId, useRef, useState } from 'react';
+import { forwardRef, useEffect, useId, useState } from 'react';
+import { AccessibleTabs } from '../../components/AccessibleTabs.js';
 import { Button } from '../../components/Button.js';
 import { ConfirmDialog } from '../../components/ConfirmDialog.js';
 import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
@@ -8,22 +9,10 @@ import { useConfirmDialog } from '../../components/use-confirm-dialog.js';
 import { yen } from '../../format.js';
 import { CandidateStatusBadges } from './CandidateStatusBadges.js';
 import { DetailOverview, TransactionTable } from './DetailOverview.js';
-import {
-  deleteExclusion,
-  deleteSubVendor,
-  postSubVendorAliases,
-  postVendorReview,
-  putSubVendor,
-} from './api.js';
 import { SOURCE_LABEL, jpDateTime, slashDate } from './format.js';
 import { summarizeObservedHistory } from './history-summary.js';
-import type {
-  CreateMergeTarget,
-  ExclusionsState,
-  RawSelection,
-  RunAction,
-  VendorOptionsState,
-} from './types.js';
+import type { ExclusionsState, RawSelection, RunWrite, VendorOptionsState } from './types.js';
+import { vendorUpdateIntent } from './writeRequests.js';
 
 const TABS = [
   { id: 'overview', label: '概要' },
@@ -39,15 +28,13 @@ interface PanelProps {
   vendorOptions: VendorOptionsState;
   exclusions: ExclusionsState;
   selection: readonly RawSelection[];
+  /** 処理中は取引名の選択と「名称を統合」を止める (AC-011) */
+  selectionLocked: boolean;
   onToggleRaw: (raw: RawSelection) => void;
-  /** 統合先。登録済みの行は自分自身、未登録の行は利用者が選んだ登録済みサブスク (未選択は null) */
-  mergeTargetId: number | null;
-  /** 未登録の行で統合先を選ぶ。下部の選択中バーと同じ値を共有するため画面側が持つ */
-  onMergeTarget: (id: number | null) => void;
-  /** 統合先の選択肢が無い場合に、同じ sub-vendor 作成経路でその場登録する */
-  onCreateMergeTarget: CreateMergeTarget;
-  run: RunAction;
-  busy: boolean;
+  /** 開いている行を選択に加え、選択バーの統合先へフォーカスを移す */
+  onMergeName: () => void;
+  /** 書き込みを「操作」に積む。処理中でも押せ、押した順に送る */
+  run: RunWrite;
   onRelatedVisibilityChange: (visible: boolean) => void;
   onClose: () => void;
 }
@@ -81,7 +68,6 @@ export const DetailPanel = forwardRef<HTMLElement, PanelProps>(function DetailPa
 function DetailBody(props: PanelProps & { detail: SubscriptionVendorDetail }) {
   const { detail } = props;
   const [tab, setTab] = useState<TabId>('overview');
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const baseId = useId();
   const row = detail.row;
   const selectTab = (next: TabId) => {
@@ -97,54 +83,23 @@ function DetailBody(props: PanelProps & { detail: SubscriptionVendorDetail }) {
     [props.onRelatedVisibilityChange],
   );
 
-  // WAI-ARIA tabs: 左右キーで隣のタブへ (端で折り返す)、Home / End で両端へ移り、そのまま選ぶ (自動選択)
-  const onTabKey = (event: KeyboardEvent<HTMLDivElement>) => {
-    const index = TABS.findIndex((item) => item.id === tab);
-    const next =
-      event.key === 'ArrowRight'
-        ? (index + 1) % TABS.length
-        : event.key === 'ArrowLeft'
-          ? (index + TABS.length - 1) % TABS.length
-          : event.key === 'Home'
-            ? 0
-            : event.key === 'End'
-              ? TABS.length - 1
-              : null;
-    if (next === null) return;
-    event.preventDefault();
-    selectTab(TABS[next].id);
-    tabRefs.current[next]?.focus();
-  };
-
   return (
     <>
       <div className="subs-detail-summary">
         <p className="subs-detail-name">{row.normalizedName}</p>
         <CandidateStatusBadges row={row} />
-        <CategoryEditor detail={detail} run={props.run} busy={props.busy} />
+        <CategoryEditor detail={detail} run={props.run} />
       </div>
-      <div className="subs-tabs" role="tablist" aria-label="詳細の表示" onKeyDown={onTabKey}>
-        {TABS.map((item, index) => (
-          <button
-            data-native-control="tab"
-            key={item.id}
-            type="button"
-            role="tab"
-            id={`${baseId}-tab-${item.id}`}
-            aria-selected={tab === item.id}
-            aria-controls={`${baseId}-panel-${item.id}`}
-            tabIndex={tab === item.id ? 0 : -1}
-            className={tab === item.id ? 'subs-tab on' : 'subs-tab'}
-            onClick={() => selectTab(item.id)}
-            // ref は最後に置く (UI 契約の走査は開始タグを最初の `>` までと読むため、矢印関数より前に ARIA 属性を並べる)
-            ref={(node) => {
-              tabRefs.current[index] = node;
-            }}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+      <AccessibleTabs
+        ariaLabel="詳細の表示"
+        idPrefix={`${baseId}-tab`}
+        items={TABS}
+        value={tab}
+        onChange={selectTab}
+        ariaControls={(id) => `${baseId}-panel-${id}`}
+        className="subs-tabs"
+        tabClassName="subs-tab"
+      />
       <div
         className="subs-tabpanel"
         role="tabpanel"
@@ -162,23 +117,30 @@ function DetailBody(props: PanelProps & { detail: SubscriptionVendorDetail }) {
 }
 
 /** 補足行のカテゴリと鉛筆 (spec §6.1)。既定辞書の名前か 1〜20 文字の自由入力 */
-function CategoryEditor({
-  detail,
-  run,
-  busy,
-}: { detail: SubscriptionVendorDetail; run: RunAction; busy: boolean }) {
+function CategoryEditor({ detail, run }: { detail: SubscriptionVendorDetail; run: RunWrite }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(detail.row.category);
   const listId = useId();
   const id = detail.vendorId;
   const trimmed = value.trim();
   const valid = trimmed.length >= 1 && trimmed.length <= 20;
+  useEffect(() => {
+    if (!editing) setValue(detail.row.category);
+  }, [editing, detail.row.category]);
   if (!editing || id === null) {
     return (
       <p className="subs-detail-category">
         {detail.row.category}
         {id !== null && (
-          <Button variant="text" size="mini" aria-label="カテゴリを変更" onClick={() => setEditing(true)}>
+          <Button
+            variant="text"
+            size="mini"
+            aria-label="カテゴリを変更"
+            onClick={() => {
+              setValue(detail.row.category);
+              setEditing(true);
+            }}
+          >
             ✎
           </Button>
         )}
@@ -191,7 +153,8 @@ function CategoryEditor({
       onSubmit={async (event) => {
         event.preventDefault();
         if (!valid) return;
-        if (await run(() => putSubVendor(id, { category: trimmed }), 'category')) setEditing(false);
+        const outcome = await run(vendorUpdateIntent(detail, id, { field: 'category', value: trimmed }));
+        if (outcome.ok) setEditing(false);
       }}
     >
       <label>
@@ -208,7 +171,7 @@ function CategoryEditor({
           <option key={name} value={name} />
         ))}
       </datalist>
-      <Button type="submit" size="mini" variant="primary" disabled={busy || !valid}>
+      <Button type="submit" size="mini" variant="primary" disabled={!valid}>
         保存
       </Button>
       <Button size="mini" variant="text" onClick={() => setEditing(false)}>
@@ -344,7 +307,6 @@ function RelatedTab({
   vendorOptions,
   exclusions,
   run,
-  busy,
 }: PanelProps & { detail: SubscriptionVendorDetail }) {
   const row = detail.row;
   if (row.status === 'unregistered' || detail.vendorId === null || !detail.related) {
@@ -353,42 +315,45 @@ function RelatedTab({
         <p className="sub">
           まだ登録していない候補です。候補の判断は「概要」で行うと、別名・対象科目・見直し日を管理できます。
         </p>
-        <ExcludedList state={exclusions} run={run} busy={busy} />
+        <ExcludedList state={exclusions} run={run} />
       </>
     );
   }
   return (
     <RegisteredRelated
+      detail={detail}
       id={detail.vendorId}
       related={detail.related}
       name={row.normalizedName}
       vendorOptions={vendorOptions}
       exclusions={exclusions}
       run={run}
-      busy={busy}
     />
   );
 }
 
 function RegisteredRelated({
+  detail,
   id,
   related,
   name,
   vendorOptions,
   exclusions,
   run,
-  busy,
 }: {
+  detail: SubscriptionVendorDetail;
   id: number;
   related: NonNullable<SubscriptionVendorDetail['related']>;
   name: string;
   vendorOptions: VendorOptionsState;
   exclusions: ExclusionsState;
-  run: RunAction;
-  busy: boolean;
+  run: RunWrite;
 }) {
   const [alias, setAlias] = useState('');
-  const removeDialog = useConfirmDialog({ busy });
+  const [removing, setRemoving] = useState(false);
+  // 処理中の「足す・外す」。送り終わるまで見込みの状態を出し、続けて押せるようにする (AC-011)
+  const [pendingAccounts, setPendingAccounts] = useState<ReadonlyMap<string, boolean>>(new Map());
+  const removeDialog = useConfirmDialog({ busy: removing });
   const aliasId = useId();
   const trimmed = alias.trim();
   // 保存済みの科目が選択肢から消えていても外さずに見せる (黙って対象を変えない)
@@ -398,14 +363,20 @@ function RegisteredRelated({
       ...related.accounts,
     ]),
   ];
-  const setAccount = (account: string, on: boolean) =>
-    run(
-      () =>
-        putSubVendor(id, {
-          accounts: on ? [...related.accounts, account] : related.accounts.filter((item) => item !== account),
-        }),
-      'vendorDefinition',
+  const isChecked = (account: string) => pendingAccounts.get(account) ?? related.accounts.includes(account);
+  const setAccount = async (account: string, on: boolean) => {
+    setPendingAccounts((current) => new Map(current).set(account, on));
+    await run(
+      vendorUpdateIntent(detail, id, { field: 'accounts', op: on ? 'add' : 'remove', value: account }),
     );
+    // 後から同じ科目を押し直していれば、その操作の見込みを残す
+    setPendingAccounts((current) => {
+      if (current.get(account) !== on) return current;
+      const next = new Map(current);
+      next.delete(account);
+      return next;
+    });
+  };
 
   return (
     <>
@@ -420,12 +391,8 @@ function RegisteredRelated({
                   variant="text"
                   size="mini"
                   aria-label={`別名「${item}」を削除`}
-                  disabled={busy}
                   onClick={() =>
-                    run(
-                      () => putSubVendor(id, { aliases: related.aliases.filter((a) => a !== item) }),
-                      'vendorDefinition',
-                    )
+                    run(vendorUpdateIntent(detail, id, { field: 'aliases', op: 'remove', value: item }))
                   }
                 >
                   <UiIcon name="close" aria-hidden="true" />
@@ -441,7 +408,13 @@ function RegisteredRelated({
           onSubmit={async (event) => {
             event.preventDefault();
             if (!trimmed) return;
-            if (await run(() => postSubVendorAliases(id, [trimmed]), 'vendorDefinition')) setAlias('');
+            const outcome = await run({
+              kind: 'vendor_aliases_add',
+              vendorId: id,
+              vendorName: name,
+              aliases: [trimmed],
+            });
+            if (outcome.ok) setAlias('');
           }}
         >
           <label htmlFor={aliasId} className="visually-hidden">
@@ -454,7 +427,7 @@ function RegisteredRelated({
             placeholder="別名を追加"
             onChange={(event) => setAlias(event.target.value)}
           />
-          <Button type="submit" size="mini" disabled={busy || !trimmed}>
+          <Button type="submit" size="mini" disabled={!trimmed}>
             追加
           </Button>
         </form>
@@ -479,9 +452,8 @@ function RegisteredRelated({
             <SelectionCheckbox
               key={account}
               label={account}
-              checked={related.accounts.includes(account)}
-              disabled={busy}
-              onChange={(event) => setAccount(account, event.target.checked)}
+              checked={isChecked(account)}
+              onChange={() => setAccount(account, !isChecked(account))}
             />
           ))
         ) : (
@@ -494,18 +466,11 @@ function RegisteredRelated({
           最後に見直した日: {related.reviewedAt ? jpDateTime(related.reviewedAt) : 'まだ見直していません'}
           {related.reviewDue && <span className="subs-badge is-pending">見直し時期</span>}
         </p>
-        <Button disabled={busy} onClick={() => run(() => postVendorReview(id), 'reviewDate')}>
-          見直した
-        </Button>
+        <Button onClick={() => run({ kind: 'review', vendorId: id, vendorName: name })}>見直した</Button>
       </section>
 
       <div className="subs-detail-actions">
-        <Button
-          ref={removeDialog.triggerRef}
-          variant="danger"
-          disabled={busy}
-          onClick={() => removeDialog.setOpen(true)}
-        >
+        <Button ref={removeDialog.triggerRef} variant="danger" onClick={() => removeDialog.setOpen(true)}>
           登録の解除
         </Button>
       </div>
@@ -516,20 +481,24 @@ function RegisteredRelated({
           confirmLabel="登録を解除する"
           busyLabel="解除しています…"
           onConfirm={async () => {
-            if (await run(() => deleteSubVendor(id), 'vendorDefinition')) removeDialog.close();
+            setRemoving(true);
+            const outcome = await run({ kind: 'vendor_delete', vendorId: id, vendorName: name });
+            setRemoving(false);
+            // 失敗は「操作」の行に出し、ダイアログは開いたままにして押し直せるようにする
+            if (outcome.ok) removeDialog.close();
           }}
           onDismiss={removeDialog.close}
         >
           <p>別名・対象科目・カテゴリ・見直し日も消えます。明細は消えません。</p>
         </ConfirmDialog>
       )}
-      <ExcludedList state={exclusions} run={run} busy={busy} />
+      <ExcludedList state={exclusions} run={run} />
     </>
   );
 }
 
 /** 除外した支払先と取消 (旧 UI の候補パネルから移した操作。dec-subs-legacy-ui) */
-function ExcludedList({ state, run, busy }: { state: ExclusionsState; run: RunAction; busy: boolean }) {
+function ExcludedList({ state, run }: { state: ExclusionsState; run: RunWrite }) {
   if (state.status === 'idle' || state.status === 'loading') {
     return <output className="sub">除外した支払先を読み込んでいます…</output>;
   }
@@ -555,8 +524,7 @@ function ExcludedList({ state, run, busy }: { state: ExclusionsState; run: RunAc
               variant="text"
               size="mini"
               aria-label={`${item.partner}の除外を取り消す`}
-              disabled={busy}
-              onClick={() => run(() => deleteExclusion(item.id), 'exclusion')}
+              onClick={() => run({ kind: 'exclusion', partner: item.partner, exclusionId: item.id })}
             >
               除外を取り消す
             </Button>

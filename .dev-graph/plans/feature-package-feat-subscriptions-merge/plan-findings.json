@@ -1,0 +1,172 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/plan-feat-subscriptions-merge-20260930T1525Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "feature-package / task-graph / workstream-inventory / system-build-handoff は feature_package_id (feature-package/feat-subscriptions-merge)・parent_feature・repository_id を一貫して持ち、handoff の execution_tasks 13件の depends_on は task-graph の edge と一致する。goal-spec の open_items OI-1 (0058 の空き)・OI-2 (TanStack の scope と useMutationState の型)・OI-3 (D1 overloaded の message)・OI-4 (FR-009 による数値変化)・OI-5 (統合 1 回の D1 問い合わせ数が 20 未満に収まる見込み) は全て resolution_owner=SYS-SUBSMERGE-P01 で、P01 の Blocker と Acceptance 行 (着手時に確かめる事項 5件の結論と根拠を記録) に内容として対応する。spec の FR 23件・BR 13件・AC 23件に対し、P07 の O1〜O4・U5 の記述と P05 の Acceptance は矛盾しない (409/503 の自動再送、5xx と通信失敗のみ再試行ボタン、統合済み行への変更は 409)。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "P01..P13 の exact-13 が揃い (validator phase_refs=P01..P13, violations=[])、task-spec は 110〜199 行で TODO/TBD/FIXME/未定/山括弧プレースホルダの grep 検出は 0件。feature context の O1〜O4・U5 は P07 の Acceptance に1件ずつ写像されている。spec の API (POST /api/sub-vendors/merge・POST /api/subscription-operations/{id}/undo・GET /api/subscription-operations) は P05 の Acceptance と write_scope (routes/subs.ts・routes/subscription-operations.ts・subscription-writes.ts) にあり、migration 0058 (migrations/0058_subscription_merge_operations.sql と schema-guard の EXPECTED_D1_MIGRATION)・選択バーと操作状態・backup の mergedIntoName・fence 登録も P05 の Acceptance に明記されている。保持と掃除 (FR-023・BR-013: 30 日で NULL 化 50 件まで・400 日で削除 50 件まで・410 undo_expired) は P05 の Acceptance と workstream-inventory の P05.acceptance に追加され、P04・P07・P12 とも整合する (前回 medium は解消)。",
+      "evidence": [
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-12-documentation-operations.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "staging-manifest.json の files 17件と staging-manifest.json 自身を shasum -a 256 と python hashlib で独立に再計算し、manifest 記載値と全件一致した (差分0件)。canonical_digest はファイルを sorted(path)+NUL+bytes+NUL で連結する validator の定義で再計算した値が sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8 で manifest・validator の validated_digest と一致する。features/feat-subscriptions-merge.context.json の実測 sha256 は bad1fd357a0f613abe231843e6a3e8c8e432fd40e9584d4c94a53115827f7498 で、goal-spec.identity_check.feature_context_sha256・feature-package.source_feature_digest・handoff identity.source_feature_digest と一致する。repository_id は goal-spec・handoff とも github:daishiman/kanjo。staging 配下にローカル絶対パスは無い。",
+      "evidence": [
+        "staging-manifest.json",
+        "feature-package.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json は SYS-SUBSMERGE-P01..P13 の13 node と、P(n+1)→P(n) の depends_on edge 12本だけからなる単一直鎖で、循環・後方 edge・他 feature 参照は無い (全 node の parent_feature と feature_package_id が同一)。system-build-handoff.json の execution_tasks 13件の task_id・phase_ref・depends_on・task_spec_path は task-graph と feature-package.task_node_ids/task_spec_paths に完全一致する。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "feature-package.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<HOME>/.claude/plugins/cache/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<REPO_ROOT>",
+        "--staging",
+        ".dev-graph/staging/plan-feat-subscriptions-merge-20260930T1525Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8\",\n  \"feature_package_id\": \"feature-package/feat-subscriptions-merge\",\n  \"parent_feature\": \"feat-subscriptions-merge\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "edfb721a39344e7af8deeeebb6339dc744719075f84363f39e98997ea67053af"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "0be98ae887b407f1aad6b02b77eff6ce371d0c43ba77a84e549bacf818d12936"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "db601d0afb65dd875b4cdc4e164c0f5307638b1cb76317f94947a58974d29182"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "5f4731a6f6cc38a6ff0b9aa7da90630c4c2db58f33315d6fc4e657e09210c432"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "63cfab53ae85a9aaa0b0729c6467e8adfa2c1abe81583bcfe3e0b21c6c4213f4"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "5a02fdbb3887e185209d1db60e18ce52fe1c20b03786ef602c347a8bd36344a9"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "27b42bb94b9994af0e9e3add0ba25b13b75bec66b2653bc6ed615a6e4a967062"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "a6b81a7e386db18588860d15c791a6896d26bffd3fd6f111a452006354b09743"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "4985b3bd423af382802e2f791dbf9bf98750e35c6c438df5bf027b8cea139f90"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "b137c2b3966f1b890940dc9ea273bfd28c324048f12ec50fdcb3d3f0aa6e659b"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "b706c9111dad906d62e3c476efbeba68bb1b636eea69a2549f3e44713cf4e3bc"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "5dfc25508d20f73d6802c3dcaa38ec26cc955622199b2fb02e8dce7a5a6bf65f"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "864aacd9795d1a2189571f59ee1e4b89553ddba280e57e35ae7b72651ed65eca"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "698576fe66e5da23133fbdceef97c140056cf55463879ae7abf462dac1442fb6"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "6feedb8ad3b0bbde8be6e5d52cfbe4adbc345d249a348ed90744f6aec6872fb6"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "16c89ed316e884bad57798584e31a65de79cb629f96b435519086d982f0e15ea"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "3dfff71005dd331d6ce3d24f624484cb62891b3ff9d6ea971f9f96fb6f367754"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "c4d07ba517c1e035b12fc03d8ad291b3fee65ffd976a130ad47b8581a90194ae"
+    }
+  ],
+  "staleness_rule": "promotion 直前に staging 配下の各 evaluated_inputs path (staging-manifest.json 自身を含む18件) の current raw bytes から shasum -a 256 を再計算し、本 plan-findings.json の evaluated_inputs および validate-system-plan.py が返す validated_digest と全件完全一致することを再照合する。1バイトでも差分があれば、または staging-manifest.json#canonical_digest と evaluated_digest が不一致になれば、本 verdict は無効 (stale) とみなし promotion しない。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "C3",
+      "observation": "仕様章の完成度評価は verdict=FAIL のまま、利用者の例外承認 (waiver_ref: docs/evidence/subscriptions-merge/spec-evaluation-waiver.json, 2026-09-30T14:07:45Z) で先へ進めている。goal-spec は system_spec_source_confirmed_pass=false と system_spec_source_waived_by_user=true を明示しており、隠れた不整合ではないが、promotion 後の追跡対象である。 推奨対応: 変更不要。P10 の独立最終レビューで waiver の範囲を再確認する。",
+      "evidence": [
+        "goal-spec.json",
+        "docs/evidence/subscriptions-merge/spec-evaluation-waiver.json"
+      ]
+    }
+  ]
+}

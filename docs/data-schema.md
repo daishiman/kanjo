@@ -819,3 +819,31 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 3 表とも `BACKUP_SNAPSHOT_SQL` の列挙対象に入れない(0029 からの禁止事項を引き継ぐ)。
 - 既存の行・画像のキー・トークンのハッシュは 1 件も落とさない。`packages/api/src/improvement-migration-0057.test.ts` が件数・`seq`・`wontfix` の移行・履歴を固定する。
 - 配信は Migrate → Deploy の順にする。0057 の前の Worker を戻すと、作成(`seq` NOT NULL)・削除中の行の扱い・`reconfirm` の表示が壊れる。巻き戻しの手順は [`improvement-request.md`](improvement-request.md) の 2.4。
+
+## サブスクの統合・操作の記録・版番号(0058 / feat-subscriptions-merge)
+
+列・制約・API・復元の現行契約は [spec-subscriptions-merge のデータモデル](../specs/spec-subscriptions-merge.md#データモデル)。DDLは `migrations/0058_subscription_merge_operations.sql`、Drizzle定義は `packages/api/src/db/schema.ts`、検証結果は [subscriptions-screen.md](subscriptions-screen.md#verification-records) を参照する。本節はデータの読み方と互換性への入口で、列定義を複製しない。
+
+### `sub_vendors.merged_into_id`
+
+統合元の保存行を残して同じテナントの統合先を参照する。名寄せの純関数と照合規則はspec FR-005・008・009。統合元の正規名は派生exactNamesで完全一致の優先度を保持する。
+
+backupの `subVendorMetadata` は `mergedIntoName` に加え、保存行の `aliases`・`accounts`・`sortOrder` をoptional fieldsとして運ぶ。旧JSONの欠落時の扱いはspecデータモデルを参照する。Datasetの実効aliasesは表示・集計用として維持し、統合展開で50件を超えても保存aliasesの上限で切り捨てない。Datasetの派生exactNamesはloader・backup再構成で作り、clone/periodで保つが、exportJSON・DB・永続backupには追加しない。
+
+### `subscription_operations`(サブスクの書込み 1 回 = 1 行)
+
+操作・操作者・変更前・再送照合用payloadを持つ。公開履歴の正本型はcoreの `subscription-operation.ts`。replayはkindとmethod/path commandを含む本文を照合する (BR-007)。公開応答に保存payload・before_json・keyを出さない (AC-020)。
+
+サブスク定義・判断等を運ぶJSON復元は `restoreTouchesSubscriptions` が真のときだけ同じcommit batchで未取り消しmergeのbefore_jsonへ `restoreBarrier=1` を付け、古いundoを409 blockedにする (BR-009)。一般settings restore (statMinMonths等) は対象外。
+
+### `subscription_revisions`(利用者ごとの版番号)
+
+共有テナントの版番号。サブスク書込みと、サブスクの行を運ぶJSON復元で進める。GETはrevision・writer claim・settings log・import runsの前後stampが整合するときだけ返す。leaseは取らず、GET同士は並列可。同一要求内での再読取りはしない。衝突の409はspecの共通読取契約を参照する。
+
+### 保持と掃除(BR-013)
+
+保持期限・掃除の件数はspec FR-023・BR-013を参照する。操作履歴とrevisionは永続backupへ運ばず、JSON復元でもbackup値で上書きしない。書込みのない期間は掃除が次の書込みまで遅れる。
+
+### 0058 の適用と巻き戻し
+
+migrationと巻き戻しの判断はspec「互換性・移行・リリース」。今回のmetadata追加はoptionalな後方互換fieldsで、列・表の追加はない。古い厳密なschemaを持つ実装へ戻す場合のJSON互換性は同節を参照する。

@@ -260,6 +260,8 @@ export const subVendors = sqliteTable('sub_vendors', {
   createdAt: text('created_at').notNull().$defaultFn(nowIso),
   /** 0043: 利用者が上書きしたカテゴリ。NULL は既定辞書 (core の SUBS_CATEGORY_DICTIONARY) に従う */
   category: text('category'),
+  /** 0058: 統合先の id。NULL は統合されていない (根)。統合元の行は消さずに残し、取り消しで NULL へ戻す */
+  mergedIntoId: integer('merged_into_id'),
 });
 
 /** 「これはサブスクではない」と記録した支払先。候補一覧から外すためだけに使う */
@@ -341,6 +343,53 @@ export const totalCashflowOperations = sqliteTable(
   },
   (t) => [index('idx_total_cashflow_operations_user_created').on(t.userId, t.createdAt)],
 );
+
+/**
+ * 0058: サブスクの書込み 1 回ぶんの記録。統合の取り消しと、同時の書込みの判定に使う。
+ *
+ * (user_id, base_revision) の一意制約が「同じ版を土台にした書込みは 1 件だけ勝つ」を DB で強制する。
+ * payload_json / before_json は 30 日で NULL、行は 400 日で消す。
+ */
+export const subscriptionOperations = sqliteTable(
+  'subscription_operations',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    actorUserId: text('actor_user_id').notNull(),
+    idempotencyKey: text('idempotency_key').notNull(),
+    kind: text('kind', {
+      enum: [
+        'merge',
+        'unmerge',
+        'vendor_create',
+        'vendor_update',
+        'vendor_delete',
+        'review',
+        'review_decision',
+        'exclusion',
+      ],
+    }).notNull(),
+    targetVendorId: integer('target_vendor_id'),
+    payloadJson: text('payload_json'),
+    beforeJson: text('before_json'),
+    baseRevision: integer('base_revision').notNull(),
+    undoesId: text('undoes_id'),
+    undoneAt: text('undone_at'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('uq_subscription_operations_idempotency').on(t.userId, t.actorUserId, t.idempotencyKey),
+    uniqueIndex('uq_subscription_operations_revision').on(t.userId, t.baseRevision),
+    index('idx_subscription_operations_user_created').on(t.userId, t.createdAt),
+  ],
+);
+
+/** 0058: 利用者ごとのサブスクの版番号。行が無ければ 0 */
+export const subscriptionRevisions = sqliteTable('subscription_revisions', {
+  userId: text('user_id').primaryKey(),
+  revision: integer('revision').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
 
 export const budgets = sqliteTable('budgets', {
   userId: text('user_id').notNull(),

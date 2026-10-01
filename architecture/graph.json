@@ -4159,7 +4159,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/auth.md",
         "source_version": "0.1.14",
         "source_digest": "6750698bc3023d6fde3c45b95ce211667ad33ca8372193ffeb5475baf684061f",
         "imported_at": "2026-09-23T13:27:15Z"
@@ -4180,7 +4180,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/backend.md",
         "source_version": "0.1.14",
         "source_digest": "d0cb72d133251ca361263ca8bebba44f3d9a531a938fceab8f5234c89a1d7847",
         "imported_at": "2026-09-23T13:27:15Z"
@@ -4201,7 +4201,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/database.md",
         "source_version": "0.1.14",
         "source_digest": "262454a435c86a72714c047a24f18f51d84e187fbc5bb2a0e40d210dc847e07b",
         "imported_at": "2026-09-23T13:27:15Z"
@@ -4222,7 +4222,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/frontend.md",
         "source_version": "0.1.14",
         "source_digest": "91756674aaa74956621cba80f0cbd496d790626d431d0e24ed476ea7c725b49f",
         "imported_at": "2026-09-23T13:27:15Z"
@@ -4243,7 +4243,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/infrastructure.md",
         "source_version": "0.1.14",
         "source_digest": "00053ca510de65ebd9915185fd8438088ba8875359d36ba66752c54b25ce906f",
         "imported_at": "2026-09-23T13:27:15Z"
@@ -4264,7 +4264,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/maintenance-ops.md",
         "source_version": "0.1.14",
         "source_digest": "cc113059f1c56ef51d31fd20416c85d51894eaba0cb8c8af7f351e8acafe56e6",
         "imported_at": "2026-09-23T13:27:15Z"
@@ -4285,7 +4285,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/security.md",
         "source_version": "0.1.14",
         "source_digest": "c0921d456f4e06dc42879df45252b78dd5acec3ccf9b7dfccf3103e60f9f82cd",
         "imported_at": "2026-09-23T13:27:15Z"
@@ -4306,10 +4306,178 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/ui-ux.md",
         "source_version": "0.1.14",
         "source_digest": "37aa1d855046a7d5b432aacf16f2c36fddccf269a12ab678d3f5139f71a78333",
         "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "サブスク統合 — 行チェック・選択バー・操作状態・取り消しを画像どおりに置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "a99e6335d85a64194464559f5c308617b7730d4075e8f725d19f0df20a3f7c7d",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "サブスク統合 — 書込みを1つの scope で直列化し、操作状態と取り消しを画面に持つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "0fb662a8b175a8a816b276bd707fa8a4b33f44f7823ee29eb432cfe8c856904f",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "サブスク統合 — 名寄せを1つの照合一覧に寄せ、書込みと subs 集計を1つの batch で適用する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "acef0cab09dfc80de17703b8d956670f4c32dcb338e26f7b519e9636887b6b02",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "サブスク統合 — migration 0058 で統合の参照・操作記録・revision を追加だけで足す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "6f3a7e7c9459d6c6baf56bf84623837dc95cd830ff6b5fe50b083288c651503e",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "サブスク統合 — 新しい API を既存のセッション認証とテナントキーの配下に置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "4c648293a2fe5cf00573e2ee541d2bbbf80ed7f5821d1d871acb13a76fc2f1ff",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "サブスク統合 — 所有者の検査・入力の上限・操作記録の最小化・fence への登録",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "06e0bb9aadd5f67da71b831e6c92a6dd1e06a37f0989d0ae3ac792d9de4d57bc",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "サブスク統合 — Workers + D1 の上限の内側で統合を完了させ、lease を短くする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "8bc7c72bdc980f5ef7f00da0356e8fcc3bced2203e554f656eb2e02774bbc017",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "サブスク統合 — 統合・並行操作・取り消しを core・api・web のテストで固定する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "85038de93396791d5832c9a757f7103bfed977078321c558b9b5cfc63274e5f6",
+        "imported_at": "2026-09-30T15:18:20Z"
       },
       "referenced_by": []
     }

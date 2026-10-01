@@ -1,14 +1,13 @@
 import { type AccountKind, SUB_VENDOR_NAME_MAX, type SubscriptionVendorDetail } from '@kanjo/core';
-import { useEffect, useId, useRef, useState } from 'react';
-import { ApiError } from '../../api.js';
+import { useEffect, useId, useState } from 'react';
 import { Button } from '../../components/Button.js';
 import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { UiIcon } from '../../components/UiIcon.js';
 import { yen } from '../../format.js';
 import { ReviewDecisionActions } from './ReviewDecisionActions.js';
-import { putSubVendor } from './api.js';
 import { SOURCE_LABEL, rawNameKey, slashDate } from './format.js';
-import type { CreateMergeTarget, RawSelection, RunAction, VendorOptionsState } from './types.js';
+import type { RawSelection, RunWrite } from './types.js';
+import { vendorUpdateIntent } from './writeRequests.js';
 
 const SOURCE_ICON: Record<AccountKind, 'lock' | 'wallet' | 'cloud' | 'info'> = {
   bank: 'lock',
@@ -17,17 +16,20 @@ const SOURCE_ICON: Record<AccountKind, 'lock' | 'wallet' | 'cloud' | 'info'> = {
   unclassified: 'info',
 };
 
-function NameEditor({
-  detail,
-  run,
-  busy,
-}: { detail: SubscriptionVendorDetail; run: RunAction; busy: boolean }) {
+function NameEditor({ detail, run }: { detail: SubscriptionVendorDetail; run: RunWrite }) {
   const [value, setValue] = useState(detail.row.normalizedName);
+  const [baseline, setBaseline] = useState(detail.row.normalizedName);
   const [duplicate, setDuplicate] = useState(false);
   const inputId = useId();
   const id = detail.vendorId;
   const trimmed = value.trim();
   const changed = trimmed !== detail.row.normalizedName;
+  useEffect(() => {
+    const next = detail.row.normalizedName;
+    if (next === baseline) return;
+    setValue((current) => (current === baseline ? next : current));
+    setBaseline(next);
+  }, [detail.row.normalizedName, baseline]);
   return (
     <form
       className="subs-name-form"
@@ -35,17 +37,11 @@ function NameEditor({
         event.preventDefault();
         if (id === null || !trimmed || !changed) return;
         setDuplicate(false);
-        await run(async () => {
-          try {
-            return await putSubVendor(id, { name: trimmed });
-          } catch (error) {
-            if (error instanceof ApiError && error.status === 409) {
-              setDuplicate(true);
-              return null;
-            }
-            throw error;
-          }
-        }, 'vendorDefinition');
+        const outcome = await run(vendorUpdateIntent(detail, id, { field: 'name', value: trimmed }), {
+          inlineCodes: ['duplicate'],
+        });
+        // 重複だけは入力のそばで知らせる。他の失敗は「操作」の行に出る
+        if (!outcome.ok && outcome.code === 'duplicate') setDuplicate(true);
       }}
     >
       <label htmlFor={inputId}>正規化された名称</label>
@@ -53,19 +49,23 @@ function NameEditor({
         <input
           id={inputId}
           value={value}
+          maxLength={SUB_VENDOR_NAME_MAX}
           disabled={id === null}
           aria-invalid={duplicate || undefined}
           aria-describedby={duplicate ? `${inputId}-error` : undefined}
-          onChange={(event) => setValue(event.target.value)}
+          onChange={(event) => {
+            setValue(event.target.value);
+            if (duplicate) setDuplicate(false);
+          }}
         />
         {id !== null && (
-          <Button type="submit" size="mini" disabled={busy || !trimmed || !changed}>
+          <Button type="submit" size="mini" disabled={!trimmed || !changed}>
             保存
           </Button>
         )}
       </div>
       {duplicate && (
-        <p id={`${inputId}-error`} className="subs-field-error">
+        <p id={`${inputId}-error`} className="subs-field-error" role="alert">
           同じ名前のサブスクがすでにあります
         </p>
       )}
@@ -118,32 +118,28 @@ export function TransactionTable({
 
 export function DetailOverview({
   detail,
-  vendorOptions,
   selection,
+  selectionLocked,
   onToggleRaw,
-  mergeTargetId,
-  onMergeTarget,
-  onCreateMergeTarget,
+  onMergeName,
   run,
-  busy,
   onShowHistory,
 }: {
   detail: SubscriptionVendorDetail;
-  vendorOptions: VendorOptionsState;
   selection: readonly RawSelection[];
+  /** 処理中は選択を動かさない (統合の対象が送る前に変わらないように。AC-011) */
+  selectionLocked: boolean;
   onToggleRaw: (raw: RawSelection) => void;
-  mergeTargetId: number | null;
-  onMergeTarget: (id: number | null) => void;
-  onCreateMergeTarget: CreateMergeTarget;
-  run: RunAction;
-  busy: boolean;
+  /** 開いている行を選択に加え、選択バーの統合先へフォーカスを移す (FR-004) */
+  onMergeName: () => void;
+  run: RunWrite;
   onShowHistory: () => void;
 }) {
   const row = detail.row;
   const checked = new Set(selection.map((raw) => rawNameKey(raw.name, raw.source)));
   return (
     <>
-      <NameEditor detail={detail} run={run} busy={busy} />
+      <NameEditor detail={detail} run={run} />
 
       <fieldset className="subs-raw-names">
         <legend>マッチした生の取引名（{detail.rawNames.length}件）</legend>
@@ -157,52 +153,17 @@ export function DetailOverview({
               <SelectionCheckbox
                 label={raw.name}
                 checked={checked.has(rawNameKey(raw.name, raw.source))}
+                disabled={selectionLocked}
                 onChange={() => onToggleRaw({ name: raw.name, source: raw.source })}
               />
               <span className="subs-raw-source">{SOURCE_LABEL[raw.source]}</span>
             </li>
           ))}
         </ul>
+        <Button className="subs-merge-name" disabled={selectionLocked} onClick={onMergeName}>
+          名称を統合
+        </Button>
       </fieldset>
-
-      {row.status === 'unregistered' && (
-        <div className="subs-merge-target">
-          <span>統合先</span>
-          {(vendorOptions.status === 'idle' || vendorOptions.status === 'loading') && (
-            <output className="sub">統合先を読み込んでいます…</output>
-          )}
-          {vendorOptions.status === 'error' && (
-            <span className="subs-inline-error" role="alert">
-              統合先を読み込めませんでした。
-              <Button size="mini" onClick={vendorOptions.retry}>
-                再試行
-              </Button>
-            </span>
-          )}
-          {vendorOptions.status === 'ready' && (
-            <>
-              <select
-                aria-label="統合先"
-                value={mergeTargetId ?? ''}
-                disabled={!vendorOptions.vendors.length}
-                onChange={(event) =>
-                  onMergeTarget(event.target.value === '' ? null : Number(event.target.value))
-                }
-              >
-                <option value="">
-                  {vendorOptions.vendors.length ? '登録済みのサブスクを選ぶ' : '統合先がありません'}
-                </option>
-                {vendorOptions.vendors.map((vendor) => (
-                  <option key={vendor.id} value={vendor.id}>
-                    {vendor.name}
-                  </option>
-                ))}
-              </select>
-              <MergeTargetCreator busy={busy} onCreate={onCreateMergeTarget} onCreated={onMergeTarget} />
-            </>
-          )}
-        </div>
-      )}
 
       <dl className="subs-estimate">
         <div>
@@ -235,113 +196,7 @@ export function DetailOverview({
         </ul>
       </section>
 
-      <ReviewDecisionActions row={row} run={run} busy={busy} />
+      <ReviewDecisionActions row={row} run={run} />
     </>
-  );
-}
-
-function MergeTargetCreator({
-  busy,
-  onCreate,
-  onCreated,
-}: {
-  busy: boolean;
-  onCreate: CreateMergeTarget;
-  onCreated: (id: number) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const wasOpen = useRef(false);
-  const id = useId();
-  const trimmed = value.trim();
-
-  useEffect(() => {
-    if (open) inputRef.current?.focus();
-    else if (wasOpen.current) triggerRef.current?.focus();
-    wasOpen.current = open;
-  }, [open]);
-
-  if (!open) {
-    return (
-      <div className="subs-merge-create-entry">
-        <Button
-          ref={triggerRef}
-          variant="text"
-          onClick={() => {
-            setOpen(true);
-            setError(null);
-            setNotice(null);
-          }}
-        >
-          新しい統合先を登録
-        </Button>
-        {notice && <output>{notice}</output>}
-      </div>
-    );
-  }
-
-  return (
-    <form
-      className="subs-merge-create"
-      onSubmit={async (event) => {
-        event.preventDefault();
-        setError(null);
-        if (!trimmed) {
-          setError('統合先の名前を入力してください。');
-          return;
-        }
-        try {
-          const created = await onCreate(trimmed);
-          onCreated(created.id);
-          setValue('');
-          setOpen(false);
-          setNotice(`「${trimmed}」を登録し、統合先に選びました。`);
-        } catch (caught) {
-          setError(
-            caught instanceof ApiError && caught.status === 409
-              ? '同じ名前の統合先がすでにあります。上の一覧から選んでください。'
-              : '統合先を登録できませんでした。入力内容を確認してもう一度お試しください。',
-          );
-        }
-      }}
-    >
-      <label htmlFor={id}>新しい統合先の名前</label>
-      <input
-        ref={inputRef}
-        id={id}
-        value={value}
-        required
-        maxLength={SUB_VENDOR_NAME_MAX}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${id}-error` : undefined}
-        onChange={(event) => {
-          setValue(event.target.value);
-          if (error) setError(null);
-        }}
-      />
-      {error && (
-        <p id={`${id}-error`} className="subs-field-error" role="alert">
-          {error}
-        </p>
-      )}
-      <div className="subs-merge-create-actions">
-        <Button type="submit" variant="primary" disabled={busy}>
-          {busy ? '登録中…' : '登録して統合先に選ぶ'}
-        </Button>
-        <Button
-          onClick={() => {
-            setOpen(false);
-            setError(null);
-          }}
-          disabled={busy}
-        >
-          やめる
-        </Button>
-      </div>
-    </form>
   );
 }

@@ -257,17 +257,17 @@ function registeredVendorFor(fact: ExpenseFact, data: Dataset): string | null {
 /**
  * 明細が当たる登録ベンダー名。名前・別名で照合し、対象科目を指定したベンダーはその科目の明細だけにする。
  * サブスク集計 (`sourceNeutralSubscriptions`) と画面 (`subscriptionsScreen`) が同じ判定を使う。
+ * 科目での絞り込みは照合の「前」に行う (`matchSubVendor` と同じ順序)。照合の後で弾くと、
+ * 科目違いのベンダーが先に当たったときに本来のベンダーを取りこぼし、再計算 (applyFreeeDeals) と割当てがずれる。
  */
 export function registeredVendorOf(
   fact: Pick<ExpenseFact, 'party' | 'categoryRaw' | 'categoryNorm'>,
   defs: readonly SubVendor[],
 ): string | null {
-  const matched = matchSubVendor(fact.party, [...defs]);
-  if (!matched) return null;
-  const definition = defs.find((vendor) => vendor.name === matched);
-  if (!definition?.accounts?.length) return matched;
-  const refs = new Set([fact.categoryRaw, fact.categoryNorm, `${fact.categoryRaw}/${fact.categoryNorm}`]);
-  return definition.accounts.some((account) => refs.has(account)) ? matched : null;
+  return matchSubVendor(fact.party, defs, {
+    raw: fact.categoryRaw,
+    normalized: fact.categoryNorm,
+  });
 }
 
 /** 登録支払先のサブスク集計も、freee固定ではなく照合後の実質支出から導出する。 */

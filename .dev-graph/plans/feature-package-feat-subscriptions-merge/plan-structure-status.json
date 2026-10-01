@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-SUBSMERGE-P01",
+      "title": "要件の基準線と着手時の確認事項 (0058 の空き・TanStack の型・問い合わせ数・overloaded の判定・照合順の数値変化) の確定",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P02",
+      "title": "resolveVendorMerges・統合と取り消しの db.batch・fence の登録・migration 0058・backup の mergedIntoName・画面の待ち行列の設計決定記録",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P03",
+      "title": "名寄せの 1 か所導出・書込みの原子性・テナント分離と操作者の記録の独立設計レビュー",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P04",
+      "title": "名寄せ・統合と取り消し・並行制御・選択と待ち行列の失敗テストの先行作成",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P05",
+      "title": "migration 0058・resolveVendorMerges・統合と取り消しと操作履歴の API・既存書込みの revision・backup・選択バーと操作状態の画面の実装",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P06",
+      "title": "全テストと型検査と lint の実行記録",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P07",
+      "title": "受入基準 O1 から O4 と U5 の検証",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P08",
+      "title": "旧い統合経路・名寄せを通らない照合・色の直書き・describeError を通る操作状態の文言の残存の読取専用監査",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P09",
+      "title": "アクセシビリティ・ログの秘匿・D1 の問い合わせ数・JS バンドル予算の保証確認",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P10",
+      "title": "独立最終レビュー",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P11",
+      "title": "再現可能な証跡索引の作成",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P12",
+      "title": "統合と取り消し・操作履歴の API・migration 0058・保持と掃除の docs 最終同期",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-SUBSMERGE-P13",
+      "title": "単一 PR での配信 (Migrate 0058 の後に Deploy) とクローズアウト",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

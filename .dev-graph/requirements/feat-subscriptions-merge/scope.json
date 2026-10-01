@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-subscriptions-merge",
+  "parent_feature": "feat-subscriptions-merge",
+  "feature_package_id": "feature-package/feat-subscriptions-merge",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "spec-subscriptions-merge",
+    "arch-subscriptions-merge-ui-ux",
+    "arch-subscriptions-merge-frontend",
+    "arch-subscriptions-merge-backend",
+    "arch-subscriptions-merge-database",
+    "arch-subscriptions-merge-auth",
+    "arch-subscriptions-merge-security",
+    "arch-subscriptions-merge-infrastructure",
+    "arch-subscriptions-merge-maintenance-ops",
+    "feat-subscriptions-merge",
+    "SYS-SUBSMERGE-P01",
+    "SYS-SUBSMERGE-P02",
+    "SYS-SUBSMERGE-P03",
+    "SYS-SUBSMERGE-P04",
+    "SYS-SUBSMERGE-P05",
+    "SYS-SUBSMERGE-P06",
+    "SYS-SUBSMERGE-P07",
+    "SYS-SUBSMERGE-P08",
+    "SYS-SUBSMERGE-P09",
+    "SYS-SUBSMERGE-P10",
+    "SYS-SUBSMERGE-P11",
+    "SYS-SUBSMERGE-P12",
+    "SYS-SUBSMERGE-P13"
+  ],
+  "artifact_kinds": [
+    "specification",
+    "architecture",
+    "feature",
+    "task"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:d690c00e96ef7745efd64ac67840530424c28d6ad4df33b34a7649e4921684ea"
+}

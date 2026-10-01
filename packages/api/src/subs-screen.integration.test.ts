@@ -78,6 +78,7 @@ interface Row {
   vendorId: number | null;
   status: 'registered' | 'unregistered';
   category: string;
+  estimatedMonthly: number;
   categorySource: 'dictionary' | 'override';
   review: { state: 'pending' | 'confirmed'; rules: string[]; fingerprint: string } | null;
 }
@@ -175,12 +176,25 @@ describe('GET /api/subscriptions', () => {
     expect(res.status).toBe(401);
   });
 
-  it('集計と詳細の応答は保存させない (Cache-Control: no-store)', async () => {
-    for (const path of ['/subscriptions?from=2025-09&to=2026-08', '/subscriptions/vendors/spotify']) {
+  it('サブスクの読取りは成否を問わず保存させない (Cache-Control: no-store)', async () => {
+    // no-store は snapshot が付けるので、snapshot を通る GET を全部と、本文が 404 の詳細を見る
+    const cases: [path: string, status: number][] = [
+      ['/subscriptions?from=2025-09&to=2026-08', 200],
+      ['/subscriptions/vendors/spotify', 200],
+      ['/subscriptions/vendors/no-such-vendor', 404],
+      ['/sub-vendors', 200],
+      ['/sub-vendors/candidates', 200],
+      ['/subscription-operations', 200],
+    ];
+    const actual: { path: string; status: number; cacheControl: string | null }[] = [];
+    for (const [path] of cases) {
       const res = await request(path);
-      expect(res.status).toBe(200);
-      expect(res.headers.get('cache-control')).toBe('private, no-store');
+      actual.push({ path, status: res.status, cacheControl: res.headers.get('cache-control') });
     }
+    // 1 回の比較にして、欠けた経路を全部まとめて差分に出す
+    expect(actual).toEqual(
+      cases.map(([path, status]) => ({ path, status, cacheControl: 'private, no-store' })),
+    );
   });
 
   it('パスワード変更前は fence で止まる', async () => {
@@ -540,5 +554,82 @@ describe('名前の変更・登録解除と見直しの判断', () => {
     ).toBe(200);
     const row = (await screen()).rows.find((r) => r.vendorKey === 'spotifypremium');
     expect(row?.review?.state).toBe('pending');
+  });
+});
+
+describe('統合と revision (AC-001・AC-018)', () => {
+  let keySeq = 0;
+  const post = async (path: string, body: unknown): Promise<Response> =>
+    app.request(
+      `/api${path}`,
+      {
+        method: 'POST',
+        headers: {
+          cookie,
+          'content-type': 'application/json',
+          'idempotency-key': `screen-key-${String(++keySeq).padStart(4, '0')}`,
+        },
+        body: JSON.stringify(body),
+      },
+      { ...auth, DB: d1 },
+    );
+  const revisionOf = async (): Promise<number> => {
+    const res = await request('/subscriptions?span=1');
+    expect(res.status).toBe(200);
+    return ((await res.json()) as { revision: number }).revision;
+  };
+  const monthlyOf = (body: Screen, key: string): number | undefined =>
+    body.rows.find((r) => r.vendorKey === key)?.estimatedMonthly;
+
+  it('Netflix を Spotify Premium へ統合すると Netflix の行が消え、月額は和になり、取り消すと戻る', async () => {
+    const before = await screen();
+    const netflix = monthlyOf(before, 'netflix');
+    const spotify = monthlyOf(before, 'spotifypremium');
+    expect(netflix).toBeGreaterThan(0);
+    expect(spotify).toBe(980);
+    const base = await revisionOf();
+
+    const merged = await post('/sub-vendors/merge', {
+      targetId: await vendorIdOf('Spotify Premium'),
+      sourceVendorIds: [await vendorIdOf('Netflix')],
+      rawNames: [],
+      baseRevision: base,
+    });
+    const mergedText = await merged.text();
+    expect(merged.status, mergedText).toBe(200);
+    const operation = JSON.parse(mergedText) as { operation: { id: string }; revision: number };
+    expect(operation.revision).toBe(base + 1);
+
+    const after = await screen();
+    expect(after.rows.find((r) => r.vendorKey === 'netflix')).toBeUndefined();
+    expect(monthlyOf(after, 'spotifypremium')).toBe((spotify ?? 0) + (netflix ?? 0));
+    // 登録済みの推定月額の和は、行がまとまっても変わらない
+    expect(after.kpis.monthlyTotal).toBe(before.kpis.monthlyTotal);
+    expect(await revisionOf()).toBe(base + 1);
+
+    const undone = await post(`/subscription-operations/${operation.operation.id}/undo`, {
+      baseRevision: base + 1,
+    });
+    expect(undone.status, await undone.text()).toBe(200);
+    const restored = await screen();
+    expect(monthlyOf(restored, 'netflix')).toBe(netflix);
+    expect(monthlyOf(restored, 'spotifypremium')).toBe(spotify);
+    expect(await revisionOf()).toBe(base + 2);
+  });
+
+  it('baseRevision を送らない従来の PUT も 200 で、revision を 1 進め、操作者付きで記録する', async () => {
+    const base = await revisionOf();
+    const res = await request(`/sub-vendors/${await vendorIdOf('Netflix')}`, 'PUT', { category: '動画' });
+    const text = await res.text();
+    expect(res.status, text).toBe(200);
+    expect((JSON.parse(text) as { revision?: number }).revision).toBe(base + 1);
+    expect(await revisionOf()).toBe(base + 1);
+    const latest = await d1
+      .prepare(
+        `SELECT kind, actor_user_id FROM subscription_operations
+          WHERE user_id = 'default' ORDER BY base_revision DESC LIMIT 1`,
+      )
+      .first<{ kind: string; actor_user_id: string }>();
+    expect(latest).toEqual({ kind: 'vendor_update', actor_user_id: 'usr_test_admin' });
   });
 });

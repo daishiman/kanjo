@@ -46,6 +46,7 @@ import {
   settingsChangeLogStatements,
   settingsChangedAt,
 } from '../import-lifecycle.js';
+import { errorBody } from '../public-validation.js';
 import { cashOverrideRuleFromRow, getDb, normRuleFromRow, recomputeFromDeals } from '../store.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
@@ -54,10 +55,6 @@ type SettingsContext = Context<Ctx>;
 export const settingsScreenRoute = new Hono<Ctx>();
 
 /* -------- エラーの形 (文言は spec の表と同じ) -------- */
-
-const errorBody = (code: string, message: string, extra: Record<string, unknown> = {}) => ({
-  error: { code, message, ...extra },
-});
 
 const SAVE_INVALID = errorBody('invalid_request', '設定を保存できませんでした。入力内容を確認してください。');
 const CONFLICT = errorBody('settings_conflict', '他の画面で更新されました');

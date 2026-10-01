@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-09-30T15:37:43Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+  "evaluated_digest": "sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+  "published_digest": "sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-subscriptions-merge/dev-graph-registration.json"
+}

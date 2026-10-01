@@ -18,6 +18,8 @@ export function AccessibleTabs<T extends string>({
   value,
   onChange,
   ariaControls,
+  className = 'segment',
+  tabClassName = '',
 }: {
   ariaLabel: string;
   idPrefix: string;
@@ -25,6 +27,8 @@ export function AccessibleTabs<T extends string>({
   value: T;
   onChange: (value: T) => void;
   ariaControls: (value: T) => string;
+  className?: string;
+  tabClassName?: string;
 }) {
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -48,7 +52,7 @@ export function AccessibleTabs<T extends string>({
   };
 
   return (
-    <span className="segment" role="tablist" aria-label={ariaLabel}>
+    <span className={className} role="tablist" aria-label={ariaLabel}>
       {items.map((item, index) => {
         const selected = item.id === value;
         return (
@@ -64,7 +68,7 @@ export function AccessibleTabs<T extends string>({
             ref={(node) => {
               refs.current[index] = node;
             }}
-            className={selected ? 'on' : undefined}
+            className={[tabClassName, selected ? 'on' : ''].filter(Boolean).join(' ') || undefined}
             onClick={() => onChange(item.id)}
             onKeyDown={(event) => onKeyDown(event, index)}
           >

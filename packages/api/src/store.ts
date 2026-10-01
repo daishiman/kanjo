@@ -16,6 +16,7 @@ import {
   type MfTx,
   type NormRule,
   type Owner,
+  type ResolvedSubVendors,
   type Rule,
   type SubVendor,
   type TxEdit,
@@ -31,15 +32,20 @@ import {
   ensureMonth,
   exportJSON,
   hasSettlementColumns,
+  isBusinessBaselineScope,
   isCashTxId,
   matchSubVendor,
   normalizeAccount,
   normalizeOwner,
   parseSplitTemplate,
   projectAccountingDataset,
+  projectSubsAggregate,
   recomputeClassification,
+  resolveVendorMerges,
   sortCashOverrides,
   subVendorDefs,
+  subsDefinitionsOf,
+  subsVendorOfScope,
 } from '@kanjo/core';
 import { and, asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
@@ -86,17 +92,30 @@ const personalBaselineMonths = (rows: ReadonlyArray<AggValue>): Set<string> =>
   );
 
 const businessBaselineMonths = (rows: ReadonlyArray<AggValue>): Set<string> =>
-  new Set(
-    rows
-      .filter(
-        (r) =>
-          r.scope === 'biz_rev' ||
-          r.scope === 'subs_other' ||
-          r.scope.startsWith('biz_exp:') ||
-          r.scope.startsWith('subs:'),
-      )
-      .map((r) => r.month),
+  new Set(rows.filter((r) => isBusinessBaselineScope(r.scope)).map((r) => r.month));
+
+/** 原本科目から現在の正規化を導く入口。保存時の accountNorm は現在のルールの正本ではない。 */
+export const normalizeFreeeDeals = (
+  deals: readonly FreeeDeal[],
+  normMap: Record<string, string>,
+): FreeeDeal[] => deals.map((deal) => ({ ...deal, accountNorm: normalizeAccount(deal.accountRaw, normMap) }));
+
+/** サブスクだけの操作・全体再計算・backup で同じ core 投影を使う。 */
+function replaceSubsProjection(data: Dataset, args: Parameters<typeof projectSubsAggregate>[0]): void {
+  const rows = projectSubsAggregate(args);
+  for (const row of rows) ensureMonth(data, row.month);
+  data.subs.vendors = args.resolved.vendors.map((vendor) => vendor.name);
+  data.subs.exactNames = Object.fromEntries(
+    args.resolved.vendors.map((vendor) => [vendor.name, vendor.exactNames ?? []]),
   );
+  data.subs.matrix = Object.fromEntries(data.subs.vendors.map((name) => [name, data.months.map(() => 0)]));
+  data.subs.other = data.months.map(() => 0);
+  for (const row of rows) {
+    const index = data.months.indexOf(row.month);
+    if (row.scope === 'subs_other') data.subs.other[index] = row.amount;
+    else data.subs.matrix[subsVendorOfScope(row.scope)!][index] = row.amount;
+  }
+}
 
 /** 原本MFが無い月に限り、復元baselineを現在の個人明細集計へ加算する */
 function addPersonalBaseline(
@@ -124,15 +143,21 @@ function addPersonalBaseline(
   }
 }
 
-/** 原本freeeが無い月に限り、復元baselineを現在の事業現金集計へ加算する */
+/**
+ * 原本freeeが無い月に限り、復元baselineを現在の事業現金集計へ加算する。
+ * 統合元の名前で残る baseline の列は、rootNameOf で統合先 (根) の列へ寄せる。
+ */
 function addBusinessBaseline(
   data: Dataset,
   rows: ReadonlyArray<AggValue>,
   months: ReadonlySet<string>,
+  rootNameOf?: ReadonlyMap<string, string>,
+  includeSubs = true,
 ): void {
   for (const r of rows) {
     if (!months.has(r.month)) continue;
     const i = ensureMonth(data, r.month);
+    const name = subsVendorOfScope(r.scope);
     if (r.scope === 'biz_rev') {
       data.biz.revenue[i] += r.amount;
     } else if (r.scope.startsWith('biz_exp:')) {
@@ -142,10 +167,10 @@ function addBusinessBaseline(
         data.biz.expense[category] = data.months.map(() => 0);
       }
       data.biz.expense[category][i] += r.amount;
-    } else if (r.scope === 'subs_other') {
+    } else if (includeSubs && r.scope === 'subs_other') {
       data.subs.other[i] += r.amount;
-    } else if (r.scope.startsWith('subs:')) {
-      const vendor = r.scope.slice('subs:'.length);
+    } else if (includeSubs && name !== null) {
+      const vendor = rootNameOf?.get(name) ?? name;
       // ベンダー削除はbaselineより優先し、削除済みの列を再生しない。
       if (data.subs.vendors.includes(vendor)) data.subs.matrix[vendor][i] += r.amount;
     }
@@ -162,6 +187,7 @@ export function mergeRestoreCanonicalSources(args: {
   freeeDeals: ReadonlyArray<FreeeDeal>;
   cashEntries: ReadonlyArray<CashEntry>;
   normMap: Record<string, string>;
+  resolvedVendors: ResolvedSubVendors;
 }): void {
   const baselineRows = aggRowsFromDataset('', args.restored);
   const rawMfMonths = new Set(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)).map((tx) => tx.m));
@@ -172,10 +198,11 @@ export function mergeRestoreCanonicalSources(args: {
     new Set([...personalBaselineMonths(baselineRows)].filter((month) => !rawMfMonths.has(month))),
   );
 
-  const normalizedDeals = args.freeeDeals.map((deal) => ({
-    ...deal,
-    accountNorm: normalizeAccount(deal.accountRaw, args.normMap),
-  }));
+  const normalizedDeals = normalizeFreeeDeals(args.freeeDeals, args.normMap);
+  const resolved = args.resolvedVendors;
+  const currentSubs = aggRowsFromDataset('', args.data).filter(
+    (row) => subsVendorOfScope(row.scope) !== null || row.scope === 'subs_other',
+  );
   const freeeMonths = new Set(normalizedDeals.map((deal) => deal.month));
   const cashDeals = cashBizDeals([...args.cashEntries], args.normMap);
   const businessMonths = new Set([
@@ -186,12 +213,21 @@ export function mergeRestoreCanonicalSources(args: {
   if (!businessMonths.size) return;
 
   const unrecordedBefore = [...args.data.unrecordedExpMonths];
-  applyFreeeDeals(args.data, [...normalizedDeals, ...cashDeals], [...businessMonths]);
+  applyFreeeDeals(args.data, [...normalizedDeals, ...cashDeals], [...businessMonths], resolved.vendors);
   addBusinessBaseline(
     args.data,
     baselineRows,
     new Set([...businessMonths].filter((month) => !freeeMonths.has(month))),
+    resolved.rootNameOf,
+    false,
   );
+  replaceSubsProjection(args.data, {
+    resolved,
+    deals: normalizedDeals,
+    cashDeals,
+    businessBaseline: baselineRows,
+    current: currentSubs,
+  });
   args.data.unrecordedExpMonths = [
     ...new Set([
       ...args.data.unrecordedExpMonths,
@@ -521,12 +557,33 @@ export const cashOverrideRuleFromRow = (r: {
   memo: r.memo ?? '',
 });
 
+type LoadDatasetOptions = {
+  withSplits?: boolean;
+  loadSplitRows?: boolean;
+  now?: Date;
+  cashOverrides?: boolean;
+};
+
 export async function loadDataset(
   db: Db,
   userId: string,
   cashEntriesSnapshot?: ReadonlyArray<CashEntry>,
-  options: { withSplits?: boolean; loadSplitRows?: boolean; now?: Date; cashOverrides?: boolean } = {},
+  options: LoadDatasetOptions = {},
 ): Promise<Dataset> {
+  return (await loadDatasetResolved(db, userId, cashEntriesSnapshot, options)).data;
+}
+
+/**
+ * loadDataset と同じ Dataset に、統合元の名前 → 統合先 (根) の名前の対応を添えて返す。
+ * Dataset.subs は根だけを持ち、統合元の別名は根の aliases に畳まれている。
+ * 集計を作り直す側 (planRecomputeFromDeals) は、baseline に残る統合元の列をこの対応で根へ寄せる。
+ */
+export async function loadDatasetResolved(
+  db: Db,
+  userId: string,
+  cashEntriesSnapshot?: ReadonlyArray<CashEntry>,
+  options: LoadDatasetOptions = {},
+): Promise<{ data: Dataset; rootNameOf: ReadonlyMap<string, string>; resolved: ResolvedSubVendors }> {
   const withSplits = options.withSplits ?? true;
   // 設定画面の現金上書き (BR-14) は表示・集計の読み手にだけ掛ける。取込計画 (withSplits:false) と
   // 集計キャッシュの書き直し (cashOverrides:false) は現金の原本の値のまま扱う。
@@ -581,11 +638,19 @@ export async function loadDataset(
 
   // 事業側の系列を monthly_agg から復元
   const catSet = new Set<string>();
-  // ベンダーは sub_vendors が正。集計キャッシュに残る登録外の名前(削除直後など)も読み出しだけは通す
-  const vendorSet = new Set<string>(vendorRows.map((v) => v.name));
+  // ベンダーは sub_vendors が正。統合元は統合先 (根) に畳み、一覧には根だけを並べる。
+  // 集計キャッシュに残る登録外の名前(削除直後など)も読み出しだけは通す
+  const resolved = resolveVendorMerges(vendorRows);
+  /** ベンダーの列 (`subs:<名前>`) なら統合先 (根) の名前、それ以外の scope は null */
+  const subsNameOf = (scope: string): string | null => {
+    const name = subsVendorOfScope(scope);
+    return name === null ? null : (resolved.rootNameOf.get(name) ?? name);
+  };
+  const vendorSet = new Set<string>(resolved.vendors.map((v) => v.name));
   for (const r of [...aggRows, ...baselineRows]) {
+    const vendor = subsNameOf(r.scope);
     if (r.scope.startsWith('biz_exp:')) catSet.add(r.scope.slice('biz_exp:'.length));
-    else if (r.scope.startsWith('subs:')) vendorSet.add(r.scope.slice('subs:'.length));
+    else if (vendor !== null) vendorSet.add(vendor);
   }
   data.biz.revenue = data.months.map(() => 0);
   data.biz.categories = [...catSet];
@@ -593,8 +658,7 @@ export async function loadDataset(
     data.biz.expense[c] = data.months.map(() => 0);
   });
   data.subs.vendors = [...vendorSet];
-  data.subs.aliases = Object.fromEntries(vendorRows.map((v) => [v.name, v.aliases]));
-  data.subs.accounts = Object.fromEntries(vendorRows.map((v) => [v.name, v.accounts ?? []]));
+  Object.assign(data.subs, subsDefinitionsOf(resolved));
   data.subs.vendors.forEach((v) => {
     data.subs.matrix[v] = data.months.map(() => 0);
   });
@@ -603,9 +667,11 @@ export async function loadDataset(
   for (const r of aggRows) {
     const i = idx.get(r.month);
     if (i === undefined) continue;
+    const vendor = subsNameOf(r.scope);
     if (r.scope === 'biz_rev') data.biz.revenue[i] = r.amount;
     else if (r.scope.startsWith('biz_exp:')) data.biz.expense[r.scope.slice('biz_exp:'.length)][i] = r.amount;
-    else if (r.scope.startsWith('subs:')) data.subs.matrix[r.scope.slice('subs:'.length)][i] = r.amount;
+    // 統合元の列が残っていても根の列へ足す (統合の batch が消すまでの間、または古い集計キャッシュ)
+    else if (vendor !== null) data.subs.matrix[vendor][i] += r.amount;
     else if (r.scope === 'subs_other') data.subs.other[i] = r.amount;
     else if (r.scope === 'biz_personal_in') {
       data.bizPersonal[r.month] ??= { income: 0, expense: 0 };
@@ -664,7 +730,11 @@ export async function loadDataset(
   addPersonalBaseline(data, baselineRows, cashOnlyPersonalMonths);
   // withSplits:false は取込計画専用のraw canonical Dataset。通常のconsumerには
   // 明示的なaccounting projectionを返し、canonical parentと派生childを混在させない。
-  return withSplits ? projectAccountingDataset(data) : data;
+  return {
+    data: withSplits ? projectAccountingDataset(data) : data,
+    rootNameOf: resolved.rootNameOf,
+    resolved,
+  };
 }
 
 /* ------------------------- 現金の記帳 ------------------------- */
@@ -732,6 +802,7 @@ export function projectCashContribution(
   data: Dataset,
   entries: ReadonlyArray<CashEntry>,
   normMap: Record<string, string>,
+  vendorDefs: SubVendor[] = subVendorDefs(data),
 ): AggValue[] {
   const rows = new Map<string, AggValue>();
   const personal = applyClassification(
@@ -751,7 +822,6 @@ export function projectCashContribution(
     if (values.expense) addProjection(rows, { month, scope: 'biz_personal_out', amount: values.expense });
   }
 
-  const vendorDefs = subVendorDefs(data);
   for (const deal of cashBizDeals([...entries], normMap)) {
     if (deal.io === 'income')
       addProjection(rows, { month: deal.month, scope: 'biz_rev', amount: deal.amount });
@@ -985,7 +1055,7 @@ FROM institution_owners WHERE user_id = ?
 UNION ALL
 SELECT * FROM (
 SELECT 'vendor', id, sort_order, NULL,
-       name, aliases, accounts, category, reviewed_at, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+       name, aliases, accounts, category, reviewed_at, merged_into_id, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM sub_vendors WHERE user_id = ?
 UNION ALL
 SELECT 'sub_vendor_review_decision', id, NULL, NULL,
@@ -1149,6 +1219,8 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
       accounts: parseStringArray(row.v3 ?? '[]'),
       category: row.v4,
       reviewedAt: row.v5,
+      mergedIntoId: row.v6 == null ? null : Number(row.v6),
+      sortOrder: row.rank ?? 0,
     }));
   const budgets: Dataset['budgets'] = {};
   for (const row of bySource('budget')) if (row.amount != null) budgets[row.v1 ?? ''] = row.amount;
@@ -1336,7 +1408,7 @@ export async function loadImportRestoreSettingsSnapshot(
        UNION ALL
        SELECT 'sub_vendor', json_object(
          'id',id,'name',name,'aliases',json(aliases),'accounts',json(accounts),
-         'category',category,'reviewedAt',reviewed_at), NULL, NULL
+         'category',category,'reviewedAt',reviewed_at,'mergedIntoId',merged_into_id,'sortOrder',sort_order), NULL, NULL
          FROM sub_vendors WHERE user_id=?
        UNION ALL
        SELECT 'sub_vendor_review_decision', json_object(
@@ -1475,7 +1547,9 @@ export async function loadImportRestoreSettingsSnapshot(
       revoked: row.revoked === 1,
     }))
     .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey, 'ja'));
-  const subVendors = payloads<SubVendorWithReview>('sub_vendor').sort((a, b) => a.id - b.id);
+  const subVendors = payloads<SubVendorWithReview>('sub_vendor').sort(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || a.id - b.id,
+  );
   const subVendorReviewDecisions = payloads<SubVendorReviewDecisionRow>('sub_vendor_review_decision');
   const destinationRowCounts = payloads<ImportRestoreSettingsSnapshot['destinationRowCounts']>(
     'destination_counts',
@@ -1531,11 +1605,10 @@ function datasetFromBackupSnapshot(snapshot: BackupSourceSnapshot): Dataset {
   data.cashOverrideRules = snapshot.cashOverrideRules;
   data.unrecordedExpMonths = [...snapshot.unrecordedExpMonths];
   data.txSplits = [...snapshot.txSplits];
-  data.subs.vendors = snapshot.vendors.map((vendor) => vendor.name);
-  data.subs.aliases = Object.fromEntries(snapshot.vendors.map((vendor) => [vendor.name, vendor.aliases]));
-  data.subs.accounts = Object.fromEntries(
-    snapshot.vendors.map((vendor) => [vendor.name, vendor.accounts ?? []]),
-  );
+  // 書き出す Dataset.subs は根だけ。統合元は subVendorMetadata の mergedIntoName が運ぶ
+  const resolved = resolveVendorMerges(snapshot.vendors);
+  data.subs.vendors = resolved.vendors.map((vendor) => vendor.name);
+  Object.assign(data.subs, subsDefinitionsOf(resolved));
 
   const monthSet = new Set<string>();
   snapshot.baselineRows.forEach((row) => monthSet.add(row.month));
@@ -1567,20 +1640,24 @@ function datasetFromBackupSnapshot(snapshot: BackupSourceSnapshot): Dataset {
     const unrecordedBefore = data.unrecordedExpMonths;
     applyFreeeDeals(
       data,
-      [
-        ...snapshot.deals.map((deal) => ({
-          ...deal,
-          accountNorm: normalizeAccount(deal.accountRaw, snapshot.normMap),
-        })),
-        ...cashDeals,
-      ],
+      [...normalizeFreeeDeals(snapshot.deals, snapshot.normMap), ...cashDeals],
       [...businessMonths],
+      resolved.vendors,
     );
     addBusinessBaseline(
       data,
       snapshot.baselineRows,
       new Set([...businessMonths].filter((month) => !freeeMonths.has(month))),
+      resolved.rootNameOf,
+      false,
     );
+    replaceSubsProjection(data, {
+      resolved,
+      deals: normalizeFreeeDeals(snapshot.deals, snapshot.normMap),
+      cashDeals,
+      businessBaseline: snapshot.baselineRows,
+      current: [],
+    });
     data.unrecordedExpMonths = [
       ...new Set([
         ...data.unrecordedExpMonths,
@@ -1596,7 +1673,12 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
   const snapshot = await loadBackupSourceSnapshot(db, userId);
   const raw = datasetFromBackupSnapshot(snapshot);
   const accounting = projectAccountingDataset(raw);
-  const rows = projectCashContribution(accounting, snapshot.cashEntries, snapshot.normMap);
+  const rows = projectCashContribution(
+    accounting,
+    snapshot.cashEntries,
+    snapshot.normMap,
+    resolveVendorMerges(snapshot.vendors).vendors,
+  );
   const aggregate = aggregateAmounts(accounting);
   if (rows.some((row) => row.amount > (aggregate.get(projectionKey(row)) ?? 0))) {
     throw new CashProjectionError('cash_projection_underflow');
@@ -1610,11 +1692,24 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     // 0045: 名義の表示名。設定の比較・設定だけの復元 (settingsJsonFromBackup) が読む
     ownerLabels: snapshot.ownerLabels,
     subVendorExclusions: snapshot.subVendorExclusions.map(({ partner }) => ({ partner })),
-    subVendorMetadata: snapshot.vendors.map(({ name, category, reviewedAt }) => ({
-      name,
-      category,
-      reviewedAt,
-    })),
+    // 0058: 統合元は Dataset.subs に載らない。統合を名前で運び、復元で入れ直す (統合していない行には足さない)
+    subVendorMetadata: snapshot.vendors.map(
+      ({ name, category, reviewedAt, mergedIntoId, aliases, accounts, sortOrder }) => {
+        const mergedIntoName =
+          mergedIntoId == null
+            ? undefined
+            : snapshot.vendors.find((vendor) => vendor.id === mergedIntoId)?.name;
+        return {
+          name,
+          category,
+          reviewedAt,
+          aliases,
+          accounts,
+          sortOrder,
+          ...(mergedIntoName ? { mergedIntoName } : {}),
+        };
+      },
+    ),
     subVendorReviewDecisions: snapshot.subVendorReviewDecisions,
     cashEntries: snapshot.cashEntries,
     cashProjection,
@@ -1646,14 +1741,14 @@ export function removeCashProjection(data: Dataset, rows: ReadonlyArray<AggValue
       return value - row.amount;
     };
     if (i < 0) throw new CashProjectionError('cash_projection_underflow');
+    const vendor = subsVendorOfScope(row.scope);
     if (row.scope === 'biz_rev') data.biz.revenue[i] = subtract(data.biz.revenue[i] ?? 0);
     else if (row.scope.startsWith('biz_exp:')) {
       const category = row.scope.slice('biz_exp:'.length);
       if (!data.biz.expense[category]) throw new CashProjectionError('cash_projection_underflow');
       data.biz.expense[category][i] = subtract(data.biz.expense[category][i] ?? 0);
     } else if (row.scope === 'subs_other') data.subs.other[i] = subtract(data.subs.other[i] ?? 0);
-    else if (row.scope.startsWith('subs:')) {
-      const vendor = row.scope.slice('subs:'.length);
+    else if (vendor !== null) {
       if (!data.subs.matrix[vendor]) throw new CashProjectionError('cash_projection_underflow');
       data.subs.matrix[vendor][i] = subtract(data.subs.matrix[vendor][i] ?? 0);
     } else if (row.scope === 'biz_personal_in' || row.scope === 'biz_personal_out') {
@@ -1679,6 +1774,8 @@ export function removeCashProjection(data: Dataset, rows: ReadonlyArray<AggValue
 
 export interface SubVendorRow extends SubVendor {
   id: number;
+  /** 0058: 統合先の id。null は統合されていない (根) */
+  mergedIntoId?: number | null;
 }
 
 /**
@@ -1687,13 +1784,14 @@ export interface SubVendorRow extends SubVendor {
  * 「集計経路では取っていない」ことを型で見えるようにする。
  */
 export interface SubVendorWithReview extends SubVendorRow {
+  sortOrder?: number;
   /** 最後に契約を見直した日時(ISO)。null は一度も見直していない */
   reviewedAt: string | null;
   /** 0043: 利用者が上書きしたカテゴリ。null は既定辞書に従う */
   category: string | null;
 }
 
-const parseStringArray = (raw: string): string[] => {
+export const parseStringArray = (raw: string): string[] => {
   try {
     const v: unknown = JSON.parse(raw);
     return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
@@ -1716,6 +1814,8 @@ export async function loadSubVendors(db: Db, userId: string): Promise<SubVendorW
     accounts: parseStringArray(r.accounts),
     reviewedAt: r.reviewedAt ?? null,
     category: r.category ?? null,
+    mergedIntoId: r.mergedIntoId ?? null,
+    sortOrder: r.sortOrder,
   }));
 }
 
@@ -1842,13 +1942,14 @@ export async function planRecomputeFromDeals(
   const normalizedDealUpdates = dealRows
     .map((row) => ({ id: row.id, accountNorm: normalizeAccount(row.accountRaw ?? '', normMap) }))
     .filter((row, index) => row.accountNorm !== dealRows[index]?.accountNorm);
-  let data = await loadDataset(
+  const loaded = await loadDatasetResolved(
     db,
     userId,
     cashEntries,
     // 集計キャッシュは現金の原本の値で書く。現金上書きは読み出し (loadDataset) の側で掛ける
     canonicalMutation ? { withSplits: false, loadSplitRows: true } : { cashOverrides: false },
   );
+  let data = loaded.data;
   if (canonicalMutation) {
     const removedMf = new Set(canonicalMutation.removeMfTxIds ?? []);
     data.mfTx = data.mfTx.filter((tx) => !removedMf.has(tx.id));
@@ -1889,10 +1990,11 @@ export async function planRecomputeFromDeals(
   data.subs.vendors = data.subs.vendors.filter((v) => registered.has(v));
   // 事業分の現金明細は freee 仕訳と同じ経路で科目別集計に合流する(取込値とは別テーブルなので再取込で消えない)
   const cashDeals = cashBizDeals(cashEntries, normMap);
-  const restoredDeals = (canonicalMutation?.restoreFreeeDeals ?? []).map((deal) => ({
-    ...deal,
-    accountNorm: normalizeAccount(deal.accountRaw, normMap),
-  }));
+  const restoredDeals = normalizeFreeeDeals(canonicalMutation?.restoreFreeeDeals ?? [], normMap);
+  const normalizedDeals = [...normalizeFreeeDeals(dealRows.map(dealFromRow), normMap), ...restoredDeals];
+  const currentSubs = aggRowsFromDataset('', data).filter(
+    (row) => subsVendorOfScope(row.scope) !== null || row.scope === 'subs_other',
+  );
   const freeeMonths = new Set([...dealRows.map((r) => r.month), ...restoredDeals.map((r) => r.month)]);
   const affectedBusinessMonths = affectedCashEntries
     .filter((entry) => entry.side === 'biz')
@@ -1908,19 +2010,21 @@ export async function planRecomputeFromDeals(
   ].sort();
   if (months.length) {
     const unrecBefore = data.unrecordedExpMonths;
-    applyFreeeDeals(
+    applyFreeeDeals(data, [...normalizedDeals, ...cashDeals], months, loaded.resolved.vendors);
+    addBusinessBaseline(
       data,
-      [
-        ...dealRows.map((r) => ({
-          ...dealFromRow(r),
-          accountNorm: normalizeAccount(r.accountRaw ?? '', normMap),
-        })),
-        ...restoredDeals,
-        ...cashDeals,
-      ],
-      months,
+      baselineRows,
+      new Set(months.filter((month) => !freeeMonths.has(month))),
+      loaded.rootNameOf,
+      false,
     );
-    addBusinessBaseline(data, baselineRows, new Set(months.filter((month) => !freeeMonths.has(month))));
+    replaceSubsProjection(data, {
+      resolved: loaded.resolved,
+      deals: normalizedDeals,
+      cashDeals,
+      businessBaseline: baselineRows,
+      current: currentSubs.filter((row) => !months.includes(row.month)),
+    });
     // 現金明細しか無い月は freee の記帳が済んでいないので、未記帳のままにする
     data.unrecordedExpMonths = [
       ...new Set([...data.unrecordedExpMonths, ...unrecBefore.filter((m) => !freeeMonths.has(m))]),

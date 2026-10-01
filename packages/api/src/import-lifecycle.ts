@@ -33,6 +33,7 @@ import {
 import { JSON_ACTIVE_TARGET, invalidateJsonSnapshotStatement } from './import-active.js';
 import { type ParsedUnit, fingerprintCanonical } from './import-pipeline.js';
 import { LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT, aggRowsFromDataset } from './store.js';
+import { subscriptionRestoreBarrierStatement } from './subscription-restore-barrier.js';
 import { txEditRestoreRow } from './tx-edit-codec.js';
 
 export type ImportOutcome = 'processing' | 'applying' | 'committed' | 'failed' | 'duplicate';
@@ -420,12 +421,16 @@ export async function updateImportRun(
     .run();
 }
 
-/** INSERT..ON CONFLICT..WHEREの1 statementで単一writerをclaimする。 */
+/**
+ * INSERT..ON CONFLICT..WHEREの1 statementで単一writerをclaimする。
+ * ttlMs は取込の 15 分が既定。サブスク等の短い変更は canonical-mutation-fence が 2 分を渡す。
+ */
 export async function acquireImportWriter(
   database: D1Database,
   userId: string,
   runId: string,
   nowMs = Date.now(),
+  ttlMs = IMPORT_CLAIM_TTL_MS,
 ): Promise<boolean> {
   const prior = await database
     .prepare('SELECT run_id, expires_at FROM import_writer_claims WHERE user_id=?')
@@ -443,7 +448,7 @@ export async function acquireImportWriter(
           OR import_writer_claims.run_id = excluded.run_id
        RETURNING run_id`,
     )
-    .bind(userId, runId, nowMs, nowMs + IMPORT_CLAIM_TTL_MS);
+    .bind(userId, runId, nowMs, nowMs + ttlMs);
   const recovering = !!prior && prior.run_id !== runId && prior.expires_at <= nowMs;
   const reason = '処理中に中断されたため、新しい取込で回復しました';
   const now = new Date(nowMs).toISOString();
@@ -1071,6 +1076,15 @@ export interface RestoreSubVendorMetadata {
   name: string;
   category: string | null;
   reviewedAt: string | null;
+  /**
+   * 0058: 統合先の名前。統合元は Dataset.subs に載らないので、この行だけが統合を運ぶ。
+   * キーが無い・null は統合なし (0058 より前の JSON には統合が存在しない)
+   */
+  mergedIntoName?: string | null;
+  /** 保存定義。実効 aliases は統合元も畳んだ表示用なので書き戻しに使わない。旧 JSON は省略可。 */
+  aliases?: string[];
+  accounts?: string[];
+  sortOrder?: number;
 }
 
 /** 復元で置き換えるサブスク見直し判断 */
@@ -1127,6 +1141,43 @@ export interface RestoreTotalCashflowOperation {
   undoneAt: string | null;
   createdAt: string;
 }
+
+/**
+ * 復元で upsert するベンダー行。根 (Dataset.subs) の後ろに、統合元 (mergedIntoName を持つ metadata) を並べる。
+ * metadata の保存別名・対象科目を優先する。旧 JSON の統合元の欠落は null とし、既存定義を保つ。
+ * 7 番目の要素 (統合先の名前) は統合元の行だけに付ける。統合の無い JSON の指紋は 0058 の前と同じになる。
+ */
+const restoreVendorRows = (
+  data: Dataset,
+  metadataRows: ReadonlyArray<RestoreSubVendorMetadata>,
+  metadataByName: ReadonlyMap<string, RestoreSubVendorMetadata>,
+): unknown[][] => {
+  const roots = [...new Set(data.subs.vendors)];
+  const rootNames = new Set(roots);
+  const merged = metadataRows.filter((row) => row.mergedIntoName && !rootNames.has(row.name));
+  return [
+    ...roots.map((name, index) => {
+      const metadata = metadataByName.get(name);
+      return [
+        name,
+        JSON.stringify(metadata?.aliases ?? [...new Set(data.subs.aliases?.[name] ?? [])].sort()),
+        JSON.stringify(metadata?.accounts ?? [...new Set(data.subs.accounts?.[name] ?? [])].sort()),
+        metadata?.sortOrder ?? index,
+        metadata?.category ?? null,
+        metadata?.reviewedAt ?? null,
+      ];
+    }),
+    ...merged.map((row, index) => [
+      row.name,
+      row.aliases === undefined ? null : JSON.stringify(row.aliases),
+      row.accounts === undefined ? null : JSON.stringify(row.accounts),
+      row.sortOrder ?? roots.length + index,
+      row.category,
+      row.reviewedAt,
+      row.mergedIntoName,
+    ]),
+  ];
+};
 
 /** restoreのmerge/default適用後に、実際にpersistするtable行を一度だけ構成する。 */
 export function prepareRestoreWriteSet(args: {
@@ -1208,17 +1259,7 @@ export function prepareRestoreWriteSet(args: {
     mfRows: rawTxs
       .map(mfPersistedIdentityRow)
       .sort((a, b) => canonicalEncode(a).localeCompare(canonicalEncode(b))),
-    vendorRows: [...new Set(args.data.subs.vendors)].map((name, index) => {
-      const metadata = subVendorMetadata.get(name);
-      return [
-        name,
-        JSON.stringify([...new Set(args.data.subs.aliases?.[name] ?? [])].sort()),
-        JSON.stringify([...new Set(args.data.subs.accounts?.[name] ?? [])].sort()),
-        index,
-        metadata?.category ?? null,
-        metadata?.reviewedAt ?? null,
-      ];
-    }),
+    vendorRows: restoreVendorRows(args.data, args.subVendorMetadata ?? [], subVendorMetadata),
     subVendorReviewDecisionRows: args.subVendorReviewDecisions
       ? [...args.subVendorReviewDecisions]
           .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey))
@@ -1402,6 +1443,12 @@ export async function restoreWriteSetFingerprint(writeSet: RestoreWriteSet): Pro
   return fingerprintCanonical(`v${FINGERPRINT_VERSION}:json-write-set:${canonicalEncode(rows)}`);
 }
 
+/** 0058: 復元がサブスクの画面の状態 (ベンダー・判断・除外) に触れるか。触れるときだけ revision を進める */
+export const restoreTouchesSubscriptions = (writeSet: RestoreWriteSet): boolean =>
+  writeSet.vendorRows.length > 0 ||
+  writeSet.subVendorReviewDecisionRows !== null ||
+  (writeSet.subVendorExclusionsChanged && writeSet.subVendorExclusionRows.length > 0);
+
 /** multipart JSONとPOST /restoreが共有するrestore commandのD1 write-set。 */
 export function restoreCommitStatements(args: {
   database: D1Database;
@@ -1416,8 +1463,12 @@ export function restoreCommitStatements(args: {
   const { database, userId, runId, writeSet, importId, contentHash, targetKeys } = args;
   const now = args.now ?? new Date().toISOString();
   const mfStatements = mfReplaceOnlyStatements(database, userId, writeSet.mfRows, importId);
+  const mergedVendorPayloads = chunkJsonRowsByBytes(
+    writeSet.vendorRows.filter((row) => typeof row[6] === 'string'),
+  );
   return [
     ...beginImportCommitStatements({ database, userId, runId, importId }),
+    ...(restoreTouchesSubscriptions(writeSet) ? [subscriptionRestoreBarrierStatement(database, userId)] : []),
     ...mfStatements,
     database.prepare('DELETE FROM tx_splits WHERE user_id=?').bind(userId),
     ...insertJsonRows(
@@ -1441,25 +1492,52 @@ export function restoreCommitStatements(args: {
       writeSet.splitRows,
       [{ column: 'user_id', value: userId }],
     ),
+    // 根と統合元の upsert は1文にまとめる。旧 JSON の統合元は null を保存定義の欠落として扱う。
     ...chunkJsonRowsByBytes(writeSet.vendorRows).map((payload) =>
       database
         .prepare(
-          `INSERT INTO sub_vendors
-             (user_id,name,aliases,accounts,sort_order,category,reviewed_at,created_at)
-           SELECT ?,
-                  CAST(json_extract(item.value,'$[0]') AS TEXT),
-                  CAST(json_extract(item.value,'$[1]') AS TEXT),
-                  CAST(json_extract(item.value,'$[2]') AS TEXT),
-                  CAST(json_extract(item.value,'$[3]') AS INTEGER),
-                  json_extract(item.value,'$[4]'),
-                  json_extract(item.value,'$[5]'), ?
-           FROM json_each(?) AS item WHERE 1
-           ON CONFLICT(user_id,name) DO UPDATE SET
-             aliases=excluded.aliases, accounts=excluded.accounts, sort_order=excluded.sort_order,
-             category=excluded.category, reviewed_at=excluded.reviewed_at`,
+          `INSERT INTO sub_vendors (user_id,name,aliases,accounts,sort_order,category,reviewed_at,created_at)
+         SELECT ?1, json_extract(item.value,'$[0]'),
+           COALESCE(json_extract(item.value,'$[1]'),'[]'), COALESCE(json_extract(item.value,'$[2]'),'[]'),
+           json_extract(item.value,'$[3]'), json_extract(item.value,'$[4]'), json_extract(item.value,'$[5]'), ?2
+         FROM json_each(?3) AS item WHERE 1
+         ON CONFLICT(user_id,name) DO UPDATE SET
+           aliases=COALESCE((SELECT json_extract(value,'$[1]') FROM json_each(?3)
+             WHERE json_extract(value,'$[0]')=excluded.name),sub_vendors.aliases),
+           accounts=COALESCE((SELECT json_extract(value,'$[2]') FROM json_each(?3)
+             WHERE json_extract(value,'$[0]')=excluded.name),sub_vendors.accounts),
+           sort_order=excluded.sort_order, category=excluded.category,
+           reviewed_at=excluded.reviewed_at, merged_into_id=NULL`,
         )
         .bind(userId, now, payload),
     ),
+    // バックアップの統合を名前で入れ直す。id は環境ごとに変わるので、全ての upsert の後に名前で引く
+    ...mergedVendorPayloads.map((payload) =>
+      database
+        .prepare(
+          `UPDATE sub_vendors SET merged_into_id=(
+             SELECT target.id FROM sub_vendors AS target, json_each(?1) AS item
+              WHERE target.user_id=sub_vendors.user_id
+                AND target.name=json_extract(item.value,'$[6]')
+                AND json_extract(item.value,'$[0]')=sub_vendors.name)
+           WHERE user_id=?2 AND name IN (SELECT json_extract(value,'$[0]') FROM json_each(?1))`,
+        )
+        .bind(payload, userId),
+    ),
+    // 復元の前に開いた画面の base を古くする (次の書込みを 409 にする)。操作の記録は書き戻さない。
+    // ベンダーは upsert だけで消さないので、サブスクの行を運ばない復元は画面の状態を変えない。
+    // その場合は文を足さない (最悪の復元が上限 50 に対して 49 で、無条件に足すと 413 になる)
+    ...(restoreTouchesSubscriptions(writeSet)
+      ? [
+          database
+            .prepare(
+              `INSERT INTO subscription_revisions (user_id,revision,updated_at) VALUES (?,1,?)
+               ON CONFLICT(user_id) DO UPDATE SET
+                 revision=subscription_revisions.revision+1, updated_at=excluded.updated_at`,
+            )
+            .bind(userId, now),
+        ]
+      : []),
     ...(writeSet.subVendorReviewDecisionRows
       ? [
           ...(writeSet.subVendorReviewDecisionsDestinationEmpty
