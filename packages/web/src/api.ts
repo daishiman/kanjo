@@ -1280,6 +1280,8 @@ export type {
 
 export interface SubVendorRow extends SubVendor {
   id: number;
+  /** 統合先の id。null なら統合されていない (統合先の候補に出してよい) */
+  mergedIntoId: number | null;
 }
 
 /** 「これはサブスクではない」と記録した支払先(候補一覧から外れる) */

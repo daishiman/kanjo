@@ -13,6 +13,13 @@ const BASE_URL = process.env.KANJO_VISUAL_BASE_URL ?? 'http://127.0.0.1:4175';
 const VISUAL_SCOPE = process.env.KANJO_VISUAL_SCOPE ?? 'all';
 const PERFORMANCE_GATE = process.env.KANJO_PERFORMANCE_GATE === '1';
 const TRACE_INTERACTIONS = process.env.KANJO_VISUAL_TRACE === '1';
+const MATRIX_READY = `(() => {
+  const card = document.querySelector('.matrix-table-card');
+  const label = card?.querySelector('tbody th[scope="row"]');
+  return location.pathname === '/analysis/matrix' && card?.isConnected && label?.isConnected
+    && card.getBoundingClientRect().width > 0 && label.getBoundingClientRect().width > 0
+    && document.querySelectorAll('.matrix-summary table tbody tr').length > 0;
+})()`;
 const VIEWPORT_LABELS = (
   process.env.KANJO_VISUAL_VIEWPORTS ??
   '320,360,375,390,641,768,900,1023,1024,1280,1600,1908,zoom200,rail-zoom200'
@@ -1590,6 +1597,8 @@ const responseFor = (url) => {
   if (path === '/api/subscriptions') return subscriptions;
   if (path === '/api/sub-vendors/candidates') return { candidates: [], excluded: [], dealRows: 0 };
   if (path === '/api/sub-vendors') return { vendors: [], accountOptions: [], review: [] };
+  // サブスク画面は「操作」欄のために操作の記録も読む。差し替えないと proxy 先の API が 401 を返し、ログインへ落ちる
+  if (path === '/api/subscription-operations') return { operations: [], revision: 0 };
   if (path === '/api/household') return household;
   if (path === '/api/household/category') return householdCategory;
   if (path === '/api/statements')
@@ -2482,12 +2491,10 @@ try {
       await send('Page.navigate', { url: `${BASE_URL}/analysis/matrix` });
       // Matrix は図ではなく表で読む画面になった。要約(偏りが大きい3点)と月次表が
       // 両方出そろってから測る
-      await waitFor(
-        "document.querySelectorAll('.matrix-summary table tbody tr').length > 0 && document.querySelectorAll('.matrix-table-card table.heatmap tbody tr').length > 0",
-        'Matrix',
-      );
+      await waitFor(MATRIX_READY, 'Matrix');
       await evaluate('window.scrollTo(0, 0)');
       await sleep(300);
+      await waitFor(MATRIX_READY, 'Matrix layout');
       const metrics = await evaluate(`(async () => {
       const wait = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       await wait();

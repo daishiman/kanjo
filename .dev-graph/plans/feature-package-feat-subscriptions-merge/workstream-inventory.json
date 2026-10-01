@@ -1,0 +1,1242 @@
+{
+  "feature_package_id": "feature-package/feat-subscriptions-merge",
+  "parent_feature": "feat-subscriptions-merge",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/00-requirements-definition.md",
+      "system-spec/completeness-findings.json",
+      "specs/spec-subscriptions-merge.md",
+      "features/feat-subscriptions-merge.md",
+      "features/feat-subscriptions-merge.context.json"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "docs/subscriptions-screen.md に『統合と並行制御』の節が足され、FR-001〜023・BR-001〜013・AC-001〜023 と検証手段 (core 契約・api 統合・web DOM) の対応表が記録されている。",
+        "着手時に確かめる事項 5 件 (0058 の空き・TanStack の scope と useMutationState の型・統合 1 回の問い合わせ数の見込み・D1 の overloaded の message・FR-009 による数値の変化) の結論と根拠が記録されている。",
+        "scope_out 8 項目が記録され、他画面の作り直し・楽観更新・DO や Queues を範囲に含めていない。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p01.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p01.md",
+        "graph_node_id": "SYS-SUBSMERGE-P01",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-SUBSMERGE-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "docs の追記を revert する。コードと表の変更を伴わない。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p01",
+        "preparation"
+      ],
+      "title": "要件の基準線と着手時の確認事項 (0058 の空き・TanStack の型・問い合わせ数・overloaded の判定・照合順の数値変化) の確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "core の resolveVendorMerges (連鎖の解決、循環と自己統合は例外、参照先の無い id は統合なし) と defaultMergeTarget (推定月額が最大の登録済み行、無ければ null) の型が記録されている。",
+        "統合・取り消し・統合先の削除の各 db.batch の文の並びと、(a) 以外の文が操作の行の存在を条件にすることが記録されている。",
+        "fence の登録 (merge と undo を CANONICAL_MUTATION_ROUTES に明示登録し、既存 9 本の consumers に新しい 2 表を足す) と lease の TTL (2 分) が記録されている。",
+        "migration 0058 の DDL、schema-guard の EXPECTED_D1_MIGRATION の更新点、backup の mergedIntoName の検証規則 (名前の集合に無い・自己参照・循環は InvalidRestoreSettingsError) が記録されている。",
+        "画面の待ち行列 (scope subscriptions-write、409 canonical_write_busy と 503 d1_overloaded の同じ key での再送、revision の衝突の送り直し、5xx と通信の失敗だけの再試行ボタン) の状態遷移が記録されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p02.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P01"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p02.md",
+        "graph_node_id": "SYS-SUBSMERGE-P02",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-SUBSMERGE-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "api",
+        "data",
+        "security"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p02",
+        "preparation"
+      ],
+      "title": "resolveVendorMerges・統合と取り消しの db.batch・fence の登録・migration 0058・backup の mergedIntoName・画面の待ち行列の設計決定記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "名寄せが core の resolveVendorMerges 1 か所から導かれ、3 経路が同じ一覧を使う設計であることを確かめた記録がある。",
+        "統合・取り消しで片方だけが反映された状態を残さないこと (1 つの db.batch、(a) が 0 行なら 409) を確かめた記録がある。",
+        "他テナントの vendor id と操作 id が 404 になること、ログに操作 id・kind・結果・所要 ms・actor の id だけを出すことを確かめた記録がある。",
+        "指摘があれば解消方法と P05 への申し送りが記録されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p03.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P02"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p03.md",
+        "graph_node_id": "SYS-SUBSMERGE-P03",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-SUBSMERGE-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "security"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p03",
+        "design-review"
+      ],
+      "title": "名寄せの 1 か所導出・書込みの原子性・テナント分離と操作者の記録の独立設計レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "core 契約テストが resolveVendorMerges (連鎖・循環・自己統合・参照先の無い id)・defaultMergeTarget・照合順 (科目で先に絞る) を検査し、旧実装で失敗する。",
+        "api 統合テストが aquavoice 型の統合 (統合元が一覧から消え、月額が和と一致し、monthly_agg の subs 範囲が一致)・Idempotency-Key の再送・revision の衝突・同時 2 件で 500 が 0 件・取り消しの判定順・掃除・既存 9 本の revision を検査し、旧実装で失敗する。",
+        "web DOM テストが行チェックと全選択 (mixed)・選択バー・統合先の既定・処理中の無効化・?vendor= の付け替え・操作状態の表示と文言・再試行ボタンを検査し、旧実装で失敗する。",
+        "旧実装で失敗した件数と代表の失敗メッセージが docs/subscriptions-screen.md に記録されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p04.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P03"
+      ],
+      "deploy_unit": "N/A: テストコードは配布物に含まれない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p04.md",
+        "graph_node_id": "SYS-SUBSMERGE-P04",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-SUBSMERGE-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "テストの追加と書き換えを revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "data"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p04",
+        "test-design"
+      ],
+      "title": "名寄せ・統合と取り消し・並行制御・選択と待ち行列の失敗テストの先行作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/test/subs-contract.test.ts",
+        "packages/core/test/subs-screen-contract.test.ts",
+        "packages/api/src/subs-screen.integration.test.ts",
+        "packages/api/src/subs-merge-operations.integration.test.ts",
+        "packages/api/src/subs-vendor-scope.test.ts",
+        "packages/api/src/expense-projection.integration.test.ts",
+        "packages/web/src/subscriptions-screen.dom.test.tsx",
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "migration 0058 が sub_vendors.merged_into_id と subscription_operations・subscription_revisions を足し、schema-guard の EXPECTED_D1_MIGRATION と db/schema.ts が 0058 に揃う。",
+        "core の resolveVendorMerges が applyFreeeDeals・サブスク画面の照合・projectCashContribution に通り、照合の順序が科目で先に絞る形に揃う。",
+        "POST /api/sub-vendors/merge・POST /api/subscription-operations/:id/undo・GET /api/subscription-operations が spec の API 契約どおりに動き、統合と取り消しが 1 つの db.batch で原子的に行われ、fence に登録されている。",
+        "既存の書込み 9 本が baseRevision (任意) と Idempotency-Key (任意) を受けて応答に revision を返し、統合済みの行への変更は 409 になり、統合先の削除は統合元をまとめて消す。",
+        "backup の JSON が mergedIntoName を運び、復元が統合を名前で入れ直して revision を +1 する。",
+        "操作の記録の保持と掃除 (FR-023・BR-013) が統合と取り消しの batch に入る。30 日を過ぎ payload_json か before_json がまだ NULL でない行を 50 件まで NULL にし、400 日を過ぎた行を 50 件まで消し、30 日を過ぎた操作の取り消しは 410 undo_expired になる。",
+        "画面が行チェック・全選択・選択バー・名称を統合・操作状態 (直近 5 件と取り消し) を描き、mutation scope で 1 件ずつ送り、409 と 503 を自動で再送し、5xx と通信の失敗だけを再試行ボタンにする。",
+        "P04 のテストが緑である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p05.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P04"
+      ],
+      "deploy_unit": "web ビルドと Worker と D1 migration 0058 (単一 PR で配信する。merge 後に CI の Migrate が 0058 を適用してから Deploy する)",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p05.md",
+        "graph_node_id": "SYS-SUBSMERGE-P05",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-SUBSMERGE-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "本 task のコミットを revert する。0058 は追加だけなので表と列は残してよい。統合済みの行は旧実装では独立した行として再び現れるため、差し戻す前に統合を取り消すかを判断する。配信済みなら直前のビルドへ戻す。",
+      "secondary_workstreams": [
+        "frontend",
+        "api",
+        "data",
+        "security",
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p05",
+        "mutation"
+      ],
+      "title": "migration 0058・resolveVendorMerges・統合と取り消しと操作履歴の API・既存書込みの revision・backup・選択バーと操作状態の画面の実装",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "backend",
+      "write_scope": [
+        "migrations/0058_subscription_merge_operations.sql",
+        "packages/core/src/subs.ts",
+        "packages/core/src/subs-screen.ts",
+        "packages/core/src/dataset.ts",
+        "packages/core/src/expense-projection.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/import-active.ts",
+        "packages/api/src/import-lifecycle.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/subscription-writes.ts",
+        "packages/api/src/routes/subs.ts",
+        "packages/api/src/routes/subscription-operations.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/api/src/routes/settings.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/index.test.ts",
+        "packages/api/src/deletion-schema.test.ts",
+        "packages/api/src/import-lifecycle-pure.test.ts",
+        "packages/web/src/api.ts",
+        "packages/web/src/api-client.ts",
+        "packages/web/src/components/Page.tsx",
+        "packages/web/src/pages/Subscriptions.tsx",
+        "packages/web/src/pages/subscriptions/",
+        "packages/web/src/pages/import/import-test-fakes.ts",
+        "packages/web/src/diagnosis-next-action-receivers.dom.test.tsx",
+        "packages/web/src/mobile-financial-visualization.dom.test.tsx"
+      ]
+    },
+    {
+      "acceptance": [
+        "pnpm test・pnpm typecheck・pnpm lint が全て exit 0 で、件数と所要時間が記録されている。",
+        "P04 で失敗したテストが全て緑になったことが記録されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p06.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P05"
+      ],
+      "deploy_unit": "N/A: 実行記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p06.md",
+        "graph_node_id": "SYS-SUBSMERGE-P06",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-SUBSMERGE-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "secondary_workstreams": [],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p06",
+        "test-run"
+      ],
+      "title": "全テストと型検査と lint の実行記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "O1: aquavoice 型の統合で統合元が一覧から 0 件になり、統合先の月額が統合前の和と一致し、他画面のサブスク集計が同じ名寄せを示すことを確かめた記録がある。",
+        "O2: 5 件連続・2 件同時の操作で 500 が 0 件で、取り合いは 409 か 503 になって画面が自動で収束することを確かめた記録がある。",
+        "O3: 行チェック・全選択・選択バー・統合先・操作状態・操作者・取り消しの DOM テストが全件緑である。",
+        "O4: テナントに無い id は 404、取り消しで統合前の一覧に戻る、古い revision は 409、30 日と 400 日の期限、操作の一覧に before_json・payload_json・key が出ないことを確かめた記録がある。",
+        "U5: pnpm verify:full が緑である (CI は PR 作成後に確かめる)。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p07.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P06"
+      ],
+      "deploy_unit": "N/A: 検証記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p07.md",
+        "graph_node_id": "SYS-SUBSMERGE-P07",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-SUBSMERGE-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p07",
+        "acceptance"
+      ],
+      "title": "受入基準 O1 から O4 と U5 の検証",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm --filter @kanjo/api test"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "matchSubVendor の呼び出しが全て resolveVendorMerges を通った一覧を受けていることを rg で確かめた記録がある。",
+        "DetailOverview.tsx に統合先の選択欄が残っていないこと、選択が vendorKey の Set であることを確かめた記録がある。",
+        "packages/web/src に色の hex の直書きが無いこと (pnpm lint の check-design-tokens) を確かめた記録がある。",
+        "操作状態の文言が describeError を通っていないことを確かめた記録がある。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p08.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P07"
+      ],
+      "deploy_unit": "N/A: 読取専用監査のみ",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p08.md",
+        "graph_node_id": "SYS-SUBSMERGE-P08",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-SUBSMERGE-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "監査記録に誤りがあれば docs の追記だけを revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p08",
+        "audit"
+      ],
+      "title": "旧い統合経路・名寄せを通らない照合・色の直書き・describeError を通る操作状態の文言の残存の読取専用監査",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "rg による matchSubVendor・統合先の選択欄・describeError の参照の検査",
+        "P06 と P07 の証跡と git diff の照合"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "全選択のチェックが aria-checked の mixed を持ち、名称を統合で選択バーへフォーカスが移り、操作状態が色だけでなく文字で示されることを確かめた記録がある。",
+        "ログに操作 id・kind・結果・所要 ms・actor の id だけが出て、操作の一覧の応答に before_json・payload_json・Idempotency-Key が出ないことを確かめた記録がある。",
+        "統合 1 回の D1 の問い合わせ数が 20 未満であることを確かめた記録がある。",
+        "pnpm --filter @kanjo/web build:bundle の直後の check:js-budget が緑である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p09.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P08"
+      ],
+      "deploy_unit": "N/A: 保証確認の記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p09.md",
+        "graph_node_id": "SYS-SUBSMERGE-P09",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-SUBSMERGE-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "security",
+        "infrastructure"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p09",
+        "quality-assurance"
+      ],
+      "title": "アクセシビリティ・ログの秘匿・D1 の問い合わせ数・JS バンドル予算の保証確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web build:bundle",
+        "pnpm --filter @kanjo/web run check:js-budget"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "FR-001〜023・BR-001〜013・AC-001〜023 の各項目が実装とテストのどこで満たされたかの対応が記録されている。",
+        "resource_scope の外への変更が 0 件であることが記録されている。",
+        "指摘があれば解消が記録されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p10.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P09"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p10.md",
+        "graph_node_id": "SYS-SUBSMERGE-P10",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-SUBSMERGE-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "secondary_workstreams": [],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p10",
+        "independent-review"
+      ],
+      "title": "独立最終レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "P04〜P10 の証跡がコマンド・結果・件数の対で docs/subscriptions-screen.md に索引されている。",
+        "記録に本番のホスト名・ローカルの絶対パス・実データが含まれていない。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p11.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P10"
+      ],
+      "deploy_unit": "N/A: 索引のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p11.md",
+        "graph_node_id": "SYS-SUBSMERGE-P11",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-SUBSMERGE-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "索引の追記を revert する。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p11",
+        "evidence"
+      ],
+      "title": "再現可能な証跡索引の作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (既存の文書検査が緑のままであることを確かめる)"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "docs/data-schema.md に sub_vendors.merged_into_id・subscription_operations・subscription_revisions の定義と、30 日と 400 日の保持・50 件ずつの掃除が記録されている。",
+        "docs/subscriptions-screen.md の API・画面・文言の記述が実装と一致している。",
+        "pnpm lint と pnpm test が緑である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p12.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P11"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p12.md",
+        "graph_node_id": "SYS-SUBSMERGE-P12",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-SUBSMERGE-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p12",
+        "documentation-sync"
+      ],
+      "title": "統合と取り消し・操作履歴の API・migration 0058・保持と掃除の docs 最終同期",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint",
+        "pnpm test"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/subscriptions-screen.md",
+        "docs/data-schema.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "pnpm run verify:full が緑である。",
+        "PR 本文に dev-graph の graph_node_id を記載し、merge 後に CI の Migrate が 0058 を適用してから Deploy したことを確かめた記録がある。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p13.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-SUBSMERGE-P12"
+      ],
+      "deploy_unit": "web ビルドと Worker と D1 migration 0058 (単一 PR で配信する。merge 後に CI の Migrate が 0058 を適用してから Deploy する)",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-subscriptions-merge",
+        "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p13.md",
+        "graph_node_id": "SYS-SUBSMERGE-P13",
+        "parent_feature": "feat-subscriptions-merge",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-SUBSMERGE-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "rollback": "PR を revert して直前のビルドへ戻す。0058 の列と表は残してよい (旧実装は参照しない)。",
+      "secondary_workstreams": [
+        "infrastructure",
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/subscriptions-screen.md",
+        "specs/spec-subscriptions-merge.md"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p13",
+        "release"
+      ],
+      "title": "単一 PR での配信 (Migrate 0058 の後に Deploy) とクローズアウト",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm run verify:full",
+        "pnpm test",
+        "pnpm typecheck"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "docs/subscriptions-screen.md"
+      ]
+    }
+  ]
+}

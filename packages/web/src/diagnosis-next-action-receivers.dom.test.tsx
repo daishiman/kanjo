@@ -113,6 +113,7 @@ function renderAt(page: 'subscriptions' | 'budget', path: string) {
       const json = (body: unknown) =>
         new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
       if ((init?.method ?? 'GET') !== 'GET') return json({ ok: true, aliases: [] });
+      if (url.includes('/api/subscription-operations')) return json({ operations: [], revision: 0 });
       if (url.includes('/api/subscriptions/vendors/')) return json(cloudDetail);
       if (url.includes('/api/subscriptions')) return json(subscriptionsScreen);
       if (url.includes('/api/budget-screen')) return json(budgetPayload);

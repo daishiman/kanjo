@@ -19,6 +19,17 @@ const CHROME_CANDIDATES = [
   '/usr/bin/chromium',
 ].filter((path): path is string => Boolean(path));
 const hasChrome = CHROME_CANDIDATES.some((path) => existsSync(path));
+// 同じ幅・ルートを検査し、1つのChromeが引き受ける幅だけを2件に制限する。
+const ADDITIONAL_VIEWPORT_SHARDS = [
+  '320,360',
+  '375,390',
+  '641,768',
+  '900,1023',
+  '1024,1280',
+  '1600,1908',
+  'zoom200,rail-zoom200',
+];
+const ROUTE_TIMEOUT_MS = 420_000;
 
 let server: ChildProcess | undefined;
 let origin = '';
@@ -91,18 +102,13 @@ describe('financial visualization real-browser gate', () => {
 
       const coreRoutes = await runRenderScript(ROUTE_SCRIPT, {
         env: { ...process.env, KANJO_VISUAL_BASE_URL: origin, KANJO_VISUAL_SCOPE: 'core' },
-        timeoutMs: 420_000,
+        timeoutMs: ROUTE_TIMEOUT_MS,
       });
       expect(coreRoutes).toContain('財務画面の実描画検査: すべて合格');
 
       // 全viewportを1つのChromeで直列実行すると、高負荷時に個別の描画失敗ではなく
       // 子プロセスのhard killに到達する。検査幅とrouteは減らさず、Chromeの寿命だけを分ける。
-      const additionalViewportShards = [
-        '320,360,375,390,641',
-        '768,900,1023,1024',
-        '1280,1600,1908,zoom200,rail-zoom200',
-      ];
-      for (const viewports of additionalViewportShards) {
+      for (const viewports of ADDITIONAL_VIEWPORT_SHARDS) {
         const additionalRoutes = await runRenderScript(ROUTE_SCRIPT, {
           env: {
             ...process.env,
@@ -110,13 +116,13 @@ describe('financial visualization real-browser gate', () => {
             KANJO_VISUAL_SCOPE: 'additional',
             KANJO_VISUAL_VIEWPORTS: viewports,
           },
-          timeoutMs: 420_000,
+          timeoutMs: ROUTE_TIMEOUT_MS,
         });
         expect(additionalRoutes).toContain('財務画面の実描画検査: すべて合格');
       }
     },
-    // responsive(110s) + core(420s) + additional 3 shard(3×420s) の各終了理由を
+    // responsive(110s) + coreと各shardの上限 + 余裕30s。各終了理由を
     // 外側が先に隠さない。個々の固着は runRenderScript の短い上限が担う。
-    1_820_000,
+    110_000 + ROUTE_TIMEOUT_MS * (1 + ADDITIONAL_VIEWPORT_SHARDS.length) + 30_000,
   );
 });

@@ -280,6 +280,55 @@ describe('D1 statement budget', () => {
     expect(planRestoreImportQueries(50 - restoreBase)).toMatchObject({ total: 50, accepted: false });
   });
 
+  it('サブスク復元はbarrierとrevisionを予算化し、統合元upsertを根と共有する', () => {
+    const data = emptyDataset();
+    data.subs.vendors = ['架空根'];
+    data.subs.aliases = { 架空根: [] };
+    data.subs.accounts = { 架空根: [] };
+    data.subs.matrix = { 架空根: [] };
+    const writeSet = prepareRestoreWriteSet({
+      userId: 'synthetic-user',
+      data,
+      restored: emptyDataset(),
+      subVendorMetadata: [
+        { name: '架空根', category: null, reviewedAt: null, aliases: [], accounts: [] },
+        {
+          name: '架空元',
+          category: null,
+          reviewedAt: null,
+          mergedIntoName: '架空根',
+          aliases: ['架空別名'],
+          accounts: ['通信費'],
+        },
+      ],
+    });
+    const sqls: string[] = [];
+    const database = {
+      prepare: (sql: string) => {
+        sqls.push(sql);
+        return fakeStatement;
+      },
+    } as unknown as D1Database;
+    const statements = restoreCommitStatements({
+      database,
+      userId: 'synthetic-user',
+      runId: 'test-run',
+      writeSet,
+      importId: 1,
+      contentHash: 'synthetic-hash',
+      targetKeys: ['json:global'],
+    });
+    expect(sqls.filter((sql) => sql.includes('restoreBarrier'))).toHaveLength(1);
+    expect(sqls.filter((sql) => sql.includes('INSERT INTO subscription_revisions'))).toHaveLength(1);
+    expect(sqls.filter((sql) => sql.includes('INSERT INTO sub_vendors'))).toHaveLength(1);
+    expect(planRestoreImportQueries(statements.length).total).toBeLessThan(50);
+    expect(planRestoreImportQueries(statements.length).accepted).toBe(true);
+    expect(writeSet.vendorRows.find((row) => row[0] === '架空元')?.slice(1, 3)).toEqual([
+      '["架空別名"]',
+      '["通信費"]',
+    ]);
+  });
+
   it('実builderがfreee/MF/restoreすべて上限50のenvelopeに収まる', () => {
     const wide = '幅'.repeat(20_000);
     const data = emptyDataset();
@@ -723,6 +772,17 @@ describe('JSON pointer invalidation consumers', () => {
 });
 
 describe('canonical mutation lease predicate', () => {
+  it('汎用sub-vendor IDは正整数に限り、除外経路と重複しない', () => {
+    expect(classifyCanonicalMutation('PUT', '/api/sub-vendors/123')).toBe('canonical-mutation');
+    expect(classifyCanonicalMutation('PUT', '/api/sub-vendors/candidates')).toBe('not-canonical-mutation');
+    const matching = CANONICAL_MUTATION_ROUTES.filter(
+      (route) => route.method === 'DELETE' && route.path.test('/api/sub-vendors/exclusions/123'),
+    );
+    expect(matching).toHaveLength(1);
+    expect(matching[0].consumers).toContain('sub_vendor_exclusions');
+    expect(SELF_MANAGED_IMPORT_CONSUMERS).toContain('subscription_operations');
+    expect(SELF_MANAGED_IMPORT_CONSUMERS).toContain('subscription_revisions');
+  });
   it('全mutating routeを3分類にMECEで固定する', () => {
     const canonical = [
       ['POST', '/api/cash-entries'],
@@ -789,6 +849,9 @@ describe('canonical mutation lease predicate', () => {
       ['DELETE', '/api/subscriptions/review-decisions'],
       ['POST', '/api/sub-vendors/exclusions'],
       ['DELETE', '/api/sub-vendors/exclusions/1'],
+      // 0058: 統合と取り消し。既存 9 本と同じ lease で直列化する
+      ['POST', '/api/sub-vendors/merge'],
+      ['POST', '/api/subscription-operations/op-1/undo'],
     ] as const;
     const selfManaged = [
       ['POST', '/api/imports'],
@@ -925,6 +988,8 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/sub-vendors/:id/review',
       'POST /api/sub-vendors/exclusions',
       'DELETE /api/sub-vendors/exclusions/:id',
+      'POST /api/sub-vendors/merge',
+      'POST /api/subscription-operations/:id/undo',
       'POST /api/imports',
       'POST /api/imports/diff',
       'POST /api/imports/:id/undo',

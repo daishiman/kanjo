@@ -286,6 +286,8 @@ export interface Dataset {
     aliases: Record<string, string[]>;
     /** ベンダーごとの対象勘定科目の原本名。空配列・未設定なら全科目を数える */
     accounts?: Record<string, string[]>;
+    /** 統合の保存行から導出する完全一致名。保存 aliases と分離し、バックアップには出さない */
+    exactNames?: Record<string, string[]>;
     matrix: Record<string, number[]>;
     other: number[];
   };

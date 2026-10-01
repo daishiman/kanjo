@@ -118,26 +118,6 @@
   padding-block: 8px;
 }
 
-/* ---- 通知 ---- */
-.subs-message {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-  padding: 10px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-.subs-message p {
-  margin: 0;
-  flex: 1 1 240px;
-}
-.subs-message.is-error {
-  border-color: var(--danger);
-  background: var(--danger-soft);
-}
-
 /* ---- カバー率・最終更新 ---- */
 .subs-coverage {
   display: grid;
@@ -372,10 +352,19 @@
 .subs-table tbody tr:hover {
   background: var(--biz-soft);
 }
-/* 選んだ行は accent の淡色。色だけに頼らず aria-current も付ける (SubscriptionTable) */
+/* 開いている行は accent の淡色と左の線。色だけに頼らず aria-current も付ける (SubscriptionTable) */
 .subs-table tbody tr.is-active {
   background: var(--biz-soft);
   box-shadow: inset 3px 0 0 var(--accent);
+}
+/* 統合のために選んだ行は淡色だけ。選んだことはチェックが示し、開いている行の線とは分ける */
+.subs-table tbody tr.is-selected {
+  background: var(--biz-soft);
+}
+/* 行チェックと全選択の列。チェックの操作領域 (44px) だけの幅にする */
+.subs-table .subs-select-column {
+  inline-size: var(--tap-target-min);
+  padding-inline: 4px;
 }
 .subs-row-open {
   padding: 0;
@@ -774,12 +763,9 @@
   padding-inline: 6px;
   font-size: var(--fs-2xs);
 }
-.subs-merge-target {
-  display: grid;
-  gap: 4px;
-  flex-basis: 100%;
-  font-size: var(--fs-sm);
-  color: var(--ink-soft);
+/* 取引名の一覧の下。押すと開いている行を選択に加え、統合は選択バーで行う (FR-004) */
+.subs-merge-name {
+  margin-block-start: 6px;
 }
 .subs-merge-create-entry {
   display: grid;
@@ -878,6 +864,84 @@
 .subs-reasons-all {
   margin-block-start: 4px;
 }
+
+/* ---- 操作 (書き込みの待機・処理・結果。一覧の直下) ---- */
+.subs-operation-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* 状態 (文字の badge) → 説明 → 操作者 → 時刻 → ボタン。狭い幅では説明の後で折り返す */
+.subs-operation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: var(--fs-sm);
+}
+/* 状態色は文字用トークンと淡い面の組だけ。色に頼らず必ず文字を添える */
+.subs-operation-state {
+  flex: none;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+.subs-operation-text {
+  display: grid;
+  gap: 2px;
+  flex: 1 1 200px;
+  min-inline-size: 0;
+}
+.subs-operation-label {
+  overflow-wrap: anywhere;
+}
+.subs-operation-detail,
+.subs-operation-actor,
+.subs-operation-time {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+.subs-operation-actor {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.subs-operation-time {
+  font-variant-numeric: tabular-nums;
+}
+.subs-operation.is-waiting .subs-operation-state {
+  color: var(--ink-soft);
+}
+.subs-operation.is-running .subs-operation-state {
+  color: var(--accent);
+}
+/* 自動再試行中も状態の文字は「処理中」のまま。待っていることは色と説明の行で示す */
+.subs-operation.is-retrying .subs-operation-state,
+.subs-operation.is-retrying .subs-operation-detail {
+  color: var(--warn);
+}
+.subs-operation.is-retrying .subs-operation-state {
+  background: var(--warn-soft);
+}
+.subs-operation.is-done .subs-operation-state {
+  color: var(--good);
+  background: var(--good-soft);
+}
+.subs-operation.is-failed .subs-operation-state,
+.subs-operation.is-failed .subs-operation-detail {
+  color: var(--danger);
+}
+.subs-operation.is-failed .subs-operation-state {
+  background: var(--danger-soft);
+}
+
 /* ---- 選択中バー (下端固定) ---- */
 .subs-selection {
   position: sticky;
@@ -916,10 +980,52 @@
   background: var(--biz-soft);
   font-size: var(--fs-sm);
 }
+.subs-selection-target {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-inline-size: 0;
+}
+.subs-selection-target label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.subs-selection-target select {
+  min-block-size: var(--tap-target-min);
+  max-inline-size: 100%;
+}
+/* 統合先の候補を読めなかったときだけ、選択欄のそばに出す (赤い帯や role=alert は使わない、SM-UX-04) */
+.subs-inline-error {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
 .subs-selection-actions {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 8px;
+}
+/* 統合のボタンを押せない理由。ボタンの aria-describedby からも引く */
+.subs-selection-hint {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.subs-selection-close {
+  min-inline-size: var(--tap-target-min);
+  padding-inline: 0;
+}
+/*
+ * sticky のバーは流れの中に自分の場所を持つので、末尾までスクロールすれば最後の行も「操作」も見える。
+ * 覆うのはスクロールの途中で、Tab で移ったフォーカスがバーの裏に入るとき (WCAG 2.4.11)。
+ * 選択バーが出ている間だけ、文書のスクロールの下の余白をバーの高さ (SelectionBar が測る) とその下の隙間ぶん足す。
+ */
+:root:has(.subs-selection) {
+  scroll-padding-bottom: calc(var(--subs-selection-h, 0px) + 12px + env(safe-area-inset-bottom, 0px));
 }
 
 /* 狭い幅: 右列を解いて縦に積む。詳細パネルは一覧の直下 (spec §0)。 */
@@ -935,6 +1041,10 @@
     display: contents;
   }
   .subs-table-card {
+    order: 3;
+  }
+  /* 「操作」は一覧と同じ order。DOM で一覧の後にあるので、詳細より前・一覧の直下に入る */
+  .subs-operations {
     order: 3;
   }
   .subs-detail {
@@ -978,11 +1088,32 @@
     max-inline-size: none;
   }
   .subs-selection {
-    bottom: calc(var(--tabbar-h) + 8px + env(safe-area-inset-bottom, 0px));
     gap: 6px 8px;
   }
+  /* 件数の行の右端に × を重ね、× だけが最後の行へ折り返さないようにする */
   .subs-selection > p {
     flex-basis: 100%;
+    padding-inline-end: var(--tap-target-min);
+  }
+  .subs-selection-close {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+}
+
+/* 下部のタブバーが出る幅 (styles.css の 640px) だけ、選択バーとフォーカスの退避をタブバーの上へ上げる */
+@media (max-width: 640px) {
+  .subs-selection {
+    bottom: calc(var(--tabbar-h) + 8px + env(safe-area-inset-bottom, 0px));
+  }
+  :root:has(.subs-selection) {
+    scroll-padding-bottom: calc(
+      var(--subs-selection-h, 0px) +
+      var(--tabbar-h) +
+      8px +
+      env(safe-area-inset-bottom, 0px)
+    );
   }
 }
 

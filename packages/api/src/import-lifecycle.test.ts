@@ -993,6 +993,9 @@ describe('サブスクのcanonical backup往復', () => {
         name: '架空クラウド',
         category: '仕事効率化',
         reviewedAt: '2026-08-01T12:34:56.000Z',
+        aliases: ['架空CLOUD'],
+        accounts: ['通信費'],
+        sortOrder: 100,
       },
     ]);
     expect(backup.subVendorReviewDecisions).toEqual([

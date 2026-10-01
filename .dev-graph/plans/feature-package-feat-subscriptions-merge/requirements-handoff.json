@@ -1,0 +1,230 @@
+{
+  "feature_id": "feat-subscriptions-merge",
+  "feature_package_id": "feature-package/feat-subscriptions-merge",
+  "graph_revision": 3,
+  "graph_snapshot_digest": "d690c00e96ef7745efd64ac67840530424c28d6ad4df33b34a7649e4921684ea",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "graph_canonical_digest": "sha256:ffb581eb074478f9aaa5a1597af34ecd7ce49be18a80a24bb90a99e2a6e7c224",
+  "graph_canonical_digest_note": "registration receipt の graph_digest_after と同方式 (canonical JSON)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-subscriptions-merge/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-subscriptions-merge/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-graph.json"
+  },
+  "plan_validated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-SUBSMERGE-P01",
+    "SYS-SUBSMERGE-P02",
+    "SYS-SUBSMERGE-P03",
+    "SYS-SUBSMERGE-P04",
+    "SYS-SUBSMERGE-P05",
+    "SYS-SUBSMERGE-P06",
+    "SYS-SUBSMERGE-P07",
+    "SYS-SUBSMERGE-P08",
+    "SYS-SUBSMERGE-P09",
+    "SYS-SUBSMERGE-P10",
+    "SYS-SUBSMERGE-P11",
+    "SYS-SUBSMERGE-P12",
+    "SYS-SUBSMERGE-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p01.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p02.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p03.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p04.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p05.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p06.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p07.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p08.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p09.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p10.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p11.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p12.md",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p13.md"
+  ],
+  "task_artifact_digests": {
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p01.md": "sha256:a58873c66faff8b2b09d4ef3d9c453c32bd1e60766f8f8c01f82cbeb045d3945",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p02.md": "sha256:15d903f0fa4ab645aba5eeaad0997a37c28faa6f1e839dc4a4a95587e0e6e225",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p03.md": "sha256:641d22386b524d4d020ca23949202fb5603aaddd0f55fd6673a83031708796d8",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p04.md": "sha256:96ce4dd252ed0563b228f41926097620836312188d894ac5636d5dbb05129326",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p05.md": "sha256:1a758f3af42cc2f312a4ba7e0d18efa8e85177204841bdc14f336493417f5339",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p06.md": "sha256:523acc472dc4b2add04a256b3a85df1863289d242aa629e723be9c5ce5dab993",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p07.md": "sha256:f0c4654e63c517f92204a0fd09187647f33ec0dfd015a4310e6c187d1d91dc80",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p08.md": "sha256:9f4c71b8bb880bfa5539f44a9b4f7a775065112a0069a0a58451b2cf41b3f64e",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p09.md": "sha256:2e0c7e380cfdbb7263c16fd524222b7b10ff752a68da0f6509643d560ed5153f",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p10.md": "sha256:ef61fc8cd82395491f84fdf75e1589a55bca0744a09abc437b10b334187e3e76",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p11.md": "sha256:1d3f73b48ab5456e7ad5261536d3d9515424de46c548f85a753951069cbe749f",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p12.md": "sha256:002e4a6541d9f24c3fddb29e6cf616f8bea79647567f2ee5a3b65392dcac8114",
+    "tasks/feat-subscriptions-merge/sys-subsmerge-p13.md": "sha256:4bdd04f6bfaa7b507346cc3057b1bd1cb9a0da6de83acc2cfa73d8ccbaebd5f3"
+  },
+  "requirements_document": {
+    "path": ".dev-graph/requirements/feat-subscriptions-merge/requirements.md",
+    "sha256": "sha256:cc6cfc0091b81bc2d65c0bc50d102729c46f726fa043c229cdc2b925bdf92620",
+    "scope": ".dev-graph/requirements/feat-subscriptions-merge/scope.json",
+    "trace_plan": ".dev-graph/requirements/feat-subscriptions-merge/trace-plan.json"
+  },
+  "requirements_decisions": [],
+  "carried_findings": [
+    {
+      "id": "OI-1",
+      "source": "goal-spec.open_items",
+      "summary": "migration 0058 の番号が空いていること",
+      "status": "open",
+      "note": "unresolved_precondition。spec の『着手時に確かめる事項』を正本とする",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P01"
+      ]
+    },
+    {
+      "id": "OI-2",
+      "source": "goal-spec.open_items",
+      "summary": "TanStack Query の解決版で useMutation の scope と useMutationState の型が使えること",
+      "status": "open",
+      "note": "unresolved_precondition。spec の『着手時に確かめる事項』を正本とする",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P01",
+        "SYS-SUBSMERGE-P05"
+      ]
+    },
+    {
+      "id": "OI-3",
+      "source": "goal-spec.open_items",
+      "summary": "D1 の overloaded を 503 d1_overloaded へ言い換える判定に使う例外の message",
+      "status": "open",
+      "note": "unresolved_precondition。spec の『着手時に確かめる事項』を正本とする",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P01",
+        "SYS-SUBSMERGE-P05"
+      ]
+    },
+    {
+      "id": "OI-4",
+      "source": "goal-spec.open_items",
+      "summary": "FR-009 (科目で先に絞る照合順) による他画面のサブスク集計の数値の変化",
+      "status": "open",
+      "note": "unresolved_precondition。spec の『着手時に確かめる事項』を正本とする",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P01",
+        "SYS-SUBSMERGE-P04"
+      ]
+    },
+    {
+      "id": "OI-5",
+      "source": "goal-spec.open_items",
+      "summary": "統合 1 回の D1 の問い合わせ数が 20 未満に収まる見込み",
+      "status": "open",
+      "note": "unresolved_precondition。spec の『着手時に確かめる事項』を正本とする",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P01",
+        "SYS-SUBSMERGE-P04",
+        "SYS-SUBSMERGE-P09"
+      ]
+    },
+    {
+      "id": "CF-doc-freshness-vitest",
+      "source": "system-spec/completeness-findings.json",
+      "severity": "medium",
+      "summary": "出典 vitest-expect の version と latest_checked_at が評価時点で現行版 (5.0.3) より古かった。取込み前に 5.0.3 へ更新済みだが、評価は取り直していない",
+      "status": "open",
+      "remediation_owner": [
+        "doc-fetch/C02",
+        "SYS-SUBSMERGE-P12 (記録)"
+      ]
+    },
+    {
+      "id": "CF-C06-leading-question",
+      "source": "system-spec/completeness-findings.json",
+      "severity": "medium",
+      "summary": "qa-subsmerge-decision-005 の問文が推奨案を埋め込んでいる (C06 軸2)。qa の問文は凍結されていて追記では消えない",
+      "status": "waived",
+      "resolution": "利用者の例外承認 (docs/evidence/subscriptions-merge/spec-evaluation-waiver.json、2026-09-30T14:07:45Z)",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P10 (waiver の範囲の再確認)"
+      ]
+    },
+    {
+      "id": "CF-C06-unresolvable",
+      "source": "system-spec/completeness-findings.json",
+      "severity": "medium",
+      "summary": "hearing-auditor の判定規則 (1 軸でも検出で FAIL、問文の書換禁止) の組合せで、置き換え済みの過去の問文まで FAIL が続く",
+      "status": "waived",
+      "resolution": "同上の例外承認。ハーネス側の規則の改善は本 feature の外",
+      "remediation_owner": [
+        "なし (記録のみ)"
+      ]
+    },
+    {
+      "id": "CF-low-8",
+      "source": "system-spec/completeness-findings.json",
+      "severity": "low",
+      "summary": "low 8 件 (問文の前提埋め込み 3 件・訂正が章に届かない・reopen 後の取り直し・basis の過大・foundation の参照の鮮度・承認節への qa の再掲・vitest の版の食い違い)。いずれも結論は変えない",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P12 (docs に訂正と版の扱いを記録)",
+        "elicit/C01"
+      ]
+    },
+    {
+      "id": "PF-C3-waiver",
+      "source": "plan-findings.json",
+      "severity": "low",
+      "summary": "仕様章の完成度評価は FAIL のまま、利用者の例外承認で先へ進めている",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P10"
+      ]
+    },
+    {
+      "id": "RQ-F1",
+      "source": "requirements",
+      "severity": "medium",
+      "summary": "`packages/api/src/import-lifecycle.test.ts:991` がバックアップの `subVendorMetadata` を toEqual で固定している。このファイルは P04・P05 の resource_scope に無い。mergedIntoName を全行に null で付けると落ちる",
+      "status": "open",
+      "resolution_plan": "mergedIntoName は統合済みの行にだけ付け、未統合の行にはキーを出さない (spec の『任意のキー』の読み方)。scope 外のテストは書き換えない",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P02",
+        "SYS-SUBSMERGE-P05"
+      ]
+    },
+    {
+      "id": "RQ-F2",
+      "source": "requirements",
+      "severity": "low",
+      "summary": "`packages/web/src/selection-checkbox-source-contract.test.ts` は native checkbox を SelectionCheckbox だけに許す。新しい行チェック・全選択はこの部品で書く (scope 外の契約テストは書き換えない)",
+      "status": "open",
+      "remediation_owner": [
+        "SYS-SUBSMERGE-P05"
+      ]
+    },
+    {
+      "id": "RQ-F3",
+      "source": "requirements",
+      "severity": "info",
+      "summary": "registration receipt の graph_digest_after は canonical JSON の sha256 で、本書の snapshot (bytes の sha256) と方式が違う。値の違いは drift ではない",
+      "status": "resolved",
+      "resolution": "handoff に graph_canonical_digest を併記し、登録時の値と一致することを検算した",
+      "remediation_owner": [
+        "なし (記録のみ)"
+      ]
+    }
+  ],
+  "remediation_owners": [
+    "SYS-SUBSMERGE-P01",
+    "SYS-SUBSMERGE-P02",
+    "SYS-SUBSMERGE-P04",
+    "SYS-SUBSMERGE-P05",
+    "SYS-SUBSMERGE-P09",
+    "SYS-SUBSMERGE-P10",
+    "SYS-SUBSMERGE-P10 (waiver の範囲の再確認)",
+    "SYS-SUBSMERGE-P12 (docs に訂正と版の扱いを記録)",
+    "SYS-SUBSMERGE-P12 (記録)",
+    "doc-fetch/C02",
+    "elicit/C01",
+    "なし (記録のみ)"
+  ]
+}

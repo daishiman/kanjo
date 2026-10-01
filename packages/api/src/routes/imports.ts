@@ -20,6 +20,10 @@ import {
   type ImportValidation,
   OWNER_VALUES,
   OwnerValidationError,
+  SUB_VENDOR_ACCOUNTS_MAX,
+  SUB_VENDOR_ACCOUNT_NAME_MAX,
+  SUB_VENDOR_ALIASES_MAX,
+  SUB_VENDOR_CATEGORY_MAX,
   SUB_VENDOR_NAME_MAX,
   TX_EDIT_BASE_BITS,
   TxSplitsSnapshotError,
@@ -61,8 +65,11 @@ import {
   projectAccountingDataset,
   reconcileBizDuplicates,
   resolveIncomingTx,
+  resolveVendorMerges,
   sourceNeutralSubscriptionDeals,
+  subVendorDefs,
   subsCandidates,
+  subsDefinitionsOf,
   validateTxSplitsForDataset,
   vendorKey,
 } from '@kanjo/core';
@@ -73,6 +80,7 @@ import { z } from 'zod';
 import { AuditValidationError } from '../audit-log.js';
 import type { AuthEnv, AuthVariables } from '../auth.js';
 import { budgetPlansBackupSchema } from '../budget-plan-schema.js';
+import { canonicalWriteBusy } from '../canonical-mutation-fence.js';
 import * as s from '../db/schema.js';
 import {
   DELETION_UNDO_RETENTION_DAYS,
@@ -127,6 +135,7 @@ import {
   importRateLimitedResponse,
   purgeExpiredImportRows,
 } from '../import-rate-limit.js';
+import { PRIVATE_NO_STORE } from '../public-validation.js';
 import {
   type CashProjectionEnvelope,
   CashProjectionError,
@@ -177,13 +186,40 @@ const subVendorMetadataBackupSchema = z
     z
       .object({
         name: z.string().trim().min(1).max(SUB_VENDOR_NAME_MAX),
-        category: z.string().trim().min(1).max(20).nullable(),
+        category: z.string().trim().min(1).max(SUB_VENDOR_CATEGORY_MAX).nullable(),
         reviewedAt: isoTimestamp.nullable(),
+        // 0058: 統合先の名前。キーが無い旧い JSON は統合なしとして読む
+        mergedIntoName: z.string().trim().min(1).max(SUB_VENDOR_NAME_MAX).nullable().optional(),
+        aliases: z
+          .array(z.string().trim().min(1).max(SUB_VENDOR_NAME_MAX))
+          .max(SUB_VENDOR_ALIASES_MAX)
+          .optional(),
+        accounts: z
+          .array(z.string().trim().min(1).max(SUB_VENDOR_ACCOUNT_NAME_MAX))
+          .max(SUB_VENDOR_ACCOUNTS_MAX)
+          .optional(),
+        sortOrder: z.number().int().optional(),
       })
       .strict(),
   )
   .max(5_000)
   .refine((rows) => new Set(rows.map((row) => row.name)).size === rows.length);
+
+/**
+ * 0058: バックアップの統合の参照が閉じているか。統合先がバックアップの名前に無い・自分を指す・循環する、は偽。
+ * 鎖は必ず統合されていない行 (根) で終わるので、復元後の resolveVendorMerges が循環で落ちない
+ */
+const restoreMergeReferencesClosed = (rows: ReadonlyArray<RestoreSubVendorMetadata>): boolean => {
+  const targetOf = new Map(rows.map((row) => [row.name, row.mergedIntoName ?? null]));
+  for (const row of rows) {
+    const seen = new Set([row.name]);
+    for (let next = targetOf.get(row.name); next != null; next = targetOf.get(next)) {
+      if (!targetOf.has(next) || seen.has(next)) return false;
+      seen.add(next);
+    }
+  }
+  return true;
+};
 const subVendorReviewDecisionsBackupSchema = z
   .array(
     z
@@ -1024,13 +1060,19 @@ const prepareJsonApplication = async (args: {
   );
   candidate.cashOverrideRules = settingsCashOverrides ?? args.data.cashOverrideRules ?? [];
   const sourceVendorNames = new Set(candidate.subs.vendors);
+  // 0058: 統合元は subs.vendors に載らず (根へ畳まれている)、metadata の mergedIntoName だけが運ぶ
+  const sourceRootMetadata = subscriptionState.metadata?.filter((row) => !row.mergedIntoName) ?? [];
+  const sourceMergedMetadata = subscriptionState.metadata?.filter((row) => row.mergedIntoName) ?? [];
   if (
     subscriptionState.metadata &&
-    (subscriptionState.metadata.length !== sourceVendorNames.size ||
-      subscriptionState.metadata.some((row) => !sourceVendorNames.has(row.name)))
+    (sourceRootMetadata.length !== sourceVendorNames.size ||
+      sourceRootMetadata.some((row) => !sourceVendorNames.has(row.name)) ||
+      sourceMergedMetadata.some((row) => sourceVendorNames.has(row.name)) ||
+      !restoreMergeReferencesClosed(subscriptionState.metadata))
   ) {
     throw new InvalidRestoreSettingsError();
   }
+  const sourceMergedNames = new Set(sourceMergedMetadata.map((row) => row.name));
   const sourceVendorKeys = new Set(candidate.subs.vendors.map(vendorKey));
   if (subscriptionState.decisions?.some((row) => !sourceVendorKeys.has(row.vendorKey))) {
     throw new InvalidRestoreSettingsError();
@@ -1038,23 +1080,56 @@ const prepareJsonApplication = async (args: {
   // JSON restoreは初期移行。sourceの同名設定を優先しつつ、移行先だけの登録を削除しない。
   for (const vendor of destinationVendors) {
     if (candidate.subs.vendors.includes(vendor.name)) continue;
+    // 移行先で統合済みの行は DB にそのまま残す (merged_into_id を保つ)。バックアップが統合元とする名前も根にしない
+    if (vendor.mergedIntoId != null || sourceMergedNames.has(vendor.name)) continue;
     candidate.subs.vendors.push(vendor.name);
     candidate.subs.aliases[vendor.name] = vendor.aliases;
     candidate.subs.accounts ??= {};
     candidate.subs.accounts[vendor.name] = vendor.accounts ?? [];
     candidate.subs.matrix[vendor.name] = candidate.months.map(() => 0);
   }
-  const metadataByName = new Map(
+  const metadataByName = new Map<string, RestoreSubVendorMetadata>(
     destinationVendors.map((vendor) => [
       vendor.name,
-      { name: vendor.name, category: vendor.category, reviewedAt: vendor.reviewedAt },
+      {
+        name: vendor.name,
+        category: vendor.category,
+        reviewedAt: vendor.reviewedAt,
+        aliases: vendor.aliases,
+        accounts: vendor.accounts ?? [],
+        sortOrder: vendor.sortOrder,
+        mergedIntoName:
+          vendor.mergedIntoId == null
+            ? null
+            : destinationVendors.find((v) => v.id === vendor.mergedIntoId)?.name,
+      },
     ]),
   );
   for (const metadata of subscriptionState.metadata ?? []) metadataByName.set(metadata.name, metadata);
-  const mergedSubVendorMetadata = candidate.subs.vendors.map(
-    (name): RestoreSubVendorMetadata =>
-      metadataByName.get(name) ?? { name, category: null, reviewedAt: null },
+  const mergedSubVendorMetadata = [
+    ...candidate.subs.vendors.map(
+      (name): RestoreSubVendorMetadata =>
+        metadataByName.get(name) ?? { name, category: null, reviewedAt: null },
+    ),
+    ...[...metadataByName.values()].filter(
+      (row) => row.mergedIntoName && !candidate.subs.vendors.includes(row.name),
+    ),
+  ];
+  const idsByName = new Map(mergedSubVendorMetadata.map((row, index) => [row.name, index + 1]));
+  const resolvedVendors = resolveVendorMerges(
+    mergedSubVendorMetadata
+      .map((row) => ({
+        id: idsByName.get(row.name)!,
+        name: row.name,
+        aliases: row.aliases ?? candidate.subs.aliases[row.name] ?? [],
+        accounts: row.accounts ?? candidate.subs.accounts?.[row.name] ?? [],
+        mergedIntoId: row.mergedIntoName ? idsByName.get(row.mergedIntoName) : null,
+        sortOrder: row.sortOrder ?? idsByName.get(row.name)!,
+      }))
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id),
   );
+  candidate.subs.vendors = resolvedVendors.vendors.map((vendor) => vendor.name);
+  Object.assign(candidate.subs, subsDefinitionsOf(resolvedVendors));
   candidate.personal = {};
   candidate.bizPersonal = {};
   candidate.personalByOwner = {};
@@ -1065,6 +1140,7 @@ const prepareJsonApplication = async (args: {
   candidate.edits = { ...withoutCashEdits(candidate.edits), ...restoredCashEdits };
   mergeRestoreCanonicalSources({
     data: candidate,
+    resolvedVendors,
     restored: args.restored,
     freeeDeals: args.freeeDeals,
     // sourceのcash deltaはsourceで確定済み。destination設定では再投影しない。
@@ -1172,6 +1248,7 @@ const planCommitStatementCounts = async (args: {
         candidate,
         [...unit.deals, ...cashBizDeals(args.cashEntries, args.normMap, unit.months)],
         unit.months,
+        subVendorDefs(candidate),
       );
       counts.push(
         freeeCommitStatements({
@@ -1367,6 +1444,7 @@ async function executePreparedUnit(args: {
         candidate,
         [...unit.deals, ...cashBizDeals(cashEntries, normMap, unit.months)],
         unit.months,
+        subVendorDefs(candidate),
       );
       statements = freeeCommitStatements({
         database,
@@ -2230,7 +2308,7 @@ importsRoute.get('/imports/:id/original', async (c) => {
     headers: {
       'Content-Type': 'application/octet-stream',
       'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`,
-      'Cache-Control': 'private, no-store',
+      ...PRIVATE_NO_STORE,
       'X-Content-Type-Options': 'nosniff',
     },
   });
@@ -3690,16 +3768,7 @@ importsRoute.post('/imports/runs/:id/undo', importJsonBodyLimit, async (c) => {
   if (!body) return invalidRequest(c, '取り消す内容をもう一度確認してください');
   // この経路は canonical-mutation-fence の経路表に一致しないため、同じ lease をここで取る
   const leaseToken = `mutation:${crypto.randomUUID()}`;
-  if (!(await acquireImportWriter(c.env.DB, userId, leaseToken)))
-    return c.json(
-      {
-        error: {
-          code: 'canonical_write_busy',
-          message: '別の取込みまたは更新が進行中です。完了後に再試行してください',
-        },
-      },
-      409,
-    );
+  if (!(await acquireImportWriter(c.env.DB, userId, leaseToken))) return canonicalWriteBusy(c);
   try {
     const targets = await undoTargets(c, c.req.param('id'));
     if (!targets) return notFound(c);

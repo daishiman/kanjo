@@ -1,94 +1,127 @@
 {
   "references": [
     {
-      "target_id": "wcag22-use-of-color",
-      "retrieved_at": "2026-09-23T12:39:53Z",
-      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
-      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
-      "official_host": "www.w3.org",
-      "last_updated": "2025-09-16",
-      "latest_checked_at": "2026-09-23T12:39:53Z",
-      "summary": "WCAG 2.2 SC 1.4.1 Use of Color (レベル A)。色を情報伝達の唯一の手段にしない。信頼度を『高 / 中 / 低』の文字と % で示し、防衛ライン (取引ライン) の状態を『正常 / 注意 / 要対応』の文字で示す、色だけに頼らない表示の根拠。"
-    },
-    {
-      "target_id": "react-router-searchparams",
-      "retrieved_at": "2026-09-23T12:39:53Z",
-      "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
-      "official_publisher": "React Router (Shopify / Remix team)",
-      "official_host": "reactrouter.com",
-      "version": "8.4.0",
-      "latest_checked_at": "2026-09-23T12:39:53Z",
-      "summary": "useSearchParams は現在の URLSearchParams と、更新して新しい URL へ遷移する setSearchParams を返す (文書の現行版 8.4.0、リポジトリは react-router-dom 7 系で API は同形)。使い方画面の選択トピック (?topic=) と検索語 (?q=) を URL に持ち、再読込と共有で同じ表示へ戻す根拠。"
-    },
-    {
-      "target_id": "tanstack-query-keys",
-      "retrieved_at": "2026-09-23T12:39:53Z",
-      "source_url": "https://github.com/TanStack/query/blob/main/packages/react-query/package.json",
-      "official_publisher": "TanStack",
-      "official_host": "github.com",
-      "version": "5.103.2",
-      "latest_checked_at": "2026-09-23T12:39:53Z",
-      "summary": "@tanstack/react-query の現行版は 5.103.2 (リポジトリは同じメジャー 5)。公式ガイド Query Keys は、問い合わせ関数が依存する変数を query key に含めれば独立にキャッシュされ変化時に自動で再取得されるとする。/api/guide の query key に期間を含める根拠。"
-    },
-    {
-      "target_id": "hono-routing",
-      "retrieved_at": "2026-09-23T12:39:53Z",
-      "source_url": "https://github.com/honojs/hono/blob/main/package.json",
-      "official_publisher": "Hono (honojs)",
-      "official_host": "github.com",
-      "version": "4.13.8",
-      "latest_checked_at": "2026-09-23T12:39:53Z",
-      "summary": "Hono の現行版は 4.13.8。app.get で GET ルートを定義し、別の Hono インスタンスを app.route で束ねる (登録順を誤ると 404)。GET /api/guide を既存の analyticsRoute に足し、authGuard 配下の /api/* に載せる根拠。"
-    },
-    {
-      "target_id": "owasp-asvs",
-      "retrieved_at": "2026-09-23T12:39:53Z",
-      "source_url": "https://github.com/OWASP/ASVS/blob/master/README.md",
-      "official_publisher": "OWASP Foundation",
-      "official_host": "github.com",
-      "version": "5.0.0",
-      "latest_checked_at": "2026-09-23T12:39:53Z",
-      "summary": "ASVS の最新安定版は 5.0.0 (2025 年 5 月)。Web アプリとサービスのためのセキュリティ要件集。/api/guide を利用者ごとに分離し、期間・トピック・検索語を許可リストと長さ上限で検証し、利用者に見せる送信の説明を事実どおりに保つ要件の根拠。"
+      "target_id": "cloudflare-d1-batch",
+      "retrieved_at": "2026-09-30T12:42:26Z",
+      "source_url": "https://developers.cloudflare.com/d1/worker-api/d1-database/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-22",
+      "latest_checked_at": "2026-09-30T12:42:26Z",
+      "summary": "D1 Database の Workers Binding API。D1 は auto-commit で動く (D1 operates in auto-commit)。batch() に渡した prepared statement の列は、順に、並行させずに実行・commit され (sequentially, non-concurrently)、列全体が SQL transaction になる。途中の 1 文が失敗すると、その文のエラーを返して列全体を中止し巻き戻す (aborts or rolls back the entire sequence)。統合・取り消しで revision の照合 (条件付きの書込み)・sub_vendors の変更・操作の記録・revision の +1・monthly_agg の subs 範囲の置き換え・snapshot の無効化を 1 回の db.batch にまとめ、一部だけ反映された状態を残さない database 章と、transaction にまとめられるのは 1 回の batch() に並べた文だけという decision-subsmerge-003 の操作ログ案の cons の根拠。"
     },
     {
       "target_id": "mdn-set-cookie",
-      "retrieved_at": "2026-09-23T12:39:53Z",
+      "retrieved_at": "2026-09-30T08:11:39Z",
       "source_url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie",
-      "official_publisher": "Mozilla (MDN Web Docs)",
+      "official_publisher": "MDN Web Docs (Mozilla)",
       "official_host": "developer.mozilla.org",
       "last_updated": "2026-09-01",
-      "latest_checked_at": "2026-09-23T12:39:53Z",
-      "summary": "Set-Cookie の HttpOnly は JavaScript からの読み取りを禁じ、Secure は HTTPS でだけ送り、SameSite=Strict は同一サイトからの要求でだけ送る (CSRF 対策)。/api/guide が既存のセッション Cookie の認証をそのまま使い、新しい認証経路を足さない根拠。"
+      "latest_checked_at": "2026-09-30T08:11:39Z",
+      "summary": "Set-Cookie の属性。HttpOnly は Document.cookie などの JavaScript からの参照を禁じ、Secure は https の要求でだけ送り、SameSite=Strict は cookie を設定したのと同じ site からの要求でだけ送る (クロスサイト要求では送らない)。新しい統合・取り消し・操作履歴の API でも、業務データのキー (全利用者で共通の TENANT_ID) と操作者 (actor) をどちらも本文やヘッダからではなく、既存の httpOnly・secure・SameSite=Strict のセッション cookie で認証した後にサーバーが設定する値だけから取る auth 章の根拠。"
     },
     {
-      "target_id": "cloudflare-d1",
-      "retrieved_at": "2026-09-23T12:39:53Z",
-      "source_url": "https://developers.cloudflare.com/d1/",
-      "official_publisher": "Cloudflare",
-      "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-04-30",
-      "latest_checked_at": "2026-09-23T12:39:53Z",
-      "summary": "D1 は SQLite の SQL 意味論を持つ Cloudflare の管理型サーバーレスデータベースで、Workers から読み書きする。本サイクルは表・列を足さず、防衛ラインの同月平均もガイドの数値も既存の D1 の明細から導く根拠。"
+      "target_id": "wai-aria-apg-checkbox",
+      "retrieved_at": "2026-09-30T08:13:43Z",
+      "source_url": "https://www.w3.org/TR/wai-aria-1.2/",
+      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
+      "official_host": "www.w3.org",
+      "version": "1.2",
+      "last_updated": "2023-06-06",
+      "latest_checked_at": "2026-09-30T08:14:03Z",
+      "summary": "WAI-ARIA 1.2 (W3C Recommendation 2023-06-06。/TR/wai-aria/ の最新版も 1.2 であることを確認)。checkbox role は true・false・mixed の 3 値を持つ checkable input。同じ W3C の APG Checkbox Pattern (https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/) は、一部だけ選ばれた tri-state のチェックボックスを aria-checked=\"mixed\" で示すとする。サブスク一覧のヘッダの全選択を、一部の行だけ選んだとき mixed (indeterminate) にする ui-ux 章の根拠。"
     },
     {
-      "target_id": "cloudflare-workers-static-assets",
-      "retrieved_at": "2026-09-23T12:39:53Z",
-      "source_url": "https://developers.cloudflare.com/workers/static-assets/",
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-30T13:09:12Z",
+      "source_url": "https://github.com/OWASP/ASVS/blob/master/5.0/en/0x25-V16-Security-Logging-and-Error-Handling.md",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "github.com",
+      "version": "5.0.0",
+      "last_updated": "2025-05",
+      "latest_checked_at": "2026-09-30T13:09:12Z",
+      "summary": "OWASP ASVS 5.0 (README の記載で最新安定版 5.0.0、May 2025) の V16 Security Logging and Error Handling。16.2.1 は、出来事の時系列を詳しく調べられるよう、各ログ項目に when・where・who・what のメタデータを含めることを求める。16.2.5 は、機微なデータをログに残すときはその保護水準に応じて記録を制御すること (資格情報や支払い情報は記録しない、session token はハッシュかマスクでだけ残す等) を求める。16.3.2 は認可の失敗を記録することを求める (L3 では、機微なデータへのアクセスを含む全ての認可判断を、機微なデータそのものは記録せずに残す)。全利用者が同じ共有テナントのデータを扱い、取り消しも全員に許すこのシステムでは、他人のデータを隠すことではなく、subscription_operations に操作者 (actor_user_id)・操作 (kind と対象)・時刻 (created_at) を残して誰が統合し誰が取り消したかを辿れるようにすること (16.2.1)、取引名・別名・email・金額をログに出さず取り消し用の記録を 30 日で消すこと (16.2.5)、認証・認可の検査 (authGuard・mustChangePasswordFence) が拒否した要求を path・理由・actor の id で記録すること (16.3.2) を定める security 章の根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1-limits",
+      "retrieved_at": "2026-09-30T12:44:55Z",
+      "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
       "official_publisher": "Cloudflare",
       "official_host": "developers.cloudflare.com",
-      "last_updated": "2026-07-03",
-      "latest_checked_at": "2026-09-23T12:39:53Z",
-      "summary": "Workers は Worker のコードと静的アセットを 1 つの単位で配備し、利用者に近い拠点から配信・キャッシュする。使い方画面の新しい chunk も既存の静的配信に載り、新しいバインディングや配信経路を足さない根拠。"
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-09-30T12:44:55Z",
+      "summary": "D1 の上限。各 D1 database は本質的に single-threaded で、問い合わせを 1 件ずつ処理する (inherently single-threaded, and processes queries one at a time)。処理を待つ要求は待ち行列に入り、待ち行列が満杯になると overloaded のエラーを返す。Worker の 1 invocation あたりの問い合わせは Workers Free で 50・Paid で 1000、1 文の bound parameter は 100、SQL 文の長さは 100,000 bytes、1 行は 2,000,000 bytes。統合・取り消しの 1 回の要求で発行する問い合わせを 50 未満に収め、monthly_agg の再挿入を json_each(?) の 1 文にまとめ (bound parameter の上限を避ける)、既存の Workers + D1 の範囲で作る infrastructure 章と、decision-subsmerge-003 の操作ログ案の cons・risks (1 文ずつ順に処理する・満杯なら overloaded) の根拠。"
+    },
+    {
+      "target_id": "ietf-idempotency-key-header",
+      "retrieved_at": "2026-09-30T08:14:02Z",
+      "source_url": "https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-idempotency-key-header-07",
+      "official_publisher": "IETF HTTPAPI Working Group",
+      "official_host": "datatracker.ietf.org",
+      "version": "draft-ietf-httpapi-idempotency-key-header-07",
+      "last_updated": "2025-10-15",
+      "latest_checked_at": "2026-09-30T08:14:02Z",
+      "summary": "The Idempotency-Key HTTP Header Field (Internet-Draft -07。datatracker 上の状態は Expired で RFC にはなっていない)。同じ key の再送には完了済みの最初の結果 (成功または失敗) を返し、処理中の同じ key には conflict (409) を返し、同じ key で別の本文を送ったら 422 を返すことを推奨し、key の一意性の範囲は資源の所有者が決めるとする。統合 API が Idempotency-Key を受けて同じ操作を二重に適用せず最初の結果を返し、key を user_id との組で一意にする backend 章の根拠。標準化前の文書なので、ヘッダ名と振る舞いの考え方だけを採り、draft の改訂に依存する実装はしない。"
+    },
+    {
+      "target_id": "tanstack-query-mutation-scopes",
+      "retrieved_at": "2026-09-30T08:11:25Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/mutations",
+      "official_publisher": "TanStack",
+      "official_host": "tanstack.com",
+      "version": "5.104.0",
+      "latest_checked_at": "2026-09-30T08:11:36Z",
+      "summary": "TanStack Query (React) の Mutations ガイド。同じ scope.id を持つ mutation は直列に実行され、先の mutation が終わるまで後から発行した mutation は isPaused: true の待機状態になる。version は TanStack/query リポジトリの packages/react-query/package.json の現行値 (リポジトリの依存は ^5.62.11 で同じ v5 系)。サブスク画面の書込みに scope: { id: 'subscriptions-write' } を付けて連続操作を 1 件ずつ順に送り、待機中・処理中・完了・失敗を useMutationState で表示する frontend 章の根拠。"
     },
     {
       "target_id": "vitest-expect",
-      "retrieved_at": "2026-09-23T12:39:53Z",
+      "retrieved_at": "2026-09-30T14:08:20Z",
       "source_url": "https://vitest.dev/api/expect",
       "official_publisher": "Vitest (VoidZero)",
       "official_host": "vitest.dev",
-      "version": "5.0.1",
-      "latest_checked_at": "2026-09-23T12:39:53Z",
-      "summary": "Vitest 5.0.1 の expect は Chai と Jest 互換の検証を提供する。core の guide-screen・信頼度の段階・防衛ラインの同月平均と、/api/guide の利用者分離を固定する単体・API テストの根拠。"
+      "version": "5.0.3",
+      "latest_checked_at": "2026-09-30T14:08:20Z",
+      "summary": "Vitest の expect API (文書の現行版 v5.0.3、npm の latest も 5.0.3)。toBe は Object.is による primitive の一致と同一参照、toEqual は構造の再帰比較、toHaveLength は length の値、rejects は Promise の拒否理由を取り出して検査する。リポジトリの vitest は ^4.1.11 だが、同時刻に確かめた v4 の文書 (https://v4.vitest.dev/api/expect、4.1.11) にも同じ 4 つの matcher が同じ意味で載っている。統合元の行が 0 件になること、5 件連続と 2 件同時の送信で 500 が 0 件であること、月額の和とサブスク集計の一致、古い revision の 409 を core・api・web のテストで検査する maintenance-ops 章の根拠。"
+    },
+    {
+      "target_id": "cloudflare-do-pricing",
+      "retrieved_at": "2026-09-30T12:44:55Z",
+      "source_url": "https://developers.cloudflare.com/durable-objects/platform/pricing/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-30",
+      "latest_checked_at": "2026-09-30T12:44:55Z",
+      "summary": "Durable Objects の料金。Workers Free と Paid の両方で使え、Free では SQLite backend の Durable Objects だけが使える。Free の枠は requests 100,000/day・duration 13,000 GB-s/day・rows read 5 million/day・rows written 100,000/day・stored 5 GB。Paid は requests 1M/month を超えると $0.15/M、duration 400,000 GB-s を超えると $12.50/M GB-s、rows read 25B を超えると $0.001/M、rows written 50M を超えると $1.00/M、stored 5 GB-month を超えると $0.20/GB-month。公式の計算例 (4 件) は、いずれも従量分に最低 $5/月 の利用料 (minimum $5/mo usage) を加えている。decision-subsmerge-003 の Durable Objects 案の cost_model と free_tier_limits の根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1-pricing",
+      "retrieved_at": "2026-09-30T11:23:35Z",
+      "source_url": "https://developers.cloudflare.com/d1/platform/pricing/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-09-30T12:39:30Z",
+      "summary": "D1 の料金。Free の枠は rows read 5 million/day・rows written 100,000/day・storage 5 GB で、日次の上限を超えると日次のリセットまでクエリがエラーを返す。Paid は rows read 25B/month を超えると $0.001/M、rows written 50M/month を超えると $1.00/M、storage 5 GB を超えると $0.75/GB-month。decision-subsmerge-003 の操作ログ案と画面側だけの案の cost_model、および再集計の書込み行数を抑える注意点の根拠。"
+    },
+    {
+      "target_id": "cloudflare-do-concept",
+      "retrieved_at": "2026-09-30T12:39:30Z",
+      "source_url": "https://developers.cloudflare.com/durable-objects/concepts/what-are-durable-objects/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-07-15",
+      "latest_checked_at": "2026-09-30T12:39:30Z",
+      "summary": "Durable Objects の概念。各 Durable Object は globally-unique name を持ち、single-threaded で cooperatively multi-tasked に動く。decision-subsmerge-003 の Durable Objects 案で、共有テナントのキーから名前を導いて 1 つの Durable Object に書込みを集めるという前提の根拠。同時に来た要求を待たせる仕組み (input gate) と、その保護が storage の操作の間に限られることは本ページには無く、cloudflare-do-rules に記録する。"
+    },
+    {
+      "target_id": "cloudflare-do-rules",
+      "retrieved_at": "2026-09-30T12:42:26Z",
+      "source_url": "https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-08-20",
+      "latest_checked_at": "2026-09-30T12:47:12Z",
+      "summary": "Rules of Durable Objects (best practices)。storage の操作を実行している間は input gate が新しい event を止め、他の要求は割り込めない (no other requests can interleave)。ただし input gate が守るのは storage の操作の間だけで、fetch() や R2 への書込みなど storage 以外の I/O の間は他の要求が割り込める。blockConcurrencyWhile() は、callback が非同期 I/O を含んでいても、終わるまで他の event を処理しないことを保証するが、初期化以外に使うと処理量が大きく落ちる (1 回 約 5ms なら 1 つの Durable Object は 約 200 requests/second が上限)。1 つの Durable Object に全トラフィックを集めると bottleneck になるとし、利用者・部屋・文書など自然な単位で分けることを勧める。decision-subsmerge-003 の Durable Objects 案 (共有テナントに 1 つ) の goal_fit・cons・risks の根拠。"
     }
   ]
 }

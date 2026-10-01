@@ -4,10 +4,14 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import {
+  type FreeeDeal,
   type MfTx,
   type PeriodRange,
   type SubscriptionsScreenInput,
   type SubscriptionsScreenVendor,
+  applyFreeeDeals,
+  emptyDataset,
+  resolveVendorMerges,
   subsCategoryOf,
   subsReviewCards,
   subsSpendAlerts,
@@ -15,6 +19,7 @@ import {
   subscriptionVendorDetail,
   subscriptions,
   subscriptionsScreen,
+  vendorKey,
 } from '../src/index.js';
 import { GENERATED_AT, PERIOD, PREVIOUS, datasetOf, fixtureInput, pay } from './subs-screen-fixture.js';
 
@@ -536,5 +541,149 @@ describe('未登録の候補', () => {
       }),
     );
     expect(s.rows).toHaveLength(0);
+  });
+});
+
+/* ======================== 統合 (specs/spec-subscriptions-merge.md) ======================== */
+
+it('先行する第三ベンダーの重複 alias が統合元の正規名を奪わない', () => {
+  const vendors = [
+    v({ id: 3, name: '第三ベンダー', aliases: ['VOICE', 'Aqua Voice'] }),
+    { ...v({ id: 1, name: 'Aqua Voice' }), mergedIntoId: 2 },
+    v({ id: 2, name: '統合先' }),
+  ];
+  const input = inputOf(
+    { 'Aqua Voice': series('2026-01', [100, 100, 100]) },
+    { from: '2026-01', to: '2026-03' },
+    vendors,
+  );
+  expect(subscriptionVendorDetail(input, vendorKey('統合先'))?.transactionCount).toBe(3);
+  expect(subscriptionVendorDetail(input, vendorKey('第三ベンダー'))?.transactionCount ?? 0).toBe(0);
+});
+
+describe('統合した行の表示 (AC-001・AC-002 の core 側)', () => {
+  const range: PeriodRange = { from: '2026-01', to: '2026-03' };
+  const months = ['2026-01', '2026-02', '2026-03'];
+  const payments = {
+    'AQUAVOICE INC': series('2026-01', [1_500, 1_500, 1_500]),
+    'KAKU MOJI': series('2026-01', [2_000, 2_000, 2_000]),
+  };
+  const source = v({ id: 1, name: 'Aqua Voice', aliases: ['AQUAVOICE'], category: '業務ツール' });
+  const target = v({ id: 2, name: '架空文字起こし', aliases: ['KAKU MOJI'], category: '業務ツール' });
+  // 統合元は mergedIntoId で統合先を指す (P05 で SubscriptionsScreenVendor に足す列)
+  const merged = [{ ...source, mergedIntoId: 2 }, target] as SubscriptionsScreenVendor[];
+  const rootKey = vendorKey('架空文字起こし');
+
+  it('統合前は統合元と統合先が別の行で出る (前提の確認)', () => {
+    const s = subscriptionsScreen(inputOf(payments, range, [source, target]));
+    expect(s.rows.find((r) => r.vendorKey === 'aquavoice')?.estimatedMonthly).toBe(1_500);
+    expect(s.rows.find((r) => r.vendorKey === rootKey)?.estimatedMonthly).toBe(2_000);
+  });
+
+  it('統合元の行は一覧から消え、統合先の推定月額は統合前の和になる', () => {
+    const before = subscriptionsScreen(inputOf(payments, range, [source, target]));
+    const s = subscriptionsScreen(inputOf(payments, range, merged));
+    expect(s.rows.map((r) => r.vendorKey)).not.toContain('aquavoice');
+    const root = s.rows.find((r) => r.vendorKey === rootKey);
+    expect(root?.estimatedMonthly).toBe(3_500);
+    expect(root?.matchedNameCount).toBe(2);
+    // この fixture は同じ月・周期で払うため、再推定でも月額の合計は変わらない
+    expect(s.kpis.monthlyTotal).toBe(before.kpis.monthlyTotal);
+  });
+
+  it('統合元の取引名は未登録の候補にも出ない', () => {
+    const s = subscriptionsScreen(inputOf(payments, range, merged));
+    expect(s.rows.filter((r) => r.status === 'unregistered').map((r) => r.vendorKey)).not.toContain(
+      vendorKey('AQUAVOICE INC'),
+    );
+  });
+
+  it('統合元のキーで詳細を引くと null、統合先の詳細は両方の取引名を持つ', () => {
+    const input = inputOf(payments, range, merged);
+    expect(subscriptionVendorDetail(input, 'aquavoice')).toBeNull();
+    const detail = subscriptionVendorDetail(input, rootKey);
+    expect(detail?.rawNames.map((n) => n.name).sort()).toEqual(['AQUAVOICE INC', 'KAKU MOJI']);
+    expect(detail?.transactionCount).toBe(6);
+  });
+
+  it('freee 仕訳でも applyFreeeDeals と同じ取引を同じ根へ割り当てる', () => {
+    const deals: FreeeDeal[] = months.flatMap((m) => [
+      {
+        month: m,
+        date: `${m}-05`,
+        io: 'expense',
+        partner: 'AQUAVOICE INC',
+        accountRaw: '支払手数料',
+        accountNorm: 'サブスク・通信',
+        amount: 1_500,
+      },
+      {
+        month: m,
+        date: `${m}-07`,
+        io: 'expense',
+        partner: 'KAKU MOJI',
+        accountRaw: '支払手数料',
+        accountNorm: 'サブスク・通信',
+        amount: 2_000,
+      },
+    ]);
+    const input: SubscriptionsScreenInput = {
+      ...inputOf({}, range, merged),
+      all: datasetOf([], months, 100_000),
+      deals,
+    };
+    const detail = subscriptionVendorDetail(input, rootKey);
+    const screenByMonth = months.map((m) =>
+      (detail?.recent ?? []).filter((t) => t.date.startsWith(m)).reduce((sum, t) => sum + t.amount, 0),
+    );
+
+    const { vendors } = resolveVendorMerges(
+      merged.map((m) => ({
+        id: m.id,
+        name: m.name,
+        aliases: m.aliases,
+        accounts: m.accounts,
+        mergedIntoId: (m as { mergedIntoId?: number | null }).mergedIntoId ?? null,
+      })),
+    );
+    const data = emptyDataset();
+    data.subs.vendors = vendors.map((x) => x.name);
+    data.subs.aliases = Object.fromEntries(vendors.map((x) => [x.name, x.aliases]));
+    data.subs.accounts = Object.fromEntries(vendors.map((x) => [x.name, x.accounts ?? []]));
+    data.subs.matrix = Object.fromEntries(vendors.map((x) => [x.name, []]));
+    applyFreeeDeals(data, deals, months);
+
+    expect(screenByMonth).toEqual([3_500, 3_500, 3_500]);
+    expect(data.subs.matrix['架空文字起こし']).toEqual(screenByMonth);
+    expect(subscriptionVendorDetail(input, 'aquavoice')).toBeNull();
+  });
+});
+
+describe('統合後の再推定の実測（合計保持の仕様判断は未確定）', () => {
+  const source = v({ id: 1, name: '架空元' });
+  const target = v({ id: 2, name: '架空先' });
+  const range = { from: '2025-01', to: '2026-03' };
+  it('最終支払月が異なると各行の最新月額の和と統合後の最新月額が異なる', () => {
+    const payments = {
+      架空元: { '2026-01': 100, '2026-02': 100 },
+      架空先: { '2026-02': 200, '2026-03': 200 },
+    };
+    const before = subscriptionsScreen(inputOf(payments, range, [source, target]));
+    const after = subscriptionsScreen(inputOf(payments, range, [{ ...source, mergedIntoId: 2 }, target]));
+    expect(before.kpis.monthlyTotal).toBe(300);
+    expect(after.kpis.monthlyTotal).toBe(200);
+    expect(after.rows.find((row) => row.vendorKey === vendorKey(target.name))?.billing).toBe('monthly');
+  });
+  it('年払いと月払いを統合すると周期も再推定され、年払いの月割りとの和にはならない', () => {
+    const payments = {
+      架空元: { '2025-01': 1200, '2026-01': 1200 },
+      架空先: { '2026-01': 200, '2026-02': 200, '2026-03': 200 },
+    };
+    const before = subscriptionsScreen(inputOf(payments, range, [source, target]));
+    const after = subscriptionsScreen(inputOf(payments, range, [{ ...source, mergedIntoId: 2 }, target]));
+    expect(before.rows.find((row) => row.vendorKey === vendorKey(source.name))?.billing).toBe('annual');
+    expect(before.kpis.monthlyTotal).toBe(300);
+    expect(after.rows.find((row) => row.vendorKey === vendorKey(target.name))?.billing).toBe('monthly');
+    expect(after.kpis.monthlyTotal).toBe(200);
   });
 });

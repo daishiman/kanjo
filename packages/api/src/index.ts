@@ -17,6 +17,7 @@ import { cashPurgeLogLine, runCashSoftDeletePurge } from './cash-purge.js';
 import { runDeletionRetention } from './deletion-retention.js';
 import { importOriginGuard, runImportStagingCleanup } from './import-rate-limit.js';
 import { cleanupStalePasswordLoginRateLimits } from './login-rate-limit.js';
+import { PRIVATE_NO_STORE } from './public-validation.js';
 import { runR2Cleanup } from './r2-cleanup.js';
 import { adminUsersRoute } from './routes/admin-users.js';
 import { aiAgentRoute, aiRoute } from './routes/ai.js';
@@ -148,7 +149,41 @@ app.notFound((c) => {
   return c.env.ASSETS.fetch(c.req.raw);
 });
 
+/**
+ * D1 は 1 つの DB への要求が溜まりすぎると、SQL を実行する前に
+ * `D1_ERROR: D1 DB is overloaded. Too many requests queued.` で拒否する。
+ * 実行前の拒否なので未適用であり、同じ Idempotency-Key で送り直してよい。
+ * 「適用されたか分からない」500 と分けるため、503 d1_overloaded (retryable) に言い換える。
+ *
+ * ただし「未適用」と保証できるのは、書込みを 1 回の D1 batch で行う route だけ
+ * (サブスクの操作は commitOperation の 1 batch)。複数の batch や個別の文に分けて書く route では、
+ * 前の batch が適用済みのまま後の要求で拒否されうる。自動再送の対象を広げるときは、
+ * その route が 1 batch で書くかを確かめる。
+ */
+const isD1Overloaded = (err: Error): boolean => err.message.includes('D1 DB is overloaded');
+
 app.onError((err, c) => {
+  if (isD1Overloaded(err)) {
+    console.error(
+      JSON.stringify({
+        level: 'warn',
+        event: 'd1_overloaded',
+        requestId: c.get('requestId'),
+        path: c.req.path,
+      }),
+    );
+    return c.json(
+      {
+        error: {
+          code: 'd1_overloaded',
+          message: 'データベースが混み合っています。少し待ってから再試行してください',
+          retryable: true,
+        },
+      },
+      503,
+      PRIVATE_NO_STORE,
+    );
+  }
   // 金融明細のため、エラーログにも明細内容・金額は出さない。
   // ただし種別だけでは本番の障害を追えない(どの行で落ちたか分からず、再現に何時間もかかる)。
   // スタックはコードの位置しか含まないので、先頭数フレームだけ残す。message は

@@ -1,0 +1,1309 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-subscriptions-merge/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-subscriptions-merge",
+  "parent_feature": "feat-subscriptions-merge",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-SUBSMERGE-P01": "beads",
+    "SYS-SUBSMERGE-P02": "beads",
+    "SYS-SUBSMERGE-P03": "beads",
+    "SYS-SUBSMERGE-P04": "beads",
+    "SYS-SUBSMERGE-P05": "beads",
+    "SYS-SUBSMERGE-P06": "beads",
+    "SYS-SUBSMERGE-P07": "beads",
+    "SYS-SUBSMERGE-P08": "beads",
+    "SYS-SUBSMERGE-P09": "beads",
+    "SYS-SUBSMERGE-P10": "beads",
+    "SYS-SUBSMERGE-P11": "beads",
+    "SYS-SUBSMERGE-P12": "beads",
+    "SYS-SUBSMERGE-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件の基準線と着手時の確認事項 (0058 の空き・TanStack の型・問い合わせ数・overloaded の判定・照合順の数値変化) の確定",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p01",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "resolveVendorMerges・統合と取り消しの db.batch・fence の登録・migration 0058・backup の mergedIntoName・画面の待ち行列の設計決定記録",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P01"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "名寄せの 1 か所導出・書込みの原子性・テナント分離と操作者の記録の独立設計レビュー",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P02"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "名寄せ・統合と取り消し・並行制御・選択と待ち行列の失敗テストの先行作成",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P03"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "packages/core/test/subs-contract.test.ts",
+        "packages/core/test/subs-screen-contract.test.ts",
+        "packages/api/src/subs-screen.integration.test.ts",
+        "packages/api/src/subs-merge-operations.integration.test.ts",
+        "packages/api/src/subs-vendor-scope.test.ts",
+        "packages/api/src/expense-projection.integration.test.ts",
+        "packages/web/src/subscriptions-screen.dom.test.tsx",
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "migration 0058・resolveVendorMerges・統合と取り消しと操作履歴の API・既存書込みの revision・backup・選択バーと操作状態の画面の実装",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P04"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "migrations/0058_subscription_merge_operations.sql",
+        "packages/core/src/subs.ts",
+        "packages/core/src/subs-screen.ts",
+        "packages/core/src/dataset.ts",
+        "packages/core/src/expense-projection.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/import-active.ts",
+        "packages/api/src/import-lifecycle.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/subscription-writes.ts",
+        "packages/api/src/routes/subs.ts",
+        "packages/api/src/routes/subscription-operations.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/api/src/routes/settings.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/index.test.ts",
+        "packages/api/src/deletion-schema.test.ts",
+        "packages/api/src/import-lifecycle-pure.test.ts",
+        "packages/web/src/api.ts",
+        "packages/web/src/api-client.ts",
+        "packages/web/src/components/Page.tsx",
+        "packages/web/src/pages/Subscriptions.tsx",
+        "packages/web/src/pages/subscriptions/",
+        "packages/web/src/pages/import/import-test-fakes.ts",
+        "packages/web/src/diagnosis-next-action-receivers.dom.test.tsx",
+        "packages/web/src/mobile-financial-visualization.dom.test.tsx"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと型検査と lint の実行記録",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P05"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 O1 から O4 と U5 の検証",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P06"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "旧い統合経路・名寄せを通らない照合・色の直書き・describeError を通る操作状態の文言の残存の読取専用監査",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p08",
+        "audit"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P07"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・ログの秘匿・D1 の問い合わせ数・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P08"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P09"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P10"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "統合と取り消し・操作履歴の API・migration 0058・保持と掃除の docs 最終同期",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P11"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md",
+        "docs/data-schema.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SUBSMERGE-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信 (Migrate 0058 の後に Deploy) とクローズアウト",
+      "project_id": "feature-package-feat-subscriptions-merge",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "subscriptions-merge",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-30T15:37:43Z",
+      "updated_at": "2026-09-30T15:37:43Z",
+      "depends_on": [
+        "SYS-SUBSMERGE-P12"
+      ],
+      "related_nodes": [
+        "arch-subscriptions-merge-auth",
+        "arch-subscriptions-merge-backend",
+        "arch-subscriptions-merge-database",
+        "arch-subscriptions-merge-frontend",
+        "arch-subscriptions-merge-infrastructure",
+        "arch-subscriptions-merge-maintenance-ops",
+        "arch-subscriptions-merge-security",
+        "arch-subscriptions-merge-ui-ux",
+        "spec-subscriptions-merge"
+      ],
+      "resource_scope": [
+        "docs/subscriptions-screen.md"
+      ],
+      "parent_feature": "feat-subscriptions-merge",
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-subscriptions-merge/plan-findings.json",
+        "evaluated_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8",
+        "imported_at": "2026-09-30T15:37:43Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-subscriptions-merge/sys-subsmerge-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-30T15:19:39Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}
