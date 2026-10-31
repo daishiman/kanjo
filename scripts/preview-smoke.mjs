@@ -127,19 +127,24 @@ const jsonBody = (value) => ({
 
 let server;
 try {
-  run('pnpm', [
-    '--filter',
-    '@kanjo/api',
-    'exec',
-    'wrangler',
-    'd1',
-    'migrations',
-    'apply',
-    'kanjo-db',
-    '--local',
-    '--persist-to',
-    stateDir,
-  ]);
+  // 0059まで増えたfresh migrationは低速なローカル実行で60秒を超えるため、ここだけ枠を広げる。
+  run(
+    'pnpm',
+    [
+      '--filter',
+      '@kanjo/api',
+      'exec',
+      'wrangler',
+      'd1',
+      'migrations',
+      'apply',
+      'kanjo-db',
+      '--local',
+      '--persist-to',
+      stateDir,
+    ],
+    120_000,
+  );
   // migration直後の空DBに、ローカル専用の合成招待だけを作る。
   // 平文tokenはstdinだけで渡し、SQLにはSHA-256のみが入る。
   const seedSql = spawnSync(

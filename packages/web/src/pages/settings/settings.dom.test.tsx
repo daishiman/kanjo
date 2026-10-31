@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { AccountUserDetails } from '../../api.js';
 import { PeriodProvider } from '../../period.js';
 import { SettingsPage } from './SettingsPage.js';
 import { settingsDraftKey } from './draft.js';
@@ -39,6 +40,17 @@ import {
 const USER_ID = 'u-test';
 const DRAFT_KEY = settingsDraftKey(USER_ID);
 const SAVED_AT = '2026-09-01T00:00:00.000Z';
+const AUTH_USER = {
+  id: USER_ID,
+  email: 'owner@example.test',
+  role: 'admin',
+  status: 'active',
+  createdAt: SAVED_AT,
+  lastLoginAt: null,
+  twoFactorEnabled: true,
+  providers: ['credential'],
+  authAccounts: [{ id: 'account-test', providerId: 'credential' }],
+} satisfies AccountUserDetails;
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -88,8 +100,7 @@ function renderPage(opts: { view?: SettingsScreenView; handle?: Handler; period?
       calls.push({ url, init });
       const custom = await opts.handle?.(url, init);
       if (custom) return custom;
-      if (url.pathname.endsWith('/auth/me'))
-        return json({ authenticated: true, user: { id: USER_ID, username: 'owner', role: 'admin' } });
+      if (url.pathname.endsWith('/auth/me')) return json({ authenticated: true, user: AUTH_USER });
       if (url.pathname.endsWith('/settings/screen') && init?.method === 'PUT')
         return json({ ok: true, savedAt: '2026-09-02T00:00:00.000Z', changes: 1, recomputed: true });
       if (url.pathname.endsWith('/settings/screen')) return json(opts.view ?? screenView());

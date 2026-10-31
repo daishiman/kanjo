@@ -23,7 +23,11 @@ import { splitMigrationStatements } from './migration-test-support.js';
 import { recordTestMigrationHead } from './schema-guard.test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
-const auth = { ACCESS_AUD: '', ACCESS_TEAM_DOMAIN: '', BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars' };
+const auth = {
+  ACCESS_AUD: '',
+  ACCESS_TEAM_DOMAIN: '',
+  BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
+};
 
 let mf: Miniflare;
 let d1: D1Database;

@@ -8,7 +8,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ImportRunCommitResponse, ImportRunUndoPreflight } from '../api.js';
 import { ImportPage } from './Import.js';
 import {
@@ -21,8 +21,14 @@ import {
 } from './import/import-test-fakes.js';
 import { importMonthsText } from './import/view-model.js';
 
+beforeEach(() => {
+  // 取り消し可能な履歴を検証する時計を取込2日後に固定する。
+  vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-09-22T00:00:00.000Z'));
+});
+
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 

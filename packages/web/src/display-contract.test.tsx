@@ -86,7 +86,9 @@ describe('業務ルート契約', () => {
       APP_ROUTES.length + 4,
     );
     expect(AUTHENTICATED_APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
-    expect(APP_SOURCE).toContain("import { AuthenticatedApp } from './AuthenticatedApp.js'");
+    expect(APP_SOURCE).toMatch(/const AuthenticatedApp = lazy\(/);
+    expect(APP_SOURCE).toContain("import('./AuthenticatedApp.js')");
+    expect(APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
     expect(APP_SOURCE).not.toMatch(/lazy\(\(\) =>\s*import\('\.\/pages\//);
     expect(APP_SOURCE.match(/import \{ \w+ \} from '\.\/pages\//g)).toBeNull();
     expect(APP_SOURCE.match(/import \{ \w+ \} from '\.\/features\//g)).toEqual([

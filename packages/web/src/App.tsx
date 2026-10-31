@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { AuthenticatedApp } from './AuthenticatedApp.js';
 import { AUTH_EVENT, type AuthState, api } from './api.js';
 import { installDiagnostics } from './diagnostics-buffer.js';
 import { PublicRoutes } from './features/auth/PublicRoutes.js';
@@ -12,6 +11,11 @@ import { isPublicRoute, publicRoutePolicy } from './routeMetadata.js';
 // 収集は最初の描画より前に始める。エラーは「改善を送る」ボタンを押す前に起きているため、
 // useEffect まで待つと肝心の1件目を取り逃がす。二重 install は buffer 側が弾く
 installDiagnostics();
+
+// 未認証の人へ業務shellとナビゲーションを送らない。ログイン画面は即表示できるままにする。
+const AuthenticatedApp = lazy(() =>
+  import('./AuthenticatedApp.js').then((module) => ({ default: module.AuthenticatedApp })),
+);
 
 /** 認証状態と稼働状態の他は、前の利用者の結果を次の利用者へ見せない */
 const KEEP_ACROSS_SIGN_IN = new Set(['auth', 'service-status']);
@@ -84,7 +88,13 @@ export function App() {
     }
     // 招待の承諾と再設定はログアウト中の操作とする (§7.16)
     if (policy?.authenticated === 'home') return <Navigate to="/" replace />;
-    if (!isPublicRoute(pathname)) return <AuthenticatedApp />;
+    if (!isPublicRoute(pathname)) {
+      return (
+        <Suspense fallback={<output className="page-state loading">画面を読み込み中…</output>}>
+          <AuthenticatedApp />
+        </Suspense>
+      );
+    }
   }
 
   // 認証前の画面はアプリ枠の外に出す。枠の中に置くと、未認証のままヘッダーや

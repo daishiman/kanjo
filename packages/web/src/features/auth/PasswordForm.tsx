@@ -7,6 +7,7 @@
 import { type FormEvent, type KeyboardEvent, type RefObject, useId } from 'react';
 import { Button } from '../../components/Button.js';
 import { Input, PasswordInput } from '../../components/Input.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { FormAlert } from './fields.js';
 
 export interface PasswordFormProps {
@@ -94,17 +95,15 @@ export function PasswordForm(props: PasswordFormProps) {
         />
       </div>
       <div className="login-remember">
-        <label className="login-remember-control" htmlFor={rememberId}>
-          <input
-            id={rememberId}
-            type="checkbox"
-            checked={props.remember}
-            disabled={busy}
-            aria-describedby={rememberNoteId}
-            onChange={(event) => props.onRemember(event.target.checked)}
-          />
-          <span>次回からもログイン状態を保持する</span>
-        </label>
+        <SelectionCheckbox
+          className="login-remember-control"
+          id={rememberId}
+          label="次回からもログイン状態を保持する"
+          checked={props.remember}
+          disabled={busy}
+          aria-describedby={rememberNoteId}
+          onChange={(event) => props.onRemember(event.target.checked)}
+        />
         {/* 既定ONの帰結を隠さない。30日という長さは開示した上で選んでもらう */}
         <p id={rememberNoteId} className="login-remember-note">
           保持する場合は30日間、しない場合は12時間でログイン状態が切れます
