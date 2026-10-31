@@ -14,6 +14,9 @@ import {
   type OwnerLabelError,
   type SettingsDiff,
   type SettingsFieldError,
+  TAX_ACCOUNT_MAP_BIG_MAX,
+  TAX_ACCOUNT_MAP_ROWS_MAX,
+  type TaxAccountMapRowIssue,
 } from '@kanjo/core';
 import type { ApiError } from '../../api-client.js';
 import type { BackupItem } from '../../api.js';
@@ -27,12 +30,13 @@ export const LEAD_LINES = [
   'ここでの設定は、今後の取込・集計・分析・レポートに反映されます。',
 ] as const;
 
-/** 節ナビ 8 項目。id は節の要素の id と同じ */
+/** 節ナビ 9 項目。id は節の要素の id と同じ */
 export const SECTION_NAV = [
   { id: 'norm-rules', label: '集計ルール' },
   { id: 'owner-labels', label: '名義' },
   { id: 'stats', label: '統計' },
   { id: 'cash-overrides', label: '現金上書き' },
+  { id: 'tax-account-map', label: '勘定科目の対応表' },
   { id: 'data', label: 'データ' },
   { id: 'backups', label: 'バックアップ' },
   { id: 'account', label: 'アカウント' },
@@ -157,6 +161,59 @@ export function fieldErrorText(field: string, code: SettingsFieldError | 'not_in
   return '入力内容を確認してください。';
 }
 
+/* -------- 勘定科目の対応表 (spec-classify-bulk-save FR-17・BR-09) -------- */
+
+export const TAX_MAP_TEXT = {
+  heading: '勘定科目の対応表',
+  lead: 'MF の大項目を勘定科目に対応づけます。事業の明細の提案に使います。追加と削除はすぐに保存されます。',
+  note: '保存済みの明細の値は変わりません。以後の提案に使われます。',
+  big: '大項目',
+  account: '勘定科目',
+  actions: '操作',
+  bigPlaceholder: '例：保険',
+  accountPlaceholder: '勘定科目を選ぶ',
+  add: '対応を追加',
+  adding: '追加中…',
+  remove: '削除',
+  empty: '対応表はまだありません。',
+  limit: `対応表は${TAX_ACCOUNT_MAP_ROWS_MAX}行までです。`,
+  removeBody:
+    '以後、この大項目の事業の明細に勘定科目の提案が付かなくなります。保存済みの明細の値は変わりません。',
+  removeConfirm: '削除する',
+  removeBusy: '削除しています…',
+  cancel: 'キャンセル',
+} as const;
+
+export const taxMapRemoveLabel = (big: string): string => `「${big}」の対応を削除`;
+export const taxMapRemoveTitle = (big: string): string => `「${big}」の対応を削除しますか？`;
+export const taxMapAdded = (big: string): string => `「${big}」の対応を追加しました。`;
+export const taxMapRemoved = (big: string): string => `「${big}」の対応を削除しました。`;
+
+/** 欄の検査の文言。core の taxAccountMapRowIssue と、サーバの duplicate_category を 1 か所で言い分ける */
+export function taxMapFieldText(
+  field: 'categoryBig' | 'taxAccount',
+  code: NonNullable<TaxAccountMapRowIssue['categoryBig'] | TaxAccountMapRowIssue['taxAccount']> | 'duplicate',
+): string {
+  if (code === 'duplicate') return 'この大項目はすでに対応表にあります。';
+  if (code === 'required') return '大項目を入力してください。';
+  if (code === 'too_long') return `${TAX_ACCOUNT_MAP_BIG_MAX}文字以内で入力してください。`;
+  if (code === 'control_char') return '改行やタブなどの制御文字は使えません。';
+  if (code === 'reserved') return '『カテゴリなし』は予約の値のため、大項目に使えません。';
+  if (code === 'not_in_list' || field === 'taxAccount') return '勘定科目を一覧から選んでください。';
+  return '入力内容を確認してください。';
+}
+
+/** 追加・削除の失敗の文言 (欄に出さないもの)。404 は読み直した後に出す */
+export function taxMapErrorMessage(error: unknown): string {
+  const e = errorOf(error);
+  if (e.status === 400 && e.code === 'too_many_rows') return TAX_MAP_TEXT.limit;
+  if (e.status === 404) return '対応表の行が見つかりませんでした。最新の対応表を読み直しました。';
+  if (e.status === 400) return '対応表を保存できませんでした。入力内容を確認してください。';
+  // 取込や他の更新と重なった 409 (canonical_write_busy) は、サーバの文で待って送り直すよう伝える
+  if (e.status === 409 && typeof e.message === 'string' && e.message !== '') return e.message;
+  return '対応表を保存できませんでした。時間をおいてもう一度お試しください。';
+}
+
 /* -------- データ・復元 (§7.9) -------- */
 
 export const DATA_TEXT = {
@@ -238,7 +295,10 @@ export function diffLines(diff: SettingsDiff): string[] {
     : '統計（変更なし）';
   const c = diff.cashOverrides;
   const cash = `現金上書き（追加 ${c.added.count} 件・変更 ${c.changed.count} 件・削除 ${c.removed.count} 件）`;
-  return [rules, owners, stat, cash];
+  // 対応表は保存バーを通さないが、復元では入れ替わる (spec-classify-bulk-save FR-17)。total に入る差分を行にも出す
+  const t = diff.taxAccountMap;
+  const taxMap = `${TAX_MAP_TEXT.heading}（追加 ${t.added.count} 件・変更 ${t.changed.count} 件・削除 ${t.removed.count} 件）`;
+  return [rules, owners, stat, cash, taxMap];
 }
 
 /* -------- バックアップ (§7.10) -------- */

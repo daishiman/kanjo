@@ -7,6 +7,8 @@
  * 下書きに無い節は新しい保存済みの値を採り、在る節は下書きを残す (他の画面の更新を上書きしない)。
  * 形が壊れている・v が 1 でない・30 日を過ぎた下書きは捨てる。ログアウトで接頭辞のキーを全て消す。
  * 未保存件数・値の検証は core (countSettingsChanges・validateSettingsInput) に任せる。
+ * 勘定科目の対応表は専用 API で 1 行ずつ即時に確定するので、下書きの節に入れず保存済みの値の写しだけを持つ
+ * (spec-classify-bulk-save FR-17)。
  */
 import {
   CASH_OVERRIDE_AMOUNT_MAX,
@@ -22,6 +24,7 @@ import {
   type SettingsInput,
   type SettingsScreenView,
   type SettingsState,
+  type TaxAccountMapRow,
   countSettingsChanges,
   validateOwnerLabels,
   validateSettingsInput,
@@ -63,9 +66,14 @@ export interface SettingsForm {
   ownerLabels: Record<OwnerKey, string>;
   statMinMonths: string;
   cashOverrides: CashOverrideForm[];
+  /**
+   * 勘定科目の対応表 (保存済みの値の写し)。入力で変えない。
+   * 未保存件数の比較に渡す SettingsState が対応表を要るので持つが、下書きの節 (SECTIONS) には入れない
+   */
+  taxAccountMap: TaxAccountMapRow[];
 }
 
-type Section = keyof SettingsForm;
+type Section = Exclude<keyof SettingsForm, 'taxAccountMap'>;
 const SECTIONS: readonly Section[] = ['normRules', 'ownerLabels', 'statMinMonths', 'cashOverrides'];
 
 /** 集計ルールの行 id。推測できない値にする (BR-02) */
@@ -96,7 +104,10 @@ export function withAllRows(rows: readonly CashOverrideForm[]): CashOverrideForm
 
 /** 保存済みの値を入力欄の形にする */
 export function formOf(
-  view: Pick<SettingsScreenView, 'normRules' | 'ownerLabels' | 'statMinMonths' | 'cashOverrides'>,
+  view: Pick<
+    SettingsScreenView,
+    'normRules' | 'ownerLabels' | 'statMinMonths' | 'cashOverrides' | 'taxAccountMap'
+  >,
 ): SettingsForm {
   return {
     normRules: view.normRules.map((r) => ({
@@ -120,6 +131,7 @@ export function formOf(
         isNew: false,
       })),
     ),
+    taxAccountMap: view.taxAccountMap.map((r) => ({ ...r })),
   };
 }
 
@@ -142,7 +154,7 @@ export function parseMonths(raw: string): number | undefined {
 const isBlankAllRow = (r: CashOverrideForm): boolean =>
   r.scope === 'all' && r.amount.trim() === '' && r.memo.trim() === '';
 
-/** 入力欄 → 設定 4 種。読めない数値は NaN にし、保存済みと必ず違う値として数える */
+/** 入力欄 → 設定 5 種。読めない数値は NaN にし、保存済みと必ず違う値として数える。対応表は保存済みのまま渡す */
 export function stateOf(form: SettingsForm): SettingsState {
   return {
     normRules: form.normRules.map((r, i) => ({
@@ -171,6 +183,7 @@ export function stateOf(form: SettingsForm): SettingsState {
           memo: r.memo.trim(),
         };
       }),
+    taxAccountMap: form.taxAccountMap.map((r) => ({ ...r })),
   };
 }
 

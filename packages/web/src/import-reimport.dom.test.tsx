@@ -58,7 +58,8 @@ const stub = (runs: ImportRunRowView[], reimport: (body: unknown, index: number)
   return server;
 };
 
-const replaceButtons = () => screen.findAllByRole('button', { name: /の取込を置換$/ });
+// 非同期の初回読み込みは、取込画面の他の DOM テストと同じ5秒まで待つ。
+const replaceButtons = () => screen.findAllByRole('button', { name: /の取込を置換$/ }, { timeout: 5000 });
 
 beforeEach(() => {
   // 履歴の操作は取込後30日で変わる。検証時計を取込2日後に固定し、Retry-Afterの待機は実時間で行う。

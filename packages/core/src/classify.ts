@@ -1,3 +1,4 @@
+import { categoryForTotals } from './no-category.js';
 import { NORM_RULE_CAT_SRC, type NormRule, resolveVendorRule } from './norm-rules.js';
 /**
  * 公私仕分けと属性の解決。
@@ -411,7 +412,8 @@ export function applyClassification(
         inc[k] = (inc[k] || 0) + t.a;
         owners[ok].income += t.a;
       } else {
-        const k = r.big || '未分類';
+        // 『カテゴリなし』は保存値のまま残し、数えるときだけ未分類の行へ入れる (FR-18)
+        const k = categoryForTotals(r.big) || '未分類';
         exp[k] = (exp[k] || 0) - t.a;
         owners[ok].expense += -t.a;
       }

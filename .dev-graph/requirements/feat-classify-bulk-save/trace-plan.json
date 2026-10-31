@@ -1,0 +1,250 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-classify-bulk-save",
+  "snapshot_digest": "sha256:a5d2c7f929b6151f15a49a0531f9ea9292a2a26204ca8c486fc99bb62318403e",
+  "source_lineage": [
+    "system-spec/index.md",
+    "system-spec/00-requirements-definition.md",
+    "specs/spec-classify-bulk-save.md",
+    "architecture/classify-bulk-save-ui-ux.md",
+    "architecture/classify-bulk-save-frontend.md",
+    "architecture/classify-bulk-save-backend.md",
+    "architecture/classify-bulk-save-database.md",
+    "architecture/classify-bulk-save-auth.md",
+    "architecture/classify-bulk-save-security.md",
+    "architecture/classify-bulk-save-infrastructure.md",
+    "architecture/classify-bulk-save-maintenance-ops.md",
+    "features/feat-classify-bulk-save.md"
+  ],
+  "plan_package": ".dev-graph/plans/feature-package-feat-classify-bulk-save",
+  "plan_digest": "sha256:601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+  "requirements": [
+    {
+      "requirement_id": "REQ-CB-001",
+      "title": "一括指定の値を core の 1 つの解決関数で決める",
+      "source_refs": [
+        "specs/spec-classify-bulk-save.md",
+        "features/feat-classify-bulk-save.md"
+      ],
+      "spec_anchor": "FR-02 / FR-03 / FR-05 / BR-01 / BR-02 / BR-03 / AC-02 / AC-03 / AC-04 / O1",
+      "statement": "packages/core に一括指定の解決関数を 1 つ置き、画面とサーバの一括保存 API が同じ関数を通す。今は画面の `resolveBulkItem` (`view-model.ts:309-327`) と `inputFromRow` (`:98-100`) が別々に値を埋めている (FR-05)。未整理の明細は 下書き→提案、確定済みの明細は 下書き→今の値 の順で埋める。支払い方法は `row.edit.paymentMethod` を使い、無ければ送らない (FR-02・BR-01)。区分とカテゴリは 1 組で扱う。区分だけを指定したときは同じ区分の組を取り、組が無ければ『カテゴリなし』にする。大だけを指定して系統が合わない明細は外し、理由『指定したカテゴリ (大) が明細の区分に合いません』を返す (FR-03・BR-02・BR-03)。埋める値の無い行と、確定済みで変わる値の無い行は要求に入れない。外す件数と理由を返し、失敗には数えない (AC-04)。",
+      "system_tasks": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P03",
+        "SYS-CLASSIFY-BULK-P04",
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P06",
+        "SYS-CLASSIFY-BULK-P07",
+        "SYS-CLASSIFY-BULK-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CB-002",
+      "title": "一括指定欄と保存前の内訳",
+      "source_refs": [
+        "specs/spec-classify-bulk-save.md",
+        "features/feat-classify-bulk-save.md"
+      ],
+      "spec_anchor": "FR-01 / FR-04 / AC-01 / AC-04 / O1",
+      "statement": "一括操作バーに一括指定欄 (区分・カテゴリ大・中・所有者・支払い方法) を置く。中は大を選ぶまで選べず、『カテゴリなし』は候補に出さない (FR-01)。保存の前に 選択 = 保存 + 外す + 見つからない の内訳を出し、外す行は理由ごとに件数を示す (FR-04)。内訳は REQ-CB-001 の core の関数から導き、画面で別に数えない。保存に成功したら『選択した{n}件を保存しました。』を出す (AC-01)。",
+      "system_tasks": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P04",
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P06",
+        "SYS-CLASSIFY-BULK-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CB-003",
+      "title": "一括保存 API (POST /api/transactions/bulk) の 1 回の batch・予算・冪等",
+      "source_refs": [
+        "specs/spec-classify-bulk-save.md",
+        "features/feat-classify-bulk-save.md"
+      ],
+      "spec_anchor": "FR-06 / BR-11 / BR-12 / BR-13 / BR-14 / AC-06 / AC-24 / AC-26 / AC-27 / AC-28 / AC-29 / O6 / O8 / O9",
+      "statement": "`POST /api/transactions/bulk` は次の順で処理する。zod で本文を検証する。サーバが明細と勘定科目の対応表を引き直す。core の解決関数で値を決める。D1 の予算を測る。json_each で束ねた 1 回の batch で書く (FR-06)。1 要求の D1 クエリは 50 件・100 件とも 49 本以内に収める (D1 の上限は 50 本、書き込みは約 25 本。AC-27)。batch は 50 文・2MB・bound parameter 100 以下にする。上限の定数は今 4 か所 (`import-lifecycle.ts:305`・`scheduled-maintenance-budget.ts:13`・`classify.ts:90`・`classify-bulk.ts:44`) にあり、これを 2 つの名前へまとめる。一括は 1〜100 件で、txId の重複は 400。下書きは 60 字・200 字で検証し、違反は invalid_item (BR-11・BR-12)。書く前に予算の超過が分かる要求は、`planClassifyMutation` (`classify.ts:98-114`) と同じ検査で 413 too_many_classify_changes を返し、results を持たない (AC-28)。今の `classify-bulk.ts:191` の例外と `:195-203` の丸め、`chunkByItem` (`:177`) はやめる。履歴は変わった項目ごとに source=bulk と op_id で 1 行ずつ書き、変わらない明細は 0 行 (BR-13・AC-26)。同じ要求を 2 回送っても、値・月次集計・履歴は変わらず、取引先の記憶も書かない (BR-14・AC-29)。そのため `disagreeOriginKey` は渡さない (`classify-history.ts:178`・`:189`)。応答は `{results, opId, saved, failed}` で、result の code は not_found / invalid_item / split_line_not_supported / no_value / write_failed。本文は bodyLimit 256KB で、超えたら 413 payload_too_large (AC-24)。値の欄を持つ旧形式の item も受け付ける。",
+      "system_tasks": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P03",
+        "SYS-CLASSIFY-BULK-P04",
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P06",
+        "SYS-CLASSIFY-BULK-P07",
+        "SYS-CLASSIFY-BULK-P08",
+        "SYS-CLASSIFY-BULK-P10"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CB-004",
+      "title": "選択を sel に保ち、GET /api/transactions/selected で読み出す",
+      "source_refs": [
+        "specs/spec-classify-bulk-save.md",
+        "features/feat-classify-bulk-save.md"
+      ],
+      "spec_anchor": "FR-07 / FR-08 / FR-09 / FR-10 / BR-11 / AC-18 / AC-19 / AC-20 / AC-21 / O4",
+      "statement": "選択は URL の sel に行の key で持ち、ページ・絞り込み・表示件数を変えても残る (FR-07・AC-18)。選択は 1〜50 件 (BR-11)。内訳行には理由『分割後の内訳は「内訳を編集」からまとめて変更してください』(`classify.ts:406`) を出す。分割の設定が不正な行には『分割の設定を直してから保存してください』を出し、どちらもチェックを置かない。split_line_not_supported の文言 (`classify-bulk.ts:133`) は変えない (FR-08・AC-19)。見出しの全選択は 50 件で止め、『上限の 50 件で止めました』を件数の横に出す。今は `TransactionTable.tsx:84` で黙って切っている (FR-09・AC-20)。`GET /api/transactions/selected?keys=` は keys を 1〜50 件で受ける。重複は 400 invalid_query にする。形の違う key と 200 字を超える key は missing に入れる。応答は `{rows, missing}` で、行は `buildClassifyRow` (`classify-row.ts:43`) と同じ形。bound parameter 100 以内で引く (FR-10・AC-21)。",
+      "system_tasks": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P03",
+        "SYS-CLASSIFY-BULK-P04",
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P06",
+        "SYS-CLASSIFY-BULK-P07",
+        "SYS-CLASSIFY-BULK-P08"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CB-005",
+      "title": "一覧 API の応答の整理と、取引一覧の 6 列",
+      "source_refs": [
+        "specs/spec-classify-bulk-save.md",
+        "features/feat-classify-bulk-save.md"
+      ],
+      "spec_anchor": "FR-11 / FR-12 / FR-13 / FR-19 / AC-22 / O4 / O5",
+      "statement": "一覧 API (`classify.ts:253`) の応答から `transactions` (`:389` の matched) を外し、rows・total・page・limit を返す。limit は 25 / 50 / 100 で、既定は 50。今は 50 だけ (`:195-200`、PAGE_LIMIT は `:163`)。画面は queryKey (`ClassifyPage.tsx:89-93`) に limit を含め、`ClassifyPage.tsx:106` の transactions の利用をやめる。transactions を見ている API テスト 8 本 (split-lifecycle・import-diff・cash-lifecycle・vendor-memory・row-transfer-lifecycle・classify-transactions-shape・classify-list-paging・total-cashflow-verdict) は rows へ移す (FR-11)。取引一覧は 6 列 (選択・日付・取引先/内容の 2 段・金額・提案カテゴリ・信頼度) にし、表示件数とページ送りを付ける。今は 7 列 (`TransactionTable.tsx:74-104`) で、表示件数は `:67` で、ページ数は `:51` で 50 に固定されている (FR-12)。編集パネルは可変幅にし、1264px で 1 字ずつ折り返さない (FR-13)。画面検査は KANJO_VISUAL_SCOPE=classify で 1264px と 1280px を撮り、記録を docs/classify-screen/ に置く (FR-19・AC-22)。今の ci.yml はこの画面検査を走らせないので、手元の verify:full で確かめる (OI-7)。",
+      "system_tasks": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P04",
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P06",
+        "SYS-CLASSIFY-BULK-P07",
+        "SYS-CLASSIFY-BULK-P09"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CB-006",
+      "title": "MF の分類の提案と、勘定科目の対応表 (migration 2 本)",
+      "source_refs": [
+        "specs/spec-classify-bulk-save.md",
+        "features/feat-classify-bulk-save.md"
+      ],
+      "spec_anchor": "FR-14 / FR-17 / BR-05 / BR-06 / BR-07 / BR-08 / BR-09 / BR-10 / AC-11 / AC-12 / AC-13 / AC-14 / AC-15 / AC-16 / AC-17 / O3",
+      "statement": "記憶もルールも無い明細にも、MF の分類から提案を信頼度 60 で付ける。個人の明細は『MF の分類』で、MF の大項目・中項目と根拠文『MFの分類をそのまま提案』を付ける (BR-06)。事業の明細は『MF の分類 (対応表)』で、勘定科目を付け、中項目は空にする (FR-14・BR-07)。この由来は順位の最後に置き、衝突の判定を働かせない。既存の由来の順位と信頼度 (`classify-status.ts:86-88` の 95・85・70) と、要確認の閾値 80 (同 `:43`) は変えない (BR-05・AC-15)。集計ルールが当たる個人の明細は、ルールを当てた後のカテゴリで付け、ルールの値が候補に無ければ付けない (AC-14)。対応表に行の無い事業の大項目、空か『未分類』の大項目、内訳行には付けない (BR-08・AC-13)。`classifySuggestion` (`classify-status.ts:279`) の呼び出しは 6 か所 (`overview.ts:254`・`:339`、`classify-row.ts:52`・`:151`、`classify-bulk.ts:155`、`classify.ts:514`) にある。その入力の組み立てをまとめ、`legacyBasisLabel` (`overview.ts:265`) を消し、basisLabel は残す。`RecommendationBasis` (`overview.ts:199`) は `SuggestionBasis` (`classify-status.ts:143`) の別名にする (RQ-F1 の制約に従う)。勘定科目の対応表は (user_id, 大項目) で一意な新しい表に置く。行の勘定科目は `TAX_ACCOUNTS` (`core/src/tax-accounts.ts:42`) の 32 件から選ぶ (BR-09)。初期の 5 行 (通信費→通信費、水道・光熱費→水道光熱費、交通費→旅費交通費、交際費→接待交際費、日用品→消耗品費) を入れる (BR-10・AC-16)。API は GET / POST / DELETE にする。書き込みは canonicalMutationFence を通す。対応表の行と settings_change_log (`schema.ts:412`、origin は screen / restore / migration) は 1 batch で書く。対応表は設定画面から足し引きできる。設定の JSON は版 2 (`settings-json.ts:14`・`:19`) にし、バックアップとともに往復させる。版 1 の JSON と旧いバックアップを読むと、対応表は初期の 5 行になる (FR-17・AC-17)。migration は 2 本 (本 package では 0059・0060)。settings_change_log の CHECK を作り直す破壊的な変更は、migration-approvals.json に sha256 で承認を置く。あわせて `EXPECTED_D1_MIGRATION` (`schema-guard.ts:4`) を上げる。API のパスと表・列の名前は未決 (OI-2)、番号の衝突は OI-6 で確かめる。",
+      "system_tasks": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P03",
+        "SYS-CLASSIFY-BULK-P04",
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P06",
+        "SYS-CLASSIFY-BULK-P07",
+        "SYS-CLASSIFY-BULK-P08",
+        "SYS-CLASSIFY-BULK-P12",
+        "SYS-CLASSIFY-BULK-P13"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CB-007",
+      "title": "再試行と、要求全体の失敗の扱い",
+      "source_refs": [
+        "specs/spec-classify-bulk-save.md",
+        "features/feat-classify-bulk-save.md"
+      ],
+      "spec_anchor": "FR-15 / FR-16 / AC-06 / AC-07 / AC-08 / AC-09 / AC-10 / O2",
+      "statement": "再試行は、write_failed を返した明細と、要求全体の失敗 (通信の失敗・5xx・409) にだけ出す (FR-15)。write_failed の明細には『失敗した{K}件のみ再試行』を出し、押すとその明細だけを送る (AC-06・AC-07)。通信の失敗と 5xx では、一覧と選択の読み出しを読み直し、選択を残す。role=alert で『保存できたか確かめられませんでした。一覧を読み直しました。同じ内容で送り直しても二重には保存されません』と『同じ内容で再試行』を出し、押すと直前の本文をそのまま送る (AC-08)。409 はサーバの文言と『同じ内容で再試行』を出す (AC-09)。400・403・413 はサーバの文言だけを出し、再試行は出さない (AC-10)。ApiError (`api-client.ts:2`) の status は 1 つの関数で分ける (FR-16)。今の catch (`ClassifyPage.tsx:167-173`) と、item が null になって押しても何も起きない再試行 (`ClassifyPage.tsx:178`・`:420`・`:142-147`) を置き換える。",
+      "system_tasks": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P04",
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P06",
+        "SYS-CLASSIFY-BULK-P07"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CB-008",
+      "title": "『カテゴリなし』の予約の値を core の 1 か所に置く",
+      "source_refs": [
+        "specs/spec-classify-bulk-save.md",
+        "features/feat-classify-bulk-save.md"
+      ],
+      "spec_anchor": "FR-18 / BR-04 / BR-15 / AC-05 / AC-23 / O1 / O6",
+      "statement": "『カテゴリなし』の予約の値を core の 1 か所に置き、tx_edits.category_major に入れる。家計の集計・総収支の内訳・説明可能率では、未分類・説明できない側に数え、分類の状態は手動とする (FR-18・AC-05)。一括指定で予約の値を直接送る要求と、予約の値と同名の候補の作成は、400 で拒む (`settings.ts:496`。BR-04・AC-23)。KPI・バッジ・月次クローズの判定は既存の 1 か所の関数を通し、別の数え方を足さない (BR-15)。予約の値の字面は未決 (OI-3)。",
+      "system_tasks": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P04",
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P06",
+        "SYS-CLASSIFY-BULK-P07",
+        "SYS-CLASSIFY-BULK-P10"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    },
+    {
+      "requirement_id": "REQ-CB-009",
+      "title": "認可・非機能・品質ゲート・証跡・文書・配信",
+      "source_refs": [
+        "specs/spec-classify-bulk-save.md",
+        "features/feat-classify-bulk-save.md"
+      ],
+      "spec_anchor": "AC-23 / AC-25 / AC-30 / O6 / O7 / 非機能 (表示・a11y・JS 予算・品質ゲート・税務・費用)",
+      "statement": "一括保存・選択の読み出し・対応表の API は、未認証を 401、フェンスの拒否を 403 にする。他の利用者の key・txId・対応表の行は、見つからない扱いにして存在を明かさない (AC-23・AC-25)。表示は design-tokens を使って hex を直書きせず、色だけで区別しない。通知は role=status / role=alert で読み上げる。初期 JS 予算 110KiB は、build:bundle の直後に check:js-budget で測る (`packages/web/package.json:15`)。lint・typecheck・test・skills:test・初期 JS 予算・verify:full (`package.json:40`) は全て exit 0 にする (AC-30)。税務の正本は freee のままで、費用は無料枠に収める。仕上げは次の task が担う。P10 は独立レビュー、P11 は証跡の索引を作る。P12 は data-schema と architecture へ対応表を記録し、未決事項の閉じ方を残す。P13 は 1 つの PR で配信し (migration を Deploy の前に適用する)、本番の /classify で確かめる。",
+      "system_tasks": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P03",
+        "SYS-CLASSIFY-BULK-P07",
+        "SYS-CLASSIFY-BULK-P09",
+        "SYS-CLASSIFY-BULK-P10",
+        "SYS-CLASSIFY-BULK-P11",
+        "SYS-CLASSIFY-BULK-P12",
+        "SYS-CLASSIFY-BULK-P13"
+      ],
+      "handoff_fields": [
+        "acceptance",
+        "verification",
+        "resource_scope"
+      ]
+    }
+  ],
+  "cross_cutting_tasks": {
+    "SYS-CLASSIFY-BULK-P10": "独立レビュー (認可・上限・本文の大きさ・予約の値・差分の範囲。全要件の横断)",
+    "SYS-CLASSIFY-BULK-P11": "証跡の索引 (設計・テスト・受入・品質・レビューの記録を 1 か所から辿る。全要件の横断)"
+  },
+  "requirements_decisions": []
+}

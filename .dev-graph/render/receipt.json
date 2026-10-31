@@ -1,11 +1,15 @@
 {
-  "edges": 42,
+  "edges": 63,
   "feature_progress": {
     "aggregate": {
       "done": 0,
-      "total": 26
+      "total": 39
     },
     "by_feature": {
+      "feat-classify-bulk-save": {
+        "done": 0,
+        "total": 13
+      },
       "feat-login-v2": {
         "done": 0,
         "total": 13
@@ -16,11 +20,11 @@
       }
     }
   },
-  "input_sha256": "2676f873fde5697ad779d9cca3a7a15dc7ca08f67298b7daf2731fa28d49d42e",
-  "nodes": 46,
+  "input_sha256": "db341c521119d366a984394f6c223e4e339eba6f47e61a536bb53fbddf2acc06",
+  "nodes": 69,
   "ok": true,
   "out": ".dev-graph/render/index.html",
-  "output_sha256": "be009b2d4e46a5ebbcd967689d5f3bb4392a82a8313b83969c29f5145738280a",
+  "output_sha256": "36a0445958b54bcf2ee45cb2e46fde8447f749212e20a6fa6bab24ffae2b0d28",
   "receipt_checks": [
     {
       "actual_count": 13,
@@ -43,9 +47,26 @@
       "problems": [],
       "receipt": ".dev-graph/plans/feature-package-feat-subscriptions-merge/dev-graph-registration-receipt.json",
       "source_digest": "sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+    },
+    {
+      "actual_count": 13,
+      "digest_mismatch_ids": [],
+      "expected_count": 13,
+      "extra_ids": [],
+      "feature": "feat-classify-bulk-save",
+      "missing_ids": [],
+      "problems": [],
+      "receipt": ".dev-graph/plans/feature-package-feat-classify-bulk-save/dev-graph-registration-receipt.json",
+      "source_digest": "sha256:601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
     }
   ],
-  "graph_revision": 5,
+  "output": ".dev-graph/render/index.html",
+  "graph_revision": 6,
   "input": ".dev-graph/state/graph.json",
-  "receipt_source": "render-graph-html.py stdout"
+  "receipt_source": "render-graph-html.py stdout",
+  "scope": [
+    "feat-login-v2",
+    "feat-subscriptions-merge",
+    "feat-classify-bulk-save"
+  ]
 }

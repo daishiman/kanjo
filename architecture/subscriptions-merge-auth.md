@@ -18,7 +18,7 @@ template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
 confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "docs/evidence/subscriptions-merge/spec-evaluation-waiver.json", "evaluated_digest": "410f5575f8207f0d5c99286344a03852d5ae4232cc9aa70400dfa4020db77f57"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/auth.md", "source_version": "0.1.14", "source_digest": "4c648293a2fe5cf00573e2ee541d2bbbf80ed7f5821d1d871acb13a76fc2f1ff", "imported_at": "2026-09-30T15:18:20Z"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/auth.md", "source_version": "0.1.14", "source_digest": "4c648293a2fe5cf00573e2ee541d2bbbf80ed7f5821d1d871acb13a76fc2f1ff", "imported_at": "2026-09-30T15:18:20Z"}
 created_at: "2026-09-30T15:18:20Z"
 updated_at: "2026-09-30T15:18:20Z"
 depends_on: ["spec-subscriptions-merge"]

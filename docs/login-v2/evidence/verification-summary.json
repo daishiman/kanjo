@@ -1,8 +1,6 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-10-31T06:09:13.922Z",
-  "runtime_revision": "cbfc8f33564411a3d64e55b74a8c50fa15f9d85c",
-  "verification_revision": "d22b6fab219ba381b0519d4fd839c9ca4b479fc5",
+  "checked_at": "2026-10-31T06:20:07.708Z",
   "source_sha256": {
     "packages/api/src/auth.ts": "34f836baa145cafceeaf102386c8b2fd519d7ce96fdf9aedd93870e85938a887",
     "packages/api/src/better-auth.ts": "d470b666cee04094d0d1437bdd8fa6d7eb47b7667380ae632368a465d7e81c2a",
@@ -16,7 +14,7 @@
     "packages/web/src/components/AccountSettings.tsx": "b3183d42c13b70e4b703a0d33ecbb6704e33adcec1d2bc30d19d69bb422cd2ca",
     "packages/web/src/pages/settings/AccountSection.tsx": "346b9efc4d9228cc72bc272c03af27a18823119dbee9e6859c0d445a28a7b88f",
     "packages/web/src/styles.css": "8406c30bb382754a7ed6d86128b7af888b089a7fc40e8699fb1fc58aaacc1ec8",
-    "migrations/0059_login_v2_better_auth.sql": "d7051c2509ae6e20d1243a3a6e8cda545310cd2259b115b12e66ffd6339d5a6a"
+    "migrations/0061_login_v2_better_auth.sql": "d7051c2509ae6e20d1243a3a6e8cda545310cd2259b115b12e66ffd6339d5a6a"
   },
   "api_coverage": {
     "status": "passed",
@@ -35,13 +33,11 @@
     "lines": 95.45
   },
   "preview_smoke": {
-    "status": "passed",
-    "duration_seconds": 107.57,
-    "migration_head": "0059_login_v2_better_auth.sql"
+    "status": "最新main統合後は未成功。移行runnerを調査中",
+    "migration_head": "0061_login_v2_better_auth.sql"
   },
   "browser_acceptance": {
-    "status": "passed",
-    "checks": 8,
+    "status": "前回版8項目成功。最新main統合後の再測定ではない",
     "receipt": "browser-acceptance.json"
   },
   "initial_js": {
@@ -53,10 +49,10 @@
     "status": "passed"
   },
   "graph": {
-    "architecture_nodes": 206,
-    "architecture_documents": 206,
-    "render_nodes": 46,
-    "render_edges": 42,
+    "architecture_nodes": 214,
+    "architecture_documents": 214,
+    "render_nodes": 69,
+    "render_edges": 63,
     "lineage": "passed",
     "external_dependencies": 0
   },
@@ -69,10 +65,54 @@
     "本番secretとmigrationの状態",
     "本番の2回確認とCore Web Vitals"
   ],
-  "ci_observation": {
-    "revision": "d22b6fab219ba381b0519d4fd839c9ca4b479fc5",
-    "run_url": "https://github.com/daishiman/kanjo/actions/runs/41175336641",
-    "status": "実行中（全件成功未確認）",
-    "passed_jobs": ["static", "build", "package", "macOS"]
+  "previous_measurement": {
+    "runtime_revision": "cbfc8f33564411a3d64e55b74a8c50fa15f9d85c",
+    "verification_revision": "d22b6fab219ba381b0519d4fd839c9ca4b479fc5",
+    "coverage_scope": "前回測定値。最新main統合後のcoverage再測定とは区別する",
+    "preview_smoke": {
+      "status": "passed",
+      "duration_seconds": 107.57,
+      "migration_head": "0059_login_v2_better_auth.sql"
+    },
+    "browser_acceptance": {
+      "status": "passed",
+      "checks": 8,
+      "receipt": "browser-acceptance.json"
+    },
+    "initial_js": {
+      "status": "passed",
+      "gzip_kib": 86.4,
+      "limit_kib": 110
+    },
+    "ci_observation": {
+      "revision": "d22b6fab219ba381b0519d4fd839c9ca4b479fc5",
+      "run_url": "https://github.com/daishiman/kanjo/actions/runs/41175336641",
+      "status": "実行中（全件成功未確認）",
+      "passed_jobs": ["static", "build", "package", "macOS"]
+    }
+  },
+  "integrated_sources": {
+    "branch_base": "5ca7aa903da2f6bbd7fa4742a8769bc8d5a3ffe1",
+    "main": "6ef4c9c",
+    "migration_head": "0061_login_v2_better_auth.sql"
+  },
+  "integration_validation": {
+    "typecheck": "passed",
+    "web": {
+      "files": 6,
+      "passed": 210
+    },
+    "api": {
+      "files": 8,
+      "passed": 108,
+      "duration_seconds": 139.97
+    },
+    "preview_smoke": {
+      "status": "未成功",
+      "stage": "一時D1移行コマンドが44秒でSIGTERM。120秒枠前の終了原因を調査中"
+    },
+    "full_ci": "統合後の同一SHAで再実行が必要",
+    "lint": "passed",
+    "web_build": "passed"
   }
 }

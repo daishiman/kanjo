@@ -1176,9 +1176,9 @@ describe('仕分けルールのcanonical total order', () => {
       )
       .first<{ id: number }>();
     const txs = (await (await jsonRequest('/transactions?month=2026-05')).json()) as {
-      transactions: Array<{ id: string; cls: string; big: string }>;
+      rows: Array<{ id: string; cls: string; big: string }>;
     };
-    expect(txs.transactions.find((row) => row.id === 'mf-rule-order')).toMatchObject({
+    expect(txs.rows.find((row) => row.id === 'mf-rule-order')).toMatchObject({
       cls: 'biz',
       big: '架空事業費',
     });
@@ -1265,9 +1265,9 @@ describe('仕分けルールのcanonical total order', () => {
     const firstId = ids.results[0]?.id;
     const firstCls = firstId === per?.id ? 'per' : 'biz';
     const tie = (await (await jsonRequest('/transactions?month=2026-05')).json()) as {
-      transactions: Array<{ id: string; cls: string }>;
+      rows: Array<{ id: string; cls: string }>;
     };
-    expect(tie.transactions.find((row) => row.id === 'mf-rule-order')?.cls).toBe(firstCls);
+    expect(tie.rows.find((row) => row.id === 'mf-rule-order')?.cls).toBe(firstCls);
   }, 20_000);
 });
 

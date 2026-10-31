@@ -9,9 +9,9 @@ import {
   SELF_MANAGED_IMPORT_CONSUMERS,
   classifyCanonicalMutation,
 } from './canonical-mutation-fence.js';
+import { D1_BATCH_STATEMENT_LIMIT, D1_INVOCATION_QUERY_LIMIT } from './d1-limits.js';
 import { JSON_SNAPSHOT_MUTATION_CONSUMERS } from './import-active.js';
 import {
-  D1_FREE_QUERY_LIMIT,
   D1_JSON_PAYLOAD_MAX_BYTES,
   buildMfResolutionAuditStatements,
   chunkJsonRowsByBytes,
@@ -217,9 +217,16 @@ describe('D1 statement budget', () => {
     // 5,000件すべてへ長いprovenanceを保存するケースは、
     // payloadの分割数を含めた実行前見積りでFree枠超過として拒否する。
     expect(plan(mfAutoQueries)).toMatchObject({ accepted: false });
-    expect(plan(freeeQueries).total).toBeLessThan(D1_FREE_QUERY_LIMIT);
-    expect(plan(mfQueries).total).toBeLessThan(D1_FREE_QUERY_LIMIT);
-    expect(plan(mfAutoQueries).total).toBeGreaterThanOrEqual(D1_FREE_QUERY_LIMIT);
+    // D1 の上限は d1-limits.ts の 2 つの名前だけから読む (spec-classify-bulk-save decisions §3)
+    expect(D1_INVOCATION_QUERY_LIMIT).toBe(50);
+    expect(D1_BATCH_STATEMENT_LIMIT).toBe(50);
+    expect(plan(freeeQueries)).toMatchObject({ limit: D1_INVOCATION_QUERY_LIMIT });
+    expect(plan(freeeQueries).total).toBeLessThan(D1_INVOCATION_QUERY_LIMIT);
+    expect(plan(mfQueries).total).toBeLessThan(D1_INVOCATION_QUERY_LIMIT);
+    expect(plan(mfAutoQueries).total).toBeGreaterThanOrEqual(D1_INVOCATION_QUERY_LIMIT);
+    // 1 回の batch に載る文も上限以下 (取込の commit は 1 単位を 1 batch で書く)
+    expect(freeeQueries).toBeLessThanOrEqual(D1_BATCH_STATEMENT_LIMIT);
+    expect(mfQueries).toBeLessThanOrEqual(D1_BATCH_STATEMENT_LIMIT);
   });
 
   it('cache行も実builderから予算化し、49 queriesは受理、50 queriesは拒否する', () => {
@@ -754,6 +761,7 @@ describe('JSON pointer invalidation consumers', () => {
       'settings_norm_rules',
       'settings_cash_overrides',
       'settings_change_log',
+      'tax_account_map',
       'sub_vendors',
       'sub_vendor_review_decisions',
       'sub_vendor_exclusions',
@@ -840,6 +848,9 @@ describe('canonical mutation lease predicate', () => {
       ['PUT', '/api/classification'],
       // 名義の表示名は 4 名義を 1 回で差し替える。重なった保存が名義ごとに混ざらないよう直列化する
       ['PUT', '/api/settings/owner-labels'],
+      // 0059: 勘定科目の対応表。行と変更履歴を 1 回で書き、復元の write-set に入る
+      ['POST', '/api/settings/tax-account-map'],
+      ['DELETE', '/api/settings/tax-account-map/%E9%80%9A%E4%BF%A1%E8%B2%BB'],
       ['POST', '/api/sub-vendors'],
       ['PUT', '/api/sub-vendors/1'],
       ['POST', '/api/sub-vendors/1/aliases'],
@@ -934,6 +945,7 @@ describe('canonical mutation lease predicate', () => {
       'routes/saved-filters.ts',
       'routes/settings.ts',
       'routes/settings-screen.ts',
+      'routes/tax-account-map.ts',
       'routes/backups.ts',
       'routes/subs.ts',
       'routes/total-cashflow.ts',
@@ -975,6 +987,8 @@ describe('canonical mutation lease predicate', () => {
       'DELETE /api/category-options',
       'PUT /api/classification',
       'PUT /api/settings/owner-labels',
+      'POST /api/settings/tax-account-map',
+      'DELETE /api/settings/tax-account-map/:categoryBig',
       'PUT /api/settings/screen',
       'POST /api/settings/restore/preview',
       'POST /api/settings/restore',

@@ -30,9 +30,10 @@ import { and, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
+import { D1_INVOCATION_QUERY_LIMIT } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
-import { D1_FREE_QUERY_LIMIT, chunkJsonRowsByBytes } from '../import-lifecycle.js';
+import { chunkJsonRowsByBytes } from '../import-lifecycle.js';
 import { getDb, recomputeFromDeals } from '../store.js';
 import { loadCandidates } from './classify.js';
 
@@ -278,7 +279,7 @@ vendorMemoryRoute.post(
         {
           error: {
             code: 'reapply_too_large',
-            message: `一度に当て直せる件数を超えています(上限 ${D1_FREE_QUERY_LIMIT} クエリ)`,
+            message: `一度に当て直せる件数を超えています(上限 ${D1_INVOCATION_QUERY_LIMIT} クエリ)`,
           },
         },
         413,

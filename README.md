@@ -60,7 +60,7 @@ SPA・未認証ガード・招待承諾・Better Authログインに加え、架
 自動停止する。人が画面を確認するときは必ず
 `pnpm run preview`(8787、Workersランタイム)を使う。`pnpm dev`(3000、Vite)は画面開発の補助。
 
-現在のmigration headは`0059_login_v2_better_auth.sql`。未適用migrationの自動/手動判定と、
+現在のmigration headは`0061_login_v2_better_auth.sql`。未適用migrationの自動/手動判定と、
 列・テーブル削除の段階適用ゲートは
 [`CI/CD・本番運用ガイド`](docs/ci-cd-operations.md#63-列を削除する場合contract)を正本とする。
 

@@ -207,7 +207,7 @@ pnpm --filter @kanjo/api exec wrangler d1 execute kanjo-db --local \
 | 外部原本 | 取込原本、夜間バックアップ、改善要望の画像 | 取込・復旧・改善要望それぞれの経路で管理 | 取込原本以外は対象外 | R2で用途別prefixと保持期間を管理 |
 | disposable UI | filter、開閉、未保存draft | 対象外 | 対象外 | 画面/セッション内のみ |
 
-## Login v2 認証schema（0059）
+## Login v2 認証schema（0061）
 
 現行の認証主体はBetter Authの`user`で、資格情報は`account`、sessionは`session`、TOTPは`twoFactor`に分離する。
 管理一覧APIは`user`の公開要約だけ、本人APIはMFA状態と認証手段を加えた詳細だけを返し、password・token・secret・
@@ -226,7 +226,7 @@ backup codeはDTOへ含めない。
 | `auth_rate_limits` | invite/reset/MFAのIP・account別失敗数。raw IP・メールは保存しない |
 | `auth_audit_log` | Login v2固有action。秘密やメール本文を持たず、actor/target・結果・無害な件数だけを400日保持 |
 
-0059の旧`users`複写は非破壊で、`must_change_password=0`だけを`user`とcredential `account`へ写す。
+0061の旧`users`複写は非破壊で、`must_change_password=0`だけを`user`とcredential `account`へ写す。
 `must_change_password=1`は両方から除外し、同じメールへ通常招待できる状態を保つ。旧`users`自体は履歴・rollback境界の
 ため書き換えずに残す。認証モードと復旧手順は[`アカウント認証運用`](runbooks/account-login-operations.md)を参照する。
 
@@ -273,7 +273,7 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 `receipt_source_profiles`、`receipt_source_overrides`、`tax_account_settings`）は物理D1に互換データとして
 残り得るが、runtime/API/Drizzleの現行定義からは退役済みであり、このactive schema一覧には載せない。
 
-現行のrepository headは認証基盤の`0059_login_v2_better_auth.sql`である。証懑退役の物理削除は将来の別変更である
+現行のrepository headは認証基盤の`0061_login_v2_better_auth.sql`である。証懑退役の物理削除は将来の別変更である
 Release Bの`0040_drop_tax_and_receipt_tables.sql`が担う。Release Bはcleanupの`pending` / `retry` / `dead`と
 旧`attachments` / `attachment_cleanup_jobs`の残件がすべて0であることを機械ゲートで確認した後にだけ別pending集合で適用する。
 `0010`〜`0028`は適用履歴なので書き換えない。`cash_entries.receipt_waived`は交通費入力の
@@ -870,3 +870,61 @@ backupの `subVendorMetadata` は `mergedIntoName` に加え、保存行の `ali
 ### 0058 の適用と巻き戻し
 
 migrationと巻き戻しの判断はspec「互換性・移行・リリース」。今回のmetadata追加はoptionalな後方互換fieldsで、列・表の追加はない。古い厳密なschemaを持つ実装へ戻す場合のJSON互換性は同節を参照する。
+
+## 勘定科目の対応表と変更履歴の種類(0059・0060 / feat-classify-bulk-save)
+
+`migrations/0059_tax_account_map.sql` が `tax_account_map` を作り、`0060_settings_change_log_target.sql` が `settings_change_log` の target に `tax_account_map` を足す。Drizzle の定義は `packages/api/src/db/schema.ts` の `taxAccountMap`・`settingsChangeLog`。データモデルの正本は [spec-classify-bulk-save のデータモデル](../specs/spec-classify-bulk-save.md#データモデル)、実装で決めた細部は [`classify-screen/bulk-save-decisions.md`](classify-screen/bulk-save-decisions.md) の §4・§5。この機能単体のheadは0060。Login v2との統合後、`schema-guard.ts` の `EXPECTED_D1_MIGRATION` は `0061_login_v2_better_auth.sql` を指す。
+
+仕様は番号を 0058・0059 と書くが、0058 をサブスクの統合が先に使ったため 1 つずつ進めた。内容は仕様のとおりである(OI-6)。
+
+### `tax_account_map`(MF の大項目 → 勘定科目。0059)
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT NOT NULL | 業務データの持ち主 |
+| `category_big` | TEXT NOT NULL | MF の大項目の名前。前後の空白を落として保存する |
+| `tax_account` | TEXT NOT NULL | 対応先の勘定科目 |
+| `created_at` | TEXT NOT NULL | 行を作った時刻 |
+| `updated_at` | TEXT NOT NULL | 行を最後に変えた時刻 |
+
+- 主キーは `(user_id, category_big)`。同じ大項目の行は 1 つしか置けない。
+- 対応先に外部キーと CHECK は置かない。勘定科目の一覧は利用者が足せる動的な集合なので、一覧に無い対応先は API が core の `taxAccountMapRowIssue` で 400 にする。行の上限 200(`TAX_ACCOUNT_MAP_ROWS_MAX`)も API で検査する。
+- 0059 は業務データの持ち主 `default`(`TENANT_ID`)に初期の 5 行を `INSERT OR IGNORE` で入れる。字面は core の `DEFAULT_TAX_ACCOUNT_MAP` と同じ。
+
+| `category_big` | `tax_account` |
+|---|---|
+| 通信費 | 通信費 |
+| 水道・光熱費 | 水道光熱費 |
+| 交通費 | 旅費交通費 |
+| 交際費 | 接待交際費 |
+| 日用品 | 消耗品費 |
+
+- 利用者を作っても行は増えない。消した行は戻らない(AC-16)。新しい持ち主へ初期の行を入れる時機は未決事項 7(OI-4)で、`bulk-save-decisions.md` の §5 が扱いを書く。
+- 書き込むのは `routes/tax-account-map.ts`(`POST /api/settings/tax-account-map`・`DELETE /api/settings/tax-account-map/:categoryBig`)と、設定だけの復元(`routes/settings-screen.ts`)だけである。
+- 読むのは、その 2 つに加えて明細の読み込み(`store.ts` の Dataset。事業の明細の提案『MF の分類 (対応表)』(信頼度 60、core の `MF_CATEGORY_CONFIDENCE`)の材料)と、夜間バックアップと手元の backup 本文(同じ `store.ts` の `BACKUP_SNAPSHOT_SQL`)である。
+
+### `settings_change_log` の作り直し(0060)
+
+- SQLite は CHECK を後から替えられないので、0057 が改善リクエストの表で使ったのと同じ手順(新しい表を作って行を写し、元の表を消して名前を替える)で作り直す。target の CHECK は `norm_rule` / `owner_label` / `stat_min_months` / `cash_override` / `tax_account_map` になる。
+- 列・型・主キー・origin の CHECK・索引 `settings_change_log_target` は 0056 から変えない。既存の行は `seq` も含めて 1 件も落とさずに写す(`tax-account-map-migration.integration.test.ts` が確かめる)。
+- 0059 の初期の 5 行を履歴にする。target は `tax_account_map`、`target_key` は大項目、`before` は NULL、`after` は `{"categoryBig":…,"taxAccount":…}`、`changed_by` は `system`、origin は `migration`。`seq` は利用者ごとの最後の `seq` に続ける。
+- 破壊的な migration なので `.github/migration-approvals.json` に sha256 を足した。PR の merge を承認とする。
+- 画面からの追加・削除は、行・変更履歴(origin `screen`)・JSON snapshot の無効化を 1 回の batch で書く。削除の履歴は `before` に前の値を持ち、`after` は NULL。`changed_at` は設定の revision より後になるように決める。
+
+### 『カテゴリなし』
+
+- 表と列は足さない。『カテゴリなし』は `tx_edits.category_major` に予約の値 `カテゴリなし`(core の `NO_CATEGORY`)として入る。中項目は空。
+- 予約の値と同じ名前の候補は作れない(`POST /api/category-options` と名前の変更の `PUT /api/category-options` が 400 `reserved_category`)。1 件ずつの保存(`PUT /api/transactions/:txId/edit`)でも予約の値は選べない。今の値が予約の値なら、そのまま送り返すのは通す。
+- 「今の値」は取込値・ルール・手動の上書き(`tx_edits`)を解決した実効値である。上書きの層だけを見ると、取込値が『カテゴリなし』で `tx_edits` に行が無い明細の送り返しが 400 になる。
+- 科目を新しく受けるほかの窓口(ルール・分割の内訳・取引先の記憶・現金の記録)も予約の値を 400 `invalid_category` にする。これらの窓口を通る書き込みでは、科目の列に予約の値は入らない。
+- 予約の値かどうかは、書式の文字を除き NFKC で正規化して前後の空白を除いた字面で決める(core の `isNoCategory`)。ゼロ幅の文字を挟んだり半角カナで書いたりした『カテゴリなし』も同じ扱いで、候補の名前にも科目にも入らない。
+- 取込値(`mf_transactions` の大項目・中項目)に予約の値と同じ名前があっても、カテゴリの候補には入れない。取込値の列はそのまま残し、集計では未分類として数える。
+- 集計の扱い(家計の未分類・総収支の内訳・説明可能率で説明できない側)は spec の BR と `packages/core/test/no-category-contract.test.ts` が決める。
+
+### 書き出し・復元とフェンス
+
+- 設定の JSON(kanjo-settings)は版 2(`SETTINGS_JSON_VERSION`)で `taxAccountMap` を運ぶ。版 1 の JSON は初期の 5 行で補う。版 1 なのに `taxAccountMap` を持つ JSON は 400 `invalid_settings_file`、版 3 以降と版 0 以前は 400 `unsupported_settings_version` にする(`packages/core/src/settings-json.ts`)。
+- 夜間バックアップと手元の backup 本文は `BACKUP_SNAPSHOT_SQL` の `tax_map` の行で対応表を運ぶ。対応表を持たない古い本文は初期の 5 行として比べ、復元する。
+- 設定だけの復元(`POST /api/settings/restore`・`POST /api/backups/:date/restore`)は、変わった行があるときだけ対応表を置き換え、変更履歴を origin `restore` で残す。変わらない行の `created_at`・`updated_at` は保つ。
+- 全データ復元(`POST /api/restore`)は対応表を書かない。名義・集計ルールと同じ扱いである。
+- `tax_account_map` は、変更系フェンスの consumer(`canonical-mutation-fence.ts`。対応表の POST・DELETE と、設定だけの復元の route が使う `SETTINGS_SCREEN_CONSUMERS`)と、取込中の表の一覧(`import-active.ts` の `JSON_SNAPSHOT_MUTATION_CONSUMERS`)に入れた。変えると復元後と snapshot の提案が変わるためである。

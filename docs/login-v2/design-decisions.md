@@ -12,7 +12,14 @@
 
 ---
 
-## 現行実装（2026-09-22）
+## 現行実装への入口（2026-10-31 再統合）
+
+最新main `6ef4c9c` の明細一括保存・勘定科目対応表（0059・0060）を保持し、Login v2は
+**`migrations/0061_login_v2_better_auth.sql`** へ改番した。以後の現行移行手順は0061を使う。
+本書の0059表記と `evidence/verification-summary.json` は前回統合版の履歴であり、最新headの検証完了を意味しない。
+新mainの確定仕様は `system-spec/archive/2026-10-31-pre-login-v2-main-79/` にbyte同一保存した。
+
+## 前回実装の記録（2026-09-22）
 
 - 認証モードは`resolveAuthMode`の1か所で判定する。Accessは`ACCESS_AUD`と`ACCESS_TEAM_DOMAIN`の対でだけ有効で、
   片側設定はfail-closed。Access時は検証済みassertionで`/api/auth/me`だけを返し、他の`/api/auth/*`は
@@ -443,3 +450,24 @@ MCPのブラウザ接続は利用できなかったため、既存PlaywrightとC
 ステージ記録: 追加開発の要件/設計は既存正本を継承。`app-orchestrator`、`mvp-first-development`、
 `testing-excellence`、`workers-best-practices` を読み込み、親の認証/品質スキル監査と独立レビューを併用した。
 実装差分はローカル検証中、公開ステージは外部設定・受入待ちで未完である。
+
+
+## 第11章 最新mainとの競合解消（2026-10-31、PR #79 統合）
+
+main `6ef4c9c` の一括指定・保存・再試行と勘定科目対応表を保持した。新mainの0059・0060を先行させ、
+Login v2の追加移行を0061へ改番した。schema guard、migration試験、現行のREADME/運用参照を追従した。
+凍結仕様の予定番号や前回測定の履歴は書き換えない。
+
+新APIのテスト3ファイルに残っていた旧SESSION_SECRETをBetter Authへ合わせ、廃止した仮パスワード403の
+代わりに停止利用者401の拒否を検証する。利用者を追加しても勘定科目対応表が増殖しない不変条件は
+新しいuser表のfixtureで維持する。設定と取込テストは両側の追加ケース/DTO/検証時計を保持した。
+
+専用worktreeにfrozen lockfileで依存を導入し、API/webの@kanjo/coreがそのworktreeへ解決されることを確認。
+型検査は成功、設定・取込・明細一括・認証・表示のweb6ファイルは210件成功、API8ファイルは108件成功（139.97秒）。
+web buildは86.40KiB/110KiBで成功し、full lintも合格した。一時D1 previewは移行コマンドが44秒でSIGTERMとなり、
+アプリに到達前のrunnerを調査中。120秒枠に到達したtimeoutとは断定せず、成功扱いにしない。
+正式な全件結果は統合保存版と同じSHAのPR Checksで判定する。
+
+グラフは214章/214ノードのlineageが一致し、描画69ノード/63辺、3機能各0/13、3登録receipt一致、
+外部依存0、入力schemaと入出力SHAが一致した。HTMLの2つのreceiptも同じ出力へ同期した。
+前回のcoverage・ブラウザ8項目の測定対象SHAはJSON内に保持し、今回の再測定と混同しない。

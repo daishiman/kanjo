@@ -6,7 +6,7 @@
 
 ## 初回切替
 
-1. D1 の復元点を記録し、`0059_login_v2_better_auth.sql` を適用する。
+1. D1 の復元点を記録し、`0061_login_v2_better_auth.sql` を適用する。
 2. 次の secret を Workers の secret store に登録する。値を文書・シェル履歴・ログへ残さない。
    - `BETTER_AUTH_SECRET`（`openssl rand -hex 32` 以上）
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`

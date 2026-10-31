@@ -31,6 +31,8 @@ export const VIEWPORT_CASES = [
   { label: '1023', width: 1023, height: 900, zoom: 1, reducedMotion: false },
   // 常設サイドバーとデスクトップ表が同時に現れる境界。本文幅が最も厳しい。
   { label: '1024', width: 1024, height: 900, zoom: 1, reducedMotion: false },
+  // 明細仕分けの受け入れ幅 (spec-classify-bulk-save AC-22)。編集パネルを開くと一覧に回る幅が最も狭い
+  { label: '1264', width: 1264, height: 900, zoom: 1, reducedMotion: false },
   { label: '1180', width: 1180, height: 820, zoom: 1, reducedMotion: false },
   { label: '1280', width: 1280, height: 900, zoom: 1, reducedMotion: false },
   { label: '1600', width: 1600, height: 1000, zoom: 1, reducedMotion: false },

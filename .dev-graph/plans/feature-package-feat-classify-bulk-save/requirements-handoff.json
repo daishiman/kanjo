@@ -1,0 +1,279 @@
+{
+  "feature_id": "feat-classify-bulk-save",
+  "feature_package_id": "feature-package/feat-classify-bulk-save",
+  "graph_revision": 3,
+  "graph_snapshot_digest": "a5d2c7f929b6151f15a49a0531f9ea9292a2a26204ca8c486fc99bb62318403e",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "graph_canonical_digest": "sha256:f656dca626cefe52385a61274fd59b97fc918807c6e78593b3453c5dd7621455",
+  "graph_canonical_digest_note": "registration receipt の graph_digest_after と同方式 (canonical JSON)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-classify-bulk-save/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-classify-bulk-save/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-graph.json"
+  },
+  "plan_validated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-CLASSIFY-BULK-P01",
+    "SYS-CLASSIFY-BULK-P02",
+    "SYS-CLASSIFY-BULK-P03",
+    "SYS-CLASSIFY-BULK-P04",
+    "SYS-CLASSIFY-BULK-P05",
+    "SYS-CLASSIFY-BULK-P06",
+    "SYS-CLASSIFY-BULK-P07",
+    "SYS-CLASSIFY-BULK-P08",
+    "SYS-CLASSIFY-BULK-P09",
+    "SYS-CLASSIFY-BULK-P10",
+    "SYS-CLASSIFY-BULK-P11",
+    "SYS-CLASSIFY-BULK-P12",
+    "SYS-CLASSIFY-BULK-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p01.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p02.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p03.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p04.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p05.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p06.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p07.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p08.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p09.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p10.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p11.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p12.md",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p13.md"
+  ],
+  "task_artifact_digests": {
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p01.md": "sha256:8fe3b73a07cf6fa7aa95e2a57ca8eac0ac63efce61c7fcb4b065affff6008c95",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p02.md": "sha256:5ca622f25b043d982e93bb7d119dadaa101ad5697dc0f03117a3b4bd5c9d6e91",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p03.md": "sha256:eaca3b021230de1f83ee26da324d3413376f6375383270ba61a02177b9b8d990",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p04.md": "sha256:2450bae71ac7124d1fb98547df2d49cad2e82cc0fd5d25ddbf82e26eb1f3086f",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p05.md": "sha256:8f3437100832178ed2c36bfd439a54c088d239d89e7e5a9377d80778a1ef81d2",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p06.md": "sha256:82694abd971481d9976718806649bc442b277208080b94e2880e4b9a0d919c2e",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p07.md": "sha256:b14df8a48f0f245031f68efe64dee90c5142c5fc978b49a3c4c74913bb1532b1",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p08.md": "sha256:6a9866ccfe4c51b37785fa97ab08eadebcfe2c4121890a9bfc1b24d1b2d1e960",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p09.md": "sha256:5c6014d2b253a609c3aebef171f0bea50cd0277e7e567d4a85054bed49a05680",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p10.md": "sha256:c3ec9144190e4f4c9b596d1f11803a60580c11bfc304cf2abee95bbea227f66c",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p11.md": "sha256:15a32044dd5b06322f84b607ff4b0463b20039b3e19d6069870f169643b25b97",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p12.md": "sha256:b8bbcb8d147f2cae730ca3e0c4ab4c3aa41ef32d886315a2bbb7f63c29e960d7",
+    "tasks/feat-classify-bulk-save/sys-classify-bulk-p13.md": "sha256:adee521bcb692087ed9197bbf51003abeacecb4fcd785dce68c08cf2acf46400"
+  },
+  "requirements_document": {
+    "path": ".dev-graph/requirements/feat-classify-bulk-save/requirements.md",
+    "sha256": "sha256:6e6a76bfd4eaac235a87a80f7b804aaadc90d678e59a5f54e35950d4f071ef87",
+    "scope": ".dev-graph/requirements/feat-classify-bulk-save/scope.json",
+    "trace_plan": ".dev-graph/requirements/feat-classify-bulk-save/trace-plan.json"
+  },
+  "requirements_decisions": [],
+  "carried_findings": [
+    {
+      "id": "OI-1",
+      "source": "goal-spec.open_items",
+      "summary": "spec の未決事項 2: 利用者がまだ確かめていない細部 (表示件数の既定 50 件・選択の key の上限 200 字・一括保存の旧形式の受け付け)。章の値で実装する。",
+      "status": "open",
+      "precondition_status": "unresolved_precondition",
+      "note": "specs/spec-classify-bulk-save.md §未決事項 2 を正本とする。P05 が案と判断の依頼文を docs/classify-screen/bulk-save-decisions.md に書いて feature PR の本文に載せ、利用者の承認か値の改めを P12 が同じ文書に記録した時点で閉じる。判断が値を変える場合は P12 が P05 へ差し戻し、同じ PR で直して P06〜P11 をやり直す。",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P12"
+      ]
+    },
+    {
+      "id": "OI-2",
+      "source": "goal-spec.open_items",
+      "summary": "spec の未決事項 5: 勘定科目の対応表の API のパスと表・列の名前。",
+      "status": "open",
+      "precondition_status": "unresolved_precondition",
+      "note": "P02 で案を決め、P05 で実装し、P12 で docs/data-schema.md と architecture 文書に書いて閉じる。",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P12"
+      ]
+    },
+    {
+      "id": "OI-3",
+      "source": "goal-spec.open_items",
+      "summary": "spec の未決事項 6: 『カテゴリなし』の予約の値の字面。",
+      "status": "open",
+      "precondition_status": "unresolved_precondition",
+      "note": "P02 で既存の候補と衝突しない案を決め、P05 で core に置き、候補の作成の拒否のテストが通った時点で閉じる。",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P05"
+      ]
+    },
+    {
+      "id": "OI-4",
+      "source": "goal-spec.open_items",
+      "summary": "spec の未決事項 7: 新しい持ち主 (user_id) へ初期の 5 行を入れる時機。今のコードに新しい持ち主を作る経路が無い。",
+      "status": "open",
+      "precondition_status": "unresolved_precondition",
+      "note": "P05 が案と判断の依頼文を docs/classify-screen/bulk-save-decisions.md に書いて feature PR の本文に載せ、判断のとおりに入れ、O3 の API テストが通り、P12 が判断を記録した時点で閉じる。判断が値を変える場合は P12 が P05 へ差し戻し、同じ PR で直して P06〜P11 をやり直す。",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P12"
+      ]
+    },
+    {
+      "id": "OI-5",
+      "source": "goal-spec.open_items",
+      "summary": "spec の未決事項 1・3・4: 章の旧い文言 18 か所、C07 の low・info 3 件、C06 の medium 2 件。本書の契約には影響しない。",
+      "status": "open",
+      "precondition_status": "unresolved_precondition",
+      "note": "次の system-spec の改訂で spec 担当が閉じる。本 feature では P12 で持ち越しとして記録する。",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P12",
+        "spec 担当 (次の system-spec 改訂)"
+      ]
+    },
+    {
+      "id": "OI-6",
+      "source": "goal-spec.open_items",
+      "summary": "本 feature の migration の番号 (spec では 0058・0059、本 package では 0059・0060) が並行するサイクルと衝突しうる (git の衝突には出ない)。",
+      "status": "open",
+      "precondition_status": "unresolved_precondition",
+      "note": "specs/spec-classify-bulk-save.md と system-spec/ の章が書く 0058・0059 は a63d35c 時点の予定番号で、origin/main 9b5bbf3 の最後は 0058_subscription_merge_operations.sql なので、本 package は 0059・0060 と書く。migration の名前の正本は migrations/ の実ファイル (SPEC_BASE からの差分で足した 2 本) で、文書の番号はそれに従う。 P05 が着手時に、P08 が定義の削除の後に、P13 が merge の直前に origin/main と突き合わせ、P13 の突き合わせの記録で閉じる。",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P05",
+        "SYS-CLASSIFY-BULK-P08",
+        "SYS-CLASSIFY-BULK-P13"
+      ]
+    },
+    {
+      "id": "OI-7",
+      "source": "goal-spec.open_items",
+      "summary": "今の ci.yml は明細仕分けの画面検査を走らせない。CI が緑でも AC-22 は確かめられない。",
+      "status": "open",
+      "precondition_status": "unresolved_precondition",
+      "note": "P06 と P13 で手元の verify:full (4175 の vite を前提) を走らせて確かめる。.github/workflows/ は feature の resource_scope の外なので、ci.yml への画面検査の追加は本 feature で行わず、別 feature の候補として返す。",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P06",
+        "SYS-CLASSIFY-BULK-P13"
+      ]
+    },
+    {
+      "id": "OI-8",
+      "source": "goal-spec.open_items",
+      "summary": "一括保存の 1 要求は D1 のクエリを 49 本以内に収める (50 件・100 件とも)。",
+      "status": "open",
+      "precondition_status": "unresolved_precondition",
+      "note": "P04 で API テストに本数の数え上げを書き、P05 で json_each で束ねた 1 回の batch により満たす。",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P04",
+        "SYS-CLASSIFY-BULK-P05"
+      ]
+    },
+    {
+      "id": "CF-C06-medium-2",
+      "source": "system-spec/completeness-findings.json",
+      "severity": "medium",
+      "summary": "C06 (軸 2・N3) が qa-classify-bulk-decision-018 と 024 を medium とした。どちらも確定セルの主たる qa_ref ではなく、aspect-criteria 1a により PASS に残す注記である。qa の問文は凍結されていて、追記では消えない",
+      "status": "tracked",
+      "tracked_by": "OI-5",
+      "resolution": "本書の契約に影響しない。OI-5 として次の system-spec 改訂へ持ち越し、P12 が記録する",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P12"
+      ]
+    },
+    {
+      "id": "CF-low-7",
+      "source": "system-spec/completeness-findings.json",
+      "severity": "low",
+      "summary": "low 7 件。C06 軸 2 の 5 件 (decision-023・027・060・065・071)、軸 4 の maintenance-ops-web-001 のトレース、C07 n-2 (置き換え済みの qa の残存)・n-3 (関連区分の qa_refs の欠け)、章の旧い文言、利用者が確かめていない agent-inference の細部、C06 の判定の周ごとの揺れ。いずれも結論は変えない",
+      "status": "tracked",
+      "tracked_by": [
+        "OI-5",
+        "OI-1"
+      ],
+      "resolution": "章の旧い文言と C07 は OI-5、agent-inference の細部 (表示件数の既定 50 件・key の上限 200 字・旧形式の受け付け) は OI-1 が追跡する。C06 の判定の揺れはプラグインの改善案として報告する。残りは記録だけ",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P12",
+        "spec 担当 (次の system-spec 改訂)"
+      ]
+    },
+    {
+      "id": "PF-followup-wording",
+      "source": "plan-findings.json",
+      "severity": "info",
+      "summary": "P13 の task spec (phase-13:97) の『直しは別の feature として起こす』は、run-system-dev-plan の契約語『follow-up feature candidate として返す』に揃えるとより厳密になる (任意)",
+      "status": "noted",
+      "resolution": "task spec は published digest を保つため書き換えない。P13 の運用で follow-up feature candidate として返す読み方をとる",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P13"
+      ]
+    },
+    {
+      "id": "PF-round4-recheck",
+      "source": "plan-findings.json",
+      "severity": "info",
+      "summary": "4 周目の low 2 件 (p04_renumber_parenthetical_mismatch・p13_post_merge_acceptance_vs_done) が解消した。コード参照と在庫の再確認も変化なし",
+      "status": "resolved",
+      "resolution": "plan の評価 (verdict PASS) で確認済み",
+      "remediation_owner": [
+        "なし (記録のみ)"
+      ]
+    },
+    {
+      "id": "PF-readiness-repin",
+      "source": "plan-findings.json",
+      "severity": "info",
+      "summary": "main の取り込みの後に readiness を取り直し、plan の digest を旧 dae7fc67… から 601543e1… へ結び直した。readiness の pin は 13f5da18…",
+      "status": "resolved",
+      "resolution": "本書の作成時にも pin が今のファイルと一致することを取り直して確かめた",
+      "remediation_owner": [
+        "なし (記録のみ)"
+      ]
+    },
+    {
+      "id": "RQ-F1",
+      "source": "requirements",
+      "severity": "medium",
+      "summary": "範囲外の core テスト 2 本 (`packages/core/test/overview-recommendation-contract.test.ts`・`packages/core/test/overview-close-status.test.ts`) が今の形を固定している。固定しているのは 3 点: `classifySuggestion` と `recommendationFor` の 4 引数の呼び出し (recommendation-contract `:55-56`、close-status `:312`〜`:338`。core の tsconfig は include src,test なので typecheck も落ちる)、短い basisLabel『過去 10 件中 9 件』(recommendation-contract `:91`、close-status `:316`)、MF の大項目しか無い個人の明細 mf-same-old の basis 'none' (close-status `:329`・`:338`)。spec の互換 (`:664-665`) は、/review-queue の `recommendationFor` が通る `overview.ts:254`・`:339` を含む 6 か所の入力をまとめ、legacyBasisLabel を消す。spec は FR-14 の適用範囲を明細仕分けの経路に限っていないので、MF の分類を載せた入力を 6 か所すべてに通すと、この 2 本が落ちる (requirements 段階の推論)",
+      "status": "open",
+      "resolution_plan": "P02 は、4 引数の呼び出しがそのまま通る形で入力の組み立てを設計する (例: 追加の入力は省略できる末尾の 1 引数にする)。MF の分類を /review-queue (recommendationFor) にも出すかは P02 で決め、既存の期待と矛盾するなら適用を明細仕分けの経路に限る。basisLabel は legacyBasisLabel を消した後も同じ字面で出す。範囲外のテストは書き換えず、P03 が照合する。web の overview-review-queue.dom.test.tsx はモックなので影響しない",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P02",
+        "SYS-CLASSIFY-BULK-P05"
+      ]
+    },
+    {
+      "id": "RQ-F2",
+      "source": "requirements",
+      "severity": "info",
+      "summary": "spec の `path:行` は a63d35c の現物で、#75 の後にずれた。index.ts の fence は :112/:114/:116 (spec は :111/:113/:115)、route の mount は :129 から (spec は :128〜)、D1_FREE_QUERY_LIMIT は import-lifecycle.ts:305 (spec は :304)、aggregateReplacementQueries は store.ts:2041 (spec は :1937)、EXPECTED_D1_MIGRATION は schema-guard.ts:4 で 0058 (spec は 0057)",
+      "status": "open",
+      "resolution_plan": "spec は凍結のまま。task spec は今の行を引き、P05 の Entry step (phase-05:30) が着手時に取り直す。訂正は phase-01:31 のとおり P01 が docs/classify-screen/bulk-save-decisions.md に記録し、次の system-spec 改訂へ回す",
+      "remediation_owner": [
+        "SYS-CLASSIFY-BULK-P01",
+        "SYS-CLASSIFY-BULK-P05"
+      ]
+    },
+    {
+      "id": "RQ-F3",
+      "source": "requirements",
+      "severity": "info",
+      "summary": "registration receipt の graph_digest_after は canonical JSON の sha256 で、本書の snapshot (bytes の sha256) と方式が違う。値の違いは drift ではない",
+      "status": "resolved",
+      "resolution": "handoff に graph_canonical_digest を併記し、登録時の値と一致することを検算した",
+      "remediation_owner": [
+        "なし (記録のみ)"
+      ]
+    }
+  ],
+  "remediation_owners": [
+    "SYS-CLASSIFY-BULK-P01",
+    "SYS-CLASSIFY-BULK-P02",
+    "SYS-CLASSIFY-BULK-P04",
+    "SYS-CLASSIFY-BULK-P05",
+    "SYS-CLASSIFY-BULK-P06",
+    "SYS-CLASSIFY-BULK-P08",
+    "SYS-CLASSIFY-BULK-P12",
+    "SYS-CLASSIFY-BULK-P13",
+    "spec 担当 (次の system-spec 改訂)"
+  ]
+}

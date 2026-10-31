@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest';
 import type { ClassifyRow } from '../../api.js';
 import {
   DEFAULT_FILTERS,
+  type EditInput,
   amountText,
   bulkResultMessage,
   canSave,
@@ -18,18 +19,18 @@ import {
   descriptionText,
   filtersToParams,
   historyText,
-  inputFromRow,
+  initialInput,
   isDefaultFilters,
   outcomeOf,
   outcomeText,
   parseFilters,
   parseSelectionParams,
   periodRangeLabel,
+  planBulkSave,
   previewAfterText,
   previewBadgeText,
   previewNoticeText,
   previewOmittedText,
-  resolveBulkItem,
   sameInput,
   selectionParams,
   splitSumMessage,
@@ -62,6 +63,22 @@ const row = (over: Partial<ClassifyRow> = {}): ClassifyRow =>
     splitLineCount: null,
     ...over,
   }) as ClassifyRow;
+
+/**
+ * 編集パネルの入力。既定は row() の提案どおりの値。
+ * 開いた直後の初期値 (未整理は提案、確定済みは今の値) は core の解決関数が決める
+ * (spec-classify-bulk-save AC-02。packages/core/test/classify-bulk-resolve.test.ts の「土台の組」)。
+ * ここでは初期値の作り方に頼らず、入力を受けた後の判定だけを確かめる
+ */
+const editInput = (over: Partial<EditInput> = {}): EditInput => ({
+  cls: 'biz',
+  big: '会議費',
+  mid: '打合せ',
+  owner: 'business',
+  paymentMethod: null,
+  note: null,
+  ...over,
+});
 
 describe('件数・金額・日付', () => {
   it('件数は 3 桁区切りで「件」を付ける', () => {
@@ -128,55 +145,43 @@ describe('通知 (7.7)', () => {
 });
 
 describe('編集パネルの入力 (7.6・BR-01)', () => {
-  it('未整理で提案がある明細は、提案を初期値に置く', () => {
-    // この画面の既定の道筋は「提案どおりに確定する」なので、開いた直後に保存を押せば完了になる
-    expect(inputFromRow(row())).toMatchObject({
-      cls: 'biz',
-      big: '会議費',
-      mid: '打合せ',
-      owner: 'business',
-    });
-    expect(outcomeText(outcomeOf(row(), inputFromRow(row())))).toBe('この内容で保存すると完了になります。');
-  });
-
-  it('確定済みの明細は保存値をそのまま出す', () => {
-    const fixed = row({ status: 'manual', cls: 'per', big: '食費', mid: '外食', owner: 'family' });
-    expect(inputFromRow(fixed)).toMatchObject({ cls: 'per', big: '食費', mid: '外食', owner: 'family' });
+  it('提案どおりの入力で保存すると完了になる', () => {
+    // この画面の既定の道筋は「提案どおりに確定する」なので、提案を初期値に置いて保存を押せば完了になる
+    expect(outcomeText(outcomeOf(row(), editInput()))).toBe('この内容で保存すると完了になります。');
   });
 
   it('提案が無ければ、何を入れても手動変更になる', () => {
     const none = row({ suggestion: { cls: null, big: '', mid: '', owner: null }, suggestionLabel: '' });
-    expect(outcomeOf(none, inputFromRow(none))).toBe('manual');
+    expect(outcomeOf(none, editInput())).toBe('manual');
     expect(outcomeText('manual')).toBe('この内容で保存すると手動変更になります。');
   });
 
-  it('api が返す提案なし (null) でも落ちず、保存値をそのまま出す', () => {
+  it('api が返す提案なし (null) でも落ちず、手動変更になる', () => {
     // buildClassifyRow は提案なしを空オブジェクトでなく null で返す。
     // 型が非 null だった頃は、提案のない明細の編集パネルを開くだけで s.cls が TypeError になっていた
     const none = row({ suggestion: null, suggestionLabel: null, cls: 'per', big: '食費', mid: '外食' });
-    expect(inputFromRow(none)).toMatchObject({ cls: 'per', big: '食費', mid: '外食' });
-    expect(outcomeOf(none, inputFromRow(none))).toBe('manual');
+    expect(outcomeOf(none, editInput({ cls: 'per', big: '食費', mid: '外食', owner: null }))).toBe('manual');
   });
 
   it('一致の判定は core と同じで、空文字と null の差では揺れない', () => {
     // 予告 (7.13) と、保存後に api が付ける matchedProposal は同じ matchesSuggestion を通る。
     // ここを web で書き直すと「完了になります」と言われた保存が手動変更になる
     const r = row({ suggestion: { cls: 'biz', big: '会議費', mid: '', owner: 'business' } });
-    expect(outcomeOf(r, { ...inputFromRow(r), mid: null })).toBe('done');
-    expect(outcomeOf(r, { ...inputFromRow(r), mid: '' })).toBe('done');
+    expect(outcomeOf(r, editInput({ mid: null }))).toBe('done');
+    expect(outcomeOf(r, editInput({ mid: '' }))).toBe('done');
   });
 
   it('提案と 1 つでも違えば手動変更', () => {
-    expect(outcomeOf(row(), { ...inputFromRow(row()), mid: '会議' })).toBe('manual');
+    expect(outcomeOf(row(), editInput({ mid: '会議' }))).toBe('manual');
   });
 
   it('メモと支払方法の違いは確定の判定に入らない', () => {
     // BR-09。メモだけの保存は確定ではないので、提案一致の判定を動かさない
-    expect(outcomeOf(row(), { ...inputFromRow(row()), note: 'あとで確認' })).toBe('done');
+    expect(outcomeOf(row(), editInput({ note: 'あとで確認' }))).toBe('done');
   });
 
   it('sameInput は空文字と null を同じとみなす', () => {
-    const base = inputFromRow(row());
+    const base = editInput();
     expect(sameInput(base, { ...base, big: base.big })).toBe(true);
     expect(sameInput({ ...base, big: null }, { ...base, big: '' })).toBe(true);
     expect(sameInput(base, { ...base, owner: 'family' })).toBe(false);
@@ -184,10 +189,11 @@ describe('編集パネルの入力 (7.6・BR-01)', () => {
 
   it('未整理は入力を変えていなくても保存を押せる', () => {
     // 「提案どおりに確定する」が押せないと、既定の道筋が通らない
-    expect(canSave(row(), inputFromRow(row()))).toBe(true);
+    expect(canSave(row(), editInput())).toBe(true);
+    // 確定済みは今の値から変えたときだけ押せる
     const fixed = row({ status: 'done', cls: 'biz', big: '会議費', mid: '打合せ', owner: 'business' });
-    expect(canSave(fixed, inputFromRow(fixed))).toBe(false);
-    expect(canSave(fixed, { ...inputFromRow(fixed), note: 'メモ' })).toBe(true);
+    expect(canSave(fixed, editInput())).toBe(false);
+    expect(canSave(fixed, editInput({ note: 'メモ' }))).toBe(true);
   });
 
   it('履歴の 1 行は {日時} {由来} → {変更後}（信頼度 段階 n%）', () => {
@@ -207,6 +213,30 @@ describe('編集パネルの入力 (7.6・BR-01)', () => {
         confidence: null,
       }),
     ).toBe('2026/09/02 10:05 手動 → (なし)');
+  });
+});
+
+describe('区分だけの提案 (用語集『カテゴリなし』・BR-02)', () => {
+  // MF の中項目が「事業」で始まる明細は、区分だけの提案を作る (core の candidatesFor)
+  const clsOnly = row({
+    id: 'B1',
+    rowKey: 'B1',
+    suggestion: { cls: 'biz', big: null, mid: null, owner: null },
+    suggestionLabel: null,
+  });
+
+  it('編集パネルの初期値は、区分を提案から取り、大・中は空のまま (『カテゴリなし』は選べない)', () => {
+    expect(initialInput(clsOnly)).toMatchObject({ cls: 'biz', big: null, mid: null });
+  });
+
+  it('一括保存の内訳は、組の無い明細を『カテゴリなし』で保存する件数に数える', () => {
+    const plan = planBulkSave([clsOnly, row()], {}, { biz: [], per: [] }, () => null);
+    expect(plan.saveCount).toBe(2);
+    expect(plan.noCategoryCount).toBe(1);
+    expect(plan.items).toEqual([
+      { txId: 'B1', draft: {} },
+      { txId: 'A1', draft: {} },
+    ]);
   });
 });
 
@@ -288,27 +318,6 @@ describe('絞り込みの URL 契約 (7.4)', () => {
     expect(selectionParams(parsed.selected, parsed.openTxKey)).toEqual({
       sel: parsed.selected.join(','),
       tx: 'mf:9',
-    });
-  });
-});
-
-describe('一括保存の入力解決', () => {
-  it('下書き > 提案 > クライアント失敗の優先順にする', () => {
-    const suggested = row();
-    const draft = { ...inputFromRow(suggested), big: '雑費', mid: null };
-    expect(resolveBulkItem(suggested, draft)).toEqual({
-      ok: true,
-      item: { txId: 'A1', ...draft },
-      source: 'draft',
-    });
-    expect(resolveBulkItem(suggested, null)).toMatchObject({
-      ok: true,
-      item: { txId: 'A1', cls: 'biz', big: '会議費', mid: '打合せ' },
-      source: 'suggestion',
-    });
-    expect(resolveBulkItem(row({ suggestion: null, suggestionLabel: null }), null)).toEqual({
-      ok: false,
-      message: '提案または保存済みの下書きがありません。',
     });
   });
 });

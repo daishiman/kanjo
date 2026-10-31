@@ -9,10 +9,13 @@ kind: index
 
 ## 現行Login v2の実装・配信情報
 
-実行時の移行は `migrations/0059_login_v2_better_auth.sql`。以下の章は着手時の確定仕様の履歴を含む。
+実行時の移行は `migrations/0061_login_v2_better_auth.sql`。以下の章は着手時の確定仕様の履歴を含む。
 現行の認証方式・安全な戻し・検証結果は [`設計・実行記録`](../docs/login-v2/design-decisions.md) と
 [`認証運用`](../docs/runbooks/account-login-operations.md) を参照する。最新mainの統合前仕様は
 `archive/2026-10-31-pre-login-v2-main/` にそのまま保存した。
+追加統合した明細一括保存・勘定科目対応表（main `6ef4c9c`）の確定仕様は
+[`archive/2026-10-31-pre-login-v2-main-79/index.md`](archive/2026-10-31-pre-login-v2-main-79/index.md) にbyte同一保存した。
+現行runtimeではこの明細機能とLogin v2を併存させ、migrationのheadは0061とする。
 
 ## 要件定義書 (上位概念・憲法)
 

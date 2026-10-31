@@ -11,6 +11,8 @@ import type {
   BudgetOutlook,
   BudgetRow,
   BudgetScreen,
+  BulkDraft,
+  BulkSpec,
   Candidates,
   CashFlow,
   ClassificationProgress,
@@ -541,7 +543,6 @@ export interface ClassifyRow extends TxRow {
 
 export interface ClassifyTransactionsResponse extends Omit<TransactionsResponse, 'transactions'> {
   period: { from: string | null; to: string | null };
-  transactions: ClassifyRow[];
   rows: ClassifyRow[];
   /** 絞り込み後の件数 (ページ送りの母数) */
   total: number;
@@ -581,14 +582,22 @@ export interface TxHistoryRow {
   opId: string;
 }
 
-export interface BulkItemBody {
-  txId: string;
-  cls?: Cls | null;
-  big?: string | null;
-  mid?: string | null;
-  owner?: Owner | null;
-  paymentMethod?: 'cash' | 'card' | 'account' | null;
-  note?: string | null;
+/**
+ * 選択の読み出し (GET /transactions/selected)。表示中のページに無い選択を key で引く。
+ * rows は keys の順、missing は消えた・読めない key (FR-04)
+ */
+export interface ClassifySelectedResponse {
+  rows: ClassifyRow[];
+  missing: string[];
+}
+
+/**
+ * 一括保存の本文 (POST /transactions/bulk)。bulk は全明細へ同じ値、draft は明細ごとの下書き。
+ * 値はサーバが core の resolveBulkSaveItem で決める。画面は送るだけで値を作らない (BR-01)
+ */
+export interface BulkSaveBody {
+  bulk?: BulkSpec;
+  items: { txId: string; draft: Partial<BulkDraft> }[];
 }
 
 export interface BulkItemResult {

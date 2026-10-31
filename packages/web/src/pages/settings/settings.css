@@ -374,6 +374,17 @@ ul.settings-info,
   color: var(--ink-soft);
 }
 
+/* -------- 勘定科目の対応表 -------- */
+
+/* 欄は見出しを上に置くので、追加ボタンは入力の下端に揃える */
+.settings-tax-map-add {
+  align-items: flex-end;
+}
+
+.settings-tax-map-add select {
+  min-height: var(--tap-target-min);
+}
+
 /* -------- データ・バックアップ -------- */
 
 .settings-exports {

@@ -1,0 +1,238 @@
+{
+ "acceptance": [
+  "O1 (G1): 提案の無い明細を一括指定で保存できる (測定基準は 00 U4 の O1)",
+  "O2 (G1): 失敗の種類ごとに、再試行の有無と理由が正しく出る (測定基準は 00 U4 の O2)",
+  "O3 (G2): 取込直後でも明細に提案が付く (測定基準は 00 U4 の O3)",
+  "O4 (G3): 選択がページと絞り込みをまたいで保たれ、サーバが値を解決する (測定基準は 00 U4 の O4)",
+  "O5 (G4): 1264px 幅で取引一覧が崩れない (測定基準は 00 U4 の O5)",
+  "O6 (G5): 保存の経路が認可と入力検証を通る (測定基準は 00 U4 の O6)",
+  "O7 (G1, G2, G3, G4, G5): 既存の品質ゲートを緑のまま保つ (測定基準は 00 U4 の O7)",
+  "O8 (G1): 一括保存が無料枠の 1 起動の上限に収まる (測定基準は 00 U4 の O8)",
+  "O9 (G1): 同じ要求を送り直しても二重に保存されない (測定基準は 00 U4 の O9)"
+ ],
+ "architecture_refs": [
+  "architecture/classify-bulk-save-ui-ux.md",
+  "architecture/classify-bulk-save-frontend.md",
+  "architecture/classify-bulk-save-backend.md",
+  "architecture/classify-bulk-save-database.md",
+  "architecture/classify-bulk-save-auth.md",
+  "architecture/classify-bulk-save-security.md",
+  "architecture/classify-bulk-save-infrastructure.md",
+  "architecture/classify-bulk-save-maintenance-ops.md",
+  "specs/spec-classify-bulk-save.md"
+ ],
+ "artifact_kind": "feature",
+ "checklist_summary": {
+  "architecture_refs_resolved_in_repo": true,
+  "feature_identity_matches": true,
+  "lineage_has_path_version_digest": true,
+  "no_feature_split_or_task_generation": true,
+  "purpose_goal_scope_acceptance_nonempty": true,
+  "system_spec_source_confirmed_pass": true
+ },
+ "feature_id": "feat-classify-bulk-save",
+ "generated_at": "2026-10-01T14:41:30Z",
+ "goal": "/classify で、提案の無い明細も一括指定欄で値を決めて保存でき、保存前の内訳で保存する件数と外す件数を確かめられる。選択は URL の sel に行の key で保たれ、サーバが明細を引き直して 1 回の batch (D1 クエリ 49 本以内) で書き、再試行は write_failed の明細と要求全体の失敗 (通信の失敗・5xx・409) にだけ出る。取込直後でも『MF の分類』の提案が付き、勘定科目の対応表を設定画面で編集でき、取引一覧は 1264px でも 6 列で崩れない。lint・typecheck・test・skills:test・初期 JS 予算・verify:full は緑のまま。",
+ "identity_check": {
+  "artifact_kind_matches": true,
+  "feature_context_path": "features/feat-classify-bulk-save.context.json",
+  "feature_context_sha256": "b2add3b39408da9d9b3c7d028f130ae4f2cebe447c83cf88ec0afdb6f49f8d58",
+  "graph_node_id": "feat-classify-bulk-save",
+  "graph_node_id_matches_feature_id": true,
+  "resolved_by": "C09 resolve-project-context と shasum による実測。"
+ },
+ "notes": [
+  "purpose/goal/scope_in/scope_out/acceptance/architecture_refs は features/feat-classify-bulk-save.context.json (updated_at=2026-10-01T12:17:32Z) の値をそのまま写した。",
+  "正本の優先順位は (1) system-spec/ 配下、(2) specs/spec-classify-bulk-save.md、(3) 本番の /classify (sel に 50 件を選んだ状態) の画像。goal-spec は正本を再構成せず path/digest で引用する。",
+  "受入の詳細 (core 単体・API テスト・DOM・画面検査・D1 のクエリの本数) は specs/spec-classify-bulk-save.md の『テストと受入条件』(AC-01〜AC-30) を正本とし、複製しない。",
+  "改善の深さは standard を記録した (利用者の継続指示により、問を出さずに進める)。",
+  "package に足さない別 feature の候補: (1) ci.yml に明細仕分けの画面検査を足す (OI-7)。(2) 次に graph を更新するとき packages/api/src/d1-limits.test.ts を resource_scope へ足し、D1 上限の 2 つの名前の検査をそこへ移す。",
+  "main の取り込み: plan の途中で origin/main が a63d35c から 9b5bbf3 (#75) へ進んだので fast-forward で取り込んだ。specs/spec-classify-bulk-save.md と system-spec/ の章が書く 0058・0059 は a63d35c 時点の予定番号で、origin/main 9b5bbf3 の最後は 0058_subscription_merge_operations.sql なので、本 package は 0059・0060 と書く。migration の名前の正本は migrations/ の実ファイル (SPEC_BASE からの差分で足した 2 本) で、文書の番号はそれに従う。 行番号の参照も 9b5bbf3 で測り直した (spec と architecture の行番号は a63d35c 時点の値)。",
+  "PR の単位: 本 feature は前サイクル (#75) と同じく 1 本の PR (feature PR) で main へ入れる。各 task の branch は直前の task の branch の先端から作り、完了時に feature PR の head branch (P01 が決めて記録する) を本 task の branch の先端へ fast-forward する。13 task の linked_pr_merged_all は P13 の merge 1 回で同時に満たされる。差分の基点は SPEC_BASE (P01 の着手前に、仕様サイクルと dev-graph 登録の成果物 — 章の markdown と archive・specs・architecture・features・tasks・.dev-graph/plans と requirements — だけを入れた commit)。"
+ ],
+ "open_items": [
+  {
+   "id": "OI-1",
+   "item": "spec の未決事項 2: 利用者がまだ確かめていない細部 (表示件数の既定 50 件・選択の key の上限 200 字・一括保存の旧形式の受け付け)。章の値で実装する。",
+   "note": "specs/spec-classify-bulk-save.md §未決事項 2 を正本とする。P05 が案と判断の依頼文を docs/classify-screen/bulk-save-decisions.md に書いて feature PR の本文に載せ、利用者の承認か値の改めを P12 が同じ文書に記録した時点で閉じる。判断が値を変える場合は P12 が P05 へ差し戻し、同じ PR で直して P06〜P11 をやり直す。",
+   "resolution_owner": "SYS-CLASSIFY-BULK-P12",
+   "status": "unresolved_precondition"
+  },
+  {
+   "id": "OI-2",
+   "item": "spec の未決事項 5: 勘定科目の対応表の API のパスと表・列の名前。",
+   "note": "P02 で案を決め、P05 で実装し、P12 で docs/data-schema.md と architecture 文書に書いて閉じる。",
+   "resolution_owner": "SYS-CLASSIFY-BULK-P12",
+   "status": "unresolved_precondition"
+  },
+  {
+   "id": "OI-3",
+   "item": "spec の未決事項 6: 『カテゴリなし』の予約の値の字面。",
+   "note": "P02 で既存の候補と衝突しない案を決め、P05 で core に置き、候補の作成の拒否のテストが通った時点で閉じる。",
+   "resolution_owner": "SYS-CLASSIFY-BULK-P05",
+   "status": "unresolved_precondition"
+  },
+  {
+   "id": "OI-4",
+   "item": "spec の未決事項 7: 新しい持ち主 (user_id) へ初期の 5 行を入れる時機。今のコードに新しい持ち主を作る経路が無い。",
+   "note": "P05 が案と判断の依頼文を docs/classify-screen/bulk-save-decisions.md に書いて feature PR の本文に載せ、判断のとおりに入れ、O3 の API テストが通り、P12 が判断を記録した時点で閉じる。判断が値を変える場合は P12 が P05 へ差し戻し、同じ PR で直して P06〜P11 をやり直す。",
+   "resolution_owner": "SYS-CLASSIFY-BULK-P12",
+   "status": "unresolved_precondition"
+  },
+  {
+   "id": "OI-5",
+   "item": "spec の未決事項 1・3・4: 章の旧い文言 18 か所、C07 の low・info 3 件、C06 の medium 2 件。本書の契約には影響しない。",
+   "note": "次の system-spec の改訂で spec 担当が閉じる。本 feature では P12 で持ち越しとして記録する。",
+   "resolution_owner": "SYS-CLASSIFY-BULK-P12",
+   "status": "unresolved_precondition"
+  },
+  {
+   "id": "OI-6",
+   "item": "本 feature の migration の番号 (spec では 0058・0059、本 package では 0059・0060) が並行するサイクルと衝突しうる (git の衝突には出ない)。",
+   "note": "specs/spec-classify-bulk-save.md と system-spec/ の章が書く 0058・0059 は a63d35c 時点の予定番号で、origin/main 9b5bbf3 の最後は 0058_subscription_merge_operations.sql なので、本 package は 0059・0060 と書く。migration の名前の正本は migrations/ の実ファイル (SPEC_BASE からの差分で足した 2 本) で、文書の番号はそれに従う。 P05 が着手時に、P08 が定義の削除の後に、P13 が merge の直前に origin/main と突き合わせ、P13 の突き合わせの記録で閉じる。",
+   "resolution_owner": "SYS-CLASSIFY-BULK-P13",
+   "status": "unresolved_precondition"
+  },
+  {
+   "id": "OI-7",
+   "item": "今の ci.yml は明細仕分けの画面検査を走らせない。CI が緑でも AC-22 は確かめられない。",
+   "note": "P06 と P13 で手元の verify:full (4175 の vite を前提) を走らせて確かめる。.github/workflows/ は feature の resource_scope の外なので、ci.yml への画面検査の追加は本 feature で行わず、別 feature の候補として返す。",
+   "resolution_owner": "SYS-CLASSIFY-BULK-P06",
+   "status": "unresolved_precondition"
+  },
+  {
+   "id": "OI-8",
+   "item": "一括保存の 1 要求は D1 のクエリを 49 本以内に収める (50 件・100 件とも)。",
+   "note": "P04 で API テストに本数の数え上げを書き、P05 で json_each で束ねた 1 回の batch により満たす。",
+   "resolution_owner": "SYS-CLASSIFY-BULK-P05",
+   "status": "unresolved_precondition"
+  }
+ ],
+ "purpose": "明細仕分け画面で選んだ明細を、提案の有無や表示中のページ・絞り込みに左右されずに、何がどの値で保存されるかを確かめたうえで一括で確定できるようにする。取込直後で取引先の記憶もルールも無い利用者でも未整理を月次クローズまで減らせるようにし、『選んだのに保存できない』『再試行を押しても何も起きない』『一覧が崩れて読めない』ことで仕分けが止まるのを無くす。",
+ "readiness_pin": {
+  "checked_at": "2026-10-01T14:41:20Z",
+  "completeness_report": "system-spec/completeness-findings.json",
+  "missing_sections": [],
+  "source_pin": {
+   "compile_entrypoint": "run-system-spec-compile",
+   "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+   "plugin": "system-spec-harness",
+   "source_digest": "sha256:13f5da18256ca31f2b00f2b67a79e882332ac7e3b841f46575a884e6257ed4f4",
+   "version": "0.1.16"
+  },
+  "status": "complete",
+  "verdict": "PASS"
+ },
+ "repository_id": "github:daishiman/kanjo",
+ "run_id": "plan-feat-classify-bulk-save-20261001T1245Z",
+ "scope_in": [
+  "一括操作バーの一括指定欄 (区分・カテゴリ大/中・所有者・支払い方法) と保存前の内訳 (00 I1)",
+  "POST /api/transactions/bulk の拡張: サーバが明細を引き直して core で値を解決し、1 回の batch で書く (00 I2)",
+  "GET /api/transactions/selected の新設と、一覧の応答から絞り込み後の全件を外すこと (00 I3)",
+  "提案の最後の由来『MF の分類』『MF の分類 (対応表)』(00 I4)",
+  "選択の保持・選べない行の理由・見出しの全選択の 50 件での停止 (00 I5)",
+  "取引一覧の 6 列化・表示件数の選択・編集パネルの可変幅・明細仕分けの画面検査 (00 I6)",
+  "再試行を write_failed の明細と要求全体の失敗に限ること (00 I7)",
+  "勘定科目の対応表: 表・migration・API・設定画面・設定の変更履歴・設定の JSON とバックアップ (00 I8)",
+  "『カテゴリなし』の予約の値 (00 I9)",
+  "上記の認可・入力検証・履歴・テストと、画面検査の記録 (docs/classify-screen/)"
+ ],
+ "scope_out": [
+  "選択の上限 (URL の sel 50 件) と一括保存の上限 (100 件) の変更",
+  "要確認の閾値 80 と、既存の由来 (記憶・ルール・MF 中項目の対応表) の順位と信頼度の変更",
+  "分割・ルール作成・ルール適用・削除と取消・保存フィルタの仕様変更",
+  "絞り込み結果の全件 (表示外のページを含む) を一度に選ぶ操作",
+  "取込 (CSV の読み込み) の仕様変更、証憑の添付と保管",
+  "モバイル・タブレット・デスクトップ専用アプリ",
+  "Workers Paid などの有料プランへの変更"
+ ],
+ "source_lineage": [
+  {
+   "note": "C09 preflight で実測した digest。graph_node_id=feat-classify-bulk-save と --feature-id の一致を確認した。",
+   "path": "features/feat-classify-bulk-save.context.json",
+   "sha256": "b2add3b39408da9d9b3c7d028f130ae4f2cebe447c83cf88ec0afdb6f49f8d58",
+   "source_kind": "feature_context"
+  },
+  {
+   "note": "ファイルのバイト列の実測 digest。front matter は confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "features/feat-classify-bulk-save.md",
+   "sha256": "1b044a774642cfc4586204f0d09a473c7b650b2054acdf6b4b365602c71c71aa",
+   "source_kind": "feature_document"
+  },
+  {
+   "note": "ファイルのバイト列の実測 digest。confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "specs/spec-classify-bulk-save.md",
+   "sha256": "ac7d9e19d525eaa77f695f0915992cc40f0307671234aecfd400396e5cc73dc0",
+   "source_kind": "specification"
+  },
+  {
+   "note": "ファイルのバイト列の実測 digest で、specs/spec-classify-bulk-save.md front matter の confirmation_evidence.evaluated_digest と一致する。C08 の source_pin.source_digest (sha256:13f5da18...) は C08 の算出規則による別の digest であり、並記する。",
+   "path": "system-spec/00-requirements-definition.md",
+   "sha256": "f0b0a1a8b288f5a152a1b1f2a4c3701b128753ccef2a2fc5c6c248b6c5e851b0",
+   "source_kind": "system_spec_requirements",
+   "version": "0.1.16"
+  },
+  {
+   "note": "verdict=PASS の完成度 evaluator 記録。このファイル自体のバイト列の実測 digest。評価対象の 00 の digest は system_spec_requirements に記す。",
+   "path": "system-spec/completeness-findings.json",
+   "sha256": "3859d23ee95b5af86b4274dea7eeb90c3f7bdf84076736b327e3d305f8a14599",
+   "source_kind": "completeness_evaluation"
+  },
+  {
+   "note": "arch-classify-bulk-save-ui-ux (architecture/classify-bulk-save-ui-ux.md) の source_lineage.source_path が指す章。sha256 は章のバイト列の実測で、architecture 文書の confirmation_evidence.evaluated_digest / source_lineage.source_digest と一致する。architecture 文書自体は architecture_refs で参照する (P12 が 2 本に追記するので digest では固定しない)。confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "system-spec/ui-ux.md",
+   "sha256": "b1c03ab76d1f3b2747236c7eb125c53b68b1d651eaf371d5dbf85b07c3731fad",
+   "source_kind": "system_spec_chapter",
+   "version": "0.1.16"
+  },
+  {
+   "note": "arch-classify-bulk-save-frontend (architecture/classify-bulk-save-frontend.md) の source_lineage.source_path が指す章。sha256 は章のバイト列の実測で、architecture 文書の confirmation_evidence.evaluated_digest / source_lineage.source_digest と一致する。architecture 文書自体は architecture_refs で参照する (P12 が 2 本に追記するので digest では固定しない)。confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "system-spec/frontend.md",
+   "sha256": "0e7b7f2409859c73414efe597a232e4058a00780cd6df53d4d050ce4a2aefa6e",
+   "source_kind": "system_spec_chapter",
+   "version": "0.1.16"
+  },
+  {
+   "note": "arch-classify-bulk-save-backend (architecture/classify-bulk-save-backend.md) の source_lineage.source_path が指す章。sha256 は章のバイト列の実測で、architecture 文書の confirmation_evidence.evaluated_digest / source_lineage.source_digest と一致する。architecture 文書自体は architecture_refs で参照する (P12 が 2 本に追記するので digest では固定しない)。confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "system-spec/backend.md",
+   "sha256": "ab269614a9358535d89563df46c2e288b6d52894cd7db12588c9cb529f983c51",
+   "source_kind": "system_spec_chapter",
+   "version": "0.1.16"
+  },
+  {
+   "note": "arch-classify-bulk-save-database (architecture/classify-bulk-save-database.md) の source_lineage.source_path が指す章。sha256 は章のバイト列の実測で、architecture 文書の confirmation_evidence.evaluated_digest / source_lineage.source_digest と一致する。architecture 文書自体は architecture_refs で参照する (P12 が 2 本に追記するので digest では固定しない)。confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "system-spec/database.md",
+   "sha256": "12f08e168e97d84b37f27da2d8379f5e1d60a5431857d5c7688360f5d107d623",
+   "source_kind": "system_spec_chapter",
+   "version": "0.1.16"
+  },
+  {
+   "note": "arch-classify-bulk-save-auth (architecture/classify-bulk-save-auth.md) の source_lineage.source_path が指す章。sha256 は章のバイト列の実測で、architecture 文書の confirmation_evidence.evaluated_digest / source_lineage.source_digest と一致する。architecture 文書自体は architecture_refs で参照する (P12 が 2 本に追記するので digest では固定しない)。confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "system-spec/auth.md",
+   "sha256": "39dc98bbb339173ca4a394060045561241f79a2620b3ca338c6a268ed873ecc2",
+   "source_kind": "system_spec_chapter",
+   "version": "0.1.16"
+  },
+  {
+   "note": "arch-classify-bulk-save-security (architecture/classify-bulk-save-security.md) の source_lineage.source_path が指す章。sha256 は章のバイト列の実測で、architecture 文書の confirmation_evidence.evaluated_digest / source_lineage.source_digest と一致する。architecture 文書自体は architecture_refs で参照する (P12 が 2 本に追記するので digest では固定しない)。confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "system-spec/security.md",
+   "sha256": "85b474d994a4d8b7d31e97f571c03fad75bf7d5e1dad066c05fbafd42619e06c",
+   "source_kind": "system_spec_chapter",
+   "version": "0.1.16"
+  },
+  {
+   "note": "arch-classify-bulk-save-infrastructure (architecture/classify-bulk-save-infrastructure.md) の source_lineage.source_path が指す章。sha256 は章のバイト列の実測で、architecture 文書の confirmation_evidence.evaluated_digest / source_lineage.source_digest と一致する。architecture 文書自体は architecture_refs で参照する (P12 が 2 本に追記するので digest では固定しない)。confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "system-spec/infrastructure.md",
+   "sha256": "9a4eaa14ba4a71c8800747bed11d35d5562cc2635086f9f3b92a0bedb72837e9",
+   "source_kind": "system_spec_chapter",
+   "version": "0.1.16"
+  },
+  {
+   "note": "arch-classify-bulk-save-maintenance-ops (architecture/classify-bulk-save-maintenance-ops.md) の source_lineage.source_path が指す章。sha256 は章のバイト列の実測で、architecture 文書の confirmation_evidence.evaluated_digest / source_lineage.source_digest と一致する。architecture 文書自体は architecture_refs で参照する (P12 が 2 本に追記するので digest では固定しない)。confirmation_status=confirmed, evaluation_status=pass。",
+   "path": "system-spec/maintenance-ops.md",
+   "sha256": "b12cfcee5a7b7de7613084fb545e100724d284e7e09e39aa10317f9544f2317b",
+   "source_kind": "system_spec_chapter",
+   "version": "0.1.16"
+  }
+ ]
+}

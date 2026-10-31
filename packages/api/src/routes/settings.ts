@@ -14,6 +14,7 @@ import {
   budgetTable,
   cashToTx,
   clampStatMinMonths,
+  isNoCategory,
   normalizeAccount,
   resolveTx,
   settingsActorFromEmail,
@@ -42,13 +43,16 @@ import {
   saveAgg,
   upsertEdit,
 } from '../store.js';
-import { loadCandidates } from './classify.js';
+import { loadCandidates, reservedCategory } from './classify.js';
 import { legacySettingsStatements } from './settings-screen.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
 
 /** drizzle の query を D1 の statement に直す。新表の statement (D1 直) と同じ batch に並べるため */
-const rawStatement = (database: D1Database, query: { toSQL(): { sql: string; params: unknown[] } }) => {
+export const rawStatement = (
+  database: D1Database,
+  query: { toSQL(): { sql: string; params: unknown[] } },
+) => {
   const { sql: text, params } = query.toSQL();
   return database.prepare(text).bind(...params);
 };
@@ -497,6 +501,8 @@ settingsRoute.post('/category-options', zValidator('json', optionSchema), async 
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
   const b = c.req.valid('json');
+  // 『カテゴリなし』は予約の値。同じ名前の候補を作ると、集計で未分類に数える明細と見分けられない (BR-04)
+  if (isNoCategory(b.major) || isNoCategory(b.mid)) return c.json(reservedCategory, 400);
   if (b.scope === 'biz' && b.mid)
     return c.json(
       { error: { code: 'biz_has_no_mid', message: '事業の科目(freee勘定科目)には中項目がありません' } },
@@ -528,6 +534,7 @@ settingsRoute.put('/category-options', zValidator('json', optionRenameSchema), a
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
   const { from, to } = c.req.valid('json');
+  if (isNoCategory(to.major) || isNoCategory(to.mid)) return c.json(reservedCategory, 400);
   if (from.scope === 'biz' && to.mid)
     return c.json(
       { error: { code: 'biz_has_no_mid', message: '事業の科目(freee勘定科目)には中項目がありません' } },

@@ -1,0 +1,63 @@
+{
+ "architecture_root": "architecture",
+ "checked_at": "2026-10-01T14:41:20Z",
+ "completeness_report": "system-spec/completeness-findings.json",
+ "missing_sections": [],
+ "probes": {
+  "architecture_graph": {
+   "detail": "",
+   "exists": true,
+   "heading_count": 0,
+   "non_empty": true,
+   "path": "architecture/graph.json",
+   "placeholder_free": true,
+   "verified": true
+  },
+  "completeness_evaluation": {
+   "detail": "OK: レポート形状と総合判定整合を満たす (verdict=PASS)",
+   "exists": true,
+   "heading_count": 0,
+   "non_empty": true,
+   "path": "system-spec/completeness-findings.json",
+   "placeholder_free": true,
+   "verified": true
+  },
+  "requirements_definition": {
+   "detail": "",
+   "exists": true,
+   "heading_count": 13,
+   "non_empty": true,
+   "path": "system-spec/00-requirements-definition.md",
+   "placeholder_free": true,
+   "verified": true
+  },
+  "source_plugin_manifest": {
+   "detail": "pinned producer manifest+sidecar matched",
+   "exists": true,
+   "heading_count": 0,
+   "non_empty": true,
+   "path": "<HOME>/.claude/plugins/cache/harness-local/system-dev-planner/system-spec-harness/references/package-contract.json",
+   "placeholder_free": true,
+   "verified": true
+  },
+  "system_spec_index": {
+   "detail": "",
+   "exists": true,
+   "heading_count": 5,
+   "non_empty": true,
+   "path": "system-spec/index.md",
+   "placeholder_free": true,
+   "verified": true
+  }
+ },
+ "repository_id": "github:daishiman/kanjo",
+ "source_pin": {
+  "compile_entrypoint": "run-system-spec-compile",
+  "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+  "plugin": "system-spec-harness",
+  "source_digest": "sha256:13f5da18256ca31f2b00f2b67a79e882332ac7e3b841f46575a884e6257ed4f4",
+  "version": "0.1.16"
+ },
+ "status": "complete",
+ "system_spec_root": "system-spec"
+}

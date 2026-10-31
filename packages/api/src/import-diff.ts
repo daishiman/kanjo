@@ -38,7 +38,7 @@ import {
   resolveThreeWayAttrs,
   resolveTx,
 } from '@kanjo/core';
-import { D1_FREE_QUERY_LIMIT } from './import-lifecycle.js';
+import { D1_INVOCATION_QUERY_LIMIT } from './d1-limits.js';
 import { fingerprintCanonical } from './import-pipeline.js';
 
 /* --------------------------------- 予算 --------------------------------- */
@@ -73,7 +73,12 @@ export function planImportDiffQueries(args: {
     lifecycle: 0,
   };
   const total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
-  return { total, limit: D1_FREE_QUERY_LIMIT, accepted: total < D1_FREE_QUERY_LIMIT, breakdown };
+  return {
+    total,
+    limit: D1_INVOCATION_QUERY_LIMIT,
+    accepted: total < D1_INVOCATION_QUERY_LIMIT,
+    breakdown,
+  };
 }
 
 /* --------------------------------- 差分 --------------------------------- */

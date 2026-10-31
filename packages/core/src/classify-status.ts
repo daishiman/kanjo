@@ -6,7 +6,11 @@
  * 判定を api や web に写すと、同じ画面の中で件数が食い違う (旧実装が実際にそうなっていた)。
  */
 import type { PaymentMethod } from './cash.js';
+import type { Candidates } from './categories.js';
 import { type ResolvedTx, ruleMatches } from './classify.js';
+import { isNoCategory } from './no-category.js';
+import { type NormRule, resolveVendorRule } from './norm-rules.js';
+import { type TaxAccountMapRow, taxAccountFor } from './tax-accounts.js';
 import type {
   Cls,
   MfTx,
@@ -86,6 +90,8 @@ export const CONFLICT_CONFIDENCE_PENALTY = 20;
 export const RULE_PAYEE_CONFIDENCE = 95;
 export const RULE_KEYWORD_CONFIDENCE = 85;
 export const MF_MID_CONFIDENCE = 70;
+/** MF の分類 (最後の由来)。閾値 80 未満なので、提案されても必ず要確認に入る (AC-15) */
+export const MF_CATEGORY_CONFIDENCE = 60;
 
 export interface StatusInput {
   /** resolveTx の clsSrc */
@@ -140,7 +146,45 @@ export function classifyCounts(results: readonly StatusResult[]): ClassifyCounts
 
 /* -------- 提案と信頼度 (BR-04・BR-05・BR-08) -------- */
 
-export type SuggestionBasis = 'vendor_memory' | 'rule' | 'mf_mid' | 'none';
+export type SuggestionBasis =
+  | 'vendor_memory'
+  | 'rule'
+  | 'mf_mid'
+  | 'mf_category'
+  | 'mf_category_map'
+  | 'norm_rule'
+  | 'none';
+
+/** 由来の表示名。画面・/review-queue・使い方はこの表だけを引く */
+export const SUGGESTION_BASIS_LABEL: Record<SuggestionBasis, string> = {
+  vendor_memory: '過去の仕分け',
+  rule: 'ルール',
+  mf_mid: 'MF の中項目',
+  mf_category: 'MF の分類',
+  mf_category_map: 'MF の分類 (対応表)',
+  norm_rule: '集計ルール',
+  none: '提案なし',
+};
+
+/**
+ * 提案の材料 (spec-classify-bulk-save BR-05〜BR-08)。
+ *
+ * 仕分け画面・一括保存・/review-queue が同じ 1 つの入力から提案を作る。材料を引数で
+ * ばらばらに渡すと、呼び出し元ごとに足りない材料が出て、同じ明細に違う提案が出る。
+ */
+export interface SuggestionContext {
+  rules: readonly Rule[];
+  vendorMemories: readonly VendorMemoryRecord[];
+  /** 集計ルール。家計の明細の MF の分類を、ルール後のカテゴリで提案するために使う */
+  normRules: readonly NormRule[];
+  /** MF の大項目 → 勘定科目の対応表。事業の明細の MF の分類を科目へ引く */
+  taxAccountMap: readonly TaxAccountMapRow[];
+  /** 集計ルールの値が家計の候補にあるかを確かめる */
+  categoryCandidates: Candidates;
+}
+
+/** 解決後の区分と名義。MF の分類はこれを見て家計か事業かを決める */
+export type SuggestionResolved = { cls: Cls | null; owner: Owner | null } | null;
 
 export interface SuggestionValue {
   cls: Cls | null;
@@ -155,6 +199,8 @@ export interface ClassifySuggestion {
   /** 画面の『提案カテゴリ』列にそのまま出す文字列 */
   label: string | null;
   basis: SuggestionBasis;
+  /** /review-queue の 1 行に出す短い根拠。候補を作った由来が 1 か所で作る (提案が無ければ null) */
+  shortLabel: string | null;
   confidence: number | null;
   /** 『信頼度の根拠』に出す文 (BR-08) */
   basisText: string;
@@ -171,8 +217,9 @@ const NO_SUGGESTION: ClassifySuggestion = {
   suggestion: null,
   label: null,
   basis: 'none',
+  shortLabel: null,
   confidence: null,
-  basisText: '提案に使える過去の事例・ルール・中項目がありません。',
+  basisText: '提案に使える過去の事例・ルール・中項目・MF の分類がありません。',
   conflict: false,
   contradiction: false,
 };
@@ -181,6 +228,7 @@ interface Candidate {
   basis: Exclude<SuggestionBasis, 'none'>;
   value: SuggestionValue;
   label: string;
+  shortLabel: string;
   confidence: number;
   basisText: string;
 }
@@ -214,6 +262,7 @@ function candidatesFor(
         basis: 'vendor_memory',
         value,
         label,
+        shortLabel: `過去 ${total} 件中 ${memory.hitCount} 件`,
         confidence: clampConfidence(Math.round(vendorConfidence(memory) * 100)),
         basisText: `過去に同じ取引先を「${label}」として仕分けた事例が${memory.hitCount}件あります。（全${total}件中）`,
       });
@@ -237,6 +286,7 @@ function candidatesFor(
         basis: 'rule',
         value,
         label,
+        shortLabel: `ルール「${rule.k}」に一致`,
         confidence: payee ? RULE_PAYEE_CONFIDENCE : RULE_KEYWORD_CONFIDENCE,
         basisText: payee
           ? `ルール「${rule.k}」（取引先「${payee}」）に一致しています。`
@@ -250,6 +300,7 @@ function candidatesFor(
         basis: 'mf_mid',
         value,
         label: CLS_LABEL.biz,
+        shortLabel: `MF の中項目が「${CLS_LABEL.biz}」`,
         confidence: MF_MID_CONFIDENCE,
         basisText: `MF の中項目「${tx.mid ?? ''}」から「${CLS_LABEL.biz}」を提案しています。`,
       });
@@ -259,6 +310,84 @@ function candidatesFor(
 }
 
 const clampConfidence = (v: number): number => Math.min(100, Math.max(0, Math.round(v)));
+
+/** MF が大項目を付けていない明細。MF の分類は根拠にならない */
+const isUnsortedMfBig = (big: string): boolean => big === '' || big === '未分類' || isNoCategory(big);
+
+/**
+ * 最後の由来 = MF の分類 (BR-05〜BR-08)。ほかの由来が 1 つも無いときだけ呼ぶ。
+ *
+ * 家計は MF の大・中をそのまま (集計ルールが当たればルール後のカテゴリ)、事業は対応表で
+ * 大項目を勘定科目へ引く。付けられないときは、理由を basisText に書いて提案なしで返す。
+ * 衝突の判定には加えない: 他の由来が 1 つでもあれば、ここまで下りてこない。
+ */
+function mfCategorySuggestion(
+  tx: MfTx | null,
+  resolved: SuggestionResolved,
+  ctx: SuggestionContext,
+  content: string,
+): ClassifySuggestion {
+  const cls = resolved?.cls ?? null;
+  if (!tx || !cls) return { ...NO_SUGGESTION };
+  if (tx.splitProjection?.kind === 'split')
+    return { ...NO_SUGGESTION, basisText: '分割後の内訳には提案を付けません。' };
+  const big = (tx.big ?? '').trim();
+  if (isUnsortedMfBig(big)) return { ...NO_SUGGESTION };
+  const owner = resolved?.owner ?? null;
+  const made = (
+    basis: 'mf_category' | 'mf_category_map' | 'norm_rule',
+    value: SuggestionValue,
+    shortLabel: string,
+    basisText: string,
+  ): ClassifySuggestion => ({
+    suggestion: value,
+    label: labelOf(value),
+    basis,
+    shortLabel,
+    confidence: MF_CATEGORY_CONFIDENCE,
+    basisText,
+    conflict: false,
+    contradiction: false,
+  });
+
+  if (cls === 'per') {
+    const rule = resolveVendorRule(content, ctx.normRules);
+    if (rule) {
+      const norm = rule.norm.trim();
+      // ルール後のカテゴリが候補に無いときに MF の分類へ落とすと、集計とは違うカテゴリを提案してしまう
+      if (isNoCategory(norm) || !ctx.categoryCandidates.per.some((m) => m.name === norm)) {
+        return {
+          ...NO_SUGGESTION,
+          basisText: `集計ルール「${rule.raw} → ${rule.norm}」のカテゴリが${CLS_LABEL.per}の候補にありません。`,
+        };
+      }
+      return made(
+        'norm_rule',
+        { cls: 'per', big: norm, mid: '', owner },
+        `集計ルール「${rule.raw}」`,
+        `集計ルール「${rule.raw} → ${norm}」`,
+      );
+    }
+    return made(
+      'mf_category',
+      { cls: 'per', big, mid: (tx.mid ?? '').trim(), owner },
+      SUGGESTION_BASIS_LABEL.mf_category,
+      'MFの分類をそのまま提案',
+    );
+  }
+
+  // 事業: 集計ルールは家計の大項目を決めるものなので使わない
+  const account = taxAccountFor(ctx.taxAccountMap, big);
+  if (!account) {
+    return { ...NO_SUGGESTION, basisText: `MF の大項目「${big}」に対応する勘定科目が対応表にありません。` };
+  }
+  return made(
+    'mf_category_map',
+    { cls: 'biz', big: account, mid: '', owner },
+    SUGGESTION_BASIS_LABEL.mf_category_map,
+    `${big} → ${account}`,
+  );
+}
 
 /** 同じカテゴリを指しているか。衝突の判定は区分と科目で見る (所有者は矛盾の側で見る) */
 const sameCategory = (a: SuggestionValue, b: SuggestionValue): boolean =>
@@ -278,13 +407,13 @@ export function isContradiction(cls: Cls | null, owner: Owner | null): boolean {
  */
 export function classifySuggestion(
   tx: MfTx | null,
+  resolved: SuggestionResolved,
+  ctx: SuggestionContext,
   content: string,
-  rules: readonly Rule[],
-  vendorMemories: readonly VendorMemoryRecord[],
 ): ClassifySuggestion {
-  const candidates = candidatesFor(tx, content, rules, vendorMemories);
+  const candidates = candidatesFor(tx, content, ctx.rules, ctx.vendorMemories);
   const head = candidates[0];
-  if (!head) return { ...NO_SUGGESTION };
+  if (!head) return mfCategorySuggestion(tx, resolved, ctx, content);
 
   const other = candidates.find((c) => !sameCategory(c.value, head.value));
   const conflict = other !== undefined;
@@ -301,6 +430,7 @@ export function classifySuggestion(
     suggestion: head.value,
     label: head.label,
     basis: head.basis,
+    shortLabel: head.shortLabel,
     confidence: clampConfidence(confidence),
     basisText,
     conflict,

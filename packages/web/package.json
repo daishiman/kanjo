@@ -24,6 +24,7 @@
     "check:cash-screen": "KANJO_VISUAL_SCOPE=cash node scripts/check-financial-visuals.mjs",
     "check:guide-screen": "KANJO_VISUAL_SCOPE=guide node scripts/check-financial-visuals.mjs",
     "check:improvement-screen": "KANJO_VISUAL_SCOPE=improvement node scripts/check-financial-visuals.mjs",
+    "check:classify-screen": "KANJO_VISUAL_SCOPE=classify node scripts/check-financial-visuals.mjs",
     "check:settings-visual": "tsx scripts/check-settings-visual.mts"
   },
   "dependencies": {

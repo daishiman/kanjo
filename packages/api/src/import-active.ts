@@ -27,6 +27,8 @@ export const JSON_SNAPSHOT_MUTATION_CONSUMERS = [
   'settings_norm_rules',
   'settings_cash_overrides',
   'settings_change_log',
+  // 0059: 勘定科目の対応表。変えると復元後の提案が変わる
+  'tax_account_map',
   'sub_vendors',
   'sub_vendor_review_decisions',
   'sub_vendor_exclusions',

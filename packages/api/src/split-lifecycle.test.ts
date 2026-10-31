@@ -198,7 +198,7 @@ describe('明細の分割記帳', () => {
     });
     const response = await jsonRequest('/transactions?month=2026-07');
     const body = (await response.json()) as {
-      transactions: Array<{
+      rows: Array<{
         id: string;
         amount: number;
         big: string;
@@ -208,13 +208,13 @@ describe('明細の分割記帳', () => {
       }>;
     };
     // 元の1行は消え、外部IDのsuffix解析ではなく構造化metadataを持つ内訳だけが並ぶ
-    expect(body.transactions.map((t) => t.id)).toHaveLength(2);
-    expect(body.transactions.map((t) => t.rowKind)).toEqual(['split', 'split']);
-    expect(body.transactions.map((t) => t.parentTxId)).toEqual(['T1', 'T1']);
-    expect(body.transactions.every((t) => !t.capabilities.quickClass && !t.capabilities.edit)).toBe(true);
+    expect(body.rows.map((t) => t.id)).toHaveLength(2);
+    expect(body.rows.map((t) => t.rowKind)).toEqual(['split', 'split']);
+    expect(body.rows.map((t) => t.parentTxId)).toEqual(['T1', 'T1']);
+    expect(body.rows.every((t) => !t.capabilities.quickClass && !t.capabilities.edit)).toBe(true);
     // 支出の符号は元の明細から引き継ぐ。内訳側は正の数しか持っていない
-    expect(body.transactions.map((t) => t.amount)).toEqual([-70000, -30000]);
-    expect(body.transactions.map((t) => t.big)).toEqual(['食費', '日用品']);
+    expect(body.rows.map((t) => t.amount)).toEqual([-70000, -30000]);
+    expect(body.rows.map((t) => t.big)).toEqual(['食費', '日用品']);
   });
 
   it('安定IDの無い親は分割せず、再取込を案内する', async () => {
@@ -272,9 +272,9 @@ describe('内訳1行ごとの名義', () => {
 
   const listOwners = async () => {
     const body = (await (await jsonRequest('/transactions?month=2026-07')).json()) as {
-      transactions: { owner: string | null; ownerSrc: string }[];
+      rows: { owner: string | null; ownerSrc: string }[];
     };
-    return body.transactions.map((t) => t.owner);
+    return body.rows.map((t) => t.owner);
   };
 
   it('行ごとに違う名義を保存し、読み出しでも返す', async () => {

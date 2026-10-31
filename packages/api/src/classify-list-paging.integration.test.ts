@@ -42,7 +42,6 @@ const get = (path: string) => app.request(`/api${path}`, { headers: { cookie } }
 
 interface ListBody {
   rows: { id: string; date: string }[];
-  transactions: { id: string }[];
   total: number;
   page: number;
   limit: number;
@@ -52,6 +51,12 @@ interface ListBody {
 const AUGUST_DAYS = 31;
 const JULY_DAYS = 20;
 const PERIOD = 'from=2026-07&to=2026-08';
+
+/** 種に入れた利用者自身の 51 件の取引 id。ページを繋いだ結果の比較相手 */
+const SEEDED_IDS = [
+  ...Array.from({ length: AUGUST_DAYS }, (_, i) => `tx-08-${String(i + 1).padStart(2, '0')}`),
+  ...Array.from({ length: JULY_DAYS }, (_, i) => `tx-07-${String(i + 1).padStart(2, '0')}`),
+];
 
 const values = (month: string, day: number, userId = 'default') => {
   const dd = String(day).padStart(2, '0');
@@ -123,7 +128,7 @@ describe('一覧のページ送り (AT-04)', () => {
     // 2 ページで全件がちょうど 1 回ずつ出る。重複も取りこぼしも無い
     const paged = [...first.rows, ...second.rows].map((r) => r.id);
     expect(new Set(paged).size).toBe(51);
-    expect(paged.sort()).toEqual(first.transactions.map((t) => t.id).sort());
+    expect(paged.sort()).toEqual([...SEEDED_IDS].sort());
   });
 
   it('明細が無いページは空で返る。件数は変わらない', async () => {
@@ -132,9 +137,13 @@ describe('一覧のページ送り (AT-04)', () => {
     expect(third.total).toBe(51);
   });
 
-  it('表示件数は 50 で固定。ほかの値は 400', async () => {
+  // 25・100 を受けることは classify-selected.integration.test.ts が見る (P05 で受けるようになる)。
+  // ここは新旧どちらの実装でも同じ答えになる境界だけを置く
+  it('表示件数 50 は 50 件。24・51・101 と page=0 は 400', async () => {
     expect((await listOf(`${PERIOD}&limit=50`)).rows).toHaveLength(50);
-    expect((await get(`/transactions?${PERIOD}&limit=100`)).status).toBe(400);
+    for (const limit of [24, 51, 101]) {
+      expect((await get(`/transactions?${PERIOD}&limit=${limit}`)).status, `limit=${limit}`).toBe(400);
+    }
     expect((await get(`/transactions?${PERIOD}&page=0`)).status).toBe(400);
   });
 

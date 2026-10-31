@@ -2,7 +2,7 @@
  * 0059 (ログイン v2) の migration の回帰テスト。
  *
  * 見張っているのは5つ。
- *   1. 0049 までの上に当たり、移行可能な旧 users の行を user / account へ写す (C3・C4)
+ *   1. 0060 までの上に当たり、移行可能な旧 users の行を user / account へ写す (C3・C4)
  *   2. 一時パスワードの利用者は user/account の両方から除外し、招待を妨げない (Q-16)
  *   3. 複写の INSERT を再実行しても重複しない (R-6)
  *   4. 利用者を消すと認証の従属行が cascade で消える (R-12)
@@ -16,7 +16,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { splitMigrationStatements } from './migration-test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
-const LOGIN_V2 = '0059_login_v2_better_auth.sql';
+const LOGIN_V2 = '0061_login_v2_better_auth.sql';
 const T = '2026-09-01T00:00:00.000Z';
 const HASH = `pbkdf2-sha256$600000$${'a'.repeat(22)}$${'b'.repeat(43)}`;
 const hex = (char: string) => char.repeat(64);
@@ -53,7 +53,7 @@ beforeAll(async () => {
     }),
   );
   d1 = (await mf.getD1Database('DB')) as D1Database;
-  await applyUpTo(d1, '0049_ai_report_invariants.sql');
+  await applyUpTo(d1, '0060_settings_change_log_target.sql');
   await d1.batch([
     d1
       .prepare(

@@ -1,6 +1,7 @@
 import type { BudgetPlanRow } from './budget-screen.js';
 import type { CashOverrideRule } from './cash.js';
 import type { NormRule } from './norm-rules.js';
+import type { TaxAccountMapRow } from './tax-accounts.js';
 /** 公私判定の区分 */
 export type Cls = 'biz' | 'per';
 
@@ -315,6 +316,8 @@ export interface Dataset {
   normRules?: NormRule[];
   /** 現金上書き(設定画面)。読み手は resolveCashOverride 経由で読む */
   cashOverrideRules?: CashOverrideRule[];
+  /** MF の大項目 → 勘定科目の対応表(設定画面)。事業の明細の提案が読む。無ければ提案しない */
+  taxAccountMap?: TaxAccountMapRow[];
   unrecordedExpMonths: string[];
 }
 

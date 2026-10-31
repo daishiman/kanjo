@@ -319,7 +319,7 @@ describe('決め事の当て直し', () => {
     const transactionsResponse = await jsonRequest('/transactions?month=2026-06');
     expect(transactionsResponse.status).toBe(200);
     const transactionsBody = (await transactionsResponse.json()) as {
-      transactions: Array<{
+      rows: Array<{
         id: string;
         cls: string;
         src: string;
@@ -328,7 +328,7 @@ describe('決め事の当て直し', () => {
       }>;
       summary: { progress: { bySource: Record<string, number> } };
     };
-    expect(transactionsBody.transactions.find((row) => row.id === 'tx-b')).toMatchObject({
+    expect(transactionsBody.rows.find((row) => row.id === 'tx-b')).toMatchObject({
       cls: 'biz',
       src: '手動',
       origin: 'vendor_memory',

@@ -147,6 +147,45 @@ export const txEditInsertValues = (
   matchedProposal: edit.matchedProposal ?? null,
 });
 
+/**
+ * json_each で束ねて書く tx_edits の列 (user_id を除く全列)。一括保存 (routes/classify-bulk.ts) が使う。
+ * 値は txEditInsertValues の投影なので、単一書込みと同じ正規化 (base_known など) を通る。
+ * 列を足したら PRAGMA table_info と突き合わせるテスト (classify-bulk-save.integration.test.ts) が落ちる。
+ */
+const TX_EDIT_WRITE_FIELDS = [
+  ['tx_id', 'txId'],
+  ['cls', 'cls'],
+  ['category_major', 'categoryMajor'],
+  ['category_mid', 'categoryMid'],
+  ['owner', 'owner'],
+  ['base_major', 'baseMajor'],
+  ['base_mid', 'baseMid'],
+  ['base_cls', 'baseCls'],
+  ['base_owner', 'baseOwner'],
+  ['base_known', 'baseKnown'],
+  ['stable_key', 'stableKey'],
+  ['fingerprint_version', 'fingerprintVersion'],
+  ['origin', 'origin'],
+  ['origin_key', 'originKey'],
+  ['note', 'note'],
+  ['updated_at', 'updatedAt'],
+  ['institution', 'institution'],
+  ['payment_method', 'paymentMethod'],
+  ['matched_proposal', 'matchedProposal'],
+] as const satisfies ReadonlyArray<readonly [string, keyof typeof s.txEdits.$inferInsert]>;
+
+export const TX_EDIT_WRITE_COLUMNS: readonly string[] = TX_EDIT_WRITE_FIELDS.map(([column]) => column);
+
+/** TX_EDIT_WRITE_COLUMNS の順に並べた 1 行 */
+export const txEditWriteRow = (
+  txId: string,
+  edit: TxEdit,
+  fallbackUpdatedAt: string | null = null,
+): unknown[] => {
+  const values = txEditInsertValues('', txId, edit, fallbackUpdatedAt);
+  return TX_EDIT_WRITE_FIELDS.map(([, key]) => values[key] ?? null);
+};
+
 /** JSON restore write-set。新列は既存列の末尾に追加し、古いbackupはNULLへ安全に倒す。 */
 export const txEditRestoreRow = (txId: string, edit: TxEdit): unknown[] => [
   txId,

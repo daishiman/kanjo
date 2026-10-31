@@ -19,8 +19,8 @@ source_image: "design/FINAL-UI/images/19-guide.png"
 route: "/guide"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "f98f279826872e15be041b98f2eeae88e1b0254b3f33432e3a9ccf411047b129"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/00-requirements-definition.md", "source_version": "0.1.14", "source_digest": "f98f279826872e15be041b98f2eeae88e1b0254b3f33432e3a9ccf411047b129", "imported_at": "2026-09-23T13:27:15Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-25-guide-screen/completeness-findings.json", "evaluated_digest": "f98f279826872e15be041b98f2eeae88e1b0254b3f33432e3a9ccf411047b129"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-25-guide-screen/00-requirements-definition.md", "source_version": "0.1.14", "source_digest": "f98f279826872e15be041b98f2eeae88e1b0254b3f33432e3a9ccf411047b129", "imported_at": "2026-09-23T13:27:15Z"}
 created_at: "2026-09-23T13:27:15Z"
 updated_at: "2026-09-23T13:27:15Z"
 depends_on: []

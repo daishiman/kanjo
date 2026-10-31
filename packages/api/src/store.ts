@@ -19,6 +19,7 @@ import {
   type ResolvedSubVendors,
   type Rule,
   type SubVendor,
+  type TaxAccountMapRow,
   type TxEdit,
   type TxSplit,
   type VendorMemoryRecord,
@@ -43,6 +44,7 @@ import {
   recomputeClassification,
   resolveVendorMerges,
   sortCashOverrides,
+  sortTaxAccountMap,
   subVendorDefs,
   subsDefinitionsOf,
   subsVendorOfScope,
@@ -456,10 +458,12 @@ export interface SettingsRuleRows {
   cashOverride: Dataset['cashOverride'];
   normRules: NormRule[];
   cashOverrideRules: CashOverrideRule[];
+  /** 0059: 勘定科目の対応表 (事業の明細の提案が読む) */
+  taxAccountMap: TaxAccountMapRow[];
 }
 
 /**
- * 旧 cash_overrides と 0051・0052 の新表を 1 statement で読む。
+ * 旧 cash_overrides と 0051・0052 の新表と 0059 の対応表を 1 statement で読む。
  * loadDataset の SELECT 数は取込の D1 query 上限に効くので、表を足しても本数は増やさない (loadBudgetRows と同じ)。
  */
 async function loadSettingsRuleRows(db: Db, userId: string): Promise<SettingsRuleRows> {
@@ -474,9 +478,12 @@ async function loadSettingsRuleRows(db: Db, userId: string): Promise<SettingsRul
        UNION ALL
        SELECT 'override', override_id, kind, NULL, NULL, amount, NULL, scope, month, memo
          FROM settings_cash_overrides WHERE user_id=?
+       UNION ALL
+       SELECT 'taxmap', category_big, tax_account, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+         FROM tax_account_map WHERE user_id=?
        ORDER BY source, n1, a`,
     )
-    .bind(userId, userId, userId)
+    .bind(userId, userId, userId, userId)
     .all<{
       source: string;
       a: string;
@@ -489,7 +496,7 @@ async function loadSettingsRuleRows(db: Db, userId: string): Promise<SettingsRul
       month: string | null;
       memo: string | null;
     }>();
-  const out: SettingsRuleRows = { cashOverride: {}, normRules: [], cashOverrideRules: [] };
+  const out: SettingsRuleRows = { cashOverride: {}, normRules: [], cashOverrideRules: [], taxAccountMap: [] };
   for (const row of result.results) {
     if (row.source === 'cash') {
       out.cashOverride[row.a] = { revenue: row.n1 ?? 0, expense: row.n2 ?? 0 };
@@ -504,6 +511,8 @@ async function loadSettingsRuleRows(db: Db, userId: string): Promise<SettingsRul
           enabled: row.n2,
         }),
       );
+    } else if (row.source === 'taxmap') {
+      out.taxAccountMap.push({ categoryBig: row.a, taxAccount: row.b ?? '' });
     } else {
       out.cashOverrideRules.push(
         cashOverrideRuleFromRow({
@@ -522,6 +531,7 @@ async function loadSettingsRuleRows(db: Db, userId: string): Promise<SettingsRul
     rule.order = i + 1;
   });
   out.cashOverrideRules = sortCashOverrides(out.cashOverrideRules);
+  out.taxAccountMap = sortTaxAccountMap(out.taxAccountMap);
   return out;
 }
 
@@ -717,6 +727,7 @@ export async function loadDatasetResolved(
   data.cashOverride = settingsRows.cashOverride;
   data.normRules = settingsRows.normRules;
   data.cashOverrideRules = settingsRows.cashOverrideRules;
+  data.taxAccountMap = settingsRows.taxAccountMap;
   data.unrecordedExpMonths = unrecRows.filter((r) => r.kind === 'expense').map((r) => r.month);
 
   data.txSplits = splitRows.map(splitFromRow);
@@ -887,6 +898,8 @@ interface BackupSourceSnapshot {
   cashOverrideRules: CashOverrideRule[];
   /** 0045: 名義の表示名。行が無ければ空 (既定の表示名) */
   ownerLabels: Record<string, string>;
+  /** 0059: 勘定科目の対応表。設定の比較・設定だけの復元が読む */
+  taxAccountMap: TaxAccountMapRow[];
   statMinMonths: number;
   subVendorExclusions: Array<{ partner: string; vendorKey: string }>;
   subVendorReviewDecisions: SubVendorReviewDecisionRow[];
@@ -992,6 +1005,8 @@ export interface ImportRestoreSettingsSnapshot {
  * backupに影響する全canonical tableを1本のSQLite statementで読み、statement snapshotを境界にする。
  * 表を足すときは既存の `SELECT * FROM (...)` の組へ入れる。1つの UNION ALL に6本目を並べると
  * D1 が "too many terms in compound SELECT" で落ちる(組の数も本数も5まで)。
+ * 0059 の対応表で 5 組 × 5 本が埋まった。次に表を足すときは、行の source を束ねて本数を減らすか
+ * statement を分けて snapshot の境界を設計し直す。
  * monthly_aggは派生cacheなので意図的に含めない。
  *
  * 禁止事項: improvement_requests をここへ追加しない。
@@ -1092,6 +1107,10 @@ UNION ALL
 SELECT 'owner_label', NULL, NULL, NULL,
        owner, label, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 FROM owner_labels WHERE user_id = ?
+UNION ALL
+SELECT 'tax_map', NULL, NULL, NULL,
+       category_big, tax_account, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
+FROM tax_account_map WHERE user_id = ?
 )
 UNION ALL
 SELECT * FROM (
@@ -1119,7 +1138,7 @@ ORDER BY source, rank, id, v1, v2`;
 
 /** export用canonical rowsを、単一D1 read statementから型付きsnapshotへ変換する。 */
 async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupSourceSnapshot> {
-  const params = Array.from({ length: 24 }, () => userId);
+  const params = Array.from({ length: 25 }, () => userId);
   const result = await db.$client
     .prepare(BACKUP_SNAPSHOT_SQL)
     .bind(...params)
@@ -1311,6 +1330,9 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
   );
   const ownerLabels: Record<string, string> = {};
   for (const row of bySource('owner_label')) ownerLabels[row.v1 ?? ''] = row.v2 ?? '';
+  const taxAccountMap = sortTaxAccountMap(
+    bySource('tax_map').map((row) => ({ categoryBig: row.v1 ?? '', taxAccount: row.v2 ?? '' })),
+  );
   const statMinMonths = bySource('analysis_setting')[0]?.amount ?? DEFAULT_STAT_MIN_MONTHS;
   const subVendorExclusions = bySource('sub_vendor_exclusion').map((row) => ({
     partner: row.v1 ?? '',
@@ -1380,6 +1402,7 @@ async function loadBackupSourceSnapshot(db: Db, userId: string): Promise<BackupS
     normRules,
     cashOverrideRules,
     ownerLabels,
+    taxAccountMap,
     statMinMonths,
     subVendorExclusions,
     subVendorReviewDecisions,
@@ -1603,6 +1626,7 @@ function datasetFromBackupSnapshot(snapshot: BackupSourceSnapshot): Dataset {
   data.cashOverride = snapshot.cashOverride;
   data.normRules = snapshot.normRules;
   data.cashOverrideRules = snapshot.cashOverrideRules;
+  data.taxAccountMap = snapshot.taxAccountMap;
   data.unrecordedExpMonths = [...snapshot.unrecordedExpMonths];
   data.txSplits = [...snapshot.txSplits];
   // 書き出す Dataset.subs は根だけ。統合元は subVendorMetadata の mergedIntoName が運ぶ
@@ -1691,6 +1715,8 @@ export async function loadBackupPayload(db: Db, userId: string): Promise<Record<
     analysisSettings: { statMinMonths: snapshot.statMinMonths },
     // 0045: 名義の表示名。設定の比較・設定だけの復元 (settingsJsonFromBackup) が読む
     ownerLabels: snapshot.ownerLabels,
+    // 0059: 勘定科目の対応表。設定の比較・設定だけの復元 (settingsJsonFromBackup) が読む
+    taxAccountMap: snapshot.taxAccountMap,
     subVendorExclusions: snapshot.subVendorExclusions.map(({ partner }) => ({ partner })),
     // 0058: 統合元は Dataset.subs に載らない。統合を名前で運び、復元で入れ直す (統合していない行には足さない)
     subVendorMetadata: snapshot.vendors.map(

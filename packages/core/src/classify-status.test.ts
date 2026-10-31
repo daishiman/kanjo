@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest';
+import { buildCandidates } from './categories.js';
 import {
   CONFIDENCE_TIER_HIGH_MIN,
   CONFIDENCE_TIER_MEDIUM_MIN,
   CONFLICT_CONFIDENCE_PENALTY,
+  MF_CATEGORY_CONFIDENCE,
   MF_MID_CONFIDENCE,
   REVIEW_CONFIDENCE_THRESHOLD,
   RULE_KEYWORD_CONFIDENCE,
   RULE_PAYEE_CONFIDENCE,
+  SUGGESTION_BASIS_LABEL,
+  type SuggestionContext,
   applySplitTemplate,
   classifyCounts,
   classifyStatus,
@@ -20,17 +24,49 @@ import {
   ruleTargets,
   splitTemplateIssues,
 } from './classify-status.js';
+import { NO_CATEGORY } from './no-category.js';
+import type { NormRule } from './norm-rules.js';
+import { DEFAULT_TAX_ACCOUNT_MAP } from './tax-accounts.js';
 import type { MfTx, Rule, SplitTemplate } from './types.js';
 import type { VendorMemoryRecord } from './vendor-memory.js';
 
+// 既定は MF が未分類のまま渡した明細。MF の分類 (信頼度 60) は割り込まない (AC-13)
 const tx = (over: Partial<MfTx> = {}): MfTx => ({
   id: 't1',
   m: '2026-09',
   d: '09/01',
   c: 'アマゾン ウェブ サービス',
   a: -5000,
-  big: '通信費',
+  big: '未分類',
   mid: '',
+  ...over,
+});
+
+const CANDIDATES = buildCandidates([], [{ big: '食費', mid: '食料品' }], []);
+const ctx = (over: Partial<SuggestionContext> = {}): SuggestionContext => ({
+  rules: [],
+  vendorMemories: [],
+  normRules: [],
+  taxAccountMap: DEFAULT_TAX_ACCOUNT_MAP,
+  categoryCandidates: CANDIDATES,
+  ...over,
+});
+const PER = { cls: 'per', owner: 'family' } as const;
+const BIZ = { cls: 'biz', owner: 'business' } as const;
+/** 本番と同じく、解決後の区分と名義を必ず渡す */
+const suggest = (
+  t: MfTx,
+  over: Partial<SuggestionContext> = {},
+  resolved: { cls: 'biz' | 'per' | null; owner: 'business' | 'spouse' | 'family' | null } = PER,
+  content = t.c,
+) => classifySuggestion(t, resolved, ctx(over), content);
+const normRule = (over: Partial<NormRule> = {}): NormRule => ({
+  ruleId: 'n1',
+  kind: 'vendor',
+  raw: 'アマゾン ウェブ サービス',
+  norm: '通信費',
+  order: 1,
+  enabled: true,
   ...over,
 });
 
@@ -142,7 +178,7 @@ describe('classifyCounts (AT-12)', () => {
 
 describe('classifySuggestion の信頼度 (BR-04)', () => {
   it('取引先の決め事は実績の比率をそのまま百分率にする', () => {
-    const s = classifySuggestion(tx(), tx().c, [], [memory()]);
+    const s = suggest(tx(), { vendorMemories: [memory()] });
     expect(s.basis).toBe('vendor_memory');
     expect(s.confidence).toBe(90); // 9/(9+1)
     expect(s.basisText).toBe(
@@ -153,43 +189,188 @@ describe('classifySuggestion の信頼度 (BR-04)', () => {
   it('取引先とキーワードの両方に一致するルールは 95、キーワードだけは 85', () => {
     const both: Rule = { k: 'アマゾン', cls: 'biz', big: '通信費', payee: payeeOf(tx().c) };
     const only: Rule = { k: 'アマゾン', cls: 'biz', big: '通信費' };
-    expect(classifySuggestion(tx(), tx().c, [both], []).confidence).toBe(RULE_PAYEE_CONFIDENCE);
-    expect(classifySuggestion(tx(), tx().c, [only], []).confidence).toBe(RULE_KEYWORD_CONFIDENCE);
+    expect(suggest(tx(), { rules: [both] }).confidence).toBe(RULE_PAYEE_CONFIDENCE);
+    expect(suggest(tx(), { rules: [only] }).confidence).toBe(RULE_KEYWORD_CONFIDENCE);
     expect(RULE_PAYEE_CONFIDENCE).toBe(95);
     expect(RULE_KEYWORD_CONFIDENCE).toBe(85);
   });
 
   it('payee が一致しないルールは当たらない', () => {
     const rule: Rule = { k: 'アマゾン', cls: 'biz', big: '通信費', payee: 'ベツノトリヒキサキ' };
-    expect(classifySuggestion(tx(), tx().c, [rule], []).basis).toBe('none');
+    expect(suggest(tx(), { rules: [rule] }).basis).toBe('none');
   });
 
   it('MF の中項目だけが根拠なら 70', () => {
-    const s = classifySuggestion(tx({ mid: '事業経費' }), 'ナゾノテン', [], []);
+    const s = suggest(tx({ mid: '事業経費' }), {}, PER, 'ナゾノテン');
     expect(s.basis).toBe('mf_mid');
     expect(s.confidence).toBe(MF_MID_CONFIDENCE);
     expect(s.basisText).toBe('MF の中項目「事業経費」から「事業」を提案しています。');
   });
 
   it('提案が無ければ信頼度は null', () => {
-    const s = classifySuggestion(tx({ c: 'ナゾノテン' }), 'ナゾノテン', [], []);
+    const s = suggest(tx({ c: 'ナゾノテン' }));
     expect(s).toMatchObject({
       suggestion: null,
       confidence: null,
       basis: 'none',
-      basisText: '提案に使える過去の事例・ルール・中項目がありません。',
+      shortLabel: null,
+      basisText: '提案に使える過去の事例・ルール・中項目・MF の分類がありません。',
     });
   });
 
   it('取消済みの決め事は提案に使わない', () => {
-    expect(classifySuggestion(tx(), tx().c, [], [memory({ revoked: true })]).basis).toBe('none');
+    expect(suggest(tx(), { vendorMemories: [memory({ revoked: true })] }).basis).toBe('none');
+  });
+});
+
+describe('MF の分類を最後の由来にする (BR-05〜BR-08)', () => {
+  const unknownShop = (over: Partial<MfTx> = {}) => tx({ c: 'ナゾノテン', ...over });
+
+  it('個人は MF の大・中をそのまま信頼度 60 で提案する (AC-11)', () => {
+    expect(MF_CATEGORY_CONFIDENCE).toBe(60);
+    expect(suggest(unknownShop({ big: '食費', mid: '食料品' }))).toEqual({
+      suggestion: { cls: 'per', big: '食費', mid: '食料品', owner: 'family' },
+      label: '家計 / 食費 / 食料品',
+      basis: 'mf_category',
+      shortLabel: 'MF の分類',
+      confidence: MF_CATEGORY_CONFIDENCE,
+      basisText: 'MFの分類をそのまま提案',
+      conflict: false,
+      contradiction: false,
+    });
+  });
+
+  it('事業は対応表で大項目から科目を引き、中は空にする (AC-12)', () => {
+    // 区分の決まり方 (ルール → 記憶 → 中項目 → 既定 per) のため、事業になるのは主に手で上書きした明細
+    expect(suggest(unknownShop({ big: '通信費', mid: '携帯電話' }), {}, BIZ)).toEqual({
+      suggestion: { cls: 'biz', big: '通信費', mid: '', owner: 'business' },
+      label: '事業 / 通信費',
+      basis: 'mf_category_map',
+      shortLabel: 'MF の分類 (対応表)',
+      confidence: MF_CATEGORY_CONFIDENCE,
+      basisText: '通信費 → 通信費',
+      conflict: false,
+      contradiction: false,
+    });
+    expect(suggest(unknownShop({ big: '日用品' }), {}, BIZ).suggestion?.big).toBe('消耗品費');
+    // 対応表は利用者ごとに変えられる。渡された表だけを引く
+    const custom = [{ categoryBig: '食費', taxAccount: '会議費' }];
+    expect(suggest(unknownShop({ big: '食費' }), { taxAccountMap: custom }, BIZ).basisText).toBe(
+      '食費 → 会議費',
+    );
+    expect(suggest(unknownShop({ big: '通信費' }), { taxAccountMap: custom }, BIZ).basis).toBe('none');
+  });
+
+  it('対応表に行の無い事業と、大項目が空か未分類の明細には付けず、理由を出す (AC-13)', () => {
+    expect(suggest(unknownShop({ big: '食費' }), {}, BIZ)).toMatchObject({
+      suggestion: null,
+      basis: 'none',
+      basisText: 'MF の大項目「食費」に対応する勘定科目が対応表にありません。',
+    });
+    for (const big of ['', '未分類', '  未分類 ', NO_CATEGORY]) {
+      expect(suggest(unknownShop({ big }), {}, PER).basis).toBe('none');
+      expect(suggest(unknownShop({ big }), {}, BIZ).basis).toBe('none');
+    }
+    // 解決値が無い (区分が決まらない) 明細にも付けない
+    expect(suggest(unknownShop({ big: '食費' }), {}, { cls: null, owner: null }).basis).toBe('none');
+    expect(classifySuggestion(null, null, ctx(), 'ナゾノテン').basis).toBe('none');
+  });
+
+  it('分割の内訳行には付けない (AC-13)', () => {
+    const line = unknownShop({
+      big: '食費',
+      splitProjection: {
+        kind: 'split',
+        parentTxId: 't0',
+        lineId: 'l1',
+        seq: 1,
+        lineCount: 2,
+        parentAmount: -5000,
+      },
+    });
+    expect(suggest(line)).toMatchObject({ basis: 'none', basisText: '分割後の内訳には提案を付けません。' });
+  });
+
+  it('集計ルールが当たる個人は、ルール後のカテゴリと集計ルールの名前で提案する (AC-14)', () => {
+    const s = suggest(tx({ big: '食費', mid: '食料品' }), { normRules: [normRule()] });
+    expect(s).toMatchObject({
+      suggestion: { cls: 'per', big: '通信費', mid: '', owner: 'family' },
+      basis: 'norm_rule',
+      shortLabel: '集計ルール「アマゾン ウェブ サービス」',
+      confidence: MF_CATEGORY_CONFIDENCE,
+      basisText: '集計ルール「アマゾン ウェブ サービス → 通信費」',
+    });
+    // 無効な行は当たらず、MF の分類へ戻る
+    expect(suggest(tx({ big: '食費' }), { normRules: [normRule({ enabled: false })] }).basis).toBe(
+      'mf_category',
+    );
+  });
+
+  it('集計ルールの値が個人の候補に無ければ、MF の分類へ落とさず付けない (AC-14)', () => {
+    const s = suggest(tx({ big: '食費' }), { normRules: [normRule({ norm: 'ナゾノカテゴリ' })] });
+    expect(s).toMatchObject({
+      suggestion: null,
+      basis: 'none',
+      basisText:
+        '集計ルール「アマゾン ウェブ サービス → ナゾノカテゴリ」のカテゴリが家計の候補にありません。',
+    });
+    expect(suggest(tx({ big: '食費' }), { normRules: [normRule({ norm: NO_CATEGORY })] }).basis).toBe('none');
+  });
+
+  it('事業の明細には集計ルールを使わない (集計ルールは家計の大項目を決めるもの)', () => {
+    expect(suggest(tx({ big: '通信費' }), { normRules: [normRule({ norm: '食費' })] }, BIZ).basis).toBe(
+      'mf_category_map',
+    );
+  });
+
+  it('ほかの由来が 1 つでもあれば足さず、衝突にも数えない (AC-15)', () => {
+    const s = suggest(tx({ big: '食費' }), { vendorMemories: [memory()] });
+    expect(s).toMatchObject({ basis: 'vendor_memory', confidence: 90, conflict: false });
+    const mid = suggest(tx({ big: '食費', mid: '事業経費' }), {}, PER, 'ナゾノテン');
+    expect(mid).toMatchObject({ basis: 'mf_mid', confidence: MF_MID_CONFIDENCE, conflict: false });
+  });
+
+  it('信頼度の段は 95・85・70・60 の順で、60 も 70 も閾値 80 未満なので要確認 (AC-15)', () => {
+    expect([
+      RULE_PAYEE_CONFIDENCE,
+      RULE_KEYWORD_CONFIDENCE,
+      MF_MID_CONFIDENCE,
+      MF_CATEGORY_CONFIDENCE,
+    ]).toEqual([95, 85, 70, 60]);
+    expect(REVIEW_CONFIDENCE_THRESHOLD).toBe(80);
+    for (const confidence of [MF_CATEGORY_CONFIDENCE, MF_MID_CONFIDENCE, REVIEW_CONFIDENCE_THRESHOLD - 1]) {
+      expect(classifyStatus({ clsSrc: '既定', confidence }).reviewReasons).toEqual(['low_confidence']);
+    }
+    expect(classifyStatus({ clsSrc: '既定', confidence: REVIEW_CONFIDENCE_THRESHOLD }).needsReview).toBe(
+      false,
+    );
+  });
+
+  it('提案の由来の表示名は 1 か所の表から引く', () => {
+    expect(SUGGESTION_BASIS_LABEL).toEqual({
+      vendor_memory: '過去の仕分け',
+      rule: 'ルール',
+      mf_mid: 'MF の中項目',
+      mf_category: 'MF の分類',
+      mf_category_map: 'MF の分類 (対応表)',
+      norm_rule: '集計ルール',
+      none: '提案なし',
+    });
+  });
+
+  it('候補の短い根拠は候補を作った由来から作る (ルールは payee まで一致した行)', () => {
+    const shadowed: Rule = { k: 'アマゾン', cls: 'biz', big: '通信費', payee: 'ベツノトリヒキサキ' };
+    const hit: Rule = { k: 'ウェブ', cls: 'biz', big: '通信費' };
+    expect(suggest(tx(), { rules: [shadowed, hit] }).shortLabel).toBe('ルール「ウェブ」に一致');
+    expect(suggest(tx(), { vendorMemories: [memory()] }).shortLabel).toBe('過去 10 件中 9 件');
+    expect(suggest(tx({ mid: '事業経費' }), {}, PER, 'ナゾノテン').shortLabel).toBe('MF の中項目が「事業」');
   });
 });
 
 describe('衝突と矛盾 (BR-05)', () => {
   it('別々のカテゴリを指す由来が 2 つあれば、最小の信頼度から 20 引く', () => {
     const rule: Rule = { k: 'アマゾン', cls: 'per', big: '日用品' };
-    const s = classifySuggestion(tx(), tx().c, [rule], [memory()]);
+    const s = suggest(tx(), { rules: [rule], vendorMemories: [memory()] });
     expect(s.conflict).toBe(true);
     // 取引先の決め事 90 とキーワードだけのルール 85 の小さい方 − 20
     expect(s.confidence).toBe(RULE_KEYWORD_CONFIDENCE - CONFLICT_CONFIDENCE_PENALTY);
@@ -198,7 +379,7 @@ describe('衝突と矛盾 (BR-05)', () => {
 
   it('同じカテゴリを指す由来が重なっても衝突にしない', () => {
     const rule: Rule = { k: 'アマゾン', cls: 'biz', big: '通信費', mid: 'クラウド' };
-    const s = classifySuggestion(tx(), tx().c, [rule], [memory()]);
+    const s = suggest(tx(), { rules: [rule], vendorMemories: [memory()] });
     expect(s.conflict).toBe(false);
     expect(s.confidence).toBe(90);
   });
@@ -209,7 +390,7 @@ describe('衝突と矛盾 (BR-05)', () => {
     expect(isContradiction('biz', 'business')).toBe(false);
     expect(isContradiction('per', 'family')).toBe(false);
     expect(isContradiction(null, 'business')).toBe(false);
-    const s = classifySuggestion(tx(), tx().c, [], [memory({ cls: 'per', owner: 'business' })]);
+    const s = suggest(tx(), { vendorMemories: [memory({ cls: 'per', owner: 'business' })] });
     expect(s.contradiction).toBe(true);
     expect(s.basisText).toContain('区分と所有者が一致していません。');
   });

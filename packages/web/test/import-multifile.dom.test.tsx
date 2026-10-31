@@ -5,7 +5,7 @@
  *
  * 実データで 3 ファイルを選んだところ「取込の安全上限を超えます(計画 61 queries / 上限未満 50)」
  * で丸ごと失敗した。上限は Cloudflare Workers Free の 1 invocation あたり 50 D1 queries で、
- * アプリ側では上げられない (`packages/api/src/import-lifecycle.ts` の `D1_FREE_QUERY_LIMIT`)。
+ * アプリ側では上げられない (`packages/api/src/d1-limits.ts` の `D1_INVOCATION_QUERY_LIMIT`)。
  * 取込画面の作り直し後は、検査済みのファイルを `POST /imports/runs` で確定し、
  * サーバが 1 要求で扱いきれなかった分を `remaining` で返す。画面は remaining が空になるまで呼び直す。
  *

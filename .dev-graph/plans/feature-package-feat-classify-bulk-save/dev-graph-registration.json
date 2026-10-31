@@ -1,0 +1,1369 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-classify-bulk-save/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-classify-bulk-save",
+  "parent_feature": "feat-classify-bulk-save",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-CLASSIFY-BULK-P01": "beads",
+    "SYS-CLASSIFY-BULK-P02": "beads",
+    "SYS-CLASSIFY-BULK-P03": "beads",
+    "SYS-CLASSIFY-BULK-P04": "beads",
+    "SYS-CLASSIFY-BULK-P05": "beads",
+    "SYS-CLASSIFY-BULK-P06": "beads",
+    "SYS-CLASSIFY-BULK-P07": "beads",
+    "SYS-CLASSIFY-BULK-P08": "beads",
+    "SYS-CLASSIFY-BULK-P09": "beads",
+    "SYS-CLASSIFY-BULK-P10": "beads",
+    "SYS-CLASSIFY-BULK-P11": "beads",
+    "SYS-CLASSIFY-BULK-P12": "beads",
+    "SYS-CLASSIFY-BULK-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "一括保存の要件の棚卸し: FR・BR・AC と未決事項の担当 phase の確定",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p01",
+        "requirements"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/classify-screen/bulk-save-decisions.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core の解決関数・行の key・D1 上限の名前・対応表の API と表の名前・『カテゴリなし』の字面の設計",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P01"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/classify-screen/bulk-save-decisions.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "設計の照合: spec・architecture 8 本・既存コードとの食い違いと重複の確認",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P02"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/classify-screen/bulk-save-decisions.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "解決関数・一括保存・選択の読み出し・一覧・対応表・migration・画面のテストを先に書き、旧実装で落ちることを確かめる",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P03"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "packages/core/test/classify-bulk-resolve.test.ts",
+        "packages/core/test/no-category-contract.test.ts",
+        "packages/core/src/classify-status.test.ts",
+        "packages/core/test/settings-json.test.ts",
+        "packages/api/test/classify-bulk-save.integration.test.ts",
+        "packages/api/test/classify-selected.integration.test.ts",
+        "packages/api/test/tax-account-map.integration.test.ts",
+        "packages/api/test/tax-account-map-migration.integration.test.ts",
+        "packages/api/test/settings-backups.integration.test.ts",
+        "packages/api/test/settings-screen.integration.test.ts",
+        "packages/api/src/classify-bulk.integration.test.ts",
+        "packages/api/src/split-lifecycle.test.ts",
+        "packages/api/src/import-diff.test.ts",
+        "packages/api/src/cash-lifecycle.test.ts",
+        "packages/api/src/vendor-memory.test.ts",
+        "packages/api/src/row-transfer-lifecycle.test.ts",
+        "packages/api/src/classify-transactions-shape.test.ts",
+        "packages/api/src/classify-list-paging.integration.test.ts",
+        "packages/api/test/total-cashflow-verdict.integration.test.ts",
+        "packages/api/src/schema-guard.test.ts",
+        "packages/api/src/deletion-schema.test.ts",
+        "packages/api/src/scheduled-maintenance-budget.test.ts",
+        "packages/api/src/import-lifecycle-pure.test.ts",
+        "packages/web/src/pages/classify/classify.dom.test.tsx",
+        "packages/web/src/pages/classify/view-model.test.ts",
+        "packages/web/src/pages/settings/settings.dom.test.tsx",
+        "packages/web/src/pages/settings/view-model.test.ts",
+        "packages/web/test/import-multifile.dom.test.tsx",
+        ".github/scripts/plan-auto-migration.test.mjs",
+        "docs/classify-screen/bulk-save-evidence.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core の解決関数と『カテゴリなし』・一括保存と選択の読み出しと一覧 API・勘定科目の対応表と migration 2 本・取引一覧と一括操作バーと設定画面・check:classify-screen の実装",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P04"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "packages/core/src/cash.ts",
+        "packages/core/src/categories.ts",
+        "packages/core/src/classify-status.ts",
+        "packages/core/src/classify.ts",
+        "packages/core/src/design-tokens.ts",
+        "packages/core/src/index.ts",
+        "packages/core/src/overview.ts",
+        "packages/core/src/settings-json.ts",
+        "packages/core/src/settings-screen.ts",
+        "packages/core/src/tax-accounts.ts",
+        "packages/api/src/routes/admin-users.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/api/src/routes/backups.ts",
+        "packages/api/src/routes/cash.ts",
+        "packages/api/src/routes/classify-bulk.ts",
+        "packages/api/src/routes/classify.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/api/src/routes/settings-screen.ts",
+        "packages/api/src/routes/settings.ts",
+        "packages/api/src/routes/tax-account-map.ts",
+        "packages/api/src/routes/vendor-memory.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/classify-row.ts",
+        "packages/api/src/classify-history.ts",
+        "packages/api/src/d1-limits.ts",
+        "packages/api/src/import-lifecycle.ts",
+        "packages/api/src/scheduled-maintenance-budget.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/import-active.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/deletion-lifecycle.ts",
+        "packages/api/src/import-diff.ts",
+        "packages/api/src/users.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/migration-test-support.ts",
+        "packages/api/src/db/schema.ts",
+        "migrations/",
+        ".github/migration-approvals.json",
+        "packages/web/src/api.ts",
+        "packages/web/src/api-client.ts",
+        "packages/web/src/components/Button.tsx",
+        "packages/web/src/components/CategoryPicker.tsx",
+        "packages/web/src/components/SelectionCheckbox.tsx",
+        "packages/web/src/components/classification-invalidate.ts",
+        "packages/web/src/pages/classify/",
+        "packages/web/src/pages/settings/",
+        "packages/web/scripts/check-financial-visuals.mjs",
+        "packages/web/scripts/viewports.mjs",
+        "packages/web/package.json",
+        "package.json",
+        "scripts/seed-admin.mjs",
+        "docs/classify-screen/bulk-save-decisions.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと verify:full の実行: 緑の確認と、落ちたときの原因の切り分け",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P05"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/classify-screen/bulk-save-evidence.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入の確認: AC-01〜AC-30 の根拠の表と、sel に 50 件を選んだ状態の再現",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P06"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/classify-screen/bulk-save-acceptance.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "参照の消えた旧い定義の削除と migration の突き合わせ: 番号・承認の sha256・EXPECTED_D1_MIGRATION の一致",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "data",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p08",
+        "refactoring-migration"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P07"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "migrations/",
+        ".github/migration-approvals.json",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/schema-guard.test.ts",
+        "packages/api/src/deletion-schema.test.ts",
+        "packages/core/src/overview.ts",
+        "packages/api/src/import-lifecycle.ts",
+        "packages/api/src/scheduled-maintenance-budget.ts",
+        "packages/api/src/routes/classify.ts",
+        "packages/api/src/routes/classify-bulk.ts",
+        "packages/web/src/pages/classify/view-model.ts",
+        "packages/api/test/tax-account-map-migration.integration.test.ts",
+        ".github/scripts/plan-auto-migration.test.mjs",
+        "docs/classify-screen/bulk-save-evidence.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "品質ゲート: lint・typecheck・test・skills:test・初期 JS 予算・security:content",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P08"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/classify-screen/bulk-save-evidence.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立レビュー: 認可・上限・本文の大きさ・予約の値・差分の範囲",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P09"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/classify-screen/bulk-save-review.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "証跡の索引: 設計・テスト・受入・品質・レビューの記録を 1 か所から辿れるようにする",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P10"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/classify-screen/bulk-save-index.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "文書の同期: data-schema と architecture への対応表の記録と、未決事項の閉じ方の記録",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P11"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/data-schema.md",
+        "docs/classify-screen/bulk-save-decisions.md",
+        "architecture/classify-bulk-save-database.md",
+        "architecture/classify-bulk-save-backend.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CLASSIFY-BULK-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "リリース: merge 前の最終確認、deploy.yml での migration の適用、本番の /classify での確認",
+      "project_id": "feature-package-feat-classify-bulk-save",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "classify-bulk-save",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-10-01T14:43:53Z",
+      "updated_at": "2026-10-01T14:43:53Z",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P12"
+      ],
+      "related_nodes": [
+        "arch-classify-bulk-save-auth",
+        "arch-classify-bulk-save-backend",
+        "arch-classify-bulk-save-database",
+        "arch-classify-bulk-save-frontend",
+        "arch-classify-bulk-save-infrastructure",
+        "arch-classify-bulk-save-maintenance-ops",
+        "arch-classify-bulk-save-security",
+        "arch-classify-bulk-save-ui-ux",
+        "spec-classify-bulk-save"
+      ],
+      "resource_scope": [
+        "docs/classify-screen/bulk-save-evidence.md"
+      ],
+      "parent_feature": "feat-classify-bulk-save",
+      "feature_package_id": "feature-package/feat-classify-bulk-save",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-classify-bulk-save/plan-findings.json",
+        "evaluated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+        "imported_at": "2026-10-01T14:43:53Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-classify-bulk-save/sys-classify-bulk-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-10-01T14:41:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

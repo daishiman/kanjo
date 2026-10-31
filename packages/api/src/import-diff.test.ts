@@ -721,9 +721,9 @@ describe('取引先の決め事の通常取込', () => {
     expect(JSON.stringify(audit.results)).not.toContain('tx-a');
 
     const listed = (await (await jsonRequest('/transactions?month=2026-07')).json()) as {
-      transactions: Array<{ id: string; cls: string; origin: string | null; originKey: string | null }>;
+      rows: Array<{ id: string; cls: string; origin: string | null; originKey: string | null }>;
     };
-    expect(listed.transactions.find((tx) => tx.id === 'tx-a')).toMatchObject({
+    expect(listed.rows.find((tx) => tx.id === 'tx-a')).toMatchObject({
       cls: 'biz',
       origin: 'vendor_memory',
       originKey: '架空の支払いA',
@@ -826,7 +826,7 @@ describe('取引先の決め事の通常取込', () => {
       ]),
     );
     let listed = (await (await jsonRequest('/transactions?month=2026-07')).json()) as {
-      transactions: Array<{
+      rows: Array<{
         id: string;
         cls: string;
         owner: string | null;
@@ -834,7 +834,7 @@ describe('取引先の決め事の通常取込', () => {
         originKey: string | null;
       }>;
     };
-    expect(listed.transactions.find((tx) => tx.id === 'tx-a')).toMatchObject({
+    expect(listed.rows.find((tx) => tx.id === 'tx-a')).toMatchObject({
       cls: 'per',
       owner: 'spouse',
       origin: 'vendor_memory',
@@ -843,7 +843,7 @@ describe('取引先の決め事の通常取込', () => {
 
     expect((await jsonRequest('/transactions/tx-a/class', 'PUT', { cls: 'biz' })).status).toBe(200);
     listed = (await (await jsonRequest('/transactions?month=2026-07')).json()) as typeof listed;
-    expect(listed.transactions.find((tx) => tx.id === 'tx-a')).toMatchObject({
+    expect(listed.rows.find((tx) => tx.id === 'tx-a')).toMatchObject({
       cls: 'biz',
       owner: null,
       origin: 'manual',
@@ -883,9 +883,9 @@ describe('取引先の決め事の通常取込', () => {
     ).toBe(201);
 
     const listed = (await (await jsonRequest('/transactions?month=2026-07')).json()) as {
-      transactions: Array<{ id: string; cls: string; origin: string | null; originKey: string | null }>;
+      rows: Array<{ id: string; cls: string; origin: string | null; originKey: string | null }>;
     };
-    expect(listed.transactions.find((tx) => tx.id === 'tx-a')).toMatchObject({
+    expect(listed.rows.find((tx) => tx.id === 'tx-a')).toMatchObject({
       cls: 'per',
       origin: null,
       originKey: null,

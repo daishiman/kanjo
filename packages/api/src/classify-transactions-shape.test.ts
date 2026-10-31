@@ -177,11 +177,22 @@ describe('公私仕分けの明細一覧(集計と明細がずれた状態)', ()
       months: string[];
       month: string;
       summary: { count: number; noInstitutionCount: number };
-      transactions: unknown[];
+      rows: { id: string }[];
+      total: number;
+      limit: number;
     };
     expect(body.month).toBe(LAST_MONTH);
     expect(body.summary.count).toBe(107);
-    expect(body.transactions).toHaveLength(107);
+    // 一覧はページに分かれる。件数は total が持ち、ページを辿ると 107 件がちょうど 1 回ずつ出る
+    expect(body.total).toBe(107);
+    const ids = body.rows.map((row) => row.id);
+    for (let page = 2; (page - 1) * body.limit < body.total; page++) {
+      const next = await get(`/transactions?page=${page}`);
+      expect(next.status, `page=${page}`).toBe(200);
+      ids.push(...((await next.json()) as { rows: { id: string }[] }).rows.map((row) => row.id));
+    }
+    expect(ids).toHaveLength(107);
+    expect(new Set(ids).size).toBe(107);
     // 口座名の無い明細は件数として出す。取込漏れと取り違えさせない
     expect(body.summary.noInstitutionCount).toBe(107);
   });

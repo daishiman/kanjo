@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-classify-bulk-save",
+  "parent_feature": "feat-classify-bulk-save",
+  "feature_package_id": "feature-package/feat-classify-bulk-save",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "spec-classify-bulk-save",
+    "arch-classify-bulk-save-ui-ux",
+    "arch-classify-bulk-save-frontend",
+    "arch-classify-bulk-save-backend",
+    "arch-classify-bulk-save-database",
+    "arch-classify-bulk-save-auth",
+    "arch-classify-bulk-save-security",
+    "arch-classify-bulk-save-infrastructure",
+    "arch-classify-bulk-save-maintenance-ops",
+    "feat-classify-bulk-save",
+    "SYS-CLASSIFY-BULK-P01",
+    "SYS-CLASSIFY-BULK-P02",
+    "SYS-CLASSIFY-BULK-P03",
+    "SYS-CLASSIFY-BULK-P04",
+    "SYS-CLASSIFY-BULK-P05",
+    "SYS-CLASSIFY-BULK-P06",
+    "SYS-CLASSIFY-BULK-P07",
+    "SYS-CLASSIFY-BULK-P08",
+    "SYS-CLASSIFY-BULK-P09",
+    "SYS-CLASSIFY-BULK-P10",
+    "SYS-CLASSIFY-BULK-P11",
+    "SYS-CLASSIFY-BULK-P12",
+    "SYS-CLASSIFY-BULK-P13"
+  ],
+  "artifact_kinds": [
+    "specification",
+    "architecture",
+    "feature",
+    "task"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:a5d2c7f929b6151f15a49a0531f9ea9292a2a26204ca8c486fc99bb62318403e"
+}

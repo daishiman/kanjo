@@ -954,6 +954,190 @@
       ]
     },
     {
+      "id": "arch-classify-bulk-save-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "明細仕分け一括保存 — 選択の読み出し・一括保存・勘定科目の対応表を既存のセッション認証と利用者の区切りの配下に置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/auth.md",
+        "source_version": "0.1.16",
+        "source_digest": "39dc98bbb339173ca4a394060045561241f79a2620b3ca338c6a268ed873ecc2",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "明細仕分け一括保存 — サーバが明細を引き直して core で値を解決し、json_each で束ねた 1 回の batch で書く API",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/backend.md",
+        "source_version": "0.1.16",
+        "source_digest": "ab269614a9358535d89563df46c2e288b6d52894cd7db12588c9cb529f983c51",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "明細仕分け一括保存 — 勘定科目の対応表の表を 1 つ足し、設定の変更履歴を承認つきで作り直し、一括保存を 1 回の batch で全件か無しに書くデータ設計",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/database.md",
+        "source_version": "0.1.16",
+        "source_digest": "12f08e168e97d84b37f27da2d8379f5e1d60a5431857d5c7688360f5d107d623",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "明細仕分け一括保存 — 選択の読み出し・失敗の分類関数・直前の本文の保持",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/frontend.md",
+        "source_version": "0.1.16",
+        "source_digest": "0e7b7f2409859c73414efe597a232e4058a00780cd6df53d4d050ce4a2aefa6e",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "明細仕分け一括保存 — 1 起動 49 本の予算と対応表 migration の承認つき配備",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/infrastructure.md",
+        "source_version": "0.1.16",
+        "source_digest": "9a4eaa14ba4a71c8800747bed11d35d5562cc2635086f9f3b92a0bedb72837e9",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "明細仕分け一括保存 — O1〜O9 を 4 層のテストと 1264px の画面検査で固定する回帰検出",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/maintenance-ops.md",
+        "source_version": "0.1.16",
+        "source_digest": "b12cfcee5a7b7de7613084fb545e100724d284e7e09e39aa10317f9544f2317b",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "明細仕分け一括保存 — 入力の境界を許可リストで閉じ、本文と書き込みの上限・フェンス・項目ごとの履歴で一括保存を守る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/security.md",
+        "source_version": "0.1.16",
+        "source_digest": "85b474d994a4d8b7d31e97f571c03fad75bf7d5e1dad066c05fbafd42619e06c",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "明細仕分け一括保存 — 6 列の一覧・一括指定と保存前の内訳・失敗ごとの知らせ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/ui-ux.md",
+        "source_version": "0.1.16",
+        "source_digest": "b1c03ab76d1f3b2747236c7eb125c53b68b1d651eaf371d5dbf85b07c3731fad",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
       "id": "arch-classify-database",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -3589,7 +3773,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main/auth.md",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/auth.md",
         "source_version": "0.1.14",
         "source_digest": "4c648293a2fe5cf00573e2ee541d2bbbf80ed7f5821d1d871acb13a76fc2f1ff",
         "imported_at": "2026-09-30T15:18:20Z"
@@ -3610,7 +3794,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main/backend.md",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/backend.md",
         "source_version": "0.1.14",
         "source_digest": "acef0cab09dfc80de17703b8d956670f4c32dcb338e26f7b519e9636887b6b02",
         "imported_at": "2026-09-30T15:18:20Z"
@@ -3631,7 +3815,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main/database.md",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/database.md",
         "source_version": "0.1.14",
         "source_digest": "6f3a7e7c9459d6c6baf56bf84623837dc95cd830ff6b5fe50b083288c651503e",
         "imported_at": "2026-09-30T15:18:20Z"
@@ -3652,7 +3836,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main/frontend.md",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/frontend.md",
         "source_version": "0.1.14",
         "source_digest": "0fb662a8b175a8a816b276bd707fa8a4b33f44f7823ee29eb432cfe8c856904f",
         "imported_at": "2026-09-30T15:18:20Z"
@@ -3673,7 +3857,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main/infrastructure.md",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/infrastructure.md",
         "source_version": "0.1.14",
         "source_digest": "8bc7c72bdc980f5ef7f00da0356e8fcc3bced2203e554f656eb2e02774bbc017",
         "imported_at": "2026-09-30T15:18:20Z"
@@ -3694,7 +3878,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/maintenance-ops.md",
         "source_version": "0.1.14",
         "source_digest": "85038de93396791d5832c9a757f7103bfed977078321c558b9b5cfc63274e5f6",
         "imported_at": "2026-09-30T15:18:20Z"
@@ -3715,7 +3899,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main/security.md",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/security.md",
         "source_version": "0.1.14",
         "source_digest": "06e0bb9aadd5f67da71b831e6c92a6dd1e06a37f0989d0ae3ac792d9de4d57bc",
         "imported_at": "2026-09-30T15:18:20Z"
@@ -3736,7 +3920,7 @@
       "source_lineage": {
         "origin_kind": "system-spec-harness",
         "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main/ui-ux.md",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/ui-ux.md",
         "source_version": "0.1.14",
         "source_digest": "a99e6335d85a64194464559f5c308617b7730d4075e8f725d19f0df20a3f7c7d",
         "imported_at": "2026-09-30T15:18:20Z"
