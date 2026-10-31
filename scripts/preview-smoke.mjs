@@ -45,11 +45,13 @@ writeFileSync(
   { mode: 0o600 },
 );
 
-function run(command, args, timeout = 60_000) {
+function run(command, args, timeout = 60_000, successSummary = '') {
   const result = spawnSync(command, args, {
     cwd: projectRoot,
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
+    // 0061までのfresh migration一覧は1MiBを超える。無制限にはせず8MiBで捕捉する。
+    maxBuffer: 8 * 1024 * 1024,
     timeout,
   });
   if (result.status !== 0) {
@@ -57,7 +59,7 @@ function run(command, args, timeout = 60_000) {
     process.stderr.write(result.stderr);
     throw new Error(`${command} ${args.join(' ')} failed (${result.signal ?? result.status})`);
   }
-  process.stdout.write(result.stdout);
+  process.stdout.write(successSummary ? `${successSummary}\n` : result.stdout);
 }
 
 async function waitForServer() {
@@ -127,7 +129,7 @@ const jsonBody = (value) => ({
 
 let server;
 try {
-  // 0059まで増えたfresh migrationは低速なローカル実行で60秒を超えるため、ここだけ枠を広げる。
+  // 0061まで増えたfresh migrationは低速なローカル実行で60秒を超えるため、ここだけ枠を広げる。
   run(
     'pnpm',
     [
@@ -144,6 +146,7 @@ try {
       stateDir,
     ],
     120_000,
+    'local D1 migrations applied',
   );
   // migration直後の空DBに、ローカル専用の合成招待だけを作る。
   // 平文tokenはstdinだけで渡し、SQLにはSHA-256のみが入る。

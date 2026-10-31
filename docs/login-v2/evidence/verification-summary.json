@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-10-31T06:20:07.708Z",
+  "checked_at": "2026-10-31T06:23:48.208Z",
   "source_sha256": {
     "packages/api/src/auth.ts": "34f836baa145cafceeaf102386c8b2fd519d7ce96fdf9aedd93870e85938a887",
     "packages/api/src/better-auth.ts": "d470b666cee04094d0d1437bdd8fa6d7eb47b7667380ae632368a465d7e81c2a",
@@ -33,7 +33,8 @@
     "lines": 95.45
   },
   "preview_smoke": {
-    "status": "最新main統合後は未成功。移行runnerを調査中",
+    "status": "passed",
+    "duration_seconds": 94.85,
     "migration_head": "0061_login_v2_better_auth.sql"
   },
   "browser_acceptance": {
@@ -108,11 +109,13 @@
       "duration_seconds": 139.97
     },
     "preview_smoke": {
-      "status": "未成功",
-      "stage": "一時D1移行コマンドが44秒でSIGTERM。120秒枠前の終了原因を調査中"
+      "status": "passed",
+      "duration_seconds": 94.85,
+      "migration_head": "0061_login_v2_better_auth.sql"
     },
     "full_ci": "統合後の同一SHAで再実行が必要",
     "lint": "passed",
-    "web_build": "passed"
+    "web_build": "passed",
+    "runner_regression": "既定1MiBでENOBUFSを再現後、有界8MiB捕捉と成功時要約で完走"
   }
 }

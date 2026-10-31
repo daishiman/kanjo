@@ -464,8 +464,10 @@ Login v2の追加移行を0061へ改番した。schema guard、migration試験�
 
 専用worktreeにfrozen lockfileで依存を導入し、API/webの@kanjo/coreがそのworktreeへ解決されることを確認。
 型検査は成功、設定・取込・明細一括・認証・表示のweb6ファイルは210件成功、API8ファイルは108件成功（139.97秒）。
-web buildは86.40KiB/110KiBで成功し、full lintも合格した。一時D1 previewは移行コマンドが44秒でSIGTERMとなり、
-アプリに到達前のrunnerを調査中。120秒枠に到達したtimeoutとは断定せず、成功扱いにしない。
+web buildは86.40KiB/110KiBで成功し、full lintも合格した。一時D1 previewの初回は44秒でSIGTERM。
+独立probeで `spawnSync pnpm ENOBUFS`、stdout 1,062,855 bytesを確認し、既定1MiBの出力上限超過を確定した。
+120秒の時間枠は維持し、捕捉を有界8MiB・成功時のmigration出力を短い要約へ変更した。
+修正後は0061適用から認証・現金記帳・廃止APIまで94.85秒で成功した。
 正式な全件結果は統合保存版と同じSHAのPR Checksで判定する。
 
 グラフは214章/214ノードのlineageが一致し、描画69ノード/63辺、3機能各0/13、3登録receipt一致、
