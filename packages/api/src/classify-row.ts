@@ -7,13 +7,17 @@
 import {
   type Candidates,
   type Cls,
+  type Dataset,
   type MfTx,
+  type NormRule,
   type Owner,
   type Rule,
   type RuleTargetRow,
+  type SuggestionContext,
+  type TaxAccountMapRow,
   type TxEdit,
   type VendorMemoryRecord,
-  categoryAllowed,
+  categoryAllowedOrKept,
   classifyStatus,
   classifySuggestion,
   isCashTxId,
@@ -30,7 +34,46 @@ export interface ClassifyRowContext {
   institutionOwners: Readonly<Record<string, Owner>>;
   vendorMemories: readonly VendorMemoryRecord[];
   candidates: Candidates;
+  /** 提案の材料。集計ルールと勘定科目の対応表 (MF の分類からの提案に使う) */
+  normRules: readonly NormRule[];
+  taxAccountMap: readonly TaxAccountMapRow[];
 }
+
+/** Dataset から行の文脈を組む。一覧・保存・一括保存・ルールの対象が同じ材料を使う */
+export function classifyRowContext(
+  data: Dataset,
+  vendorMemories: readonly VendorMemoryRecord[],
+  candidates: Candidates,
+): ClassifyRowContext {
+  return {
+    rules: data.rules,
+    edits: data.edits,
+    institutionOwners: data.institutionOwners,
+    vendorMemories,
+    candidates,
+    normRules: data.normRules ?? [],
+    taxAccountMap: data.taxAccountMap ?? [],
+  };
+}
+
+/** 行の文脈から提案の材料を取り出す。core の classifySuggestion へそのまま渡す形 */
+export const suggestionContextOf = (ctx: ClassifyRowContext): SuggestionContext => ({
+  rules: ctx.rules,
+  vendorMemories: ctx.vendorMemories,
+  normRules: ctx.normRules,
+  taxAccountMap: ctx.taxAccountMap,
+  categoryCandidates: ctx.candidates,
+});
+
+/**
+ * 提案の材料を Dataset から作る (仕分け画面・単体保存・一括保存・概況の未処理キュー)。
+ * 材料を 1 か所で揃えないと、同じ明細に画面ごとに違う提案が出る。
+ */
+export const suggestionContextFor = (
+  data: Dataset,
+  vendorMemories: readonly VendorMemoryRecord[],
+  candidates: Candidates,
+): SuggestionContext => suggestionContextOf(classifyRowContext(data, vendorMemories, candidates));
 
 /** 並べ替えのためだけに使う内部の値。応答へ出す前に落とす */
 export interface RowSortKeys {
@@ -39,6 +82,15 @@ export interface RowSortKeys {
 }
 
 export type ClassifyRow = ReturnType<typeof buildClassifyRow>;
+
+/**
+ * 行の key (`mf:<id>` / `cash:<id>` / `split:<lineId>`)。一覧の行と選択の読み出しが同じ規則で key を作る。
+ * 種類も key の一部なので、MF の明細を `cash:` や `split:` の key で引いても当たらない。
+ */
+export function classifyRowKeyOf(t: MfTx): string {
+  if (t.splitProjection?.kind === 'split') return `split:${t.splitProjection.lineId}`;
+  return `${isCashTxId(t.id) ? 'cash' : 'mf'}:${t.id}`;
+}
 
 export function buildClassifyRow(t: MfTx, ctx: ClassifyRowContext) {
   const r = resolveTx(t, ctx.rules, ctx.edits, ctx.institutionOwners);
@@ -49,7 +101,7 @@ export function buildClassifyRow(t: MfTx, ctx: ClassifyRowContext) {
   const e = split ? ctx.edits[split.parentTxId] : ctx.edits[t.id];
   const memoryContributes = vendorMemoryEditContributes(t, ctx.rules, e);
   // 提案・信頼度・根拠は core の 1 か所で決める。route では組み替えない (BR-04・BR-08)
-  const suggestion = classifySuggestion(t, t.c, ctx.rules, ctx.vendorMemories);
+  const suggestion = classifySuggestion(t, r, suggestionContextOf(ctx), t.c ?? '');
   const payment = paymentMethodFor(e, paymentMethodOf({ id: t.id, inst: r.inst }));
   const status = classifyStatus({
     clsSrc: r.clsSrc,
@@ -61,7 +113,7 @@ export function buildClassifyRow(t: MfTx, ctx: ClassifyRowContext) {
   });
   return {
     id: t.id,
-    rowKey: split ? `split:${split.lineId}` : `${rowKind}:${t.id}`,
+    rowKey: classifyRowKeyOf(t),
     rowKind,
     parentTxId,
     lineId: split?.lineId ?? null,
@@ -114,8 +166,8 @@ export function buildClassifyRow(t: MfTx, ctx: ClassifyRowContext) {
     /** 値一致ではなく、保存された適用由来をそのまま画面へ渡す。 */
     origin: memoryContributes ? 'vendor_memory' : e?.origin === 'manual' ? 'manual' : null,
     originKey: memoryContributes ? (e?.originKey ?? null) : null,
-    /** 手動の科目が現在の公私の系統に無い(公私を後から変えた等) */
-    scopeMismatch: r.catSrc === '手動' && !categoryAllowed(ctx.candidates, r.cls, r.big, r.mid),
+    /** 手動の科目が現在の公私の系統に無い(公私を後から変えた等)。保存済みの値そのものを見るので『カテゴリなし』は外れにしない */
+    scopeMismatch: r.catSrc === '手動' && !categoryAllowedOrKept(ctx.candidates, r.cls, r.big, r.mid, r.big),
     edit: e
       ? {
           cls: e.cls ?? null,
@@ -148,7 +200,7 @@ export function buildRuleTargetRows(txs: readonly MfTx[], ctx: ClassifyRowContex
     if (t.splitProjection?.kind === 'split') continue;
     const e = ctx.edits[t.id];
     const r = resolveTx(t, ctx.rules, ctx.edits, ctx.institutionOwners);
-    const suggestion = classifySuggestion(t, t.c, ctx.rules, ctx.vendorMemories);
+    const suggestion = classifySuggestion(t, r, suggestionContextOf(ctx), t.c ?? '');
     const status = classifyStatus({
       clsSrc: r.clsSrc,
       origin: e?.origin ?? null,

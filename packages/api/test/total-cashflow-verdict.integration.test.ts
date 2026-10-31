@@ -530,10 +530,10 @@ describe('MF 事業判定の公開 wire 契約', () => {
     const response = await request('/transactions?month=2026-10');
     expect(response.status).toBe(200);
     const body = (await response.json()) as {
-      transactions: Array<Record<string, unknown> & { id: string; cls: string; src: string }>;
+      rows: Array<Record<string, unknown> & { id: string; cls: string; src: string }>;
       summary: { progress: { bySource: Record<string, number> } };
     };
-    const row = body.transactions.find((item) => item.id === 'api-wire-mid');
+    const row = body.rows.find((item) => item.id === 'api-wire-mid');
     expect(row).toMatchObject({ cls: 'biz', src: '中項目' });
     expect(row).not.toHaveProperty('clsSrc');
     expect(body.summary.progress.bySource['中項目']).toBe(1);

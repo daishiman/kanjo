@@ -69,6 +69,8 @@ const SETTINGS_SCREEN_CONSUMERS: readonly CanonicalConsumer[] = [
   'settings_change_log',
   'owner_labels',
   'analysis_settings',
+  // 0059: 設定だけの復元は版 2 の JSON の対応表も書く
+  'tax_account_map',
 ];
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
@@ -243,6 +245,20 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
     method: 'PUT',
     path: /^\/api\/settings\/owner-labels$/,
     consumers: ['owner_labels', 'settings_change_log'],
+  },
+  /*
+   * 0059: 勘定科目の対応表。行と変更履歴を 1 回の batch で書く。
+   * 復元の write-set に入り、変えると復元後の提案が変わる。
+   */
+  {
+    method: 'POST',
+    path: /^\/api\/settings\/tax-account-map$/,
+    consumers: ['tax_account_map', 'settings_change_log'],
+  },
+  {
+    method: 'DELETE',
+    path: /^\/api\/settings\/tax-account-map\/[^/]+$/,
+    consumers: ['tax_account_map', 'settings_change_log'],
   },
   {
     method: 'POST',

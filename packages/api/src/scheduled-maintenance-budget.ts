@@ -1,3 +1,5 @@
+import { D1_INVOCATION_QUERY_LIMIT } from './d1-limits.js';
+
 /**
  * 夜間 scheduledMaintenance 全体の D1 query 予算。
  *
@@ -10,8 +12,7 @@
  */
 
 /** 上限そのものは使い切らず、常に 1 query 以上を残す。 */
-export const SCHEDULED_D1_QUERY_LIMIT = 50;
-export const SCHEDULED_D1_QUERY_ACCEPTED_MAX = SCHEDULED_D1_QUERY_LIMIT - 1;
+export const SCHEDULED_D1_QUERY_ACCEPTED_MAX = D1_INVOCATION_QUERY_LIMIT - 1;
 
 /**
  * 現行 job 群の安全側上限。新規 job は既存枠を再配分しない限り追加できない。
@@ -77,7 +78,7 @@ export function planScheduledMaintenanceD1Queries(
   return Object.freeze({
     jobs: Object.freeze({ ...candidate }) as Readonly<Record<ScheduledMaintenanceJobName, number>>,
     total,
-    limit: SCHEDULED_D1_QUERY_LIMIT,
+    limit: D1_INVOCATION_QUERY_LIMIT,
     acceptedMax: SCHEDULED_D1_QUERY_ACCEPTED_MAX,
   });
 }

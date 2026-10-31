@@ -28,6 +28,7 @@ const diff = (patch: Partial<SettingsDiff> = {}): SettingsDiff => ({
   ownerLabels: { changed: [] },
   statMinMonths: null,
   cashOverrides: { added: bucket(0), changed: bucket(0), removed: bucket(1) },
+  taxAccountMap: { added: bucket(0), changed: bucket(0), removed: bucket(0) },
   total: 4,
   ...patch,
 });
@@ -76,7 +77,21 @@ describe('差分プレビュー', () => {
       '名義（変更 0 件）',
       '統計（変更なし）',
       '現金上書き（追加 0 件・変更 0 件・削除 1 件）',
+      '勘定科目の対応表（追加 0 件・変更 0 件・削除 0 件）',
     ]);
+  });
+
+  it('対応表だけが違うときも、その差分を行に出す (spec-classify-bulk-save FR-17・AC-17)', () => {
+    const lines = diffLines(
+      diff({
+        normRules: { added: bucket(0), changed: bucket(0), removed: bucket(0), reordered: bucket(0) },
+        cashOverrides: { added: bucket(0), changed: bucket(0), removed: bucket(0) },
+        taxAccountMap: { added: bucket(1), changed: bucket(2), removed: bucket(3) },
+        total: 6,
+      }),
+    );
+    expect(lines).toHaveLength(5);
+    expect(lines[4]).toBe('勘定科目の対応表（追加 1 件・変更 2 件・削除 3 件）');
   });
 
   it('並び順と統計の変化があれば数を出す', () => {

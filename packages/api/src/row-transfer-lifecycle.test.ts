@@ -75,8 +75,8 @@ async function seedTx(): Promise<void> {
 const listRow = async (): Promise<Row> => {
   const response = await jsonRequest('/transactions?month=2026-07');
   expect(response.status).toBe(200);
-  const body = (await response.json()) as { transactions: Row[]; institutions: string[] };
-  const row = body.transactions.find((t) => t.id === 'T1');
+  const body = (await response.json()) as { rows: Row[]; institutions: string[] };
+  const row = body.rows.find((t) => t.id === 'T1');
   expect(row).toBeDefined();
   return row as Row;
 };

@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 
 /**
- * 明細仕分け画面 (spec-classify-screen) の DOM 受入 (AT-01〜AT-10・AT-16〜AT-18・AT-21)。
+ * 明細仕分け画面 (spec-classify-screen) の DOM 受入 (AT-01〜AT-10・AT-16〜AT-18・AT-21) と、
+ * 一括保存と取引一覧の改善 (spec-classify-bulk-save) の DOM 受入 (AC-01・03・04・06〜10・18〜20)。
  *
  * 置き換え前の画面は KPI も一括操作も分類ステータスの絞り込みも持たない。
  * このテストが旧 `pages/Classify.tsx` では落ちること自体が、契約が変わった証拠になる。
@@ -10,7 +11,7 @@
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ClassifyRow, ClassifyTransactionsResponse } from '../../api.js';
 import { ClassifyPage } from './ClassifyPage.js';
@@ -66,6 +67,16 @@ const crow = (over: Partial<ClassifyRow> & { id: string }): ClassifyRow => {
   };
 };
 
+/** 提案の無い未整理の明細。下書きも一括指定も無ければ「埋める値がありません」で外れる */
+const noSug = (id: string, over: Partial<ClassifyRow> = {}) =>
+  crow({ id, suggestion: null, suggestionLabel: null, confidence: null, ...over });
+
+/** 一括指定の候補。区分ごとのカテゴリ (大) の系統を判定する (FR-03) */
+const CANDS = {
+  biz: [{ name: '消耗品費', source: 'standard', mids: [] }],
+  per: [{ name: '食費', source: 'standard', mids: [{ name: '食料品', source: 'standard' }] }],
+} as unknown as ClassifyTransactionsResponse['candidates'];
+
 const response = (rows: ClassifyRow[], over: Partial<ClassifyTransactionsResponse> = {}) =>
   ({
     months: ['2025-09', '2026-08'],
@@ -93,7 +104,6 @@ const response = (rows: ClassifyRow[], over: Partial<ClassifyTransactionsRespons
       noInstitutionCount: 0,
       nonCountableCount: 0,
     },
-    transactions: rows,
     rows,
     total: rows.length,
     page: 1,
@@ -111,13 +121,37 @@ interface Call {
   method: string;
   body: unknown;
 }
+interface BulkBody {
+  bulk?: Record<string, unknown>;
+  items: { txId: string; draft: Record<string, unknown> }[];
+}
 
 let calls: Call[] = [];
 let routes: Record<string, (call: Call) => unknown>;
 
-/** URL とメソッドから応答を選ぶ。未登録の GET は空の一覧を返す */
-function install(rows: ClassifyRow[], extra: Record<string, (call: Call) => unknown> = {}) {
+const json = (status: number, payload: unknown) =>
+  new Response(JSON.stringify(payload), { status, headers: { 'Content-Type': 'application/json' } });
+
+/**
+ * URL とメソッドから応答を選ぶ。未登録の GET は空の一覧を返す。
+ * 選択の読み出し (`/transactions/selected?keys=`) は、一覧の行と more の行を合わせた母集団から key で引き、
+ * 見つからない key を missing に返す (サーバの classify-selected と同じ形)。
+ */
+function install(
+  rows: ClassifyRow[],
+  extra: Record<string, (call: Call) => unknown> = {},
+  more: ClassifyRow[] = [],
+) {
   routes = extra;
+  const byKey = new Map([...rows, ...more].map((r) => [r.rowKey, r]));
+  const selectedOf = (url: string) => {
+    const raw = /[?&]keys=([^&]*)/.exec(url)?.[1] ?? '';
+    const keys = raw.split(',').filter(Boolean).map(decodeURIComponent);
+    return {
+      rows: keys.flatMap((k) => byKey.get(k) ?? []),
+      missing: keys.filter((k) => !byKey.has(k)),
+    };
+  };
   vi.stubGlobal(
     'fetch',
     vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -126,29 +160,32 @@ function install(rows: ClassifyRow[], extra: Record<string, (call: Call) => unkn
       const body = init?.body ? JSON.parse(String(init.body)) : null;
       const call: Call = { url, method, body };
       calls.push(call);
-      const key = Object.keys(routes).find(
-        (k) => url.includes(k) && (k.includes(' ') ? true : method === 'GET'),
-      );
       const matched = Object.entries(routes).find(([k]) => {
         const [m, p] = k.includes(' ') ? k.split(' ') : ['GET', k];
         return m === method && url.includes(p);
       });
       const payload = matched
         ? matched[1](call)
-        : url.includes('/settings/owner-labels')
-          ? { labels: { business: '事業主', spouse: '妻', family: '子', unset: '共通' } }
-          : url.includes('/rules')
-            ? { rules: [], usingDefaults: false }
-            : url.includes('/saved-filters')
-              ? { items: [] }
-              : url.includes('/history')
+        : url.includes('/transactions/selected')
+          ? selectedOf(url)
+          : url.includes('/settings/owner-labels')
+            ? { labels: { business: '事業主', spouse: '妻', family: '子', unset: '共通' } }
+            : url.includes('/rules')
+              ? { rules: [], usingDefaults: false }
+              : url.includes('/saved-filters')
                 ? { items: [] }
-                : response(rows);
-      void key;
+                : url.includes('/history')
+                  ? { items: [] }
+                  : response(rows);
       if (payload instanceof Response) return payload;
-      return new Response(JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+      return json(200, payload);
     }),
   );
+}
+
+/** URL の検索部分を画面の外から読む。sel と limit が URL を正本にしているかを確かめる */
+function LocationProbe() {
+  return <span data-testid="location">{useLocation().search}</span>;
 }
 
 function renderAt(path = '/classify') {
@@ -157,13 +194,42 @@ function renderAt(path = '/classify') {
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={[path]}>
         <ClassifyPage />
+        <LocationProbe />
       </MemoryRouter>
     </QueryClientProvider>,
   );
 }
 
 const lastGetUrl = () =>
-  [...calls].reverse().find((c) => c.method === 'GET' && c.url.includes('/transactions'))?.url;
+  [...calls].reverse().find((c) => c.method === 'GET' && c.url.includes('/transactions?'))?.url;
+const gets = () => calls.filter((c) => c.method === 'GET' && c.url.includes('/transactions?'));
+const posts = () => calls.filter((c) => c.method === 'POST' && c.url.includes('/transactions/bulk'));
+const itemIds = (call: Call | undefined) => (call?.body as BulkBody).items.map((i) => i.txId);
+const location = () => screen.getByTestId('location').textContent ?? '';
+
+/** 取引先/内容の 1 段目 (取引先のボタン) を押して明細を開く */
+const openRow = (text: string) =>
+  fireEvent.click(screen.getByText(text, { selector: 'td[data-label="取引先/内容"] button' }));
+const bar = () => within(screen.getByRole('region', { name: '一括操作' }));
+const selectAll = () => screen.getByRole('checkbox', { name: '表示中の明細をすべて選択' });
+/** 保存する件数が n になり、選択の読み出しが終わって押せるようになった保存ボタン */
+const saveButton = async (n: number) => {
+  const button = await screen.findByRole('button', { name: `選択した${n}件を保存` });
+  await waitFor(() => expect(button.hasAttribute('disabled')).toBe(false));
+  return button;
+};
+const okAll = (call: Call) => {
+  const items = (call.body as BulkBody).items;
+  return {
+    opId: 'op1',
+    saved: items.length,
+    failed: 0,
+    results: items.map((i) => ({ txId: i.txId, ok: true, status: 'done' })),
+  };
+};
+const list = (rows: ClassifyRow[], over: Partial<ClassifyTransactionsResponse> = {}) => ({
+  'GET /transactions?': () => response(rows, over),
+});
 
 beforeEach(() => {
   calls = [];
@@ -365,26 +431,60 @@ describe('絞り込み (左パネル)', () => {
   });
 });
 
-/* -------- AT-04・AT-05 -------- */
+/* -------- AT-04・AT-05・FR-08〜FR-12 -------- */
 
 describe('取引一覧', () => {
   it('AT-04 件数見出し・表示件数・6 列・全選択が出る', async () => {
-    install([crow({ id: 'A1' })], { '/transactions': () => response([crow({ id: 'A1' })], { total: 51 }) });
+    install([crow({ id: 'A1' })], list([crow({ id: 'A1' })], { total: 51 }));
     renderAt();
     expect(await screen.findByText('取引一覧（51件）')).toBeTruthy();
-    expect(screen.getByText('表示件数 50件')).toBeTruthy();
+    const size = screen.getByLabelText('表示件数') as HTMLSelectElement;
+    expect(size.value).toBe('50');
+    expect(Array.from(size.options).map((o) => o.value)).toEqual(['25', '50', '100']);
+    // 取引先と内容は 1 列の 2 段に畳む (FR-12)。7 列のままだと 1264px で内容が 1 字ずつ折り返す
     const headers = Array.from(document.querySelectorAll('thead th')).map((th) => th.textContent?.trim());
-    expect(headers.slice(1)).toEqual(['日付', '取引先', '内容', '金額', '提案カテゴリ', '信頼度']);
-    expect(screen.getByRole('checkbox', { name: '表示中の明細をすべて選択' })).toBeTruthy();
+    expect(headers).toHaveLength(6);
+    expect(headers.slice(1)).toEqual(['日付', '取引先/内容', '金額', '提案カテゴリ', '信頼度']);
+    expect(selectAll()).toBeTruthy();
     expect(screen.getByText('全51件')).toBeTruthy();
+    expect(lastGetUrl()).toContain('limit=50');
   });
 
   it('AT-04 2 ページ目を要求すると page=2 が付く', async () => {
-    install([crow({ id: 'A1' })], { '/transactions': () => response([crow({ id: 'A1' })], { total: 51 }) });
+    install([crow({ id: 'A1' })], list([crow({ id: 'A1' })], { total: 51 }));
     renderAt();
     await screen.findByText('取引一覧（51件）');
     fireEvent.click(screen.getByRole('button', { name: '次のページ' }));
     await waitFor(() => expect(lastGetUrl()).toContain('page=2'));
+  });
+
+  it('FR-12 表示件数を 100 にすると limit=100 で読み、ページ数は応答の limit で割る', async () => {
+    install([crow({ id: 'A1' })], {
+      'GET /transactions?': (call) => {
+        const limit = Number(new URL(call.url, 'http://localhost').searchParams.get('limit'));
+        return response([crow({ id: 'A1' })], { total: 100, limit });
+      },
+    });
+    renderAt();
+    await screen.findByText('取引一覧（100件）');
+    const next = () => screen.getByRole('button', { name: '次のページ' });
+    // 50 件ずつなら 2 ページある
+    expect(next().hasAttribute('disabled')).toBe(false);
+
+    fireEvent.change(screen.getByLabelText('表示件数'), { target: { value: '100' } });
+    await waitFor(() => expect(lastGetUrl()).toContain('limit=100'));
+    // 50 で固定して割っていた頃は、100 件表示でも「次のページ」が押せて空のページへ進んだ
+    await waitFor(() => expect(next().hasAttribute('disabled')).toBe(true));
+    expect(location()).toContain('limit=100');
+  });
+
+  it('FR-12 URL の limit が 25/50/100 以外なら 50 で読む', async () => {
+    install([crow({ id: 'A1' })]);
+    renderAt('/classify?limit=30');
+    await screen.findByText('取引一覧（1件）');
+    expect(lastGetUrl()).toContain('limit=50');
+    expect(lastGetUrl()).not.toContain('limit=30');
+    expect((screen.getByLabelText('表示件数') as HTMLSelectElement).value).toBe('50');
   });
 
   it('AT-05 未整理の行に提案カテゴリと信頼度が出る。要確認は文言も併記する', async () => {
@@ -401,6 +501,16 @@ describe('取引一覧', () => {
     expect(reviewCell?.textContent).toContain('要確認');
   });
 
+  it('FR-12 取引先が 1 段目、内容が 2 段目に出る', async () => {
+    install([crow({ id: 'A1', payee: '架空商店', description: '架空商店 文具' })]);
+    renderAt();
+    await screen.findByText('取引一覧（1件）');
+    const cell = screen
+      .getByText('架空商店', { selector: 'td[data-label="取引先/内容"] button' })
+      .closest('td');
+    expect(within(cell as HTMLElement).getByText('架空商店 文具')).toBeTruthy();
+  });
+
   it('スマホ用に全セルが data-label を持つ', async () => {
     install([crow({ id: 'A1' })]);
     renderAt();
@@ -411,6 +521,47 @@ describe('取引一覧', () => {
     const table = document.querySelector('.classify-transactions');
     expect(table?.parentElement?.classList.contains('classify-table-scroll')).toBe(true);
   });
+
+  it('AC-19 内訳行と分割の設定が不正な行はチェックの代わりに理由を出し、全選択の対象にしない', async () => {
+    const rows = [
+      crow({
+        id: 'P1',
+        payee: '架空家電',
+        description: '架空家電',
+        rowKind: 'split',
+        rowKey: 'split:L1',
+        parentTxId: 'P1',
+        lineId: 'L1',
+        splitSeq: 1,
+        splitLineCount: 2,
+      }),
+      crow({ id: 'B1', payee: '架空書店', description: '架空書店', splitState: 'amount_conflict' }),
+      crow({ id: 'A1' }),
+    ];
+    install(rows);
+    renderAt();
+    await screen.findByText('取引一覧（3件）');
+    for (const reason of [
+      '分割後の内訳は「内訳を編集」からまとめて変更してください',
+      '分割の設定を直してから保存してください',
+    ]) {
+      const tr = screen.getByText(reason).closest('tr') as HTMLElement;
+      expect(tr).toBeTruthy();
+      expect(within(tr).queryByRole('checkbox')).toBeNull();
+    }
+    fireEvent.click(selectAll());
+    expect(await screen.findByText('1 件選択中')).toBeTruthy();
+  });
+
+  it('AC-20 表示件数 100 で全選択すると 50 件で止まり、件数の横に文言が出る', async () => {
+    const rows = Array.from({ length: 100 }, (_, i) => crow({ id: `R${i}` }));
+    install(rows, list(rows, { total: 100, limit: 100 }));
+    renderAt('/classify?limit=100');
+    await screen.findByText('取引一覧（100件）');
+    fireEvent.click(selectAll());
+    expect(await screen.findByText('50 件選択中')).toBeTruthy();
+    expect(bar().getByText('上限の 50 件で止めました')).toBeTruthy();
+  });
 });
 
 /* -------- AT-06 -------- */
@@ -420,7 +571,7 @@ describe('編集パネル', () => {
     install([crow({ id: 'A1' })]);
     renderAt();
     await screen.findByText('取引一覧（1件）');
-    fireEvent.click(screen.getByText('架空スーパー', { selector: 'td[data-label="内容"] *' }));
+    openRow('架空スーパー');
     return screen.findByRole('heading', { name: '取引の編集' });
   };
 
@@ -511,14 +662,11 @@ describe('編集パネル', () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     install([crow({ id: 'A1' })], {
       'PUT /transactions/A1/edit': () =>
-        new Response(JSON.stringify({ error: { code: 'internal', message: '保存できません' } }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        }),
+        json(500, { error: { code: 'internal', message: '保存できません' } }),
     });
     renderAt();
     await screen.findByText('取引一覧（1件）');
-    fireEvent.click(screen.getByText('架空スーパー', { selector: 'td[data-label="内容"] *' }));
+    openRow('架空スーパー');
     await screen.findByRole('heading', { name: '取引の編集' });
     fireEvent.change(screen.getByLabelText('メモ'), { target: { value: '消えては困る下書き' } });
     await vi.advanceTimersByTimeAsync(1100);
@@ -533,72 +681,339 @@ describe('編集パネル', () => {
   });
 });
 
-/* -------- AT-07・AT-08 -------- */
+/* -------- AT-07・AT-08・spec-classify-bulk-save -------- */
 
 describe('一括保存', () => {
-  const select = async () => {
-    const rows = [crow({ id: 'A1' }), crow({ id: 'A2' }), crow({ id: 'A3' })];
+  const three = () => [
+    crow({ id: 'A1' }),
+    crow({ id: 'A2', payee: '架空書店', description: '架空書店' }),
+    crow({ id: 'A3', payee: '架空薬局', description: '架空薬局' }),
+  ];
+
+  it('AT-07 一括操作バーが出る', async () => {
+    install(three());
+    renderAt();
+    await screen.findByText('取引一覧（3件）');
+    fireEvent.click(selectAll());
+    expect(await screen.findByText('3 件選択中')).toBeTruthy();
+    expect(screen.getByRole('button', { name: '選択をクリア' })).toBeTruthy();
+    expect(await saveButton(3)).toBeTruthy();
+  });
+
+  it('7.8 狭い幅で畳む一括指定欄は、開閉が欄を指し、畳んでいても指定した欄の数が名前で分かる', async () => {
+    install(three(), list(three(), { candidates: CANDS }));
+    renderAt();
+    await screen.findByText('取引一覧（3件）');
+    fireEvent.click(selectAll());
+    const toggle = await waitFor(() => bar().getByRole('button', { name: '一括指定' }));
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    // 1023px 以下で隠すのは CSS (.classify-bulk-fields:not(.is-open))。開閉が指す先と状態のクラスを確かめる
+    const fields = document.getElementById(toggle.getAttribute('aria-controls') ?? '');
+    expect(fields?.contains(bar().getByLabelText('区分'))).toBe(true);
+    expect(fields?.contains(bar().getByLabelText('支払い方法'))).toBe(true);
+    expect(fields?.classList.contains('is-open')).toBe(false);
+
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(fields?.classList.contains('is-open')).toBe(true);
+
+    fireEvent.change(bar().getByLabelText('区分'), { target: { value: 'biz' } });
+    fireEvent.change(bar().getByLabelText('カテゴリ (大)'), { target: { value: '消耗品費' } });
+    fireEvent.click(toggle);
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(bar().getByRole('button', { name: '一括指定 (2)' })).toBe(toggle);
+  });
+
+  it('WCAG 2.4.11 バーが出ている間だけ高さを :root へ渡し、Tab で移った先をバーの上へ持ち上げる', async () => {
+    // jsdom は ResizeObserver を持たない。観測を始めた時点の高さを 1 度だけ報告する代役に差し替える
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(private readonly report: () => void) {}
+        observe(target: HTMLElement) {
+          Object.defineProperty(target, 'offsetHeight', { configurable: true, value: 132 });
+          this.report();
+        }
+        disconnect() {}
+      },
+    );
+    const root = document.documentElement;
+    install(three());
+    renderAt();
+    await screen.findByText('取引一覧（3件）');
+    expect(root.style.getPropertyValue('--classify-bulk-h')).toBe('');
+
+    fireEvent.click(selectAll());
+    await screen.findByText('3 件選択中');
+    expect(root.style.getPropertyValue('--classify-bulk-h')).toBe('132px');
+
+    // 選択を外すとバーが消える。消えたバーの高さを :root に残さない (別の画面へ移っても値だけが居残る)
+    fireEvent.click(bar().getByRole('button', { name: '選択をクリア' }));
+    await waitFor(() => expect(screen.queryByRole('region', { name: '一括操作' })).toBeNull());
+    expect(root.style.getPropertyValue('--classify-bulk-h')).toBe('');
+  });
+
+  it('AC-01 提案の無い明細も、一括指定した値で保存できる', async () => {
+    const rows = [noSug('N1'), noSug('N2'), noSug('N3')];
+    install(rows, { ...list(rows, { candidates: CANDS }), 'POST /transactions/bulk': okAll });
+    renderAt();
+    await screen.findByText('取引一覧（3件）');
+    fireEvent.click(selectAll());
+    // 一括指定の前は埋める値が無いので押せない。旧実装は通信の前に 3 件とも失敗にしていた
+    const none = await screen.findByRole('button', { name: '選択した0件を保存' });
+    expect(none.hasAttribute('disabled')).toBe(true);
+    expect(bar().getByText('3件は保存しません')).toBeTruthy();
+
+    fireEvent.change(bar().getByLabelText('区分'), { target: { value: 'biz' } });
+    fireEvent.change(bar().getByLabelText('カテゴリ (大)'), { target: { value: '消耗品費' } });
+    expect(bar().getByText('3件を一括指定で保存')).toBeTruthy();
+
+    fireEvent.click(await saveButton(3));
+    await waitFor(() => expect(posts()).toHaveLength(1));
+    expect(posts()[0].body).toEqual({
+      bulk: { cls: 'biz', big: '消耗品費' },
+      items: [
+        { txId: 'N1', draft: {} },
+        { txId: 'N2', draft: {} },
+        { txId: 'N3', draft: {} },
+      ],
+    });
+    expect(await screen.findByText('選択した3件を保存しました。')).toBeTruthy();
+    await waitFor(() => expect(screen.queryByRole('region', { name: '一括操作' })).toBeNull());
+  });
+
+  it('AC-03 区分だけを指定すると、合うカテゴリの無い明細は『カテゴリなし』で保存すると内訳に出る', async () => {
+    const rows = [
+      noSug('N1'),
+      noSug('N2'),
+      crow({ id: 'B1', suggestion: { cls: 'biz', big: '消耗品費', mid: '', owner: null } }),
+    ];
+    install(rows, list(rows, { candidates: CANDS }));
+    renderAt();
+    await screen.findByText('取引一覧（3件）');
+    fireEvent.click(selectAll());
+    fireEvent.change(await waitFor(() => bar().getByLabelText('区分')), { target: { value: 'biz' } });
+    expect(bar().getByText('3件を一括指定で保存')).toBeTruthy();
+    expect(bar().getByText('うち2件は『カテゴリなし』で保存')).toBeTruthy();
+    expect(await saveButton(3)).toBeTruthy();
+  });
+
+  it('AC-04 埋める値が無い行と変わる値が無い行を理由付きで外し、残りだけを送る', async () => {
+    const rows = [
+      noSug('N1'),
+      crow({ id: 'D1', status: 'done', big: '食費', mid: '食料品' }),
+      crow({ id: 'S1' }),
+    ];
+    install(rows, { ...list(rows, { candidates: CANDS }), 'POST /transactions/bulk': okAll });
+    renderAt();
+    await screen.findByText('取引一覧（3件）');
+    fireEvent.click(selectAll());
+    await screen.findByText('3 件選択中');
+    expect(bar().getByText('1件を提案で保存')).toBeTruthy();
+    expect(bar().getByText('2件は保存しません')).toBeTruthy();
+    expect(bar().getByText('埋める値がありません')).toBeTruthy();
+    expect(bar().getByText('変わる値がありません')).toBeTruthy();
+
+    fireEvent.click(await saveButton(1));
+    await waitFor(() => expect(posts()).toHaveLength(1));
+    // 外した行は送らない。確定済みの D1 を送ると、手で直した値を提案で巻き戻しうる
+    expect(itemIds(posts()[0])).toEqual(['S1']);
+  });
+
+  it('FR-03 区分に合わないカテゴリ (大) を一括指定した行は理由付きで外す', async () => {
+    const rows = [crow({ id: 'A1' })];
+    install(rows, list(rows, { candidates: CANDS }));
+    renderAt();
+    await screen.findByText('取引一覧（1件）');
+    fireEvent.click(selectAll());
+    fireEvent.change(await waitFor(() => bar().getByLabelText('カテゴリ (大)')), {
+      target: { value: '消耗品費' },
+    });
+    expect(bar().getByText('1件は保存しません')).toBeTruthy();
+    expect(bar().getByText('指定したカテゴリ (大) が明細の区分に合いません')).toBeTruthy();
+    expect(screen.getByRole('button', { name: '選択した0件を保存' }).hasAttribute('disabled')).toBe(true);
+  });
+
+  it('AC-06 全件が write_failed なら全件の再試行を出し、同じ本文で送り直す', async () => {
+    const rows = three();
+    install(rows, {
+      'POST /transactions/bulk': (call) => {
+        const items = (call.body as BulkBody).items;
+        return {
+          opId: 'op1',
+          saved: 0,
+          failed: items.length,
+          results: items.map((i) => ({
+            txId: i.txId,
+            ok: false,
+            error: { code: 'write_failed', message: '保存できませんでした' },
+          })),
+        };
+      },
+    });
+    renderAt();
+    await screen.findByText('取引一覧（3件）');
+    fireEvent.click(selectAll());
+    fireEvent.click(await saveButton(3));
+    expect(await screen.findByText('選択した3件を保存できませんでした。')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '失敗した3件のみ再試行' }));
+    await waitFor(() => expect(posts()).toHaveLength(2));
+    expect(posts()[1].body).toEqual(posts()[0].body);
+  });
+
+  it('AT-08・AC-07 一部が write_failed なら、その明細だけを同じ一括指定で送り直し、選択もその明細だけにする', async () => {
+    const rows = three();
     install(rows, {
       'POST /transactions/bulk': () => ({
         opId: 'op1',
-        saved: 2,
-        failed: 1,
+        saved: 1,
+        failed: 2,
         results: [
-          { txId: 'A1', ok: true },
-          { txId: 'A2', ok: true },
-          { txId: 'A3', ok: false, error: { code: 'invalid_body', message: 'カテゴリが不正です' } },
+          { txId: 'A1', ok: false, error: { code: 'write_failed', message: '保存できませんでした' } },
+          { txId: 'A2', ok: false, error: { code: 'not_found', message: '明細が見つかりません' } },
+          { txId: 'A3', ok: true, status: 'done' },
         ],
       }),
     });
     renderAt();
     await screen.findByText('取引一覧（3件）');
-    fireEvent.click(screen.getByRole('checkbox', { name: '表示中の明細をすべて選択' }));
-    return rows;
-  };
-
-  it('AT-07 一括操作バーが出る', async () => {
-    await select();
-    expect(await screen.findByText('3 件選択中')).toBeTruthy();
-    expect(screen.getByRole('button', { name: '選択をクリア' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: '選択した3件を保存' })).toBeTruthy();
-  });
-
-  it('AT-08 部分失敗の通知が出て、再試行は失敗の 1 件だけを送る', async () => {
-    await select();
-    fireEvent.click(await screen.findByRole('button', { name: '選択した3件を保存' }));
+    fireEvent.click(selectAll());
+    fireEvent.change(await waitFor(() => bar().getByLabelText('所有者')), { target: { value: 'spouse' } });
+    fireEvent.click(await saveButton(3));
     expect(
-      await screen.findByText('選択した3件のうち2件を保存しました。1件はエラーのため保存できませんでした。'),
+      await screen.findByText('選択した3件のうち1件を保存しました。2件はエラーのため保存できませんでした。'),
     ).toBeTruthy();
-    const retry = screen.getByRole('button', { name: '失敗した1件のみ再試行' });
-    fireEvent.click(retry);
-    await waitFor(() => {
-      const posts = calls.filter((c) => c.method === 'POST' && c.url.includes('/transactions/bulk'));
-      expect(posts.length).toBe(2);
-      expect((posts[1].body as { items: { txId: string }[] }).items.map((i) => i.txId)).toEqual(['A3']);
-    });
+    // 見つからない明細は送り直しても直らないので、再試行と選択に残すのは write_failed だけ
+    expect(await screen.findByText('1 件選択中')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '失敗した1件のみ再試行' }));
+    await waitFor(() => expect(posts()).toHaveLength(2));
+    expect(posts()[1].body).toEqual({ bulk: { owner: 'spouse' }, items: [{ txId: 'A1', draft: {} }] });
   });
 
-  it('通信が全失敗しても選択と元のpayloadを保ち、同じ内容で再試行する', async () => {
-    const rows = [crow({ id: 'A1' }), crow({ id: 'A2' })];
-    let attempts = 0;
-    install(rows, {
-      'POST /transactions/bulk': () => {
-        attempts += 1;
+  it.each([
+    [
+      '通信の失敗',
+      () => {
         throw new Error('synthetic network failure');
       },
+    ],
+    ['5xx', () => json(500, { error: { code: 'internal', message: '内部エラーが発生しました' } })],
+  ])('AC-08 %s では一覧を読み直し、選択を残して同じ内容で再試行できる', async (_name, fail) => {
+    const rows = [crow({ id: 'A1' }), crow({ id: 'A2', payee: '架空書店', description: '架空書店' })];
+    install(rows, { 'POST /transactions/bulk': fail });
+    renderAt();
+    await screen.findByText('取引一覧（2件）');
+    fireEvent.click(selectAll());
+    const button = await saveButton(2);
+    const before = gets().length;
+    fireEvent.click(button);
+    const message = await screen.findByText(
+      '保存できたか確かめられませんでした。一覧を読み直しました。同じ内容で送り直しても二重には保存されません',
+    );
+    expect(message.closest('[role="alert"]')).toBeTruthy();
+    // 保存できたかどうかが分からないので、全件を失敗と決めつけず一覧を読み直す
+    await waitFor(() => expect(gets().length).toBeGreaterThan(before));
+    expect(screen.getByText('2 件選択中')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: '同じ内容で再試行' }));
+    await waitFor(() => expect(posts()).toHaveLength(2));
+    expect(posts()[1].body).toEqual(posts()[0].body);
+  });
+
+  it('AC-09 409 はサーバの文言を出し、選択を残して同じ内容で再試行できる', async () => {
+    const rows = [crow({ id: 'A1' }), crow({ id: 'A2', payee: '架空書店', description: '架空書店' })];
+    install(rows, {
+      'POST /transactions/bulk': () =>
+        json(409, {
+          error: {
+            code: 'canonical_write_busy',
+            message: '別の取込みまたは更新が進行中です。完了後に再試行してください',
+          },
+        }),
     });
     renderAt();
     await screen.findByText('取引一覧（2件）');
-    fireEvent.click(screen.getByRole('checkbox', { name: '表示中の明細をすべて選択' }));
-    fireEvent.click(screen.getByRole('button', { name: '選択した2件を保存' }));
-    expect(await screen.findByText('選択した2件を保存できませんでした。')).toBeTruthy();
-    expect(await screen.findByText('2 件選択中')).toBeTruthy();
+    fireEvent.click(selectAll());
+    fireEvent.click(await saveButton(2));
+    const message = await screen.findByText('別の取込みまたは更新が進行中です。完了後に再試行してください');
+    expect(message.closest('[role="alert"]')).toBeTruthy();
+    expect(screen.getByText('2 件選択中')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '同じ内容で再試行' }));
+    await waitFor(() => expect(posts()).toHaveLength(2));
+    expect(posts()[1].body).toEqual(posts()[0].body);
+  });
 
-    const first = calls.find((call) => call.method === 'POST' && call.url.includes('/transactions/bulk'));
-    fireEvent.click(screen.getByRole('button', { name: '失敗した2件のみ再試行' }));
-    await waitFor(() => expect(attempts).toBe(2));
-    const posts = calls.filter((call) => call.method === 'POST' && call.url.includes('/transactions/bulk'));
-    expect(posts[1].body).toEqual(first?.body);
+  it.each([
+    [400, 'invalid_request', '入力が正しくありません'],
+    [403, 'forbidden', 'この操作は許可されていません'],
+    [413, 'payload_too_large', 'リクエストが大きすぎます'],
+  ])('AC-10 %i はサーバの文言を出し、選択を残して再試行を出さない', async (status, code, text) => {
+    const rows = [crow({ id: 'A1' }), crow({ id: 'A2', payee: '架空書店', description: '架空書店' })];
+    install(rows, { 'POST /transactions/bulk': () => json(status, { error: { code, message: text } }) });
+    renderAt();
+    await screen.findByText('取引一覧（2件）');
+    fireEvent.click(selectAll());
+    fireEvent.click(await saveButton(2));
+    const message = await screen.findByText(text);
+    expect(message.closest('[role="alert"]')).toBeTruthy();
+    expect(screen.getByText('2 件選択中')).toBeTruthy();
+    // 同じ本文を送り直しても同じ答えになるので、押しても直らない再試行は出さない
+    expect(screen.queryByRole('button', { name: '同じ内容で再試行' })).toBeNull();
+    expect(screen.queryByRole('button', { name: /失敗した/ })).toBeNull();
+  });
+
+  it('AC-18 ページと絞り込みを変えても選択が残り、表示外の明細も一覧に出て保存される', async () => {
+    const page1 = [crow({ id: 'A1' }), crow({ id: 'A2', payee: '架空書店', description: '架空書店' })];
+    const page2 = [crow({ id: 'B1', payee: '架空薬局', description: '架空薬局' })];
+    const cash = [crow({ id: 'C1', payee: '架空商店', description: '架空商店', paymentMethod: 'cash' })];
+    install(
+      page1,
+      {
+        'GET /transactions?': (call) => {
+          const sp = new URL(call.url, 'http://localhost').searchParams;
+          if (sp.get('method') === 'cash') return response(cash, { total: 1 });
+          if (sp.get('page') === '2') return response(page2, { total: 51, page: 2 });
+          return response(page1, { total: 51 });
+        },
+        'POST /transactions/bulk': okAll,
+      },
+      [...page2, ...cash],
+    );
+    renderAt();
+    await screen.findByText('取引一覧（51件）');
+    fireEvent.click(screen.getByRole('checkbox', { name: /架空スーパー を選択/ }));
+    fireEvent.click(screen.getByRole('checkbox', { name: /架空書店 を選択/ }));
+    fireEvent.click(screen.getByRole('button', { name: '次のページ' }));
+    fireEvent.click(await screen.findByRole('checkbox', { name: /架空薬局 を選択/ }));
+
+    const filters = within(screen.getByRole('region', { name: '絞り込み' }));
+    fireEvent.change(filters.getByLabelText('支払い方法'), { target: { value: 'cash' } });
+    await screen.findByText('架空商店', { selector: 'td[data-label="取引先/内容"] button' });
+    expect(screen.getByText('3 件選択中')).toBeTruthy();
+
+    // 表示中の rows だけを渡していた頃は、ページを移ると選択一覧から消えていた
+    fireEvent.click(bar().getByRole('button', { name: '選択中の明細を表示' }));
+    expect(bar().getAllByRole('listitem')).toHaveLength(3);
+
+    fireEvent.click(await saveButton(3));
+    await waitFor(() => expect(posts()).toHaveLength(1));
+    expect(itemIds(posts()[0])).toEqual(['A1', 'A2', 'B1']);
+  });
+
+  it('FR-04 見つからない明細は内訳に数え、URL の sel から外し、送らない', async () => {
+    install([crow({ id: 'A1' }), crow({ id: 'A2', payee: '架空書店', description: '架空書店' })], {
+      'POST /transactions/bulk': okAll,
+    });
+    renderAt('/classify?sel=mf%3AA1%2Cmf%3AA2%2Cmf%3AGONE');
+    await screen.findByText('取引一覧（2件）');
+    expect(await bar().findByText('1件は見つかりません')).toBeTruthy();
+    expect(screen.getByText('3 件選択中')).toBeTruthy();
+    await waitFor(() => expect(location()).not.toContain('GONE'));
+    expect(decodeURIComponent(location())).toContain('mf:A1,mf:A2');
+
+    fireEvent.click(await saveButton(2));
+    await waitFor(() => expect(posts()).toHaveLength(1));
+    expect(itemIds(posts()[0])).toEqual(['A1', 'A2']);
   });
 });
 
@@ -632,7 +1047,7 @@ describe('分割明細の編集', () => {
     });
     renderAt();
     await screen.findByText('取引一覧（1件）');
-    fireEvent.click(screen.getByText('架空家電', { selector: 'td[data-label="内容"] *' }));
+    openRow('架空家電');
     await screen.findByRole('heading', { name: '取引の編集' });
     fireEvent.click(screen.getByRole('button', { name: '分割' }));
     return screen.findByRole('region', { name: '分割明細の編集' });
@@ -683,7 +1098,7 @@ describe('ルール適用プレビュー', () => {
     });
     renderAt();
     await screen.findByText('取引一覧（1件）');
-    fireEvent.click(screen.getByText('架空スーパー', { selector: 'td[data-label="内容"] *' }));
+    openRow('架空スーパー');
     await screen.findByRole('heading', { name: '取引の編集' });
     fireEvent.click(screen.getByRole('button', { name: 'ルールを作成' }));
 
@@ -717,7 +1132,7 @@ describe('削除と取消', () => {
     // 削除の前後で一覧の中身を変える。通知の文言だけを見ても、行が戻ったかは分からない
     let removed = false;
     install(all, {
-      '/transactions': () => {
+      'GET /transactions?': () => {
         const rows = removed ? all.slice(1) : all;
         return response(rows, { total: rows.length });
       },
@@ -738,7 +1153,8 @@ describe('削除と取消', () => {
     });
     renderAt();
     await screen.findByText('取引一覧（2件）');
-    const deletedRow = () => screen.queryByText('架空スーパー', { selector: 'td[data-label="内容"] *' });
+    const deletedRow = () =>
+      screen.queryByText('架空スーパー', { selector: 'td[data-label="取引先/内容"] button' });
     fireEvent.click(deletedRow() as HTMLElement);
     await screen.findByRole('heading', { name: '取引の編集' });
     fireEvent.click(screen.getByRole('button', { name: '削除' }));
@@ -759,16 +1175,13 @@ describe('削除と取消', () => {
 
 describe('画面の状態', () => {
   it('AT-17 期間内 0 件は空の文言を出す', async () => {
-    install([], {
-      '/transactions': () =>
-        response([], { total: 0, kpi: { all: 0, unsorted: 0, review: 0, manual: 0, done: 0 } }),
-    });
+    install([], list([], { total: 0, kpi: { all: 0, unsorted: 0, review: 0, manual: 0, done: 0 } }));
     renderAt();
     expect(await screen.findByText('この期間の明細はありません。')).toBeTruthy();
   });
 
   it('AT-17 絞り込み結果 0 件は一覧の位置に文言とクリアを出す', async () => {
-    install([], { '/transactions': () => response([], { total: 0 }) });
+    install([], list([], { total: 0 }));
     renderAt();
     expect(await screen.findByText('条件に合う明細はありません。')).toBeTruthy();
     expect(screen.getAllByRole('button', { name: 'フィルタをクリア' }).length).toBeGreaterThan(0);
@@ -776,7 +1189,7 @@ describe('画面の状態', () => {
 
   it('AT-17 取得に失敗したら失敗の文言を出す', async () => {
     install([], {
-      '/transactions': () =>
+      'GET /transactions?': () =>
         new Response(JSON.stringify({ error: { code: 'error', message: 'だめ' } }), { status: 500 }),
     });
     renderAt();

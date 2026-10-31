@@ -203,6 +203,9 @@ describe('要求そのものが成り立たない場合 (BR-14)', () => {
     const items = Array.from({ length: 101 }, (_, i) => ({ txId: `tx-${i}`, cls: 'per' }));
     const response = await post('/transactions/bulk', { items });
     expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: { code: 'invalid_body', message: '入力を確認してください' },
+    });
   });
 
   it('同じ明細を 2 回含めると 400。どちらの指定が勝ったか読めなくなるため', async () => {
@@ -269,20 +272,22 @@ describe('明細ごとの成否 (7.8・BR-09・BR-15)', () => {
       .first<{ n: number }>();
     expect(foreign?.n).toBe(0);
 
-    // BR-15: 一括で保存したことが履歴から分かる
+    // tx-cloud はルールが当たるので保存前から完了で、提案どおりに送っても変わる値が無い。
+    // 値が変わらない明細は ok を返し、履歴を 1 行も書かない (spec-classify-bulk-save BR-13・AC-26)
     const history = await database
-      .prepare("SELECT field, source, op_id FROM tx_history WHERE user_id='default' AND tx_id='tx-cloud'")
-      .all<{ field: string; source: string; op_id: string }>();
-    expect(history.results.length).toBeGreaterThan(0);
-    for (const row of history.results) {
-      expect(row.source).toBe('bulk');
-      expect(row.op_id).toBe(body.opId);
-    }
+      .prepare("SELECT COUNT(*) AS n FROM tx_history WHERE user_id='default' AND tx_id='tx-cloud'")
+      .first<{ n: number }>();
+    expect(history?.n).toBe(0);
   });
 
-  it('提案と 1 つでも違えば manual として保存される (BR-09)', async () => {
+  it('提案と 1 つでも違えば manual として保存され、変わった項目ごとに bulk の履歴が残る (BR-09)', async () => {
+    // 取込直後でも MF の分類が提案に付く (spec-classify-bulk-save FR-14)。名義だけを提案と違えて送る
+    const cafe = (await rowsOf()).find((r) => r.id === 'tx-cafe');
+    expect(cafe?.suggestion).toMatchObject({ cls: 'per', big: '食費', mid: 'カフェ' });
+    expect(cafe?.suggestion?.owner).not.toBe('family');
+
     const response = await post('/transactions/bulk', {
-      items: [{ txId: 'tx-cafe', cls: 'per', note: '打合せ' }],
+      items: [{ txId: 'tx-cafe', cls: 'per', owner: 'family', note: '打合せ' }],
     });
     expect(response.status).toBe(200);
     const body = (await response.json()) as BulkBody;
@@ -291,6 +296,19 @@ describe('明細ごとの成否 (7.8・BR-09・BR-15)', () => {
       .prepare("SELECT matched_proposal FROM tx_edits WHERE user_id='default' AND tx_id='tx-cafe'")
       .first<{ matched_proposal: number | null }>();
     expect(saved?.matched_proposal).toBe(0);
+
+    // 一括で保存したことが履歴から分かる: 値が変わった項目ごとに 1 行、同じ op_id・source=bulk (BR-13)。
+    // 組を省いた旧形式でも、カテゴリは提案の組で埋まって変わった項目に数える。
+    // tx-cafe には前の PUT (メモ 200 字) の履歴もあるので、この操作の op_id で絞る
+    const history = await database
+      .prepare(
+        "SELECT field, source, confidence FROM tx_history WHERE user_id='default' AND tx_id='tx-cafe' AND op_id=? ORDER BY field",
+      )
+      .bind(body.opId)
+      .all<{ field: string; source: string; confidence: number | null }>();
+    expect(history.results).toEqual(
+      ['category', 'cls', 'note', 'owner'].map((field) => ({ field, source: 'bulk', confidence: null })),
+    );
   });
 
   it('候補に無い科目は明細単位で弾かれ、同じ要求の他の明細は保存される', async () => {
@@ -457,29 +475,33 @@ const historyOf = (txId: string) =>
 describe('手動の変更履歴 (AT-15・BR-15)', () => {
   it('手で 1 項目だけ変えると manual の履歴が 1 件だけ残り、同じ値の保存では増えない', async () => {
     expect(await historyOf('tx-pen')).toHaveLength(0);
+    // 取込直後の提案は MF の分類 (FR-14)。名義を提案と違えれば、提案どおりではない確定になる
+    const pen = (await rowsOf()).find((r) => r.id === 'tx-pen');
+    expect(pen?.suggestion).toMatchObject({ cls: 'per', big: '日用品', mid: '文具' });
+    expect(pen?.suggestion?.owner).not.toBe('family');
 
-    const first = await put('/transactions/tx-pen/edit', { cls: 'per' });
+    const first = await put('/transactions/tx-pen/edit', { owner: 'family' });
     expect(first.status).toBe(200);
     const firstBody = (await first.json()) as { historyOpId: string | null; status: string };
     expect(firstBody.historyOpId).toBeTruthy();
 
     const afterFirst = await historyOf('tx-pen');
     expect(afterFirst).toHaveLength(1);
-    expect(afterFirst[0]).toEqual({ field: 'cls', source: 'manual', op_id: firstBody.historyOpId });
+    expect(afterFirst[0]).toEqual({ field: 'owner', source: 'manual', op_id: firstBody.historyOpId });
 
     // 値が変わらない保存では 1 行も書かない。押し直すたびに履歴が伸びると監査に使えない
-    const again = await put('/transactions/tx-pen/edit', { cls: 'per' });
+    const again = await put('/transactions/tx-pen/edit', { owner: 'family' });
     expect(again.status).toBe(200);
     expect((await again.json()) as { historyOpId: string | null }).toMatchObject({ historyOpId: null });
     expect(await historyOf('tx-pen')).toHaveLength(1);
 
     // 別の項目を変えれば、その 1 項目ぶんだけが別の操作として増える
-    const second = await put('/transactions/tx-pen/edit', { owner: 'family' });
+    const second = await put('/transactions/tx-pen/edit', { note: '架空のメモ' });
     expect(second.status).toBe(200);
     const secondBody = (await second.json()) as { historyOpId: string | null };
     const afterSecond = await historyOf('tx-pen');
     expect(afterSecond).toHaveLength(2);
-    expect(afterSecond[1]).toEqual({ field: 'owner', source: 'manual', op_id: secondBody.historyOpId });
+    expect(afterSecond[1]).toEqual({ field: 'note', source: 'manual', op_id: secondBody.historyOpId });
     expect(secondBody.historyOpId).not.toBe(firstBody.historyOpId);
   });
 });
@@ -553,6 +575,10 @@ describe('後から提案が変わっても区分は変わらない (AT-13)', ()
     const saved = await put('/transactions/tx-gym/edit', { cls: 'per', big: '健康', mid: 'ジム' });
     expect(saved.status).toBe(200);
     expect((await saved.json()) as { status: string }).toMatchObject({ status: 'done' });
+    // 提案どおりの確定は『自動提案を受け入れた』履歴として残る
+    const gymHistory = await historyOf('tx-gym');
+    expect(gymHistory.length).toBeGreaterThan(0);
+    expect(gymHistory.every((h) => h.source === 'auto')).toBe(true);
 
     // 提案そのものを別のカテゴリへ動かす。画面の提案列は確かに変わる
     await database
@@ -573,10 +599,10 @@ describe('後から提案が変わっても区分は変わらない (AT-13)', ()
 
   it('提案と違えて確定した明細は、あとから提案が同じ値になっても手動変更のまま', async () => {
     const before = await suggestionOf('tx-salon');
-    // 提案の出どころが無い状態で確定する。どの提案とも一致しないので手動変更になる
-    expect(before.suggestion).toBe(null);
+    // 取込直後は MF の分類 (美容 / 美容院) が提案される (FR-14)。それと違うカテゴリで確定するので手動変更になる
+    expect(before.suggestion).toMatchObject({ cls: 'per', big: '美容', mid: '美容院' });
 
-    const saved = await put('/transactions/tx-salon/edit', { cls: 'per', big: '美容', mid: '美容院' });
+    const saved = await put('/transactions/tx-salon/edit', { cls: 'per', big: '健康', mid: 'ジム' });
     expect(saved.status).toBe(200);
     expect((await saved.json()) as { status: string }).toMatchObject({ status: 'manual' });
 
@@ -584,11 +610,11 @@ describe('後から提案が変わっても区分は変わらない (AT-13)', ()
     await database
       .prepare(
         `INSERT INTO vendor_memory (user_id,vendor_key,vendor_label,cls,category_major,category_mid,hit_count,disagree_count)
-         VALUES ('default','架空サロン渋谷','架空サロン渋谷','per','美容','美容院',9,1)`,
+         VALUES ('default','架空サロン渋谷','架空サロン渋谷','per','健康','ジム',9,1)`,
       )
       .run();
     const after = await suggestionOf('tx-salon');
-    expect(after.suggestion).toMatchObject({ cls: 'per', big: '美容', mid: '美容院' });
+    expect(after.suggestion).toMatchObject({ cls: 'per', big: '健康', mid: 'ジム' });
     // 利用者が自分で決めたことは消えない。手動変更のままにする
     expect(after.status).toBe('manual');
     const edit = await database

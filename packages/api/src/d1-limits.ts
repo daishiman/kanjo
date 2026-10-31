@@ -11,6 +11,18 @@
 export const D1_MAX_BOUND_PARAMS = 100;
 
 /**
+ * Workers Free の 1 起動 (invocation) で D1 に発行できるクエリの数。読み込みと書き込みの合計で数え、
+ * batch() も中の文の数で数える。見積りがこれ未満 (49 本まで) のときだけ受け付け、上限そのものは使い切らない。
+ */
+export const D1_INVOCATION_QUERY_LIMIT = 50;
+
+/**
+ * 1 回の batch() に載せる文の上限。batch の文も上の起動あたりの数に数えられるので、
+ * 読み込みと合わせた合計は D1_INVOCATION_QUERY_LIMIT で別に見る。
+ */
+export const D1_BATCH_STATEMENT_LIMIT = 50;
+
+/**
  * IN() に並べてよい値の数。fixed は同じ文に載る IN() 以外のバインド数。
  * 1文に載せきれない場合は呼び出し側で分割する。
  */

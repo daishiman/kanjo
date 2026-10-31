@@ -15,6 +15,7 @@ import { type AuthState, type SettingsSaveResponse, type SettingsScreenResponse,
 import { Button } from '../../components/Button.js';
 import { ConfirmDialog } from '../../components/ConfirmDialog.js';
 import { PageHeader, PageState } from '../../components/Page.js';
+import { invalidateClassificationQueries } from '../../components/classification-invalidate.js';
 import { useConfirmDialog } from '../../components/use-confirm-dialog.js';
 import { OWNER_LABELS_QUERY_KEY } from '../../owner-labels.js';
 import { AccountSection } from './AccountSection.js';
@@ -29,6 +30,7 @@ import { SettingsSaveBar } from './SettingsSaveBar.js';
 import { SettingsSectionNav } from './SettingsSectionNav.js';
 import { SettingsWorkspace } from './SettingsWorkspace.js';
 import { StatsSection } from './StatsSection.js';
+import { TaxAccountMapSection } from './TaxAccountMapSection.js';
 import { type SettingsForm, formOf, savePayloadOf, useSettingsDraft, validateForm } from './draft.js';
 import {
   CONFLICT,
@@ -91,6 +93,15 @@ export function SettingsPage() {
       qc.invalidateQueries({ queryKey: BACKUPS_QUERY_KEY }),
       invalidateAnalysisDerived(qc),
     ]);
+  };
+
+  /**
+   * 対応表の追加・削除の後 (spec-classify-bulk-save FR-17)。保存は専用の API で済んでいるので、
+   * 設定を読み直して保存済みの値と更新時刻を進め、提案を含む読み出しを古くする。下書きは新しい保存値の上へ載せ直される
+   */
+  const refreshTaxAccountMap = async () => {
+    invalidateClassificationQueries(qc, 'tax-account-map');
+    await qc.invalidateQueries({ queryKey: SETTINGS_SCREEN_QUERY_KEY });
   };
 
   const save = useMutation({
@@ -273,6 +284,7 @@ export function SettingsPage() {
                 errors={validation.fields}
                 onChange={(cashOverrides) => update((current) => ({ ...current, cashOverrides }))}
               />
+              <TaxAccountMapSection rows={data.taxAccountMap} onChanged={refreshTaxAccountMap} />
               <DataSection hasDraft={dirty} onRestored={onRestored} />
               <BackupsSection hasDraft={dirty} onRestored={onRestored} />
             </>

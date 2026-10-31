@@ -6,7 +6,16 @@
 import { type QueryClient, useQueryClient } from '@tanstack/react-query';
 import { invalidateAnalysisDerived } from '../analysis-query-invalidation.js';
 
-export type ClassificationMutation = 'edit' | 'bulk' | 'split' | 'rule' | 'delete' | 'undo' | 'saved-filter';
+/** tax-account-map: 勘定科目の対応表の追加・削除。事業の明細の提案が変わり、提案を含む一覧と点検の読み出しが古くなる */
+export type ClassificationMutation =
+  | 'edit'
+  | 'bulk'
+  | 'split'
+  | 'rule'
+  | 'delete'
+  | 'undo'
+  | 'saved-filter'
+  | 'tax-account-map';
 
 const SHARED_KEYS = [
   ['classify'],

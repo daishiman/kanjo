@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AuthEnv } from './auth.js';
+import { D1_BATCH_STATEMENT_LIMIT, D1_INVOCATION_QUERY_LIMIT } from './d1-limits.js';
 import worker, { scheduledMaintenance } from './index.js';
 import { R2_CLEANUP_JOB_LIMIT } from './r2-cleanup.js';
 import { IMPROVEMENT_ORPHAN_CHECKPOINT_KEY } from './routes/improvement.js';
 import {
   SCHEDULED_D1_QUERY_ACCEPTED_MAX,
-  SCHEDULED_D1_QUERY_LIMIT,
   SCHEDULED_D1_QUERY_PLAN_MAX,
   SCHEDULED_MAINTENANCE_D1_PLAN,
   SCHEDULED_MAINTENANCE_JOB_NAMES,
@@ -190,7 +190,11 @@ describe('scheduled maintenance D1 plan', () => {
     });
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBe(SCHEDULED_D1_QUERY_PLAN_MAX);
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.total).toBeLessThanOrEqual(SCHEDULED_D1_QUERY_ACCEPTED_MAX);
-    expect(SCHEDULED_D1_QUERY_LIMIT).toBe(50);
+    // D1 の上限は d1-limits.ts の 2 つの名前だけから読む (spec-classify-bulk-save decisions §3)
+    expect(D1_INVOCATION_QUERY_LIMIT).toBe(50);
+    expect(D1_BATCH_STATEMENT_LIMIT).toBe(50);
+    // 1 起動の合計は上限未満 (49 本まで) で受け付け、上限そのものは使い切らない
+    expect(SCHEDULED_D1_QUERY_ACCEPTED_MAX).toBe(D1_INVOCATION_QUERY_LIMIT - 1);
   });
 
   it('宣言漏れ・未知job・50到達をすべて拒否する', () => {
@@ -214,7 +218,7 @@ describe('scheduled maintenance D1 plan', () => {
     await scheduledMaintenance({ DB: database, FILES: fakeFiles(chronology) });
 
     expect(database.actual()).toBe(SCHEDULED_MAINTENANCE_D1_PLAN.total);
-    expect(database.actual()).toBeLessThan(SCHEDULED_D1_QUERY_LIMIT);
+    expect(database.actual()).toBeLessThan(D1_INVOCATION_QUERY_LIMIT);
     expect(database.events().slice(0, 3)).toEqual(['d1:backup', 'r2:backup', 'd1:maintenance']);
     const records = log.mock.calls.map(([entry]) => JSON.parse(String(entry)) as Record<string, unknown>);
     expect(records.find((entry) => entry.job === 'scheduled_maintenance_budget')).toEqual({

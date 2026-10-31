@@ -24,7 +24,7 @@ import {
   dateText,
   draftSavedText,
   historyText,
-  inputFromRow,
+  initialInput,
   outcomeOf,
   outcomeText,
   sameInput,
@@ -77,7 +77,7 @@ export function EditPanel({
   onMakeRule: (draft: RuleDraft, input: EditInput) => void;
   onDirtyChange: (dirty: boolean) => void;
 }) {
-  const saved = inputFromRow(row);
+  const saved = initialInput(row);
   const [input, setInput] = useState<EditInput>(saved);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   // 開いた時点の下書きを初期値として読む。ここを null 始まりにすると、

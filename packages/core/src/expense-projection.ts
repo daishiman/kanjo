@@ -9,6 +9,7 @@ import { type SubscriptionsData, subscriptions } from './analysis.js';
 import { isCashTxId } from './cash.js';
 import { resolveTx } from './classify.js';
 import { ensureMonth, subVendorDefs } from './dataset.js';
+import { categoryForTotals } from './no-category.js';
 import { normalizeMfDisplayDate } from './persisted-projection.js';
 import { type SubVendor, matchSubVendor } from './subs.js';
 import { type DuplicateVerdict, type FreeeExclusion, reconcileBizDuplicates } from './total-cashflow.js';
@@ -109,6 +110,7 @@ function factsFromMf(data: Dataset): ExpenseFact[] {
     // freee/MFだけが対象なので、現金をMF未記帳と呼ばず既存の現金台帳へ任せる。
     if (isCashTxId(tx.id) || !isMfCountable(tx) || tx.a >= 0) return [];
     const resolved = resolveTx(tx, data.rules, data.edits, data.institutionOwners);
+    const big = categoryForTotals(resolved.big);
     return [
       {
         source: 'mf' as const,
@@ -119,8 +121,8 @@ function factsFromMf(data: Dataset): ExpenseFact[] {
         amount: Math.abs(tx.a),
         purpose: resolved.cls === 'biz' ? ('business' as const) : ('personal' as const),
         party: tx.c,
-        categoryRaw: resolved.big,
-        categoryNorm: resolved.mid || resolved.big,
+        categoryRaw: big,
+        categoryNorm: resolved.mid || big,
         split: tx.splitProjection != null,
       },
     ];

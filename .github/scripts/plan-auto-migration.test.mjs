@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { after, describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import { parseApprovals, sha256 } from './migration-approvals.mjs';
 import { destructiveFindings, planAutoMigration, stripSqlNoise } from './plan-auto-migration.mjs';
@@ -104,6 +105,29 @@ describe('planAutoMigration', () => {
     });
     assert.equal(plan.decision, 'blocked');
     assert.deepEqual(plan.blockers, ['0029_x.sql: 列を削除します']);
+  });
+});
+
+describe('リポジトリの migration と承認 (spec-classify-bulk-save)', () => {
+  // 合成の本文ではなく、実際の migrations/ と .github/migration-approvals.json を読む。
+  // 0060 の本文か承認の sha256 の片方だけが変わると、main への merge が本番の D1 へ届かなくなる
+  const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+  const migrationsDir = join(root, 'migrations');
+  const approvals = parseApprovals(readFileSync(join(root, '.github', 'migration-approvals.json'), 'utf8'));
+  const REBUILD_0060 = '0060_settings_change_log_target.sql';
+
+  it('0060 の作り直しは破壊的な変更として検出される', () => {
+    assert.notDeepEqual(destructiveFindings(readFileSync(join(migrationsDir, REBUILD_0060), 'utf8')), []);
+  });
+
+  it('追加だけの 0059 と承認済みの 0060 は、まとめて自動適用へ回る', () => {
+    const plan = planAutoMigration({
+      migrationsDir,
+      runRemoteList: listing(pendingStdout(['0059_tax_account_map.sql', REBUILD_0060])),
+      approvals,
+    });
+    assert.equal(plan.decision, 'apply');
+    assert.deepEqual(plan.approved, [REBUILD_0060]);
   });
 });
 

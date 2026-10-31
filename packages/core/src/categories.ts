@@ -15,6 +15,7 @@
  * 家計には生活の標準費目(HOUSEHOLD_CATEGORIES)を混ぜる。両者は別のマスタで、混ざらない。
  */
 import { householdStandardPairs } from './household-categories.js';
+import { isNoCategory } from './no-category.js';
 import { TAX_ACCOUNTS } from './tax-accounts.js';
 import type { Cls } from './types.js';
 
@@ -54,7 +55,9 @@ function buildScope(
   const add = (big: string, mid: string, source: CandidateSource) => {
     const b = big.trim();
     const m = mid.trim();
-    if (!b) return;
+    // 予約の値は候補にしない。取込値や追加の候補に同じ名前 (表記ゆれを含む) があっても、
+    // 選べる科目として出さない (BR-04)。候補の検査はこれを前提に予約の値を弾く
+    if (!b || isNoCategory(b)) return;
     let entry = majors.get(b);
     if (!entry) {
       entry = { source, mids: new Map() };
@@ -62,7 +65,7 @@ function buildScope(
     } else if (SOURCE_RANK[source] > SOURCE_RANK[entry.source]) {
       entry.source = source; // 実データに現れたら「追加」「最初から用意」の扱いをやめる
     }
-    if (!m) return;
+    if (!m || isNoCategory(m)) return;
     const cur = entry.mids.get(m);
     // 大項目と同じ理由で、中項目も実績のほうを残す
     if (cur === undefined || SOURCE_RANK[source] > SOURCE_RANK[cur]) entry.mids.set(m, source);
@@ -107,6 +110,10 @@ export function buildCandidates(
  * 公私に対して科目の組み合わせが会計上あり得るか。
  * - 事業: 大項目が freee 勘定科目の候補にあり、中項目は空
  * - 個人: 大項目が MF 候補にあり、中項目は空か、その大項目の候補にある
+ *
+ * 『カテゴリなし』は予約の値で、候補を作る段 (buildScope) が捨てるので、候補に無い値として弾く。
+ * ルール・分割・取引先の記憶・現金のように新しく値を受ける窓口はこの検査を使う。
+ * 今の値を送り返す保存は categoryAllowedOrKept を使う。
  */
 export function categoryAllowed(
   cands: Candidates,
@@ -121,6 +128,22 @@ export function categoryAllowed(
   if (!major) return false;
   if (cls === 'biz') return !m;
   return !m || major.mids.some((x) => x.name === m);
+}
+
+/**
+ * 今の値を残す保存の候補の検査。『カテゴリなし』は選べない予約の値なので categoryAllowed は弾くが、
+ * 今の値がそれなら送り返すのは変更ではない。そのときだけ、中項目が空なら通す (FR-18・BR-04)。
+ * 一括保存の下書き・個別の編集・一覧の行の「区分に合わない科目」の判定が使う。
+ */
+export function categoryAllowedOrKept(
+  cands: Candidates,
+  cls: Cls,
+  big: string | null,
+  mid: string | null,
+  currentBig: string | null | undefined,
+): boolean {
+  if (isNoCategory(big)) return isNoCategory(currentBig) && !(mid ?? '').trim();
+  return categoryAllowed(cands, cls, big, mid);
 }
 
 /** 候補外のときに画面へ出す理由(1行) */

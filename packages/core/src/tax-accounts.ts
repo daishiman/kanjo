@@ -10,6 +10,8 @@
  * 例はコンサル / AI導入支援 / SaaS サブスクを主な業務とする想定で書いている。
  */
 
+import { isNoCategory } from './no-category.js';
+
 /** 選ぶ場面で切ったグループ。決算書の印字順ではなく「何に払ったか」で辿れるようにする */
 export type TaxAccountGroup =
   | 'ひと・外注'
@@ -438,3 +440,72 @@ export function suggestTaxAccounts(text: string): TaxAccount[] {
   }
   return [...names].map((n) => BY_NAME.get(n)).filter((a): a is TaxAccount => Boolean(a));
 }
+
+/* -------- MF の大項目 → 勘定科目の対応表 (spec-classify-bulk-save FR-17・BR-09・BR-10) -------- */
+
+/**
+ * 事業の明細に MF の分類から勘定科目を提案するための対応表の 1 行。
+ * 大項目は MF の取込値と突き合わせるので、利用者が自由に書ける (候補の一覧には縛らない)。
+ */
+export interface TaxAccountMapRow {
+  categoryBig: string;
+  taxAccount: string;
+}
+
+/** 大項目の最大文字数 (コードポイント数。集計ルールの文字列と同じ上限) */
+export const TAX_ACCOUNT_MAP_BIG_MAX = 60;
+/** 対応表の最大行数。MF の大項目はおよそ 20 種なので、自由入力の余地を見ても十分 */
+export const TAX_ACCOUNT_MAP_ROWS_MAX = 200;
+
+/** 初期の 5 行 (BR-10)。migration 0059 が既存の持ち主へ入れる行と同じ */
+export const DEFAULT_TAX_ACCOUNT_MAP: readonly TaxAccountMapRow[] = Object.freeze([
+  { categoryBig: '通信費', taxAccount: '通信費' },
+  { categoryBig: '水道・光熱費', taxAccount: '水道光熱費' },
+  { categoryBig: '交通費', taxAccount: '旅費交通費' },
+  { categoryBig: '交際費', taxAccount: '接待交際費' },
+  { categoryBig: '日用品', taxAccount: '消耗品費' },
+]);
+
+/** 1 行だけで決まる不正。重複は行の集合を見ないと決まらないので呼び出し側が数える */
+export interface TaxAccountMapRowIssue {
+  categoryBig?: 'invalid_type' | 'control_char' | 'required' | 'too_long' | 'reserved';
+  taxAccount?: 'invalid_type' | 'not_in_list';
+}
+
+// biome-ignore lint/suspicious/noControlCharactersInRegex: 制御文字そのものを検出するための式
+const MAP_CONTROL_CHAR = /[\u0000-\u001F\u007F]/u;
+
+/**
+ * 対応表の 1 行の検査 (BR-09)。API・設定 JSON の復元・設定画面が同じ関数を呼ぶ。
+ * 大項目は trim 後 1〜60 字で制御文字を含まず、予約の値『カテゴリなし』ではない。
+ * 対応先は TAX_ACCOUNTS の名前に限る (取込由来の科目名は受けない)。
+ */
+export function taxAccountMapRowIssue(row: {
+  categoryBig: unknown;
+  taxAccount: unknown;
+}): TaxAccountMapRowIssue | null {
+  const issue: TaxAccountMapRowIssue = {};
+  const big = row.categoryBig;
+  if (typeof big !== 'string') issue.categoryBig = 'invalid_type';
+  else if (MAP_CONTROL_CHAR.test(big)) issue.categoryBig = 'control_char';
+  else if (big.trim() === '') issue.categoryBig = 'required';
+  else if ([...big.trim()].length > TAX_ACCOUNT_MAP_BIG_MAX) issue.categoryBig = 'too_long';
+  else if (isNoCategory(big)) issue.categoryBig = 'reserved';
+  if (typeof row.taxAccount !== 'string') issue.taxAccount = 'invalid_type';
+  else if (!BY_NAME.has(row.taxAccount)) issue.taxAccount = 'not_in_list';
+  return issue.categoryBig || issue.taxAccount ? issue : null;
+}
+
+/** 大項目のコード単位順。D1 の ORDER BY category_big (BINARY) と同じ並びにする */
+export const compareTaxAccountMapRows = (a: TaxAccountMapRow, b: TaxAccountMapRow): number =>
+  a.categoryBig < b.categoryBig ? -1 : a.categoryBig > b.categoryBig ? 1 : 0;
+
+/** MF の大項目から勘定科目を引く。行が無ければ null */
+export function taxAccountFor(map: readonly TaxAccountMapRow[], categoryBig: string): string | null {
+  const big = categoryBig.trim();
+  return map.find((r) => r.categoryBig === big)?.taxAccount ?? null;
+}
+
+/** 対応表をコード単位順に並べた写し (入力は変えない) */
+export const sortTaxAccountMap = (rows: readonly TaxAccountMapRow[]): TaxAccountMapRow[] =>
+  rows.map((r) => ({ categoryBig: r.categoryBig, taxAccount: r.taxAccount })).sort(compareTaxAccountMapRows);
