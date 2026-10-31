@@ -1944,7 +1944,7 @@ export async function planRecomputeFromDeals(
 ): Promise<RecomputePlan> {
   const [normMap, databaseDealRows, databaseBaselineRows, rawMfRows, cashEntries] = await Promise.all([
     loadNormMap(db, userId),
-    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
+    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)).orderBy(s.freeeDeals.id),
     db.select().from(s.restoredMonthlyAgg).where(eq(s.restoredMonthlyAgg.userId, userId)),
     db
       .select({ txId: s.mfTransactions.txId, month: s.mfTransactions.month })

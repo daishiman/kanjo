@@ -593,7 +593,7 @@ describe('履歴', () => {
       rowCount: 3,
       result: 'success',
       undoable: true,
-      canHide: false,
+      canHide: true,
     });
 
     const detail = await request(`/imports/runs/${runId}`);
@@ -629,11 +629,11 @@ describe('履歴', () => {
     expect(listed.runs.map((entry) => entry.id)).toEqual([runId]);
   });
 
-  it('取り消しは確認した指紋で run の全ファイルを戻し、取り消し済みの履歴だけ非表示にできる', async () => {
+  it('取り消しは確認した指紋で run の全ファイルを戻し、取り消し済みのCSVも元データごと削除できる', async () => {
     const runId = await commitRun([{ name: 'freee.csv', body: freeeCsv(800) }]);
     // 成功した取込は非表示にできない
     const blocked = await postJson('/imports/runs/hide', { ids: [runId] });
-    expect(blocked.status).toBe(409);
+    expect(blocked.status).toBe(410);
 
     const preflight = await request(`/imports/runs/${runId}/undo/preflight`, { method: 'POST' });
     expect(preflight.status).toBe(200);
@@ -659,28 +659,34 @@ describe('履歴', () => {
     expect(runs[0]).toMatchObject({ result: 'undone', canHide: true, undoable: false });
     expect((await request(`/imports/runs/${runId}/undo/preflight`, { method: 'POST' })).status).toBe(409);
 
-    const hidden = await postJson('/imports/runs/hide', { ids: [runId] });
+    const deletePlan = (await (
+      await postJson('/imports/runs/delete/preflight', { ids: [runId] })
+    ).json()) as { fingerprint: string };
+    const hidden = await postJson('/imports/runs/delete', {
+      ids: [runId],
+      fingerprint: deletePlan.fingerprint,
+    });
     expect(hidden.status).toBe(200);
-    expect(await hidden.json()).toEqual({ hidden: 1 });
+    expect(await hidden.json()).toMatchObject({ deletedRuns: 1, undoable: false });
     expect(((await (await request('/imports/runs')).json()) as { runs: unknown[] }).runs).toEqual([]);
-    // 非表示は記録を消さない
+    // CSV削除は履歴も消し、undo控えからも復活させない
     const row = await d1
       .prepare('SELECT hidden_at FROM import_runs WHERE id=?')
       .bind(runId)
       .first<{ hidden_at: string }>();
-    expect(row?.hidden_at).not.toBeNull();
+    expect(row).toBeNull();
   });
 
-  it('非表示は 1 回 100 件までで、他人の ID が混ざれば 404', async () => {
-    const tooMany = await postJson('/imports/runs/hide', {
+  it('CSV削除は 1 回 100 件までで、他人の ID が混ざれば 404', async () => {
+    const tooMany = await postJson('/imports/runs/delete/preflight', {
       ids: Array.from({ length: IMPORT_LIMITS.maxHideIds + 1 }, (_, index) => `run-${index}`),
     });
     expect(tooMany.status).toBe(400);
-    const unknown = await postJson('/imports/runs/hide', { ids: ['run-not-mine'] });
+    const unknown = await postJson('/imports/runs/delete/preflight', { ids: ['run-not-mine'] });
     expect(unknown.status).toBe(404);
   });
 
-  it('失敗した履歴 100 件は 1 回で非表示にでき、明細の表は 1 行も変わらない', async () => {
+  it('失敗した取込100件を削除しても別CSVの明細は変わらない', async () => {
     const runId = await commitRun([{ name: 'mf.csv', body: mfCsv(2) }]);
     const owner = await d1
       .prepare('SELECT user_id FROM import_runs WHERE id=?')
@@ -699,11 +705,15 @@ describe('履歴', () => {
     );
     const before = await canonicalRowCounts();
 
-    const hidden = await postJson('/imports/runs/hide', { ids });
+    const deletePlan = (await (await postJson('/imports/runs/delete/preflight', { ids })).json()) as {
+      fingerprint: string;
+    };
+    const hidden = await postJson('/imports/runs/delete', { ids, fingerprint: deletePlan.fingerprint });
     expect(hidden.status).toBe(200);
-    expect(await hidden.json()).toEqual({ hidden: IMPORT_LIMITS.maxHideIds });
-    // 非表示は hidden_at を埋めるだけで、行は消さない
-    expect(await canonicalRowCounts()).toEqual(before);
+    expect(await hidden.json()).toMatchObject({ deletedRuns: IMPORT_LIMITS.maxHideIds });
+    // 選択していない取込の正本は保持
+    const after = await canonicalRowCounts();
+    expect({ ...after, import_runs: before.import_runs }).toEqual(before);
     const { runs } = (await (await request('/imports/runs')).json()) as { runs: Array<{ id: string }> };
     expect(runs.map((entry) => entry.id)).toEqual([runId]);
   });

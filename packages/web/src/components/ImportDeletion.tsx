@@ -906,6 +906,7 @@ export function DeletionPanel() {
 
   return (
     <details
+      id="import-data-maintenance"
       className="card import-deletion-disclosure"
       onToggle={(event) => {
         if (!event.currentTarget.open) flow.cancel();

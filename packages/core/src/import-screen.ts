@@ -513,14 +513,14 @@ export function importHistoryActions(input: {
   now: number;
 }): ImportHistoryAction[] {
   if (input.result === 'failed' || input.result === 'undone') return ['detail', 'files', 'delete'];
-  if (!importWithinUndoWindow(input.createdAt, input.now)) return ['detail', 'files'];
-  if (input.result === 'success') return ['detail', 'files', 'replace', 'undo'];
-  return ['detail', 'files', 'undo'];
+  if (!importWithinUndoWindow(input.createdAt, input.now)) return ['detail', 'files', 'delete'];
+  if (input.result === 'success') return ['detail', 'files', 'replace', 'undo', 'delete'];
+  return ['detail', 'files', 'undo', 'delete'];
 }
 
-/** 一括削除 (記録の非表示) の対象になるか。取り消し済み・失敗だけ。 */
+/** CSVの不可逆削除の候補。処理中・帰属不明はAPIの所有権検査で拒否する。 */
 export const importHistoryHideable = (result: ImportHistoryResult): boolean =>
-  result === 'failed' || result === 'undone';
+  ['success', 'partial', 'failed', 'undone'].includes(result);
 
 /* ======================== 表示の書式 ======================== */
 

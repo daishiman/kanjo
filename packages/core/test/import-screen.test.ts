@@ -419,18 +419,21 @@ describe('履歴の操作', () => {
       'files',
       'replace',
       'undo',
+      'delete',
     ]);
     expect(importHistoryActions({ result: 'partial', createdAt: created, now: within })).toEqual([
       'detail',
       'files',
       'undo',
+      'delete',
     ]);
   });
 
-  it('30 日を 1 ms でも過ぎると詳細とファイルだけ', () => {
+  it('30日を過ぎても不可逆のCSV削除は可能', () => {
     expect(importHistoryActions({ result: 'success', createdAt: created, now: within + 1 })).toEqual([
       'detail',
       'files',
+      'delete',
     ]);
   });
 
@@ -447,8 +450,8 @@ describe('履歴の操作', () => {
     ]);
     expect(importHistoryHideable('undone')).toBe(true);
     expect(importHistoryHideable('failed')).toBe(true);
-    expect(importHistoryHideable('success')).toBe(false);
-    expect(importHistoryHideable('partial')).toBe(false);
+    expect(importHistoryHideable('success')).toBe(true);
+    expect(importHistoryHideable('partial')).toBe(true);
   });
 
   it('取り消しの期限は作成から 30 日後', () => {

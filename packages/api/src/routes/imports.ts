@@ -135,6 +135,12 @@ import {
   importRateLimitedResponse,
   purgeExpiredImportRows,
 } from '../import-rate-limit.js';
+import {
+  ImportSourceDeletionError,
+  executeImportSourceDeletion,
+  planImportSourceDeletion,
+  publicSourceDeletionPlan,
+} from '../import-source-deletion.js';
 import { PRIVATE_NO_STORE } from '../public-validation.js';
 import {
   type CashProjectionEnvelope,
@@ -3509,7 +3515,14 @@ function summarizeImportRun(
     undoable: actions.includes('undo') && cancelable.length > 0,
     replaceable: actions.includes('replace') && rows.some((row) => row.r2_key),
     undoDeadline: importUndoDeadline(run.created_at),
-    canHide: importHistoryHideable(result),
+    canHide: rows.every(
+      (row) => row.kind !== 'json' && ['committed', 'failed', 'duplicate'].includes(row.status ?? ''),
+    ),
+    deleteBlockedReason: rows.some((row) => row.kind === 'json' || row.status === 'ok')
+      ? 'この形式はCSVの帰属を特定できません。期間を指定してデータを消す操作をご利用ください。'
+      : rows.some((row) => ['processing', 'applying'].includes(row.status ?? ''))
+        ? '処理中の取込は、完了してから削除してください。'
+        : null,
     hasOriginal: rows.some((row) => row.r2_key),
     keepPrevious: run.keep_previous === null ? null : run.keep_previous === 1,
     impact:
@@ -3844,41 +3857,69 @@ const hideSchema = z
   .object({ ids: z.array(z.string().min(1).max(64)).min(1).max(IMPORT_LIMITS.maxHideIds) })
   .strict();
 
-importsRoute.post('/imports/runs/hide', importJsonBodyLimit, async (c) => {
-  const userId = c.get('userId');
-  const body = await readJsonBody(c, hideSchema);
-  if (!body) return invalidRequest(c, `削除する履歴を 1〜${IMPORT_LIMITS.maxHideIds} 件選んでください`);
-  const ids = [...new Set(body.ids)];
-  const owned = await c.env.DB.prepare(
-    `SELECT ${RUN_COLUMNS} FROM import_runs
-      WHERE user_id=? AND hidden_at IS NULL AND parent_run_id IS NULL
-        AND id IN (SELECT CAST(value AS TEXT) FROM json_each(?))`,
-  )
-    .bind(userId, JSON.stringify(ids))
-    .all<ImportRunRow>();
-  if (owned.results.length !== ids.length) return notFound(c);
-  const rows = await loadImportsOfRuns(c.env.DB, userId, ids);
-  const ownership = await loadImportOwnership(c.env.DB, userId);
-  const now = Date.now();
-  const blocked = owned.results.some(
-    (run) =>
-      !summarizeImportRun(
-        run,
-        rows.filter((row) => row.run_id === run.id),
-        ownership,
-        now,
-      ).canHide,
+importsRoute.post('/imports/runs/hide', importJsonBodyLimit, (c) =>
+  c.json(
+    {
+      error: {
+        code: 'history_hide_retired',
+        message: '履歴だけの削除は終了しました。CSV削除の確認から実行してください。',
+      },
+    },
+    410,
+  ),
+);
+
+/* CSV削除: 旧hideと区別し、全選択を検査してから1 batchで削除する。 */
+for (const preflight of [true, false]) {
+  importsRoute.post(
+    `/imports/runs/delete${preflight ? '/preflight' : ''}`,
+    importJsonBodyLimit,
+    async (c) => {
+      const schema = preflight
+        ? hideSchema
+        : hideSchema.extend({ fingerprint: z.string().min(1).max(200) }).strict();
+      const body = await readJsonBody(c, schema);
+      if (!body) return invalidRequest(c, '削除する取込を選んでください');
+      const ids = [...new Set(body.ids)];
+      const userId = c.get('userId');
+      const token = crypto.randomUUID();
+      if (!preflight && !(await acquireImportWriter(c.env.DB, userId, token))) return canonicalWriteBusy(c);
+      try {
+        return c.json(
+          preflight
+            ? publicSourceDeletionPlan(await planImportSourceDeletion(c.env.DB, userId, ids))
+            : await executeImportSourceDeletion(
+                c.env,
+                userId,
+                ids,
+                (body as unknown as { fingerprint: string }).fingerprint,
+                token,
+              ),
+        );
+      } catch (error) {
+        if (error instanceof ImportSourceDeletionError)
+          return c.json(
+            {
+              error: {
+                code: error.code,
+                message:
+                  error.code === 'in_progress'
+                    ? '処理中の取込を含むため削除しませんでした。完了後に再試行してください。'
+                    : error.code === 'unattributed'
+                      ? '旧履歴・JSON復元はCSVへの帰属を特定できないため削除しませんでした。データの初期化をご利用ください。'
+                      : error.code === 'scope_changed'
+                        ? '対象が変わりました。削除内容を確認し直してください。'
+                        : error.code === 'delete_too_large'
+                          ? '一度に削除できる範囲を超えています。取込の選択を減らしてください。'
+                          : '取込が見つかりません',
+              },
+            },
+            error.status,
+          );
+        throw error;
+      } finally {
+        if (!preflight) await releaseImportWriter(c.env.DB, userId, token);
+      }
+    },
   );
-  if (blocked)
-    return c.json(
-      { error: { code: 'not_hideable', message: '削除できるのは失敗・取り消し済みの履歴だけです' } },
-      409,
-    );
-  const updated = await c.env.DB.prepare(
-    `UPDATE import_runs SET hidden_at=?
-      WHERE user_id=? AND hidden_at IS NULL AND id IN (SELECT CAST(value AS TEXT) FROM json_each(?))`,
-  )
-    .bind(new Date().toISOString(), userId, JSON.stringify(ids))
-    .run();
-  return c.json({ hidden: updated.meta.changes ?? 0 });
-});
+}
