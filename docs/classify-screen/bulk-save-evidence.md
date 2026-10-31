@@ -362,3 +362,87 @@ CI に画面検査の job を足すことは、P06 の節の「別 feature の�
 - merge の直前に origin/main が `9b5bbf3` から動いていたら、取り込み直して上の突き合わせと verify:full をやり直す。
 - PR を ready にすること、merge、merge の後の deploy と本番の確認は、利用者の指示を待つ。
 - PR の本文で OI-1 (表示件数の既定 50・key の上限 200 字・旧形式の受け付け) と OI-4 (新しい持ち主へ初期の 5 行を入れる時機) の判断を依頼する (decisions「§5 未決事項の閉じ方の記録 (P12)」)。
+
+### 2026-10-31 の再確認: 公開前の監査
+
+対象は `65ab446` (SPEC_BASE) と `88ac0aa` (実装) で、
+[PR #79](https://github.com/daishiman/kanjo/pull/79) を draft として作成した。
+2026-10-31 に取り直した origin/main は `9b5bbf3` のままで、本 feature の前提から変わっていない。
+0059・0060 の番号の重複は無く、0060 の本文の sha256 は承認台帳と一致し、
+`EXPECTED_D1_MIGRATION` は `0060_settings_change_log_target.sql` である。
+
+#### 入力・認可・書き込み・コスト
+
+- 一括保存と対応表の API は `index.ts` の authGuard・一時パスワードの制限・schema-guard・canonicalMutationFence の後へ登録されている。
+- 対応表の読取・更新は `user_id` をバインドして所有者を限定する。値を SQL へ連結する経路は無い。
+- 一括保存は本文 256KiB と最大 100 件、対応表の追加は本文 16KiB で止める。一括保存の外側は `z.array(z.unknown())` であり、件数の検査を通る前に各明細の複雑な検証を行わない。
+- 対応表の追加・削除も更新フェンスの対象に入り、行・変更履歴・snapshot の無効化を同じ batch に含める。
+- 画面は React の通常の文字描画を使い、今回変更する仕分け・設定の画面に HTML の直接挿入、eval、OS コマンド実行は無い。
+- 一括保存のクエリ予算は明細ごとの SQL 発行で増やさず、書き込みの前に要求全体を見積もる。上限超過は 413 で止める。
+- 公開する実装・記録 95 ファイルの秘密鍵・認証 token・ローカル絶対パスの検出は 0 件。ローカル secrets・実データを commit していない。
+
+#### 依存関係の監査と残課題
+
+`pnpm audit --prod --json` は critical 1・high 1・moderate 1、exit 1。
+開発用を含む `pnpm audit --json` は critical 1・high 15・moderate 24・low 5、exit 1。
+`pnpm-lock.yaml` の sha256 は origin/main と作業ツリーでともに
+`f4555b364fbbc471f780d98d41c7e6aed8f1625d47792b87a84be19355183b78` で、依存関係の解決結果は同じである。
+
+| 本番依存の指摘 | この変更で確認した実行経路 | 対処方針 |
+|---|---|---|
+| [shell-quote / GHSA-pqg4-j6r4-53mv](https://github.com/advisories/GHSA-pqg4-j6r4-53mv)、critical、1.10.0 | `drizzle-orm > gel > shell-quote`。アプリが import するのは Drizzle の D1・SQLite 用の経路であり、shell-quote を使う gel の CLI をアプリから参照していない。今回の Worker のソースマップ (223 入力) に新しい対応表の route が含まれ、shell-quote・gel の CLI がともに含まれないことをビルド後にも確認した | 依存関係の保守で 1.11.0 以上へ更新し、lockfile と再ビルドを検証する。監査の検出を無視する設定は足さない |
+| [Zod / GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)、high、3.25.76 | 巨大な不正配列の検証によるメモリ消費。今回の一括保存は認証・本文上限・外側の単純な件数検査の後で最大 100 件を個別検証する。対応表の追加は単一行である。この緩和をアプリ全経路の安全性の証明とは扱わない | 4.6.6 以上への移行を別の保守課題とし、Hono の validator、公開エラーの形、全入力スキーマと回帰テストを確認する |
+| [Hono / GHSA-5r4p-p66f-jhc7](https://github.com/advisories/GHSA-5r4p-p66f-jhc7)、moderate、4.13.7 | 指摘対象の serveStatic はアプリで使っておらず、静的ファイルは Workers Assets が配信する | 依存関係の保守で 4.13.11 以上へ更新する |
+
+開発用の high 指摘 (undici・Vite・source-map-js・sharp など) も依存関係の保守対象とする。
+本 feature の挙動の回帰検査とは別に、依存更新後の開発サーバ・テスト・ビルドを検証する。
+監査判定は **CONDITIONAL**。依存監査の high/critical がゼロであるとは報告せず、
+上記の実行経路・緩和・保守方針を PR に示したうえで公開の判断を得る。
+
+#### 現在日付での CI の失敗と修正
+
+初回の [CI run 41171118163](https://github.com/daishiman/kanjo/actions/runs/41171118163) では、
+core 1395 件が成功し、web は 1278 件成功・6 件失敗だった。
+失敗したのは `src/import-reimport.dom.test.tsx` の 5 件と `src/pages/Import.dom.test.tsx` の取り消しの 1 件。
+履歴の作成日が 2026-09-20 に固定されている一方、操作の表示は実行時の `Date.now()` から
+30 日の期限を判定するため、2026-10-31 には置換と取り消しのボタンが出なくなっていた。
+
+両テストの現在時刻を 2026-09-21 に固定し、各ケースの後で spy を復元した。
+製品側の期限・操作の表示・確認・保存の判定は変えていない。
+手元ではさらに負荷による初回読み込み待ちの 1 秒の時間切れが再現したため、
+既存の `test/import-multifile.dom.test.tsx` と同じ 5 秒を初回の非同期表示の待ちに設定した。
+この待ち時間は性能の受入条件ではなく、操作対象の描画を待つテストの上限である。
+修正後の対象 2 ファイルは 8 件すべて成功 (2026-10-31T05:17:44Z 開始、6.83 秒)。
+
+手元の最初の `verify:full` は API の DB 準備で 30 秒の時間切れが続き、途中で中断した。
+終了コードは 143 であり、成功として数えない。段別に試した確認も、上記修正の整形の指摘で停止し、
+整形後に全体の通しを最初から再実行した。ローカルの通しと画面検査の最新の終了結果は
+[PR #79](https://github.com/daishiman/kanjo/pull/79) の本文「2026-10-31 の再確認」に記録し、
+途中で中断した実行と区別する。本番の deploy・実動確認の結果は merge 後の記録であり、本節の対象外である。
+
+#### 配信物の独立確認
+
+2026-10-31 に `pnpm build` を単独でも実行し、exit 0 を確認した。
+初期 JS は 109.11KiB / 110KiB、Worker の Total Upload は 2539.52KiB / gzip 592.39KiB。
+Wrangler は dry-run で終了しており、本番環境を変更していない。
+Worker のソースマップの入力 223 件に `routes/tax-account-map.ts` は 1 件、
+shell-quote・gel の CLI・Hono の serveStatic はいずれも 0 件だった。
+入力一覧の検査はソースマップを使って再現できるが、ローカルのパスを含む生成物そのものは公開しない。
+
+#### 修正後の CI
+
+`5704343` を対象とした [CI run 41171904113](https://github.com/daishiman/kanjo/actions/runs/41171904113) は
+2026-10-31 に全 job が成功した。API の実測は 1076.62 秒。
+
+| 対象 | 結果 |
+|---|---|
+| core | 70 ファイル成功・1 スキップ、1395 件成功・6 スキップ。スキップは実データが無いときの既存の 6 件 |
+| api | 80 ファイル・1192 件成功、失敗・スキップ 0 |
+| web | 101 ファイル・1284 件成功、失敗・スキップ 0 |
+| 静的検査 | lint・型検査・周辺スクリプト成功 |
+| build | Web と Worker の dry-run 成功 |
+| 配布キット | パッケージ検査・Windows 実機・macOS 実機が成功 |
+| verify | 必須 job の集約が成功 |
+
+この後の初回描画の待ちの調整は上記 2 ファイルのテストだけであり、対象 8 件の成功も単独で確認した。
+PR の先端を更新した場合、CI はその先端で再実行し、merge 前に結果を確認する。

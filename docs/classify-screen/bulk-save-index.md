@@ -2,6 +2,10 @@
 
 記録: 2026-10-02T17:00:49Z (`date -u` の実測)
 
+2026-10-31 の再開後: [PR #79](https://github.com/daishiman/kanjo/pull/79) を draft として作成した。
+最新の検証・監査・残課題は evidence の「2026-10-31 の再確認」、commit の基準と判断待ちは
+decisions の「リリース準備の再開」を参照する。13 task は merge 前なので完了確定していない。
+
 `specs/spec-classify-bulk-save.md` を実装した feature (feat-classify-bulk-save) の記録の入口。
 設計・テスト・受入・品質・レビューの記録は 4 つの文書に分かれている。ここから全部の節へ辿れる。
 前のサイクル (feat-classify-screen) の記録は [`design-decisions.md`](design-decisions.md) にあり、本書からは参照するだけで書き換えない。

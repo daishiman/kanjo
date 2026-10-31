@@ -28,6 +28,7 @@ task ごとの節にまとめる。前サイクル (feat-classify-screen) の決
 - P13 の merge で、13 task の completion_evidence `linked_pr_merged_all` を同時に満たす。
 - SPEC_BASE: **利用者の指示待ち**。commit・push・PR は利用者の指示があるまで行わない。
   基準にする commit は現 HEAD の `9b5bbf3` (origin/main と同じ)。spec・architecture・task 仕様書は未 commit のまま作業木にある。
+  この段落は計画時の記録。2026-10-31 の再開後の状態は末尾の「リリース準備の再開」を参照する。
 
 ## §1 要求の担当と契約の境界 (P01)
 
@@ -690,3 +691,22 @@ P10 の独立したレビューと再レビューで、ほかに 4 つの不具�
 | H (中) | 取込値が『カテゴリなし』の明細は、科目を選び直さない限りメモも直せなかった | 「今の値」を上書きの層でなく、取込値・ルール・上書きを解決した値で見る |
 
 記録の時刻: 2026-10-02T17:14:05Z (`date -u` の実測)
+
+### リリース準備の再開 (2026-10-31)
+
+利用者の継続指示を受け、未コミットだった成果物を次の 2 commit に分けた。
+
+| commit | 内容 |
+|---|---|
+| `65ab446` (SPEC_BASE) | 仕様・architecture・13 task・計画・要求・仕様の章と退避。109 ファイル |
+| `88ac0aa` | 一括保存・対応表・migration・関連テスト・記録。95 ファイル |
+
+作業場所の branch は `daishiman/ファイル読み込み` を維持し、その先端を予定していた
+remote の `devgraph/feat-classify-bulk-save` へ送った。
+[PR #79](https://github.com/daishiman/kanjo/pull/79) は main 向けの draft である。
+公開する実装・記録 95 ファイルを検査し、秘密鍵・認証 token・ローカル絶対パスの検出は 0 件だった。
+実データ・ローカル secrets・本 feature と無関係なローカル提案文書を commit していない。
+
+OI-1 と OI-4 は選択肢を示して利用者へ確認中で、回答の代わりに推奨案を承認済みとは扱わない。
+採用待ちの値と案は §4、判断待ちの状態は §5 の表のとおりである。
+13 task の完了条件はこの PR の merge であり、draft の作成だけでは done にしない。

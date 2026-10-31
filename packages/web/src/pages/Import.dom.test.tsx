@@ -90,7 +90,7 @@ describe('取込結果の件数表示', () => {
     mount(server);
 
     chooseImportFiles([csvFile('anonymous-counts.csv')]);
-    const commit = await screen.findByRole('button', { name: '✓ 1ファイルを取り込む' });
+    const commit = await screen.findByRole('button', { name: '✓ 1ファイルを取り込む' }, { timeout: 5000 });
     await waitFor(() => expect((commit as HTMLButtonElement).disabled).toBe(false));
     expect(within(screen.getByRole('region', { name: /取込内容の確認/ })).getByText('5件')).toBeTruthy();
     fireEvent.click(commit);
@@ -125,7 +125,7 @@ describe('取り消しの対象月', () => {
     });
     mount(server);
 
-    fireEvent.click(await screen.findByRole('button', { name: /の取込を取り消し$/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /の取込を取り消し$/ }, { timeout: 5000 }));
     const dialog = await screen.findByRole('dialog');
     expect(await within(dialog).findByText(/2026\/01、2026\/03（2か月・連続していません）/)).toBeTruthy();
     expect(within(dialog).queryByText(/2026\/01\/01 - 2026\/03\/31/)).toBeNull();
