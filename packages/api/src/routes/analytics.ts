@@ -261,7 +261,11 @@ analyticsRoute.get('/overview', async (c) => {
   const { report } = sources;
   const { closeStatus, dataUpdatedAt } = await loadCloseStatus(c, all, { items: effective.items });
   // 系列は全期間から作り、期間は「表示する月の集合」として渡す。前年の比較窓を欠かさないため
-  const series = overviewScopeMonths(rawScope, { data: all, totalMonths: report.months });
+  const series = overviewScopeMonths(rawScope, {
+    data: all,
+    totalMonths: report.months,
+    totalLedger: report.ledger,
+  });
   const aggregate = overviewAggregate(series, period.applied);
   const forecast = defenseForecast(data);
   return c.json({

@@ -678,6 +678,8 @@ export function totalCashflowReport(
   mfExcludedTxIds: readonly string[] = [],
 ): {
   months: TotalCashflowMonth[];
+  /** 同じ照合結果から作った集計用台帳。呼出側で再照合・再分類しないために共有する。 */
+  ledger: TotalCashflowLedger;
   review: ReconcileReview[];
   matched: ReconcileMatch[];
   freeeOnly: ReconcileFreee[];
@@ -685,8 +687,10 @@ export function totalCashflowReport(
   coverage: FreeeCoverage;
 } {
   const result = reconcileBizDuplicates(data, deals, verdicts, exclusions, mfExcludedTxIds);
+  const ledger = ledgerFrom(data, deals, result);
   return {
-    months: rowsFrom(data, deals, result),
+    months: monthsFromLedger(ledger),
+    ledger,
     review: result.review,
     matched: result.matched,
     freeeOnly: result.freeeOnly,

@@ -109,7 +109,7 @@ Cloudflare Workers 上の既存 API。集計と判定は packages/core の純関
 
 #### Domain and module boundaries
 
-総合は totalCashflowReport の月別値、事業は freee、家計は MF 家計側を入力にする。未処理の件数は仕分け (classificationProgress、clsSrc=既定)、照合 (totalCashflowReport の review)、取込 (import_runs.status=failed) を全期間で数える。
+総合は totalCashflowReport の月別値、事業は既存の帳簿・事業現金・復元系列へ同じ照合済み台帳のMF事業分だけを加え、家計は MF 家計側を入力にする。未処理の件数は仕分け (classificationProgress、clsSrc=既定)、照合 (totalCashflowReport の review)、取込 (import_runs.status=failed) を全期間で数える。
 
 #### API and service contracts
 
