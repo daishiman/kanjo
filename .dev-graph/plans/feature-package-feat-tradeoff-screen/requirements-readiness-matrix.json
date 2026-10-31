@@ -1,0 +1,221 @@
+{
+  "feature_id": "feat-tradeoff-screen",
+  "gates": {
+    "C08": "complete",
+    "C11": true,
+    "validate_system_plan": "pass"
+  },
+  "graph_revision": 3,
+  "graph_snapshot_digest": "2199a0060ca51036778a6888672c1d33b9748f1dbfa53fbe4ef0117800fca9bb",
+  "missing_sections": [],
+  "nodes": [
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P01",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P01",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P01"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P02",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P02",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P02"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P03",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P03",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P03"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P04",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P04",
+      "resource_scope_count": 5,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P04"
+      ],
+      "domain": "frontend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P05",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P05",
+      "resource_scope_count": 13,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P05"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P06",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P06",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P06"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P07",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P07",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P07"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P08",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P08",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P08"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P09",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P09",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P09"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P10",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P10",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P10"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P11",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P11",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P11"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P12",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P12",
+      "resource_scope_count": 4,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-TRADEOFF-P12"
+      ],
+      "domain": "operations",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-TRADEOFF-P13",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P13",
+      "resource_scope_count": 1,
+      "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+      "source_version": "0.1.0"
+    }
+  ],
+  "plan_validated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+  "status": "pass"
+}

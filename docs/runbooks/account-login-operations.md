@@ -6,7 +6,7 @@
 
 ## 初回切替
 
-1. D1 の復元点を記録し、`0050_login_v2_better_auth.sql` を適用する。
+1. D1 の復元点を記録し、`0059_login_v2_better_auth.sql` を適用する。
 2. 次の secret を Workers の secret store に登録する。値を文書・シェル履歴・ログへ残さない。
    - `BETTER_AUTH_SECRET`（`openssl rand -hex 32` 以上）
    - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
@@ -64,7 +64,7 @@ MFA再登録計画と全利用者の再ログイン告知を含む保守作業�
 夜間scheduled処理は次を行います。
 
 - `auth_rate_limits` の期限切れ行を削除する。
-- `auth_audit_log` を400日で削除する。
+- `auth_audit_log` の400日超の行を2日周期で最大80件削除する。反対の日は期限付き認証artifactを1種類最大100件掃除し、8日で4種類すべてを巡回する。期限判定は各要求で行うため、掃除待ちのtoken/sessionは再利用できない。
 - 既存の業務監査・バックアップ・retentionを継続する。
 
 監査には操作種別・actor/target・結果・件数だけを残します。メールアドレス、Cookie、token、TOTP、復旧コード、
@@ -77,7 +77,7 @@ Googleのcode/state、secret値を残しません。
 
 ## rollback境界
 
-0050適用後でも、Login v2の招待承諾・パスワード変更・MFA設定・アカウント連携など、新しい認証状態への書込みがまだ
+0059適用後でも、Login v2の招待承諾・パスワード変更・MFA設定・アカウント連携など、新しい認証状態への書込みがまだ
 1件も無いことを監査と表の件数で確認できる場合に限り、Time Travel復元点と旧Workerを組にして戻せます。1件でも
 新しい認証状態が作られた後は、旧Workerだけを戻すと新パスワード・session・MFAを読めず利用者を締め出します。この
 境界以後は旧版deployをrollbackに使わず、現行schemaのままforward-fixします。例外的な復元は、停止時間・失われる

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "status": "promoted",
+  "promoted_at": "2026-09-21T22:58:32Z",
+  "repo_identity": "github:daishiman/kanjo",
+  "staging_digest": "sha256:385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+  "evaluated_digest": "sha256:385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+  "published_digest": "sha256:385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+  "implementation_readiness": "complete",
+  "quality_conditions": {
+    "no_contradiction": "PASS",
+    "no_missing": "PASS",
+    "consistent": "PASS",
+    "dependency_integrity": "PASS"
+  },
+  "promotion_method": "same-filesystem-atomic-rename",
+  "registration_manifest": ".dev-graph/plans/feature-package-feat-tradeoff-screen/dev-graph-registration.json"
+}

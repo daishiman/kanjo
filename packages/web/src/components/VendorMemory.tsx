@@ -212,8 +212,8 @@ export function VendorMemorySettings() {
           >
             {rows.map((row) => (
               <tr key={row.vendorKey}>
-                <td>{row.vendorLabel || row.vendorKey}</td>
-                <td>{appliedText(row, labels)}</td>
+                <td data-capture-mask="">{row.vendorLabel || row.vendorKey}</td>
+                <td data-capture-mask="">{appliedText(row, labels)}</td>
                 <td>
                   <span className={DISPOSITION_PILL[row.disposition]}>
                     {DISPOSITION_LABEL[row.disposition]}

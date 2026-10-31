@@ -16,6 +16,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { NON_AUTH_AUDIT, loginForTest } from './auth.test-support.js';
 import { planDeletionQueries, planUndoQueries } from './deletion-lifecycle.js';
+import { IMPORT_RATE_WINDOW_MS } from './import-rate-limit.js';
 import { app } from './index.js';
 import { splitMigrationStatements } from './migration-test-support.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
@@ -703,6 +704,13 @@ describe('削除の実行', () => {
     expect(await freeeDealCount()).toBe(0);
     expect(await balanceRowCount()).toBe(0);
     expect(await activeTargetKeys()).toEqual([]);
+
+    // 初期投入 3 回と再取込 3 回は、実運用では別の操作時間になる。互換 API の 5 回/分を
+    // 緩めずに「削除後も同じ原本を取り込める」というこのテストの責務だけを確認する。
+    await d1
+      .prepare("UPDATE import_rate_limits SET window_start=window_start-? WHERE user_id=? AND kind='commit'")
+      .bind(IMPORT_RATE_WINDOW_MS, 'default')
+      .run();
 
     expect((await importMf(JUNE_JULY, 'mf-replacement.csv')).status).toBe(200);
     expect((await importMf(FREEE_JUNE, 'freee-replacement.csv')).status).toBe(200);

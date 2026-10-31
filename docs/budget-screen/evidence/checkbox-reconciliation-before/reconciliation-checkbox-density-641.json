@@ -1,0 +1,19 @@
+{
+  "native": {
+    "width": 44,
+    "height": 44
+  },
+  "visual": {
+    "width": 18,
+    "height": 18
+  },
+  "hitArea": {
+    "width": 44,
+    "height": 44
+  },
+  "row": {
+    "width": 486.0625,
+    "height": 56.5
+  },
+  "textFontPx": 15
+}

@@ -1,0 +1,160 @@
+{
+  "evaluator": {
+    "name": "assign-system-spec-completeness-evaluator",
+    "version": "0.1.0",
+    "context": "fork"
+  },
+  "spec_dir": "system-spec",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "U1〜U9 はすべて値で埋まり、requirements_foundation.approval_ref=appr-foundation-guide-003 (confirmed=true) は approval_log に実在する。改訂した 10 項目 (背景・G2・G4・O2・S2・S4・範囲・C2・I5・I6) は、qa-guide-decision-008〜011 の結論と 1 対 1 で合う。防衛ラインは直近 3 か月平均のままで、範囲外に『算出変更』と『取引ライン』が入った。ヘッダは『防衛ライン』のまま。信頼度は 3 段階＋%、フッタは画像の文言である。9 ファイルの .md を検索したが、覆された決定 002/003/004/006 の内容 (過去年の同月平均・取引ラインへの呼称変更・算出方式の表示) は、覆したことを説明する文脈以外に残っていない。記録の時刻は、決定 13:11:13Z → 承認 13:13:46Z → reopen 13:14:30Z → 再確定 13:14:47Z → 設計適用 13:15:27Z と単調に進み、実測した現在時刻 13:20:20Z より未来のものは無い。repo の現物とも合う。defenseLine は packages/core/src/analysis.ts:1093-1097 で pMonths.slice(-3)、REVIEW_CONFIDENCE_THRESHOLD=80 は classify-status.ts:43、ヘッダの『防衛ライン：』は Layout.tsx:444 にある。medium が 1 件ある。『信頼度を出す全画面』の範囲が特定されていない。概要画面 (Overview.tsx:209-210) は信頼度を % で出し、80/60 の境界で色を分けている。この 60 の境界は、新しい中/低の境界 50 と食い違う。診断画面と AI 分析画面の『確度』(高/中/低 の列挙で、% は無い) を範囲に含めるかも書かれていない。",
+      "evidence": [
+        "validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit0",
+        "00-requirements-definition.md:20,27,29,36,44,46,55-56,61,73-74 (改訂 10 項目)",
+        "spec-state.json approval_log appr-foundation-guide-003 (13:13:46Z)",
+        "grep 同月|取引ライン|過去年|算出方式|基準月 → 覆された内容は否定文脈にしか出ない",
+        "packages/web/src/pages/Overview.tsx:209-210 confidenceClass (80/60 の境界)",
+        "packages/web/src/pages/analysis/diagnosis/ResultCards.tsx:33, packages/web/src/pages/ai/AiContextAnalysis.tsx:22 (確度 高/中/低)"
+      ]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "decisions[] は空で、needs_guidance の項目も残っていない。R3-reask の 4 問 (qa-guide-decision-008〜011) を qa-guide-presented-options-009 の逐語と照らした。各問は 1 論点だけを扱い、どの選択肢にも推奨ラベルが無い。どの案にも利点と欠点が 1 つずつ書かれている。自由記述欄 (Other) も選べた。選択は (1)(2)(2)(1) と分かれており、並び順に引きずられた形跡は無い。前周の FAIL の原因 (2 論点を 1 問に束ねたこと) は解消した。AI の推奨だけで confirmed にした項目は無い。",
+      "evidence": [
+        "spec-state.json qa_log qa-guide-decision-008〜011 (basis=user-decision, 13:11:13Z)",
+        "spec-state.json qa_log qa-guide-presented-options-009 (basis=observed-fact)"
+      ]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "C07 の判定は loop_pass と final_ready の両方で PASS だった。48 セル (8 カテゴリ × 6 platform) は確定 8 (web)・対象外 40・未収集 0 で、C05 も jq で数えて同じ数になった。対象外の理由は 40 件とも具体的で、qa-guide-target-platforms-001 に接地している。4 セル (database / ui-ux / backend / frontend の web) には reopen_log (13:14:30Z) がある。主 qa_ref はそれぞれ -002 (13:14:47Z、user-decision) で、qa_log に実在し、確定内容を実際に裏付けている。caller は『backend は推定の -004 で再確定した』と申告したが、これは記録と違う。主根拠は -002 (user-decision) で、-004 (agent-inference) は qa_refs の補助にすぎない。推定であることも、basis と本文の両方で宣言されている。集約の真理値表は一致し、ungrounded_blocking_items=[] である。sub-input の C06 は、4 軸すべて PASS。ただし medium 2 件・low 1 件の指摘がある。C06 は全体を『56 セル・対象外 47』と数えているが、正しくは 48 セル・対象外 40 である。この数え間違いは判定の要点を変えないので、C05 は verdict を書き換えていない。",
+      "evidence": [
+        "validate-coverage-matrix.py (loop) exit0 / --require-complete --require-basis --require-foundation exit0",
+        "validate-knowledge-graph.py --profile required-info --input required-info-catalog.json --state spec-state.json exit0 (ungrounded_blocking_items=[])",
+        "C07: loop_pass=PASS / final_ready=PASS",
+        "C06 (sub-input): 聞き漏れ・誘導質問・早期停止・トレーサビリティの 4 軸すべて PASS (medium 2 件・low 1 件)"
+      ]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "8 章すべてで、card と doctrine の『本章での適用』が確定セルへ具体的に当てられている。新しい決定に合わせた更新も確かめた。backend は Clean Architecture の Dependency Rule を『算出期間を core の名前付き定数にし、説明文も同じ定数から組む』ことに当てている。API Design は /api/guide を { screen } の 1 形にすることに、DDD のユビキタス言語は『防衛ライン』の 1 語を保つこと (decision-010) に当てている。data-access の doctrine は『防衛ラインの値を新たに計算しない』である。frontend は Information Design の『残す・落とす・加工する』を、このページの数値を 4 項目に絞ることに当てている。database は DDD を『表示の都合は永続化しない』ことに、maintenance-ops は Clean Code を境界値テストと定数 1 か所化に当てている。ui-ux の presentation (HIG) は『色だけで伝えない』を信頼度・ヘッダ・ステッパーに当てている。infrastructure は card を 0 件としている。その理由は本文にあり、SRE の doctrine 2 行で具体的に当てている。ポインタが置いてあるだけの章は無い。knowledge / doctrine / required-info / cross の 4 profile はすべて exit0 だった。",
+      "evidence": [
+        "aggregate-completeness.py --knowledge-graph exit0 (4 subgate すべて exit0)",
+        "backend.md:25-32 doctrine / :110-112 本章での適用",
+        "frontend.md 本章での適用 (Information Design)、database.md・maintenance-ops.md・ui-ux.md の本章での適用 (記録時刻 13:15:27Z / 12:41:26Z)"
+      ]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "C08 の判定は PASS。validate-source-citation は exit0 だった。targets は 9 件で、欠落も孤児も 0 件。9 件すべてを WebFetch で公式サイトと再照合し、version と last_updated は 9 件とも公式の現行値と一致した。非公式 host・世代落ち・到達不能・未来日付は、いずれも 0 件。latest_checked_at は 2026-09-23T12:39:53Z で、実測時刻より前である。",
+      "evidence": [
+        "C08: validate-source-citation.py exit0",
+        "C08: WebFetch で 9 件を再照合 (wcag22 / react-router 8.4.0 / tanstack-query 5.103.2 / hono 4.13.8 / owasp-asvs 5.0.0 / mdn-set-cookie / cloudflare-d1 / workers-static-assets / vitest 5.0.1)"
+      ]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "installPath 0.1.14 の prompt 18 本すべてで、prompt-creator 2.1.7 の validate-prompt.py --input と verify-completeness.py --input が exit0 だった。"
+    }
+  },
+  "gate_results": [
+    {
+      "id": "G-matrix",
+      "name": "validate-coverage-matrix",
+      "command": ["python3", "scripts/validate-coverage-matrix.py", "--matrix", "system-spec/spec-state.json", "--require-complete", "--require-basis", "--require-foundation"],
+      "exit_code": 0,
+      "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"
+    },
+    {
+      "id": "G-knowledge-graph",
+      "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)",
+      "exit_code": 0
+    },
+    {
+      "id": "G-required-info-state",
+      "name": "validate-knowledge-graph --profile required-info --state spec-state.json",
+      "exit_code": 0,
+      "stdout": "status=ok, ungrounded_blocking_items=[]"
+    },
+    {
+      "id": "G-doc-sync",
+      "name": "validate-spec-doc-sync",
+      "exit_code": 0,
+      "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"
+    },
+    {
+      "id": "G-source-citation",
+      "name": "validate-source-citation (C08 実行)",
+      "exit_code": 0
+    },
+    {
+      "id": "G-prompt",
+      "name": "validate-prompt + verify-completeness (18 本)",
+      "exit_code": 0
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "bucket": "foundation_trace",
+      "observation": "『信頼度を出す全画面』の範囲が特定されていない。G2・S2・I4 は『全画面で段階＋%』と言うが、対象は O2 と frontend-web-002 の『明細仕分けなど』までしか書かれていない。現物では、概要画面 (Overview.tsx:209-210) の要確認キューも信頼度を % で出し、80/60 の境界で good/warning/danger に色を分けている。新しい区分 (中 50〜79 / 低 49 以下) を当てると、たとえば 55% は『中』と表示されるのに色は danger になり、文字と色が食い違う。診断画面 (ResultCards.tsx:33) と AI 分析画面 (AiContextAnalysis.tsx:22) の『確からしさ/確度』は、高/中/低 の列挙で % を持たない別の概念である。これを範囲に含めるかも書かれていない。qa-guide-decision-005 が『変えない』とした自動判定の規則には、この色分けは含まれない。",
+      "suggested_fix": "[elicit/C01] 概要画面の色の境界 60 を段階 (50) に揃えるか、を利用者に 1 問で確かめる。あわせて、対象画面 (明細仕分け・概要 ほか) を列挙し、診断と AI の『確度』を対象外とする理由を ui-ux・frontend の web セルと I4 に書き足す。",
+      "evidence": ["packages/web/src/pages/Overview.tsx:209-210", "system-spec/frontend.md:50", "system-spec/00-requirements-definition.md:27,36,44,72"]
+    },
+    {
+      "severity": "medium",
+      "bucket": "matrix_coverage",
+      "observation": "C06 の Finding B。appr-foundation-guide-003 について、提示した文面の逐語記録 (presented-options) が無い。appr-001 には qa-guide-presented-options-008 がある。approval_log の note は差分の項目名 (背景・G2・G4…) を挙げるだけなので、承認した文面が requirements_foundation の現在の文言と一致するかは、記録から確かめられない。appr-foundation-guide-002 にも逐語記録が無い。",
+      "suggested_fix": "[elicit/C01] 今後の上位概念の承認では、提示した差分の逐語 (またはハッシュ) を presented-options として qa_log に残す。今回の 003 については、利用者に現在の文言で再承認してもらうか、提示文面の写しを後から補う。"
+    },
+    {
+      "severity": "medium",
+      "bucket": "matrix_coverage",
+      "observation": "C06 の Finding A。008〜011 の provenance と appr-003 の note は『1 問ずつ問い直した』と書いている。一方、presented-options-009 は『1 回の AskUserQuestion に 4 問を並べた』と記録している。各問は独立した 1 論点の選択肢集合で、回答も (1)(2)(2)(1) と分かれているので、束ねた問いや誘導が再発したわけではない。記録どうしの表現が食い違っているだけである。C05 の見立ては low 相当だが、C06 が付けた severity をそのまま残す。",
+      "suggested_fix": "[elicit/C01] 以後の R3-reask の provenance は『1 回の提示で、4 論点をそれぞれ独立した問いとして並べた』のように、実際の提示方法どおりに書く。"
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage",
+      "observation": "C06 の Finding C。覆された qa-guide-decision-002/003/004/006 の entry には superseded_by が無い。後継 (009/010 の provenance と reopen_log) から逆に引けるだけで、追跡は一方向である。旧セル根拠 -001 と backend-web-003 も qa_log に残っており、そこには過去年の同月平均などの旧内容がある。ただしどのセルからも参照されていない。",
+      "suggested_fix": "[elicit/C01] (low・任意) 覆された entry と旧セル根拠に、superseded_by を付けて双方向に追えるようにする。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace",
+      "observation": "qa-guide-backend-web-002 は basis=user-decision だが、利用者が選んでいない設計の具体も含んでいる。『算出期間を core の名前付き定数として公開する』(現物は analysis.ts:1095 に slice(-3) を直書き) や『/defense-line の応答は変えない』がそれに当たる。どちらも decision-009 の範囲に収まるが、選んだ主体は agent である。",
+      "suggested_fix": "[elicit/C01] (low) 定数化などの実装の具体は、agent-inference の補助根拠 (backend-web-004 など) へ移すか、provenance で『decision-009 から agent が導いた具体』と明記する。"
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness",
+      "observation": "C08 の観察。tanstack-query・hono・owasp-asvs の official_host は github.com である。どれも publisher の正規 org 配下で、非公式 host には当たらない。ただし機械検査で確かめられるのは host の文字列一致だけで、org が正規かどうかまでは判定できない。",
+      "suggested_fix": "[doc-fetch/C02] (任意) 公式ドキュメントサイト (tanstack.com など) の URL を補助として併記する。"
+    },
+    {
+      "severity": "info",
+      "bucket": "decision_guidance",
+      "observation": "前周の FAIL (C06 の誘導質問。002/003 が 2 論点を 1 問に束ねていた) の解消を確かめた。008〜011 は 1 問 1 論点で、推奨ラベルは無い。利点と欠点はすべての案に併記されている。結論が変わった 2 点 (防衛ライン・ヘッダ) は、上位概念 (appr-003)・4 セル (reopen から再確定)・設計適用の 3 層すべてに入った。前周の low 1 (防衛ラインの基準月の推定) は、前提ごと消えた。前周の low 2 (backend の API Design/DDD、frontend の Information Design) も、本章での適用に入った。"
+    },
+    {
+      "severity": "info",
+      "bucket": "prompt_quality",
+      "observation": "prompt 18 本すべてで validate-prompt / verify-completeness が exit0 (--input 指定、installPath 0.1.14、prompt-creator 2.1.7)。"
+    }
+  ],
+  "gaps": []
+}

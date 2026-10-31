@@ -5,7 +5,7 @@ import { Layout } from './components/Layout.js';
 import { PeriodProvider } from './period.js';
 import { APP_ROUTES, type AppRouteId, LEGACY_ROUTE_REDIRECTS } from './routeMetadata.js';
 
-/** 改善要望は業務画面ではないため routeMetadata に載せず、ここで明示的に登録する。 */
+/** 改善リクエストは業務画面ではないため routeMetadata に載せず、ここで明示的に登録する。 */
 const ImprovementPage = lazy(() =>
   import('./pages/Improvement.js').then((module) => ({ default: module.ImprovementPage })),
 );

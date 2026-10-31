@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/run-import-screen-20260921T2311Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "system-build-handoff.json の source_inputs 16 件 (feature-package.json, workstream-inventory.json, task-graph.json, task-specs 13 件) は staging-manifest.json の files 17 件のうち goal-spec.json を除く集合と一致し、実測 sha256 は全件一致した。source_manifest.canonical_digest_before_handoff (sha256:8d3861dd856b49baa7b737fe5ad6c15e045b91084218d5811d454c2011b9fbcd) と digest_contract.source_canonical_digest (handoff_contract 側) が一致し、identity.source_feature_digest (sha256:1635b789aba805b25b0c425b355d53e6191d9e54e6855820edfb3cd3220269ed) は feature-package.json の source_feature_digest と一致した (features/feat-import-screen.context.json の実測 sha256 との突合は staging 外評価であり、本 summary に記載するのみで evidence には算入しない)。registration_request は promotion_receipt.owner=system-dev-planner/C11、registration_receipt.owner=dev-graph/C02 をそれぞれ produced_by_this_component=false・status=not-emitted で宣言しており、本 staging 自身が両受領書を自己発行/自己判定していない。task-graph.json の depends_on と system-build-handoff.json の execution_tasks.depends_on は P01..P13 で完全一致し、矛盾は検出されなかった。",
+      "evidence": [
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "feature-package.json",
+        "task-graph.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "受入 S1〜S6 と『全体』は task-specs/phase-01-requirements.md (受入を検証可能な文に分解) と task-specs/phase-07-acceptance.md (S1〜S6 それぞれの PASS/FAIL と証跡記録) に写像され、『全体』(旧 Import.tsx の操作移設・verify:full 緑) は phase-05-implementation.md と phase-06-test-run.md が担う。specs/spec-import-screen.md の『申し送り』4 件 (数値リテラル指紋→OI-04、Content-Length→OI-02、xlsx メモリ→OI-03、qa_refs 追記漏れ→OI-07) と『未決事項』(agent 推定・利用者未確認の値一覧→OI-05、import_runs.id 関係/keepOnShrink/IMPORT_LIMITS 範囲→OI-06) は、突合の結果、goal-spec.json の open_items OI-01〜OI-07 に漏れなく割り当てられ、各 resolution_owner の task-spec 本文 (P01 の一覧化、P02 の決定記録、P03 の独立レビュー、P09 の実測、P12 の docs 同期) に対応する具体的な acceptance 記述が実在した (突合先の specs/goal-spec は staging 外正本のため evidence には算入せず summary にのみ記載)。ただし OI-04 の『何を上限の数値リテラルと見なすかの指紋定義』そのものを明記する acceptance 項目が task-specs/phase-04-test-design.md に無く、字面検査テスト成果物の存在のみが受入条件になっている点を low finding として記録した。",
+      "evidence": [
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-06-test-run.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-03-design-review.md",
+        "task-specs/phase-09-quality-assurance.md",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-12-documentation-operations.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "staging-manifest.json の files 17 件全てについて実測 sha256 が manifest 記載値と完全一致し、canonical_digest (sha256:fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4) は validator の validated_digest と一致した。task-specs/phase-05-implementation.md の write_scope は、新設予定の packages/web/src/pages/import/ や migrations/0050_import_inspections.sql のような未存在パス (リポジトリの migrations 最終番号は 0049 で 0050 は未使用のため spec の計画どおり整合) と、既存の packages/api/src/routes/imports.ts・packages/web/src/pages/Import.tsx 等の実在パスの両方を正しく区別しており、リポジトリの実ファイル構成と矛盾しない (実ファイル存在確認は staging 外リポジトリに対する検査のため summary にのみ記載)。",
+      "evidence": [
+        "staging-manifest.json",
+        "task-graph.json",
+        "task-specs/phase-05-implementation.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の nodes は SYS-IMPORT-P01 から P13 まで depends_on が直前 1 件のみを指す単純な前方向の線形 DAG を成し、循環・後方参照・未定義ノードへの参照は無い。system-build-handoff.json の execution_tasks.depends_on も同一の連鎖で両者は完全一致する。feature-package.json と workstream-inventory.json の phase_refs / task_node_ids / task_spec_paths も P01〜P13 の 13 件で過不足なく揃っている。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "feature-package.json",
+        "workstream-inventory.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "${CLAUDE_PLUGIN_CACHE}/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        ".",
+        "--staging",
+        ".dev-graph/staging/run-import-screen-20260921T2311Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4\",\n  \"feature_package_id\": \"feature-package/feat-import-screen\",\n  \"parent_feature\": \"feat-import-screen\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "5493d0d322265e4ba9275bc361c41a3ae583ea7b29a32bfc2d66aec4fb9faf61"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "c31a0766a0da172d09c5533694a5112fbe62a9bd1305bc1f0fde512e73f86a08"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "aa75bf0bd0af7ff4352986c258ee7b30ecdfc662a1e416b8122077fb2fcd7765"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "9b345973268c79f8048b428e1a4762ead5864b67726b68b7eac35f349cd85758"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "89d7fc64def3e075878d58855728594887801ec935e8375ed6167edfc5657432"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "b323e5889e87dc27d5ddfba910d14408affa61e55adb40b59ca79b13a8cfca19"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "9f670c19b482ffddba58562f9dccdcb3e831e95ce78bd095f0426a67e50bc7ec"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "f734ccd43f0c8c020a486ea110bef6e8c4e843968db1a5fe964244b169540b2a"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "25284cdfbe3dcc333ae0d69dcaf64de212f2c33eba3d37b986670a4e6757d781"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "1b21499ab2c278c0b29b346ba0d923b97a7ea2309acbd80ff9d8f9d4ba4320d7"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "9d78f27c0bc4e3e6ecf6fd10e9612cb94970c2a223afa24c3dc616af27a6e20e"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "7be985160407a0a6669b520da33c6de34141900436e1789327ce18294f342a1c"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "ab93fc02554fbe9bc9fb26319f7b91b786e96dc38d83c0de196a11abec9a91d4"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "02372986242003eb02202dbc7ede4403750b181cab3383c63cce38f8a75457d8"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "e4f67dbc0833c4d27a0d1d841f80307cdf5896c83372f24e618456bf008c9b67"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "4fd503b08015d7648b9820fe7fd99bfe78f518b8657c176976cb2d3a189bdc83"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "4d30af063c2f5ed85911b28336ed032d6993d2ac7916598a0efa5d022c1cae41"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "2561d77a62529e068ef512e8821cd038691925dac732831c5a038b746b90c9da"
+    }
+  ],
+  "staleness_rule": "evaluated_digest は staging-manifest.json の canonical_digest および validate-system-plan.py の validated_digest と bit-for-bit 一致する必要がある。plan_dir 配下のいずれかの evaluated_inputs 対象ファイルが再生成・再steamingされ canonical_digest が変わった場合、本 findings は即時に stale とみなし、C11 promotion gate は本 findings を再利用してはならず、新しい digest に対する新規 fork 評価を要求すること。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "open-item-traceability",
+      "observation": "goal-spec.json の open_items OI-04 (上限の数値リテラルの字面検査の指紋の定義) は resolution_owner が SYS-IMPORT-P04 だが、task-specs/phase-04-test-design.md の Verification and evidence の Acceptance 項目には『指紋の定義 (式・区切り付き数値・単位つき文字列のどれを対象とするか) が決定記録にある』旨の明示項目が無く、字面検査テスト成果物 (import-limits-literal.test.ts) の存在のみが受入条件になっている。定義自体はテスト実装に埋め込まれる想定だが、決定の記録先が acceptance として明文化されていないため、P04 完了判定時に定義の妥当性を独立に検証しづらい。",
+      "evidence": [
+        "task-specs/phase-04-test-design.md"
+      ]
+    }
+  ]
+}

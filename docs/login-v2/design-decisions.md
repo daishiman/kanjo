@@ -17,7 +17,7 @@
 - 認証モードは`resolveAuthMode`の1か所で判定する。Accessは`ACCESS_AUD`と`ACCESS_TEAM_DOMAIN`の対でだけ有効で、
   片側設定はfail-closed。Access時は検証済みassertionで`/api/auth/me`だけを返し、他の`/api/auth/*`は
   `access_mode`で閉じる。deployも同じ対を検査して値を渡す。
-- `must_change_password=1`の旧利用者は0050で`user`/`account`の双方から除外し、通常招待へ移す。
+- `must_change_password=1`の旧利用者は0059で`user`/`account`の双方から除外し、通常招待へ移す。
 - MFA設定完了はtoken消費・user・factorを単一D1 batchに置き、並行消費と途中失敗を統合テストで固定する。
 - 招待再送は共通のrotate+delivery処理を使い、配送失敗なら自分が書いたtokenだけを旧値へCAS復元する。
 - 本人詳細DTO（`AccountUserDetails`）と管理一覧DTO（`AdminUserSummary`）を分け、MFA部品と公開route方針は
@@ -119,7 +119,7 @@ K-2（G5 と decision-006 の字面の食い違い）・K-3（保持のチェッ
 
 ### 1.8 migration 番号
 
-仕様書と task は `0048` を予定番号として書いている。取り込んだ main で `0048_ai_task_stages.sql` と `0049_ai_report_invariants.sql` が使用済みのため、実ファイルは **`migrations/0050_login_v2_better_auth.sql`** とする。
+仕様書と task は `0048` を予定番号として書いている。取り込んだ main で `0048_ai_task_stages.sql` と `0049_ai_report_invariants.sql` が使用済みのため、実ファイルは **`migrations/0059_login_v2_better_auth.sql`** とする。
 凍結済みの文書（仕様書・architecture・task 仕様書）の `0048` 表記は予定番号として据え置き、書き換えない。本書以降の記録では実ファイル名を使う。
 
 ---
@@ -243,7 +243,7 @@ K-2（G5 と decision-006 の字面の食い違い）・K-3（保持のチェッ
 | rateLimit | Better Auth の `rateLimit.enabled=false` にし、既存のレート制限を広げて使う | 入口を 1 つにして、ロックと監査を効かせる |
 | 塞ぐ経路（Q-11） | `/sign-up/email`・`/request-password-reset`・`/send-verification-email` と旧 `/api/auth/login` を、Hono で `auth.handler` より前に 404 にする | 仕様書の mount 順序 |
 | auth の組立て | 要求ごとに `createAuth(env)` を作る | D1 のバインディングは env から来る。要求単位の印（2.2）が他の要求に漏れない |
-| migration の実ファイル | `migrations/0050_login_v2_better_auth.sql` にし、`schema-guard.ts` の `EXPECTED_D1_MIGRATION` を更新する | 1.8 |
+| migration の実ファイル | `migrations/0059_login_v2_better_auth.sql` にし、`schema-guard.ts` の `EXPECTED_D1_MIGRATION` を更新する | 1.8 |
 
 ### 2.9 P02 の結論
 
@@ -317,7 +317,7 @@ K-2（G5 と decision-006 の字面の食い違い）・K-3（保持のチェッ
 ## 第4章 実装と回帰テストの補完（P04・P05、2026-10-31）
 
 既存のcore/API/DOM/migrationテストと実装を維持し、完了監査で見つかった不具合を修正した。
-固定版Better Auth 1.7.5は継続し、migrationの実ファイルは `migrations/0050_login_v2_better_auth.sql` である。
+固定版Better Auth 1.7.5は継続し、migrationの実ファイルは `migrations/0059_login_v2_better_auth.sql` である。
 着手時の0048という番号は凍結計画の履歴であり、本番に適用する番号ではない。
 
 - Google profile変換は初回登録だけでなく再ログインと連携でも呼ばれるため、既存active利用者には消費済み招待を要求しない。既存DBのrole/statusを返し、新規だけで有効招待を調べる。
@@ -328,16 +328,25 @@ K-2（G5 と decision-006 の字面の食い違い）・K-3（保持のチェッ
 今回のRED→GREEN: Google再ログイン1件失敗→認証境界16件成功、旧gh helper2件失敗→回帰成功、送信元予約サブドメイン1件失敗→回帰成功。
 過去のP04全テストが先行REDで作られた履歴は今回再現していないため、その履歴まで確認済みとはしない。
 
+最新mainとの統合では、予算等が0050〜0058を使用済みだったためLogin移行を0059へ改番した。
+旧Settings全体へ戻さず、mainの節分割構成のアカウント欄にLogin v2部品を組み込んだ。
+保守処理を単純合成すると50 queriesになったことを最悪経路テストで再現したため、
+rate-limit掃除は毎日、400日超のauth監査掃除と期限artifact掃除は日替わりとし49 queriesを守る。
+artifactの巡回番号も2日単位で進め、8日で全4種類を掃除する。期限の検証は要求時に独立して行う。
+変更前の0050版に対する検証と、0059/最新main統合後の最終検証は区別する。
+
 ## 第5章 全体検証（P06）
 
 2026-10-31に再実行。前回の全体検証はAPI準備中に中断されており、成功には数えない。
-最終差分の全体テストは他の型検査・ビルドと同時実行せずに確認する。結果は完走時に本章へ記録する。
+統合前の全件はcore完走後、旧revisionのAPI実行を中断（終了コード130）した。成功には数えない。
+最新main統合後の正式な全件検証は同一revisionのCI必須job（静的検査・core/web・API・build）を証跡とし、
+ローカルの対象回帰・coverage・previewも別に記録する。未完のCIを成功扱いしない。
 
 | コマンド | 確認結果 |
 |---|---|
-| `pnpm test` | 最終差分を実行中。core 981件成功、実データfixture未指定の6件スキップ。API以降の完走待ち |
-| `pnpm typecheck` | 監査開始時は成功。修正後の最終確認待ち |
-| `pnpm lint` | 監査開始時は成功。修正後の最終確認待ち |
+| `pnpm test` | 統合前: core 981件成功/実データfixture未指定6件skip、APIは中断130。統合後の正式全件はCI確認待ち |
+| `pnpm typecheck` | 最新main統合後に成功。認証fixture追従差分はCIでも確認する |
+| `pnpm lint` | 最新main統合後に成功。206 architecture章と公開文書の実データ参照検査も合格 |
 | `pnpm build` | 監査開始時は成功。初期JS 108.53KiB/110KiB。修正後の最終確認待ち |
 | `pnpm run test:coverage:account-login` | 未実行 |
 | `pnpm run preview:smoke` | 未実行 |
@@ -359,7 +368,7 @@ K-2（G5 と decision-006 の字面の食い違い）・K-3（保持のチェッ
 | AT-09 | `login-v2-endpoints.integration.test.ts` の再設定・連携・失効・監査 | 実メールと実Google連携の往復 |
 | AT-10・11 | 管理者MFA関門・TOTP・復旧コード・レート制限テスト | 本番相当の本人操作確認 |
 | AT-12 | status API統合テスト、help/privacy DOM | 本番の外側403制御の確認 |
-| AT-13 | Access境界テスト、migrationの旧行不変テスト | 本番0050適用状態（現在は読取権限不足） |
+| AT-13 | Access境界テスト、migrationの旧行不変テスト | 本番0059適用状態（現在は読取権限不足） |
 | AT-14 | 差分レビュー・監査テスト・メールtimeout/非出力 | 本番ログに秘密が出ないこと |
 | AT-15 | `../runbooks/account-login-operations.md` と `google-oauth-setup.md` | 実運用者による所有先と復元地点の確認 |
 
@@ -379,7 +388,7 @@ K-2（G5 と decision-006 の字面の食い違い）・K-3（保持のチェッ
 外部状態の再確認結果（2026-10-31）:
 
 - GitHubのRepository Variableは `APP_URL` のみで、`MAIL_FROM` は未登録。`production` のCloudflare接続secret名2本は存在する。
-- 現資格情報ではWorker secret一覧が認証エラー10000、D1 migration一覧が7403で取得できない。本番secret/0050適用状態は「不明」であり、過去の未登録記録から現在の未登録を断定しない。
+- 現資格情報ではWorker secret一覧が認証エラー10000、D1 migration一覧が7403で取得できない。本番secret/0059適用状態は「不明」であり、過去の未登録記録から現在の未登録を断定しない。
 - 本番の `/login`、`/api/status`、`/api/auth/me` は読み取り確認で403を返した。本番Login v2の受入成功とは数えない。
 - Google/Resendの本人による値の取得・安全な登録、実アカウントでの許可/拒否、実メール配送は未完である。
 

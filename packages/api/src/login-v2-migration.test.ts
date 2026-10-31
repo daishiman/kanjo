@@ -1,5 +1,5 @@
 /**
- * 0050 (ログイン v2) の migration の回帰テスト。
+ * 0059 (ログイン v2) の migration の回帰テスト。
  *
  * 見張っているのは5つ。
  *   1. 0049 までの上に当たり、移行可能な旧 users の行を user / account へ写す (C3・C4)
@@ -16,7 +16,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { splitMigrationStatements } from './migration-test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
-const LOGIN_V2 = '0050_login_v2_better_auth.sql';
+const LOGIN_V2 = '0059_login_v2_better_auth.sql';
 const T = '2026-09-01T00:00:00.000Z';
 const HASH = `pbkdf2-sha256$600000$${'a'.repeat(22)}$${'b'.repeat(43)}`;
 const hex = (char: string) => char.repeat(64);

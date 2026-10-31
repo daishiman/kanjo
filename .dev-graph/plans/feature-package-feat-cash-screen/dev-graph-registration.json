@@ -1,0 +1,1312 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-cash-screen/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-cash-screen",
+  "parent_feature": "feat-cash-screen",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-CASH-P01": "beads",
+    "SYS-CASH-P02": "beads",
+    "SYS-CASH-P03": "beads",
+    "SYS-CASH-P04": "beads",
+    "SYS-CASH-P05": "beads",
+    "SYS-CASH-P06": "beads",
+    "SYS-CASH-P07": "beads",
+    "SYS-CASH-P08": "beads",
+    "SYS-CASH-P09": "beads",
+    "SYS-CASH-P10": "beads",
+    "SYS-CASH-P11": "beads",
+    "SYS-CASH-P12": "beads",
+    "SYS-CASH-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-CASH-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と持ち越し事項の解決担当の割り当て",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p01",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間消去・画面分割のワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P01"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "削除と復元の契約・読取経路・入力検証・URL 契約の独立レビュー",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P02"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 境界値・API 契約・migration 0050・夜間予算・DOM の失敗テスト先行作成",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P03"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/cash-screen.test.ts",
+        "packages/api/src/cash-screen.integration.test.ts",
+        "packages/api/src/cash-migration-0050.test.ts",
+        "packages/web/src/pages/cash/cash-screen.dom.test.tsx",
+        "packages/api/src/scheduled-maintenance-budget.test.ts",
+        "packages/api/src/import-lifecycle-pure.test.ts",
+        "packages/api/src/schema-guard.test.ts",
+        "packages/api/src/import-lifecycle.test.ts"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間の完全消去・現金入力画面の分割と旧操作の移設の最終実装",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P04"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/cash-screen.ts",
+        "packages/core/src/cash.ts",
+        "packages/core/src/dataset.ts",
+        "packages/core/src/deletion.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/cash.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/api/src/routes/settings.ts",
+        "packages/api/src/import-lifecycle.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/index.ts",
+        "packages/api/src/scheduled-maintenance-budget.ts",
+        "packages/api/src/deletion-lifecycle.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/audit-log.ts",
+        "migrations/0050_cash_entry_owner_soft_delete.sql",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/Cash.tsx",
+        "packages/web/src/pages/cash/",
+        "packages/web/src/AuthenticatedApp.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/styles.css",
+        "packages/web/package.json",
+        "packages/web/src/cash-duplicate.dom.test.tsx",
+        "packages/web/src/cash-transit-regression.test.ts",
+        "packages/web/src/backup-restore.dom.test.tsx",
+        "packages/web/src/settings-restore.dom.test.tsx",
+        "package.json"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと型検査と lint と skill テストの実行記録",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P05"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 S1 から S5 の検証",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P06"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "合計と経路の計算の重複・削除中の行の読取漏れ・旧参照の読取専用監査",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p08",
+        "audit"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P07"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・入力検証・他人の行の拒否・下書きの扱い・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P08"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P09"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P10"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/evidence.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "合計・絞り込み・入力経路・入力検証・削除と復元・夜間消去の規則表の docs 最終同期",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P11"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/rules.md",
+        "docs/cash-screen/design-decisions.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-CASH-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信と migration 0050 の適用とクローズアウト",
+      "project_id": "feature-package-feat-cash-screen",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "cash",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T01:43:10Z",
+      "updated_at": "2026-09-22T01:43:10Z",
+      "depends_on": [
+        "SYS-CASH-P12"
+      ],
+      "related_nodes": [
+        "arch-cash-auth",
+        "arch-cash-backend",
+        "arch-cash-database",
+        "arch-cash-frontend",
+        "arch-cash-infrastructure",
+        "arch-cash-maintenance-ops",
+        "arch-cash-security",
+        "arch-cash-ui-ux",
+        "spec-cash-screen"
+      ],
+      "resource_scope": [
+        "docs/cash-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-cash-screen",
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-cash-screen/sys-cash-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-cash-screen/plan-findings.json",
+        "evaluated_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-cash-screen/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "67035b1f82f26d2d732f18b156a67c6d43d7e52afba21ff2d568d27cea5c4f1d",
+        "imported_at": "2026-09-22T01:43:10Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-cash-screen/sys-cash-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-22T00:48:20Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "kind": "spec-evaluation-waiver",
+  "status": "approved",
+  "subject_nodes": [
+    "spec-subscriptions-merge",
+    "arch-subscriptions-merge-ui-ux",
+    "arch-subscriptions-merge-frontend",
+    "arch-subscriptions-merge-backend",
+    "arch-subscriptions-merge-database",
+    "arch-subscriptions-merge-auth",
+    "arch-subscriptions-merge-security",
+    "arch-subscriptions-merge-infrastructure",
+    "arch-subscriptions-merge-maintenance-ops"
+  ],
+  "approval": {
+    "approver": "利用者 (本リポジトリの所有者。AskUserQuestion への回答)",
+    "approved_at": "2026-09-30T14:07:45Z",
+    "question": "完成度評価 (assign-system-spec-completeness-evaluator) が FAIL のまま dev-graph へ取り込んで先へ進むか",
+    "selected_option": "例外として承認し先へ進む (Recommended)",
+    "condition": "評価 FAIL の理由 (過去の質問文の中立性) と承認日時を取り込み記録に残してから先へ進む"
+  },
+  "evaluation": {
+    "evaluator": {
+      "name": "assign-system-spec-completeness-evaluator",
+      "version": "0.1.0",
+      "context": "fork"
+    },
+    "verdict": "FAIL",
+    "findings_ref": "system-spec/completeness-findings.json",
+    "findings_sha256": "3273e9122a4781702cdab42f44f4583d5e2dad646072fe24fa82f71fbcbc2c36",
+    "evaluated_findings_sha256": "8f666e62dc3d7960b7f99df06b6bbbe1203455c5871d574919a675e43519e907",
+    "anonymized_after_evaluation": [
+      {
+        "pointer": "/spec_dir",
+        "change": "リポジトリの絶対パスを前サイクルと同じリポジトリ相対 (system-spec) へ置換"
+      },
+      {
+        "pointer": "/aspects/prompt_quality/summary",
+        "change": "plugin installPath のホームディレクトリ接頭辞を ~/ へ置換"
+      }
+    ],
+    "aspects": {
+      "foundation_trace": "PASS",
+      "decision_guidance": "PASS",
+      "matrix_coverage": "FAIL",
+      "design_knowledge_reflection": "PASS",
+      "doc_freshness": "FAIL",
+      "prompt_quality": "PASS"
+    },
+    "finding_count": 15,
+    "gap_count": 5
+  },
+  "fail_reasons": [
+    {
+      "aspect": "matrix_coverage",
+      "finding": "F1 (medium)",
+      "reason": "C06 軸 2 (誘導質問): qa-subsmerge-decision-005 の問文が AI の推奨を埋め込み、承認を Yes/No で求めている。加えて凍結済みの過去の問文 (foundation-001 など 7 件) も誘導として数えられる。qa_log の問文は書き換えられず、C06 は 1 件でも検出があれば FAIL を返すため、聞き直しても FAIL は残る (gaps G2)。",
+      "disposition": "waived"
+    },
+    {
+      "aspect": "doc_freshness",
+      "finding": "F0 (medium)",
+      "reason": "vitest-expect の記録が 5.0.2 で、公式の現行版は 5.0.3 (latest_checked_at より後に公開)。",
+      "disposition": "fixed_after_evaluation: r4 で 5.0.3 に更新し出典を取り直した (gaps G0)"
+    }
+  ],
+  "supporting_findings": [
+    {
+      "aspect": "prompt_quality",
+      "finding": "F2 (medium)",
+      "aspect_verdict": "PASS",
+      "note": "R6-audit-hearing 5.3・hearing-auditor の FAIL 条件・spec-state-contract の question 書換禁止が組み合わさり、過去の問文への検出は解けない FAIL になる、と評価者自身が指摘している。matrix_coverage を waive する根拠。"
+    }
+  ],
+  "changes_after_evaluation": [
+    "vitest の出典を 5.0.3 へ更新 (doc_freshness 対応)",
+    "訂正: 利用者を削除する経路は無く、status='suspended' による停止だけ (actor-record-001 の補足)",
+    "訂正: users に行が無いときだけ「削除された利用者」と表示する (表示規則の補足)"
+  ],
+  "chapters": [
+    {
+      "path": "system-spec/00-requirements-definition.md",
+      "evaluated_sha256": "8a9ed18c1ea8d587e843aac443afc2bbb69be109dca2089b686192e178dfdee4",
+      "imported_sha256": "8a9ed18c1ea8d587e843aac443afc2bbb69be109dca2089b686192e178dfdee4",
+      "changed_after_evaluation": false
+    },
+    {
+      "path": "system-spec/index.md",
+      "evaluated_sha256": "b01e1708b09effa03fd5d908342335df1aa471ab8af85d9a1344f4f6b28c2f9f",
+      "imported_sha256": "b01e1708b09effa03fd5d908342335df1aa471ab8af85d9a1344f4f6b28c2f9f",
+      "changed_after_evaluation": false
+    },
+    {
+      "path": "system-spec/ui-ux.md",
+      "evaluated_sha256": "7f4adc910306d45374bc991fe13dc4fbe42cfbffac223aa6925790fac526dd8c",
+      "imported_sha256": "a677dc2aa1c322e0d2bd8c0f6b2c9219df8d5fe21ad0e75fc490e140c9ff1b59",
+      "changed_after_evaluation": true
+    },
+    {
+      "path": "system-spec/frontend.md",
+      "evaluated_sha256": "8ef39a683991d7fe68e6a2914e23be1fb38358db00abac5c99ac300e839d254e",
+      "imported_sha256": "1b960059b207c342cd021164dd6c8b14b4978bea13f43407e6b6b93dc9d86dd4",
+      "changed_after_evaluation": true
+    },
+    {
+      "path": "system-spec/backend.md",
+      "evaluated_sha256": "66aab9c937403e8290e35f74059d4f204aa9d20ea2224f0290bc34e6786fc6c3",
+      "imported_sha256": "7984413f9e8d4f0a4641d75ba9bf20a93d9314c700f7294c177767b276d95a2e",
+      "changed_after_evaluation": true
+    },
+    {
+      "path": "system-spec/database.md",
+      "evaluated_sha256": "5fd64e7dd75c16c80bd8e5ccae2044649af69c399d0e1689e02dfe9a52a96a89",
+      "imported_sha256": "67cfac34ec3c6d1a059b3a1d4e84207c7a5b173c200630846c7f07fdc12c3a69",
+      "changed_after_evaluation": true
+    },
+    {
+      "path": "system-spec/auth.md",
+      "evaluated_sha256": "410f5575f8207f0d5c99286344a03852d5ae4232cc9aa70400dfa4020db77f57",
+      "imported_sha256": "c04bfcecb99e3e85bd6a54ecc992c54c79cda26a9bf979409870463514c49bc6",
+      "changed_after_evaluation": true
+    },
+    {
+      "path": "system-spec/security.md",
+      "evaluated_sha256": "95a749e7c93b3eee39fab260f53ab833ad04e754db9279d6a92939dcc6c2b505",
+      "imported_sha256": "a8021e7493b189be4b0c9cb91801add0b4f9dc5cf9e5641eb724a753610e821d",
+      "changed_after_evaluation": true
+    },
+    {
+      "path": "system-spec/infrastructure.md",
+      "evaluated_sha256": "ac7dee30b17547a9d9573e1efef2e33c7d28c342ac3f323e5af78b4709cc1921",
+      "imported_sha256": "a9db1ccd2aa493d336480f3c6ba541d3ad80aa1de2eee657721d17da16b1dcdf",
+      "changed_after_evaluation": true
+    },
+    {
+      "path": "system-spec/maintenance-ops.md",
+      "evaluated_sha256": "5cdf2eac7056d85a8e79f7bf4a79fd06b9b642489c8ad8fcd7361df3d15a8d75",
+      "imported_sha256": "d628e87b9aaafb8526024f073abf000c44599985e279aa06a4d75edb1801a653",
+      "changed_after_evaluation": true
+    }
+  ],
+  "effect": "evaluation_status=pass (例外承認) として取り込む。spec・architecture 9 文書の confirmation_evidence.evidence_ref は本記録を指す。取込み receipt (.dev-graph/receipts/spec-import-subscriptions-merge.json、ローカル) は本記録の sha256 を持つ。",
+  "recorded_at": "2026-09-30T14:36:37Z"
+}

@@ -99,7 +99,7 @@ describe('見出しと期間', () => {
         '損益計算書・キャッシュフロー計算書・貸借対照表のつながりを確認し、決算の整合性をチェックしましょう。',
       ),
     ).toBeTruthy();
-    expect(screen.getByText('2025年9月 - 2026年8月', { selector: '.stmt-range-label' })).toBeTruthy();
+    expect(screen.getByText('2025年9月 - 2026年8月', { selector: '.period-range-label' })).toBeTruthy();
     // データの最終月まで来ているので、次の期間へは進めない
     expect((screen.getByRole('button', { name: '次の期間へ' }) as HTMLButtonElement).disabled).toBe(true);
     expect((screen.getByRole('button', { name: '前の期間へ' }) as HTMLButtonElement).disabled).toBe(false);

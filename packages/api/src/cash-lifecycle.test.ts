@@ -10,7 +10,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
 import { splitMigrationStatements } from './migration-test-support.js';
-import { planCashParentDeleteQueries } from './routes/cash.js';
+import { planCashParentDeleteQueries, planCashWriteQueries } from './routes/cash.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
 import {
   D1BulkPayloadError,
@@ -183,6 +183,7 @@ describe('現金記帳の月次集計ライフサイクル', () => {
     const created = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-07-15',
       side: 'biz',
+      owner: 'business',
       io: 'expense',
       amount: 5000,
       description: '架空商工会議所',
@@ -197,6 +198,7 @@ describe('現金記帳の月次集計ライフサイクル', () => {
     const moved = await jsonRequest(`/cash-entries/${entry.id}`, 'PUT', {
       date: '2026-08-15',
       side: 'biz',
+      owner: 'business',
       io: 'expense',
       amount: 5000,
       description: '架空商工会議所',
@@ -211,6 +213,7 @@ describe('現金記帳の月次集計ライフサイクル', () => {
     const changedToPersonal = await jsonRequest(`/cash-entries/${entry.id}`, 'PUT', {
       date: '2026-07-15',
       side: 'per',
+      owner: 'business',
       io: 'expense',
       amount: 5000,
       description: '架空商工会議所',
@@ -233,6 +236,7 @@ describe('現金記帳の月次集計ライフサイクル', () => {
     const changedBackToBusiness = await jsonRequest(`/cash-entries/${entry.id}`, 'PUT', {
       date: '2026-07-15',
       side: 'biz',
+      owner: 'business',
       io: 'expense',
       amount: 5000,
       description: '架空商工会議所',
@@ -245,7 +249,8 @@ describe('現金記帳の月次集計ライフサイクル', () => {
     expect(await aggregate('2026-07', 'biz_exp:架空会議費')).toBe(5777);
     expect(await cashEditExists(entry.id)).toBe(false);
 
-    // 削除時にも対応編集を消す。IDはAUTOINCREMENTのため、削除後の新規明細へ再利用されない。
+    // 削除は論理削除。対応編集は戻したときに同じ仕分けで戻るよう残し、完全消去で消す。
+    // IDはAUTOINCREMENTのため、削除後の新規明細へ再利用されない。
     await d1
       .prepare(
         `INSERT INTO tx_edits (user_id, tx_id, owner, updated_at)
@@ -256,11 +261,12 @@ describe('現金記帳の月次集計ライフサイクル', () => {
     const deleted = await jsonRequest(`/cash-entries/${entry.id}`, 'DELETE');
     expect(deleted.status).toBe(200);
     expect(await aggregate('2026-07', 'biz_exp:架空会議費')).toBe(777);
-    expect(await cashEditExists(entry.id)).toBe(false);
+    expect(await cashEditExists(entry.id)).toBe(true);
 
     const personal = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-07-20',
       side: 'per',
+      owner: 'business',
       io: 'expense',
       amount: 300,
       description: '架空売店',
@@ -276,6 +282,7 @@ describe('現金記帳の月次集計ライフサイクル', () => {
     const movedPersonal = await jsonRequest(`/cash-entries/${personalEntry.entry.id}`, 'PUT', {
       date: '2026-08-20',
       side: 'per',
+      owner: 'business',
       io: 'expense',
       amount: 300,
       description: '架空売店',
@@ -295,13 +302,15 @@ describe('現金記帳の月次集計ライフサイクル', () => {
       .bind('default', `cash:${personalEntry.entry.id}`)
       .run();
     expect((await jsonRequest(`/cash-entries/${personalEntry.entry.id}`, 'DELETE')).status).toBe(200);
-    expect(await cashEditExists(personalEntry.entry.id)).toBe(false);
+    // 手動の仕分けは残るが、削除中の明細は集計に入らないので効かない。
+    expect(await cashEditExists(personalEntry.entry.id)).toBe(true);
     expect(await aggregate('2026-08', 'per_exp:架空食費')).toBeNull();
     expect(await aggregate('2026-07', 'per_exp:架空食費')).toBe(888);
 
     const afterDelete = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-09-01',
       side: 'per',
+      owner: 'business',
       io: 'expense',
       amount: 100,
       description: '架空自販機',
@@ -354,6 +363,7 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
       const response = await jsonRequest('/cash-entries', 'POST', {
         date: `2026-${month}-15`,
         side,
+        owner: 'business',
         io: 'expense',
         amount,
         description: `架空現金${side}${month}`,
@@ -465,6 +475,7 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
       const created = await fresh.request('/cash-entries', 'POST', {
         date: '2026-11-30',
         side: 'per',
+        owner: 'business',
         io: 'expense',
         amount: 50,
         description: '架空新規現金',
@@ -523,6 +534,12 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
       d1.prepare(
         "INSERT INTO account_norm_map (user_id, raw, norm) VALUES ('default', '架空通信原', 'サブスク・通信')",
       ),
+      // 0051: 集計ルールの正本は settings_norm_rules。旧表は互換の写しとして同じ行を持つ
+      d1.prepare(
+        `INSERT INTO settings_norm_rules (user_id, rule_id, kind, raw, norm, sort_order, enabled, updated_at, updated_by)
+           VALUES ('default', 'n-kaku', 'account', '架空原科目', '架空確定科目', 1, 1, '2026-06-01T00:00:00.000Z', 'system'),
+                  ('default', 'n-tsu', 'account', '架空通信原', 'サブスク・通信', 2, 1, '2026-06-01T00:00:00.000Z', 'system')`,
+      ),
       d1.prepare(
         `INSERT INTO sub_vendors (user_id,name,aliases,sort_order,created_at)
            VALUES ('default','架空SaaS','[]',1,'2026-06-01T00:00:00.000Z')`,
@@ -535,6 +552,7 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
     const created = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-06-01',
       side: 'biz',
+      owner: 'business',
       io: 'expense',
       amount: 321,
       description: '架空支払先',
@@ -547,6 +565,7 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
       {
         date: '2026-06-02',
         side: 'biz',
+        owner: 'business',
         io: 'income',
         amount: 123,
         description: '架空売上',
@@ -557,6 +576,7 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
       {
         date: '2026-06-03',
         side: 'biz',
+        owner: 'business',
         io: 'expense',
         amount: 456,
         description: '架空SaaS',
@@ -567,6 +587,7 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
       {
         date: '2026-06-04',
         side: 'per',
+        owner: 'business',
         io: 'expense',
         amount: 789,
         description: '架空立替 現金',
@@ -677,9 +698,16 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
         "INSERT INTO account_norm_map (user_id, raw, norm) VALUES ('default', '架空原科目', '架空旧科目')",
       )
       .run();
+    // 0051: 集計ルールの正本は settings_norm_rules。旧表は互換の写しとして同じ行を持つ
+    await d1
+      .prepare(
+        "INSERT INTO settings_norm_rules (user_id, rule_id, kind, raw, norm, sort_order, enabled, updated_at, updated_by) VALUES ('default', 'n-kaku', 'account', '架空原科目', '架空旧科目', 1, 1, '2026-09-01T00:00:00.000Z', 'system')",
+      )
+      .run();
     const created = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-09-01',
       side: 'biz',
+      owner: 'business',
       io: 'expense',
       amount: 100,
       description: '架空旧現金',
@@ -714,6 +742,9 @@ describe('現金投影を含むexport/restoreのprovenance', () => {
     await d1.batch([
       d1.prepare(
         "UPDATE account_norm_map SET norm='架空新科目' WHERE user_id='default' AND raw='架空原科目'",
+      ),
+      d1.prepare(
+        "UPDATE settings_norm_rules SET norm='架空新科目' WHERE user_id='default' AND raw='架空原科目'",
       ),
       d1.prepare(
         `INSERT INTO sub_vendors (user_id,name,aliases,sort_order,created_at)
@@ -930,6 +961,7 @@ describe('候補科目と現金記帳の参照整合', () => {
     const created = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-07-20',
       side: 'per',
+      owner: 'business',
       io: 'expense',
       amount: 1200,
       description: '架空食堂',
@@ -974,6 +1006,7 @@ describe('候補科目と現金記帳の参照整合', () => {
     const created = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-10-01',
       side: 'per',
+      owner: 'business',
       io: 'expense',
       amount: 600,
       description: '架空乗車',
@@ -1288,5 +1321,16 @@ describe('cash親削除のD1 query budget', () => {
     expect(() => d1JsonPayload(['x'.repeat(D1_JSON_BIND_SAFE_BYTES)])).toThrowError(
       expect.objectContaining({ code: 'bulk_payload_too_large' }),
     );
+  });
+});
+
+describe('cash POST/PUTのD1 query budget', () => {
+  it('科目検証・更新後snapshot計画・atomic batchを含めて49以下に収まる', () => {
+    const noDifference = planCashWriteQueries(0);
+    const manyDifferences = planCashWriteQueries(100_000);
+    expect(noDifference).toEqual({ total: 40, limit: 50, accepted: true });
+    expect(manyDifferences).toEqual({ total: 41, limit: 50, accepted: true });
+    expect(manyDifferences.total).toBeLessThanOrEqual(49);
+    expect(() => planCashWriteQueries(-1)).toThrow('invalid_cash_write_query_plan');
   });
 });

@@ -1,0 +1,1292 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-tradeoff-screen/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-tradeoff-screen",
+  "parent_feature": "feat-tradeoff-screen",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-TRADEOFF-P01": "beads",
+    "SYS-TRADEOFF-P02": "beads",
+    "SYS-TRADEOFF-P03": "beads",
+    "SYS-TRADEOFF-P04": "beads",
+    "SYS-TRADEOFF-P05": "beads",
+    "SYS-TRADEOFF-P06": "beads",
+    "SYS-TRADEOFF-P07": "beads",
+    "SYS-TRADEOFF-P08": "beads",
+    "SYS-TRADEOFF-P09": "beads",
+    "SYS-TRADEOFF-P10": "beads",
+    "SYS-TRADEOFF-P11": "beads",
+    "SYS-TRADEOFF-P12": "beads",
+    "SYS-TRADEOFF-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-TRADEOFF-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と持ち越し事項の解決担当の割り当て",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p01",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "tradeoff-screen 純関数・3 経路 API・migration 0050・画面分割のワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P01"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "試算契約・API 契約・候補キー・データ保存範囲の独立レビュー",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P02"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 境界値・API 契約・migration・DOM の失敗テスト先行作成",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P03"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/tradeoff-screen-contract.test.ts",
+        "packages/api/src/tradeoff-screen.integration.test.ts",
+        "packages/api/src/tradeoff-migration-0050.test.ts",
+        "packages/web/src/pages/tradeoff/tradeoff-screen.dom.test.tsx",
+        "packages/web/src/tradeoff-review.dom.test.tsx"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "tradeoff-screen 純関数・3 経路 API・migration 0050・トレードオフ画面の分割の最終実装",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P04"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/tradeoff-screen.ts",
+        "packages/core/src/diagnosis-detectors.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/schema-guard.test.ts",
+        "migrations/0050_tradeoff_notes.sql",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/Tradeoff.tsx",
+        "packages/web/src/pages/tradeoff/",
+        "packages/web/src/AuthenticatedApp.tsx",
+        "packages/web/src/analysis-query-invalidation.ts"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと型検査と lint と verify:full の実行記録",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P05"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 S1 から S6 の検証",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P06"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "試算の式の重複・旧参照・migration の読取専用監査",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p08",
+        "audit"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P07"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・入力検証・利用者分離・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P08"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P09"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P10"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/evidence.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "候補・推移・必要度・理由・推奨の順位・防衛ラインへの影響の規則表の docs 最終同期",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P11"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/spec-v1.1.md",
+        "docs/tradeoff-screen/design-decisions.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-TRADEOFF-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信と migration 0050 の適用とクローズアウト",
+      "project_id": "feature-package-feat-tradeoff-screen",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "tradeoff",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T22:58:32Z",
+      "updated_at": "2026-09-21T22:58:32Z",
+      "depends_on": [
+        "SYS-TRADEOFF-P12"
+      ],
+      "related_nodes": [
+        "arch-tradeoff-auth",
+        "arch-tradeoff-backend",
+        "arch-tradeoff-database",
+        "arch-tradeoff-frontend",
+        "arch-tradeoff-infrastructure",
+        "arch-tradeoff-maintenance-ops",
+        "arch-tradeoff-security",
+        "arch-tradeoff-ui-ux",
+        "spec-tradeoff-screen"
+      ],
+      "resource_scope": [
+        "docs/tradeoff-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-tradeoff-screen",
+      "feature_package_id": "feature-package/feat-tradeoff-screen",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-tradeoff-screen/plan-findings.json",
+        "evaluated_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-tradeoff-screen/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "385e3fbc2589b0988fa1257762c72f111d14e1a3618a3a144c7cb72e467b0748",
+        "imported_at": "2026-09-21T22:58:32Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-tradeoff-screen/sys-tradeoff-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T22:55:00Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

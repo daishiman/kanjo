@@ -1,0 +1,599 @@
+/*
+ * 使い方画面の体裁 (spec-guide-screen 7.x)。
+ *
+ * 広い画面は 本文 + 右カラム (このページの数値・関連ページ・検索) の 2 カラム、
+ * 1024px 未満は右カラムを下に積み、目次は横スクロールのタブにする。
+ * 色・余白・角丸は共通のトークンだけを使い、この画面だけの色を作らない。
+ */
+
+.guide-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* grid / flex の子が表の min-content 幅まで親を押し広げないための共通境界 */
+.guide-page > *,
+.guide-grid > *,
+.guide-main > *,
+.guide-body-grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.guide-page .card {
+  margin: 0;
+}
+
+/* -------- 見出しと対象期間 -------- */
+
+.guide-intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.guide-intro > :first-child {
+  flex: 1 1 24rem;
+  min-width: 0;
+}
+
+/* -------- 2 カラム -------- */
+
+.guide-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--aside-panel-w);
+  align-items: start;
+  gap: 16px;
+}
+
+.guide-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* -------- 4 ステップ -------- */
+
+.guide-steps-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.guide-step + .guide-step {
+  border-left: 1px solid var(--line);
+  padding-left: 16px;
+}
+
+.guide-step-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guide-step-num {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--biz-soft);
+  color: var(--biz-strong);
+  font-weight: 800;
+}
+
+.guide-step.is-emphasized .guide-step-num {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.guide-step-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.guide-step-title strong {
+  color: var(--primary);
+  font-size: var(--fs-md);
+}
+
+.guide-step-title .sub,
+.guide-step-desc {
+  margin: 0;
+  font-size: var(--fs-xs);
+}
+
+.guide-step-desc {
+  flex: 1;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.guide-step-open {
+  align-self: flex-start;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+/* -------- 本文: 目次 + トピック -------- */
+
+.guide-body h2 {
+  margin-top: 0;
+}
+
+.guide-body-grid {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 16px;
+}
+
+.guide-toc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.guide-toc-item {
+  min-height: var(--tap-target-min);
+  padding: 8px 12px;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-standard);
+}
+
+.guide-toc-item:hover {
+  background: var(--surface-alt);
+}
+
+.guide-toc-item.is-active {
+  border-left-color: var(--primary);
+  background: var(--biz-soft);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.guide-search-none {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+}
+
+.guide-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.guide-section h3 {
+  margin: 0 0 4px;
+  font-size: var(--fs-lg);
+}
+
+.guide-section > .sub {
+  margin: 0 0 12px;
+}
+
+/* -------- 月次の流れのステッパー -------- */
+
+.guide-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-stepper-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+/* 丸と丸をつなぐ線。完了した段の右側だけを塗る */
+.guide-stepper-item + .guide-stepper-item::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: calc(50% + 20px);
+  left: calc(-50% + 20px);
+  height: 2px;
+  background: var(--line-strong);
+}
+
+.guide-stepper-item.is-done + .guide-stepper-item::before {
+  background: var(--primary);
+}
+
+.guide-stepper-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-weight: 800;
+}
+
+.guide-stepper-item.is-done .guide-stepper-dot {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.guide-stepper-label {
+  font-weight: 700;
+}
+
+.guide-stepper-state {
+  min-height: 1.2em;
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+
+/* -------- 総収支の読み方 -------- */
+
+.guide-totals {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+}
+
+.guide-total {
+  /* 金額はカードの幅に合わせて縮め、桁や符号の途中で折り返さない (7 桁の ¥ が 1 行に収まる) */
+  container-type: inline-size;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+.guide-total-label {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.guide-total-value {
+  font-size: min(var(--fs-xl), 13cqi);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.guide-total.is-net {
+  border-color: var(--good);
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.guide-totals-op {
+  color: var(--ink-soft);
+  font-size: var(--fs-lg);
+  font-weight: 800;
+}
+
+.guide-includes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-includes li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+}
+
+.guide-includes strong {
+  color: var(--primary);
+  font-size: var(--fs-sm);
+}
+
+.guide-includes .sub {
+  font-size: var(--fs-xs);
+}
+
+.guide-period-title {
+  margin: 16px 0 8px;
+  font-size: var(--fs-md);
+}
+
+/* -------- 用語と目安 -------- */
+
+.guide-terms {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.guide-terms h3 {
+  margin: 0 0 4px;
+  font-size: var(--fs-md);
+}
+
+/* -------- 右カラム -------- */
+
+.guide-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.guide-aside-card h2 {
+  margin: 0 0 8px;
+  font-size: var(--fs-md);
+}
+
+.guide-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.guide-facts dt {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.guide-facts dd {
+  margin: 2px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.guide-retry {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  background: var(--warn-soft);
+  font-size: var(--fs-xs);
+}
+
+.guide-related {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-related li + li {
+  border-top: 1px solid var(--line);
+}
+
+.guide-related a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: var(--tap-target-min);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.guide-related a:hover {
+  color: var(--primary);
+}
+
+.guide-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink-soft);
+}
+
+.guide-search:focus-within {
+  border-color: var(--primary);
+}
+
+.guide-search input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--tap-target-min);
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  outline: none;
+}
+
+.guide-aside-card .sub {
+  margin: 8px 0 0;
+  font-size: var(--fs-xs);
+}
+
+/* -------- 読込中・失敗 -------- */
+
+.guide-skeleton {
+  display: inline-block;
+  min-width: 5em;
+}
+
+.guide-skeleton > span[aria-hidden="true"] {
+  display: block;
+  height: 1em;
+  border-radius: 4px;
+  background: var(--line);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.guide-failed {
+  color: var(--danger);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+/* -------- よくある疑問 -------- */
+
+.guide-faq h2 {
+  margin: 0 0 4px;
+}
+
+.guide-faq > .sub {
+  margin: 0 0 12px;
+}
+
+.guide-faq-question {
+  text-align: left;
+}
+
+.guide-faq-question strong {
+  display: block;
+  color: var(--primary);
+}
+
+.guide-faq-question .sub {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: 400;
+}
+
+.guide-faq-table td {
+  text-align: left;
+  vertical-align: top;
+}
+
+/* -------- 下部固定バー -------- */
+
+.guide-bottom-bar {
+  position: sticky;
+  bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-popover);
+}
+
+.guide-bottom-topic {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+}
+
+.guide-bottom-topic .sub {
+  font-size: var(--fs-xs);
+}
+
+/* -------- 1024px 未満: 右カラムを下へ、目次は横スクロールのタブ -------- */
+
+@media (max-width: 1023.98px) {
+  .guide-grid,
+  .guide-body-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .guide-toc {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .guide-toc-item {
+    flex: none;
+    border-left: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    white-space: nowrap;
+  }
+
+  .guide-toc-item.is-active {
+    border-bottom-color: var(--primary);
+  }
+
+  .guide-steps-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .guide-step:nth-child(odd) {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .guide-steps-list,
+  .guide-includes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .guide-step + .guide-step {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 12px 0 0;
+  }
+
+  .guide-totals {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .guide-totals-op {
+    text-align: center;
+  }
+
+  .guide-bottom-bar {
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  }
+}

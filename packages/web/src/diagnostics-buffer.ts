@@ -1,7 +1,7 @@
 /**
  * DevTools 相当の診断情報を、アプリ起動時から上限つきで貯めておく。
  *
- * エラーは改善要望ボタンを押す「前」に起きている。だから収集はモーダルを開いた時ではなく、
+ * エラーは「改善を送る」ボタンを押す前に起きている。だから収集は撮影パネルを開いた時ではなく、
  * アプリの起動時から始まっていなければならない。ここは App.tsx がモジュールとして
  * 読み込まれた時点(=最初の描画より前)で install される。
  *
@@ -43,6 +43,18 @@ export function recordDiagnostic(kind: DiagnosticKind, message: string, detail =
   }
 }
 
+/**
+ * ページを読み込むたびに作る乱数。認証のセッションとは別物で、同じ読み込みの間に出した
+ * 依頼どうしを突き合わせるためだけに使う。診断の環境に足す識別子はこれだけ(spec FR-14)。
+ */
+const pageSessionId: string = (() => {
+  try {
+    return globalThis.crypto?.randomUUID?.() ?? '';
+  } catch {
+    return '';
+  }
+})();
+
 /** 現在の記録を、送信できる形へ固める。呼んでもバッファは空にしない(投稿失敗時に再送できる) */
 export function diagnosticsSnapshot(route: string): DiagnosticPayload {
   const trimmed = trimDiagnostics(entries);
@@ -56,6 +68,9 @@ export function diagnosticsSnapshot(route: string): DiagnosticPayload {
           : `${window.innerWidth}x${window.innerHeight}@${window.devicePixelRatio}`,
       route,
       capturedAt: new Date().toISOString(),
+      // 利用環境 (本番 / ローカル) を core が導くための値。パスや検索語は含めない
+      ...(typeof window === 'undefined' ? {} : { origin: window.location.origin }),
+      ...(pageSessionId ? { sessionId: pageSessionId } : {}),
     },
     entries: trimmed.entries,
     omittedCount: droppedCount + trimmed.omittedCount,

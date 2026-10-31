@@ -12,7 +12,7 @@ SQLはbind値を使い、CSP/HSTS/フレーム拒否等は共通middlewareにあ
 Resend送信は10秒のtimeoutを持ち、ログへ宛先・token・URLを出さない。
 
 旧自前署名/強制初回変更/一時パスワード発行の実行経路は検索で見つからなかった。
-旧users表の列とindexは履歴schemaとして残り、0050は既存行を書き換えない。
+旧users表の列とindexは履歴schemaとして残り、0059は既存行を書き換えない。
 
 ## 依存監査の実測と適用範囲
 
@@ -31,6 +31,9 @@ Resend送信は10秒のtimeoutを持ち、ログへ宛先・token・URLを出さ
 [OAuth Proxy advisory](https://github.com/better-auth/better-auth/security/advisories/GHSA-r4xp-prcw-77qf)、
 [Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)を確認した。
 修正版の導入可能性と固定版API/スキーマの互換性を確認せず、一括更新や監査除外で件数だけを消すことはしていない。
+
+夜間保守は最新mainとの統合後も49 queries以内。rate-limit掃除は毎日、監査の400日超削除は2日周期、
+期限artifact4種類は8日周期とする。要求時の期限判定は掃除の周期に依存しない。
 
 ## コストと性能
 

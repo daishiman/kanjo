@@ -198,9 +198,11 @@ describe('モバイル財務figureの意味同等性', () => {
         const url = String(input);
         const body = url.includes('/api/subscriptions')
           ? payload
-          : url.includes('/api/sub-vendors/candidates')
-            ? { candidates: [], excluded: [], dealRows: 0 }
-            : { vendors: [], accountOptions: [], review: [] };
+          : url.includes('/api/subscription-operations')
+            ? { operations: [], revision: 0 }
+            : url.includes('/api/sub-vendors/candidates')
+              ? { candidates: [], excluded: [], dealRows: 0 }
+              : { vendors: [], accountOptions: [], review: [] };
         return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
       }),
     );

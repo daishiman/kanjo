@@ -416,23 +416,27 @@ export async function runAuditHeaderRetention(
 ): Promise<AuditRetentionResult> {
   if (!Number.isSafeInteger(limit) || limit < 1 || limit > AUDIT_RETENTION_BATCH)
     throw new AuditValidationError('retention_limit');
-  const before = await readMetrics(env.DB, 'audit_log', HEADER_BYTES);
+  // 削除前の値は読み直さない。消した行の概算 byte を RETURNING で受け取り、削除後の値へ足し戻す
+  // (夜間の D1 予算を改善リクエストの完全消去へ 1 本譲るため。2 本で同じ before/after を返す)。
   const deleted = await env.DB.prepare(
     `DELETE FROM audit_log
         WHERE id IN (
           SELECT id FROM audit_log WHERE occurred_at <= ? ORDER BY occurred_at,id LIMIT ?
-        )`,
+        )
+      RETURNING ${HEADER_BYTES} AS bytes`,
   )
     .bind(retentionCutoff(now, AUDIT_HEADER_RETENTION_DAYS), limit)
-    .run();
+    .all<{ bytes: number }>();
   const after = await readMetrics(env.DB, 'audit_log', HEADER_BYTES);
+  const expired = deleted.results.length;
+  const removedBytes = deleted.results.reduce((sum, row) => sum + Number(row.bytes ?? 0), 0);
   return {
     layer: 'header',
-    expired: Number(deleted.meta.changes ?? 0),
+    expired,
     early: 0,
-    before,
+    before: { rows: after.rows + expired, bytes: after.bytes + removedBytes },
     after,
-    queries: 3,
+    queries: 2,
   };
 }
 

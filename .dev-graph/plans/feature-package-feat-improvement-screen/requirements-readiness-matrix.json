@@ -1,0 +1,279 @@
+{
+  "feature_id": "feat-improvement-screen",
+  "gates": {
+    "C08": "complete",
+    "C11": true,
+    "validate_system_plan": "pass"
+  },
+  "graph_revision": 3,
+  "graph_snapshot_digest": "4095cbf141041cf9b63278474045ef84ab178f08af0d18a1da03d90604c4dc4e",
+  "graph_snapshot_digest_note": "registration receipt の graph_digest_after (sha256:08fcef34…) は canonical JSON の digest、本値は bytes の digest。同一状態",
+  "lineage_closure": [
+    {
+      "artifact_kind": "architecture",
+      "graph_node_id": "arch-improvement-screen-ui-ux",
+      "ok": true,
+      "source_path": "system-spec/ui-ux.md"
+    },
+    {
+      "artifact_kind": "architecture",
+      "graph_node_id": "arch-improvement-screen-frontend",
+      "ok": true,
+      "source_path": "system-spec/frontend.md"
+    },
+    {
+      "artifact_kind": "architecture",
+      "graph_node_id": "arch-improvement-screen-backend",
+      "ok": true,
+      "source_path": "system-spec/backend.md"
+    },
+    {
+      "artifact_kind": "architecture",
+      "graph_node_id": "arch-improvement-screen-database",
+      "ok": true,
+      "source_path": "system-spec/database.md"
+    },
+    {
+      "artifact_kind": "architecture",
+      "graph_node_id": "arch-improvement-screen-auth",
+      "ok": true,
+      "source_path": "system-spec/auth.md"
+    },
+    {
+      "artifact_kind": "architecture",
+      "graph_node_id": "arch-improvement-screen-security",
+      "ok": true,
+      "source_path": "system-spec/security.md"
+    },
+    {
+      "artifact_kind": "architecture",
+      "graph_node_id": "arch-improvement-screen-infrastructure",
+      "ok": true,
+      "source_path": "system-spec/infrastructure.md"
+    },
+    {
+      "artifact_kind": "architecture",
+      "graph_node_id": "arch-improvement-screen-maintenance-ops",
+      "ok": true,
+      "source_path": "system-spec/maintenance-ops.md"
+    },
+    {
+      "artifact_kind": "specification",
+      "graph_node_id": "spec-improvement-screen",
+      "ok": true,
+      "source_path": "system-spec/00-requirements-definition.md"
+    }
+  ],
+  "missing_sections": [],
+  "nodes": [
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P01",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P01",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P01"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P02",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P02",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P02"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P03",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P03",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P03"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P04",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P04",
+      "resource_scope_count": 13,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P04"
+      ],
+      "domain": "frontend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P05",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P05",
+      "resource_scope_count": 26,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P05"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P06",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P06",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P06"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P07",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P07",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P07"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P08",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P08",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P08"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P09",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P09",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P09"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P10",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P10",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P10"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P11",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P11",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P11"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P12",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P12",
+      "resource_scope_count": 5,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-IMPSCR-P12"
+      ],
+      "domain": "operations",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-IMPSCR-P13",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P13",
+      "resource_scope_count": 1,
+      "source_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+      "source_version": "0.1.0"
+    }
+  ],
+  "plan_validated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+  "schema_version": "1.0.0",
+  "status": "ready"
+}

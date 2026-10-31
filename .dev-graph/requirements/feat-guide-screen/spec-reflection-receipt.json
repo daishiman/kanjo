@@ -1,0 +1,48 @@
+{
+  "receipt_kind": "spec-reflection",
+  "parent_feature": "feat-guide-screen",
+  "graph_node_id": "feat-guide-screen",
+  "beads_epic": "kanjo-ogz",
+  "recorded_at": "2026-09-24T10:07:19Z",
+  "verdict": "NO_CONTRACT_IMPACT_GENERATION_ARCHIVED",
+  "summary": "実装は specs/spec-guide-screen.md と architecture/guide-*.md の契約(GET /api/guide、DB 変更なし、フッタの AI 補足、信頼度の段階 80/50、shiftedPeriod の共有)のとおりで、仕様の再 compile は不要。実装で決めた細部はモジュール配置の判断にとどまり、追跡外の設計・判断記録へ追記した。main(ef7ee82)取り込みで直下の世代が衝突したため、settings サイクルを退避した。 2026-09-25 に main(e495813、#72 改善リクエスト画面)を再度取り込み、同様に improvement サイクルを退避した。settings サイクルの退避先は main 側と同一内容のため main の archive/2026-09-24-settings-screen/ に一本化した。",
+  "impacts": [
+    {
+      "id": "I1",
+      "finding": "AI_DATA_NOTICE を core の data-notice.ts へ分割(初期 JS 予算 110KiB のため)。文言と表示箇所は仕様どおり",
+      "action": "契約変更なし。設計と判断記録へ追記",
+      "files": [
+        "architecture/guide-frontend.md",
+        "docs/guide-screen/design-decisions.md",
+        "docs/ui-decisions.md"
+      ]
+    },
+    {
+      "id": "I2",
+      "finding": "期間の前後移動を components/PeriodRange.tsx へ共通化し決算書画面と共有",
+      "action": "契約変更なし(shiftedPeriod の共有は仕様どおり)。設計・feature へ追記",
+      "files": [
+        "architecture/guide-frontend.md",
+        "features/feat-guide-screen.md"
+      ]
+    },
+    {
+      "id": "I3",
+      "finding": "main 取り込みで直下の現行世代が衝突(1 回目: guide と settings、2 回目: guide と improvement)",
+      "action": "直下は guide サイクルを現行世代として残す。settings サイクルは main が既にバイト同一で退避した archive/2026-09-24-settings-screen/ に一本化し、本ブランチの 2026-09-23 退避は削除。improvement サイクル 14 ファイルをバイト同一で archive/2026-09-25-improvement-screen/ へ README 付きで退避。graph.json は和集合(190 ノード)にし arch-improvement-screen-* 8 件の source_path を退避先へ付け替え(digest 不変)",
+      "files": [
+        "system-spec/archive/2026-09-24-settings-screen/",
+        "system-spec/archive/2026-09-25-improvement-screen/",
+        "architecture/graph.json"
+      ]
+    },
+    {
+      "id": "I4",
+      "finding": "画像とのピクセル照合が未実施、共通シェルの幅と FAQ 表形式の差",
+      "action": "仕様変更なし。残課題として backlog へ",
+      "files": [
+        "docs/product/backlog.md"
+      ]
+    }
+  ]
+}

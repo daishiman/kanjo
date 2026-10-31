@@ -2,6 +2,7 @@ import type { SubscriptionRow, SubscriptionsScreen } from '@kanjo/core';
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../../components/Button.js';
 import { DataTable, termColumn } from '../../components/DataTable.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { yen } from '../../format.js';
 import { CandidateStatusBadges } from './CandidateStatusBadges.js';
 import { STATUS_FILTER_LABEL, type StatusFilter, matchesRow, plain } from './format.js';
@@ -10,7 +11,8 @@ const STATUS_FILTERS = Object.keys(STATUS_FILTER_LABEL) as StatusFilter[];
 
 /**
  * サブスク一覧 (spec §5)。並びは core が決めた順のまま出し、ここでは絞るだけにする。
- * 行の選択は詳細を開くためだけに使い、用途のないチェック状態は持たない。
+ * 先頭列のチェックは統合の対象を選ぶためのもので、選択の状態は画面 (Subscriptions) が持つ。
+ * 全選択は表示中の行だけを対象にし、合計行にはチェックを置かない (AC-007)。
  */
 export function SubscriptionTable({
   rows,
@@ -18,6 +20,10 @@ export function SubscriptionTable({
   activeKey,
   reviewFocusRequest,
   onOpen,
+  selectedKeys,
+  selectionLocked,
+  onToggleRow,
+  onSelectVisible,
 }: {
   rows: SubscriptionRow[];
   kpis: SubscriptionsScreen['kpis'];
@@ -25,6 +31,12 @@ export function SubscriptionTable({
   /** 理由カードの「候補一覧」から、既存の絞り込みへ移る要求を数値で受け取る。 */
   reviewFocusRequest: number;
   onOpen: (vendorKey: string) => void;
+  /** 選択中の行の vendorKey (選んだ順) */
+  selectedKeys: readonly string[];
+  /** 書き込みの処理中は選択を変えさせない (AC-011) */
+  selectionLocked: boolean;
+  onToggleRow: (vendorKey: string) => void;
+  onSelectVisible: (vendorKeys: string[], selected: boolean) => void;
 }) {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<StatusFilter>('all');
@@ -32,6 +44,9 @@ export function SubscriptionTable({
   const statusRef = useRef<HTMLSelectElement>(null);
   const visible = useMemo(() => rows.filter((row) => matchesRow(row, query, status)), [rows, query, status]);
   const filtering = visible.length !== rows.length;
+  const selected = useMemo(() => new Set(selectedKeys), [selectedKeys]);
+  const visibleSelected = visible.filter((row) => selected.has(row.vendorKey)).length;
+  const allVisibleSelected = visible.length > 0 && visibleSelected === visible.length;
   useEffect(() => {
     if (reviewFocusRequest < 1) return;
     setQuery('');
@@ -41,9 +56,9 @@ export function SubscriptionTable({
       statusRef.current?.focus();
     });
   }, [reviewFocusRequest]);
-  // 行のどこを押しても開く。名前のボタンはキーボード用に同じ操作を持つ。
+  // 行のどこを押しても開く。名前のボタンはキーボード用に同じ操作を持つ。チェックの操作では開かない。
   const openFromRow = (event: MouseEvent<HTMLTableRowElement>, key: string) => {
-    if ((event.target as HTMLElement).closest('button')) return;
+    if ((event.target as HTMLElement).closest('button,input,label')) return;
     onOpen(key);
   };
 
@@ -87,6 +102,25 @@ export function SubscriptionTable({
           className="data subs-table"
           caption={<caption className="visually-hidden">サブスク一覧</caption>}
           columns={[
+            {
+              label: (
+                <SelectionCheckbox
+                  labelHidden
+                  label="表示中の行をすべて選択"
+                  checked={allVisibleSelected}
+                  indeterminate={visibleSelected > 0 && !allVisibleSelected}
+                  disabled={selectionLocked || visible.length === 0}
+                  onChange={() =>
+                    onSelectVisible(
+                      visible.map((row) => row.vendorKey),
+                      !allVisibleSelected,
+                    )
+                  }
+                />
+              ),
+              sortable: false,
+              className: 'subs-select-column',
+            },
             termColumn('vendor', { label: 'ベンダー名', sortable: false }),
             { label: '正規化名', sortable: false },
             { label: '取引名数', sortable: false, className: 'num' },
@@ -98,7 +132,7 @@ export function SubscriptionTable({
           ]}
           foot={
             <tr className="total">
-              <td colSpan={4}>{filtering ? '合計（全体の合計）' : '合計'}</td>
+              <td colSpan={5}>{filtering ? '合計（全体の合計）' : '合計'}</td>
               <td className="num">{yen(kpis.monthlyTotal)}</td>
               <td className="num">{yen(kpis.annualized)}</td>
               <td />
@@ -108,14 +142,27 @@ export function SubscriptionTable({
         >
           {visible.map((row) => {
             const active = row.vendorKey === activeKey;
+            const checked = selected.has(row.vendorKey);
             return (
               // biome-ignore lint/a11y/useKeyWithClickEvents: キーボードでは名前のボタンで同じ操作ができる。行の click は指での操作面を広げるだけ。
               <tr
                 key={row.vendorKey}
-                className={active ? 'is-active' : undefined}
+                className={
+                  [active ? 'is-active' : '', checked ? 'is-selected' : ''].filter(Boolean).join(' ') ||
+                  undefined
+                }
                 data-vendor-key={row.vendorKey}
                 onClick={(event) => openFromRow(event, row.vendorKey)}
               >
+                <td className="subs-select-column">
+                  <SelectionCheckbox
+                    labelHidden
+                    label={`${row.displayName} を選択`}
+                    checked={checked}
+                    disabled={selectionLocked}
+                    onChange={() => onToggleRow(row.vendorKey)}
+                  />
+                </td>
                 <td>
                   <Button
                     variant="text"

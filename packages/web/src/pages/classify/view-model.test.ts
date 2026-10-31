@@ -77,7 +77,14 @@ describe('件数・金額・日付', () => {
 
   it('信頼度の null は 0% ではなく「—」', () => {
     expect(confidenceText(null)).toBe('—');
-    expect(confidenceText(0)).toBe('0%');
+    expect(confidenceText(0)).toBe('低 0%');
+  });
+
+  it('信頼度は『段階＋%』で、境界は 80 / 50 (spec-guide-screen)', () => {
+    expect(confidenceText(80)).toBe('高 80%');
+    expect(confidenceText(79)).toBe('中 79%');
+    expect(confidenceText(50)).toBe('中 50%');
+    expect(confidenceText(49)).toBe('低 49%');
   });
 
   it('日付は YYYY/MM/DD、期間の見出しは年月の範囲', () => {
@@ -183,7 +190,7 @@ describe('編集パネルの入力 (7.6・BR-01)', () => {
     expect(canSave(fixed, { ...inputFromRow(fixed), note: 'メモ' })).toBe(true);
   });
 
-  it('履歴の 1 行は {日時} {由来} → {変更後}（信頼度 n%）', () => {
+  it('履歴の 1 行は {日時} {由来} → {変更後}（信頼度 段階 n%）', () => {
     expect(
       historyText({
         changedAt: '2026-09-02T10:05:00.000Z',
@@ -191,7 +198,7 @@ describe('編集パネルの入力 (7.6・BR-01)', () => {
         after: '会議費 / 打合せ',
         confidence: 92,
       }),
-    ).toBe('2026/09/02 10:05 自動提案 → 会議費 / 打合せ（信頼度 92%）');
+    ).toBe('2026/09/02 10:05 自動提案 → 会議費 / 打合せ（信頼度 高 92%）');
     expect(
       historyText({
         changedAt: '2026-09-02T10:05:00.000Z',

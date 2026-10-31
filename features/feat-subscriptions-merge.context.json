@@ -1,0 +1,45 @@
+{
+  "graph_node_id": "feat-subscriptions-merge",
+  "artifact_kind": "feature",
+  "purpose": "サブスク画面の統合を、登録済みの行どうしでも行えて統合元が一覧から消え、他の画面のサブスク集計も同じ名寄せを示すようにする。あわせて、統合・登録・変更・見直し判断を続けて、または複数の利用者が同時に行っても、操作が失われず「サーバー側で処理に失敗しました」で止まらないようにし、操作ごとの状態 (待機中・処理中・完了・失敗) と操作者を示し、統合を取り消して統合前へ戻せるようにする。",
+  "goal": "/subscriptions?vendor=aquavoice のように登録済みの行を別の登録済みの行へ統合すると、統合元が一覧から消えて統合先の推定月額を統合後の明細から再計算し、各月の実支払額を保存し、他画面のサブスク集計も core の resolveVendorMerges による同じ名寄せを示し、行チェック・全選択・選択バーで複数件を統合先へまとめられ、統合の書込みは POST /api/sub-vendors/merge が操作の記録 (Idempotency-Key と revision) と subs 範囲の置き換えを 1 つの db.batch で原子的に行い、同時の 2 件目は未適用の 409 になって画面の待ち行列が自動で再試行し、5 件連続・2 件同時で 500 が 0 件、操作状態に待機中・処理中・完了・失敗と操作者が出て、取り消し (30 日) で統合前に戻り、記録は 400 日で書込みのついでに掃除され、migration 0058 と docs が揃い、pnpm verify:full と CI が緑の状態。",
+  "scope_in": [
+    "統合の意味の是正: 登録済みの行を別の行へ統合でき、統合元の別名・見直し判断・対象科目を統合先へ吸収し、sub_vendors.merged_into_id で統合元を一覧から消す",
+    "一覧の行チェックと全選択 (mixed 表示)、詳細パネルの取引名チェック、選択バーで統合先 (既定は推定月額が最大の登録済み行) を選ぶ複数件統合。処理中は選択を無効にし、統合後は ?vendor= を統合先へ付け替える",
+    "取り消しと操作履歴: POST /api/subscription-operations/{id}/undo と GET /api/subscription-operations?limit=1..20。取り消しはテナントの全利用者ができ、actor_user_id を記録して email (users に居なければ「削除された利用者」) で示す",
+    "名寄せの共通化: core の resolveVendorMerges (連鎖を解決し、循環と自己統合は例外) を applyFreeeDeals・サブスク画面の照合・他画面の subs 集計が共有する。金額の母集団は各画面の定義を保つ",
+    "書込みの並行制御: subscription_operations (Idempotency-Key と base_revision の一意制約)・subscription_revisions・baseRevision による 409 subscription_revision_conflict・canonical_write_busy の 409。書込みと subs 範囲の置き換えを 1 つの db.batch にまとめ、既存の書込み 9 本に baseRevision (任意) と Idempotency-Key (任意) を足す",
+    "画面の待ち行列: TanStack Query の mutation scope で 1 件ずつ送り、409 は同じ key で最大 3 回自動再試行、revision の衝突は前提を確かめて新しい key で送り直す。「サーバー側で処理に失敗しました」と再試行ボタンは 5xx と通信の失敗のときだけ出す",
+    "保持: 取り消しは 30 日 (過ぎたら 410 undo_expired)、記録は 400 日。掃除は新しい書込みのついでに 1 回 50 件まで行う",
+    "migration 0058 と schema-guard の EXPECTED_D1_MIGRATION、docs/subscriptions-screen.md と docs/data-schema.md、core 契約・api 統合・web DOM テスト (AC-001〜023)"
+  ],
+  "scope_out": [
+    "他画面 (概要・総収支・推移など) の画面デザインの作り直し (名寄せの共通化による集計の一致だけを扱う)",
+    "freee / マネーフォワードの取込方式の変更",
+    "他画面の合計へのカード・銀行の未照合明細の算入",
+    "AI による自動統合 (候補と検出理由は出すが、統合の確定は利用者の操作だけで行う)",
+    "Web 以外の専用アプリ",
+    "Durable Objects・Queues・新しい有料サービス・新しい夜間 job",
+    "楽観更新 (書込みの成功後に取り直す)",
+    "取り消しの権限を role や操作者で分けること"
+  ],
+  "acceptance": [
+    "O1 (G1): aquavoice 型 (登録済みの行を別の登録済みの行へ統合) で統合元の行が一覧から 0 件になり、統合先の推定月額を統合後の明細から再計算し、各月の実支払額を保存し、monthly_agg の subs 範囲と他画面のサブスク集計が同じ名寄せを示す (AC-001〜003・016)。",
+    "O2 (G2): 5 件連続・2 件同時の操作で 500 が 0 件で、取り合いは明示的な 409 か 503 になり画面が自動で収束させ、最終の集計が最後に完了した操作と一致する。「サーバー側で処理に失敗しました」は 5xx と通信の失敗のときだけ出る (AC-004〜006・015・021)。",
+    "O3 (G3): 行チェック・全選択・選択バー・統合先・操作状態・操作者・取り消しの DOM テストが全件緑である (AC-007〜011・022)。",
+    "O4 (G4): テナントに無い id は 404、取り消しで統合前の一覧に戻る、古い revision からの更新は未適用の 409、取り消し 30 日と記録 400 日の期限が守られ、操作の一覧に before_json・payload_json・key が出ない (AC-012〜014・017〜020)。",
+    "U5: pnpm verify:full と CI が緑である (AC-023)。"
+  ],
+  "architecture_refs": [
+    "architecture/subscriptions-merge-ui-ux.md",
+    "architecture/subscriptions-merge-frontend.md",
+    "architecture/subscriptions-merge-backend.md",
+    "architecture/subscriptions-merge-database.md",
+    "architecture/subscriptions-merge-auth.md",
+    "architecture/subscriptions-merge-security.md",
+    "architecture/subscriptions-merge-infrastructure.md",
+    "architecture/subscriptions-merge-maintenance-ops.md",
+    "specs/spec-subscriptions-merge.md"
+  ],
+  "updated_at": "2026-09-30T15:18:46Z"
+}

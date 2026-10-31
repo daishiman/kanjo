@@ -1,0 +1,43 @@
+{
+  "graph_node_id": "feat-tradeoff-screen",
+  "artifact_kind": "feature",
+  "purpose": "トレードオフ画面を、利用者 (個人事業主とその家族の家計を 1 人で管理する本人) が『新しい支出を増やすなら、何を見直しますか？』に 1 画面で答え切れる場にする。新しい支出を置くと、事業経費を科目×取引先で並べた見直し候補から削減先を選べ、core が決まったルールで出す推奨の組み合わせを参考に、年間の差額と防衛ラインへの影響を確かめてから条件を記録し、サブスク・予算・明細の画面で手を打てるようにする。アプリは LLM を呼ばず、試算の数字はすべて core の 1 か所から導く。",
+  "goal": "/tradeoff が 15-tradeoff.png の構成 (見出しと問い・分析期間カード・1.新しい支出を設定 (支出名・金額・単発 / 毎月・開始月・メモ)・2.見直し候補の選択 (# / カテゴリ・取引先 / 月額 / 年額 / 必要度 / 直近の推移 / 損益・メモ の表と検索・カテゴリ絞込・全クリア・すべて表示)・3.推奨の組み合わせ (上位 4 件と理由と関連ページ)・計算例 2 種・右側の試算結果と防衛ラインへの影響・下部の選択中バー・読込 / 空 / 失敗) をトークンと共通部品で描画し、候補・推移・必要度 (決定 010 / 011)・理由・試算 (年額・差額・単発の計上、開始月は計算に効かない)・防衛ラインへの影響・推奨の順位が core の純関数 1 か所で導かれて右パネル・選択中バー・計算例が同じ値を示し、GET /api/tradeoff の作り直し・POST /api/tradeoff のサーバ再計算 (covered / verdict / value を受け取らず 422 で未知キーを拒否)・PUT /api/tradeoff/candidates/:key の新設と追加のみの migration 0050 (予定番号) で上書きと試算の履歴が残り、保存一覧と翌月の突合を画面から外しても既存の tradeoffReview・defenseLine・診断検知器の数字とテストが変わらない状態。",
+  "scope_in": [
+    "トレードオフ画面 (15-tradeoff.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直し。packages/web/src/pages/Tradeoff.tsx を packages/web/src/pages/tradeoff/ 配下の部品 (ページ本体・新しい支出のフォーム・候補表・推奨の表・試算結果パネル・計算例・選択中バー) へ分割する (qa-tradeoff-frontend-web-001)",
+    "期間を共通の usePeriod のまま使い、候補は期間の終了月から遡る 3 か月で作る (FR-1)",
+    "packages/core の純関数: 科目×取引先の候補集計と直近 3 か月平均・推移の 3 区分・必要度の推定 (qa-tradeoff-decision-010 / 011、上書き優先)・自動の理由の文と関連ページ・試算 (年額・差額・判定・単発の計上、開始月は計算に効かない)・防衛ラインへの影響・推奨の組み合わせの列挙と評価と順位と理由・候補キーの組み立て・claimPart 正規化の export を 1 か所に置く",
+    "packages/api: GET /api/tradeoff の応答の作り直し、POST /api/tradeoff の入力の作り直しとサーバでの再計算 (covered / verdict / selected.value を受け取らず、現在の候補に無いキーは 422)、PUT /api/tradeoff/candidates/:key の新設 (必要度とメモの upsert、user_id で分離)",
+    "追加のみの migration (予定番号 0050): tradeoff_plans への start_month・memo 列の追加と新表 tradeoff_candidate_notes (一意索引 (user_id, candidate_key))。既存行は書き換えず、schema.ts と EXPECTED_D1_MIGRATION を同じ変更で進める",
+    "選択中バー、候補表の検索・カテゴリ絞込・全クリア・すべて表示、推奨の理由と関連ページへのリンク、計算例、防衛ラインが出せないときの文、変更成功後の tradeoff query だけの invalidate",
+    "docs/spec-v1.1.md の FR-09 への規則表 (候補・推移・必要度・理由・推奨の順位・防衛ラインへの影響) の明記と、core の境界値テスト・API の Contract tests・DOM テスト。tradeoff-review.dom.test.tsx は『突合の表示が無いこと』を確かめる形へ意図を置き換える"
+  ],
+  "scope_out": [
+    "共通シェル (ヘッダーの取引ライン・検索・ダウンロード・ヘルプ、サイドバー、フッター、月次クローズの進捗、改善を送る) の作り直し。既存の PageShell のまま使う",
+    "保存済みの試算の一覧と翌月の突合の画面表示 (qa-tradeoff-decision-004)。既存の tradeoff_plans の行と tradeoffReview 関数・そのテストは残す",
+    "アプリから LLM を呼ぶこと、AI分析レポートからの推奨の取り込み (qa-tradeoff-decision-003)",
+    "既存の tradeoff_plans の行やテーブルの削除・書換、税・手数料の考慮",
+    "既存の defenseLine・/api/defense-line・ヘッダーのバッジ・概要画面・診断の検知器・tradeoffCandidates (分析ハブの改善余地) の数字の変更",
+    "画像の数値 (金額・件数・取引先名) の再現と、web 以外のプラットフォーム (web SPA 1 系統のレスポンシブで扱う)"
+  ],
+  "acceptance": [
+    "S1 (G1 / O1): /tradeoff で 15-tradeoff.png の構成要素 (見出しと問い・分析期間カード・1.新しい支出の 5 入力・2.候補表の 7 列と検索・カテゴリ絞込・全クリア・3.推奨の表と理由とリンク・計算例 2 種・右側の試算結果と防衛ラインへの影響・選択中バー) がすべて描画され、色はトークン・ボタンは共通 Button・期間は usePeriod 経由で、直書き色が 0 件、読込 / 空 / 失敗の各状態が DOM テストで固定されている。",
+    "S2 (G2 / O2): 年額・差額・防衛ラインへの影響を core の 1 関数だけが決め、毎月 80,000・削減 85,000/月 で差額 −60,000 などの計算例が toBe で固定され、防衛ラインの境界 (試算後 0 = 維持、−1 = 割れる) と nodata、開始月を変えても結果が変わらないことがテストされ、右パネル・選択中バー・計算例の 3 か所が同じ値を示し、web と api に ×12・差額の式の重複が無い。",
+    "S3 (G3 / O3): 候補が科目×取引先の経費全体から出て、必要度 (決定 010 の 4 行・検知器に当たっても下がらない 011)・推移 (±10% の境界)・理由 (当たりなし・当たりあり・メモ優先) が全行に付き、PUT で保存した必要度の上書きとメモが再読込後も残る。",
+    "S4 (G4 / O4): 同じ入力で同じ推奨の上位 4 件と理由・関連ページが返り (toEqual)、届かない組み合わせが入らず、順位の各段で差が付く入力が固定されている。",
+    "S5 (G5 / O5): 『この条件で試算』を押すたびに 1 行が追加され、サーバが core で再計算した covered (0〜1e10 の整数) と verdict だけが保存され、未知の候補キーは 422、zod の上限 +1 は 400、認証なしは 401、利用者 A / B が分離され、再訪時に最新の条件が復元され、migration 0050 の適用で既存の tradeoff_plans 行の更新が 0 件である。",
+    "S6 (全体): typecheck・lint・verify:full・core / api / web のテスト・初期 JS 予算が緑で、既存の tradeoff-review-contract と diagnosis-detectors-contract のテストが緑のまま残る。受入は実行済みの最新のテスト証跡だけで判定する。"
+  ],
+  "architecture_refs": [
+    "architecture/tradeoff-ui-ux.md",
+    "architecture/tradeoff-frontend.md",
+    "architecture/tradeoff-backend.md",
+    "architecture/tradeoff-database.md",
+    "architecture/tradeoff-auth.md",
+    "architecture/tradeoff-security.md",
+    "architecture/tradeoff-infrastructure.md",
+    "architecture/tradeoff-maintenance-ops.md",
+    "specs/spec-tradeoff-screen.md"
+  ],
+  "updated_at": "2026-09-21T22:47:09Z"
+}

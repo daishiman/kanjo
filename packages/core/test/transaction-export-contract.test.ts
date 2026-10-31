@@ -84,4 +84,20 @@ describe('CSV化', () => {
   it('数字にカンマ区切りを入れない', () => {
     expect(toCsv([[1234567]])).toBe('1234567');
   });
+
+  it('文字列セルの先頭の = + - @ は式として実行されないよう無害化する(BR-30)', () => {
+    const cells = ['=SUM(A1)', '+81', '-cmd', '@x', '=1,2'];
+    expect(toCsv([cells])).toBe(`'=SUM(A1),'+81,'-cmd,'@x,"'=1,2"`);
+    expect(cells).toHaveLength(4 + 1);
+  });
+
+  it('数値セルは負数でも変えず、途中の = は無害化しない', () => {
+    expect(toCsv([[-1200, 0, 'a=b', '内容-1']])).toBe('-1200,0,a=b,内容-1');
+  });
+
+  it('明細の内容が式でも書き出しで無害化される', () => {
+    const csv = toCsv(transactionExportRows(ds({ mfTx: [tx({ c: '=HYPERLINK("x")' })] })));
+    expect(csv).toContain(`"'=HYPERLINK(""x"")"`);
+    expect(csv).toContain(',-1200,');
+  });
 });

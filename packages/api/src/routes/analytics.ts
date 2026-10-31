@@ -17,7 +17,6 @@ import {
   applyReviewSnoozes,
   availableYears,
   benchmarks,
-  budgetTable,
   buildExpenseProjection,
   buildReportHtml,
   buildReviewQueue,
@@ -31,6 +30,7 @@ import {
   diagnosisWaterfall,
   findMetric,
   fullRange,
+  guideScreen,
   householdCategoryDetail,
   householdSummary,
   isCloseMonth,
@@ -57,14 +57,13 @@ import {
   subscriptionsScreen,
   toCsv,
   totalCashflowReport,
-  tradeoffCandidates,
-  tradeoffReview,
+  totalCashflowScreen,
   transactionExportRows,
   trendsReport,
   trendsScreen,
   unsettledReport,
 } from '@kanjo/core';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import type { Context } from 'hono';
 import { Hono } from 'hono';
 import { z } from 'zod';
@@ -186,12 +185,7 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
     failedImports: failedRuns,
     vendorMemories,
   });
-  // サイドバーの「サブスク」バッジ。サブスク画面の KPI 5 枚目 (未判断の見直し候補) と同じ入口・同じ関数で数える。
-  // バッジは画面の期間タブを知らないので、既定の期間 (直近 1 年) で数える (spec §12.2)
-  const subscriptionCandidates = subscriptionsScreen(
-    await loadSubscriptionsInput(db, userId, { span: '1' }, { all, deals }),
-  ).kpis.reviewCandidates;
-  return { report, items, subscriptionCandidates };
+  return { report, items, cashflow: { deals, verdicts, exclusions, mfExclusions } };
 }
 
 /**
@@ -277,6 +271,40 @@ analyticsRoute.get('/overview', async (c) => {
   });
 });
 
+/**
+ * 使い方画面の数値 (選択期間・総収支・最終更新・データの出所・月次の流れの進捗)。
+ * 総収支は総収支画面と同じ totalCashflowScreen の summary.total (振替除外) を写し、新しい集計規則を足さない。
+ * 最終更新と進捗は /overview と同じ導出 (保留を除いた有効キュー → loadCloseStatus) で作る。
+ * 防衛ラインの値は計算しない (qa-guide-backend-web-004)。読み取りだけで D1 への書き込みは 0。
+ */
+analyticsRoute.get('/guide', async (c) => {
+  const { all, period } = await loadScoped(c);
+  const [sources, snoozes] = await Promise.all([loadReviewSources(c, all), loadSnoozes(c)]);
+  const effective = await applyReviewSnoozes(sources.items, snoozes);
+  const { closeStatus, dataUpdatedAt } = await loadCloseStatus(c, all, { items: effective.items });
+  // 期間の指定が無ければデータ全体。取込前で1か月も無いときだけ range が null になり、totals は 0
+  const range = period.applied ?? fullRange(all);
+  const { deals, verdicts, exclusions, mfExclusions } = sources.cashflow;
+  const total = range
+    ? totalCashflowScreen(
+        all,
+        deals,
+        verdicts,
+        exclusions,
+        range,
+        mfExclusions.map((row) => row.txId),
+      ).summary.total
+    : null;
+  return c.json({
+    screen: guideScreen({
+      period: { applied: period.applied, full: period.full, label: period.label },
+      totals: total ? { income: total.income, expense: total.expense } : null,
+      dataUpdatedAt,
+      closeStatus: all.months.length ? closeStatus : null,
+    }),
+  });
+});
+
 /** 全期間の未処理キュー。クエリを受け取らない (BR-002) */
 analyticsRoute.get('/review-queue', async (c) => {
   // 読み込みは loadScoped に一本化する。件数は期間に依存させないので all だけを使う
@@ -285,6 +313,18 @@ analyticsRoute.get('/review-queue', async (c) => {
   const { items, snoozed, snoozedCount } = await applyReviewSnoozes(sources.items, snoozes);
   // サイドバーの月次クローズカードも同じ有効キューで判定する。
   const { closeStatus } = await loadCloseStatus(c, all, { items });
+  // サイドバーの「サブスク」バッジだけがこの集計を使う。期間タブに依存しない直近 1 年で数える。
+  const subscriptionCandidates = subscriptionsScreen(
+    await loadSubscriptionsInput(
+      getDb(c.env.DB),
+      c.get('userId'),
+      { span: '1' },
+      {
+        all,
+        deals: sources.cashflow.deals,
+      },
+    ),
+  ).kpis.reviewCandidates;
   return c.json({
     total: items.length,
     counts: reviewQueueCounts(items),
@@ -292,7 +332,7 @@ analyticsRoute.get('/review-queue', async (c) => {
     items,
     snoozedItems: snoozed,
     closeStatus,
-    subscriptionCandidates: sources.subscriptionCandidates,
+    subscriptionCandidates,
   });
 });
 
@@ -752,73 +792,6 @@ analyticsRoute.get('/statements', async (c) => {
 analyticsRoute.get('/defense-line', async (c) => {
   const { data } = await loadScoped(c);
   return c.json({ ...defenseLine(data), forecast: defenseForecast(data) });
-});
-
-/* -------- FR-09 やりくり試算 -------- */
-
-analyticsRoute.get('/tradeoff', async (c) => {
-  const userId = c.get('userId');
-  const db = getDb(c.env.DB);
-  const { data } = await loadScoped(c);
-  const plans = await db
-    .select()
-    .from(s.tradeoffPlans)
-    .where(eq(s.tradeoffPlans.userId, userId))
-    .orderBy(desc(s.tradeoffPlans.id))
-    .limit(50);
-  return c.json({
-    candidates: tradeoffCandidates(data),
-    budgets: budgetTable(data),
-    plans: plans.map((p) => ({
-      id: p.id,
-      title: p.title,
-      amount: p.amount,
-      recurring: p.recurring === 1,
-      selected: p.selected ? (JSON.parse(p.selected) as unknown) : [],
-      covered: p.covered,
-      verdict: p.verdict,
-      createdAt: p.createdAt,
-    })),
-    // 立てた計画が翌月に効いたかの突合。見込みを出しただけで終わらせない
-    review: tradeoffReview(
-      data,
-      plans.map((p) => ({
-        id: p.id,
-        title: p.title,
-        amount: p.amount,
-        covered: p.covered,
-        createdAt: p.createdAt,
-      })),
-    ),
-  });
-});
-
-const tradeoffSchema = z.object({
-  title: z.string().max(200).optional(),
-  amount: z.number().int().positive(),
-  recurring: z.boolean(),
-  selected: z.array(z.object({ label: z.string().max(200), value: z.number().int() })).max(50),
-  covered: z.number().int(),
-  verdict: z.enum(['covered', 'insufficient']),
-});
-
-analyticsRoute.post('/tradeoff', zValidator('json', tradeoffSchema), async (c) => {
-  const userId = c.get('userId');
-  const db = getDb(c.env.DB);
-  const b = c.req.valid('json');
-  const [rec] = await db
-    .insert(s.tradeoffPlans)
-    .values({
-      userId,
-      title: b.title ?? null,
-      amount: b.amount,
-      recurring: b.recurring ? 1 : 0,
-      selected: JSON.stringify(b.selected),
-      covered: b.covered,
-      verdict: b.verdict,
-    })
-    .returning({ id: s.tradeoffPlans.id });
-  return c.json({ ok: true, id: rec.id }, 201);
 });
 
 /* -------- エクスポート(FR-05) -------- */

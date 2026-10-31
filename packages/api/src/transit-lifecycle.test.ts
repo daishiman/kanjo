@@ -64,6 +64,7 @@ async function seedCashEntry(): Promise<number> {
   const created = await jsonRequest('/cash-entries', 'POST', {
     date: '2026-07-10',
     side: 'biz',
+    owner: 'business',
     io: 'expense',
     amount: 1200,
     description: '架空の現金支払い',
@@ -115,6 +116,7 @@ describe('交通費の記帳', () => {
     const created = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-07-12',
       side: 'biz',
+      owner: 'business',
       io: 'expense',
       amount: 460,
       description: '電車代 架空駅A→架空駅B(往復)',
@@ -123,6 +125,7 @@ describe('交通費の記帳', () => {
       memo: null,
       transitFrom: '架空駅A',
       transitTo: '架空駅B',
+      transitPurpose: '客先訪問',
       transitRound: true,
       receiptWaived: true,
     });
@@ -133,6 +136,7 @@ describe('交通費の記帳', () => {
     expect(entry).toMatchObject({
       transitFrom: '架空駅A',
       transitTo: '架空駅B',
+      transitPurpose: '客先訪問',
       transitRound: true,
       receiptWaived: true,
     });
@@ -151,6 +155,7 @@ describe('交通費の記帳', () => {
     const res = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-07-12',
       side: 'biz',
+      owner: 'business',
       io: 'expense',
       amount: 230,
       description: '電車代',
@@ -163,7 +168,7 @@ describe('交通費の記帳', () => {
       receiptWaived: true,
     });
     expect(res.status).toBe(400);
-    expect(((await res.json()) as { error: { message: string } }).error.message).toContain('出発地と到着地');
+    expect(((await res.json()) as { error: { message: string } }).error.message).toContain('出発駅と到着駅');
   });
 
   it('通常記帳で証憑不要だけを指定する入力を400で拒否する', async () => {
@@ -173,6 +178,7 @@ describe('交通費の記帳', () => {
     const res = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-07-12',
       side: 'biz',
+      owner: 'business',
       io: 'expense',
       amount: 1200,
       description: '通常の架空支払い',

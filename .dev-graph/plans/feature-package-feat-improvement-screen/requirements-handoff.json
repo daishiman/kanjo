@@ -1,0 +1,48 @@
+{
+  "feature_id": "feat-improvement-screen",
+  "feature_package_id": "feature-package/feat-improvement-screen",
+  "graph_revision": 3,
+  "graph_snapshot_digest": "4095cbf141041cf9b63278474045ef84ab178f08af0d18a1da03d90604c4dc4e",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-improvement-screen/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-improvement-screen/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-improvement-screen/task-graph.json"
+  },
+  "plan_validated_digest": "976a9b89b575cd1d9a781fdd04237f7188cc0c2eb04daba7784139187fb2c144",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-IMPSCR-P01",
+    "SYS-IMPSCR-P02",
+    "SYS-IMPSCR-P03",
+    "SYS-IMPSCR-P04",
+    "SYS-IMPSCR-P05",
+    "SYS-IMPSCR-P06",
+    "SYS-IMPSCR-P07",
+    "SYS-IMPSCR-P08",
+    "SYS-IMPSCR-P09",
+    "SYS-IMPSCR-P10",
+    "SYS-IMPSCR-P11",
+    "SYS-IMPSCR-P12",
+    "SYS-IMPSCR-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-improvement-screen/sys-impscr-p01.md",
+    "tasks/feat-improvement-screen/sys-impscr-p02.md",
+    "tasks/feat-improvement-screen/sys-impscr-p03.md",
+    "tasks/feat-improvement-screen/sys-impscr-p04.md",
+    "tasks/feat-improvement-screen/sys-impscr-p05.md",
+    "tasks/feat-improvement-screen/sys-impscr-p06.md",
+    "tasks/feat-improvement-screen/sys-impscr-p07.md",
+    "tasks/feat-improvement-screen/sys-impscr-p08.md",
+    "tasks/feat-improvement-screen/sys-impscr-p09.md",
+    "tasks/feat-improvement-screen/sys-impscr-p10.md",
+    "tasks/feat-improvement-screen/sys-impscr-p11.md",
+    "tasks/feat-improvement-screen/sys-impscr-p12.md",
+    "tasks/feat-improvement-screen/sys-impscr-p13.md"
+  ]
+}

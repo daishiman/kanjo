@@ -17,7 +17,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { scheduledMaintenance } from './index.js';
+import { jstDate, scheduledMaintenance } from './index.js';
 import { splitMigrationStatements } from './migration-test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
@@ -39,7 +39,8 @@ const env = (filesBinding: R2Bucket = files, dbBinding: D1Database = d1) => ({
 });
 
 /** 実行日の当日キー。テストが日付をまたいでも同じ規則で求める。 */
-const todayKey = (): string => `backups/${new Date().toISOString().slice(0, 10)}.json`;
+// 夜間バックアップは JST 2:00 に動くので、置き場の日付も JST で切る
+const todayKey = (): string => `backups/${jstDate(Date.now())}.json`;
 
 /** 今日から days 日前の世代キー。 */
 const dayKey = (days: number): string =>

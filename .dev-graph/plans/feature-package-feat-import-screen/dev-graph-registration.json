@@ -1,0 +1,1303 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-import-screen/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-import-screen",
+  "parent_feature": "feat-import-screen",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-IMPORT-P01": "beads",
+    "SYS-IMPORT-P02": "beads",
+    "SYS-IMPORT-P03": "beads",
+    "SYS-IMPORT-P04": "beads",
+    "SYS-IMPORT-P05": "beads",
+    "SYS-IMPORT-P06": "beads",
+    "SYS-IMPORT-P07": "beads",
+    "SYS-IMPORT-P08": "beads",
+    "SYS-IMPORT-P09": "beads",
+    "SYS-IMPORT-P10": "beads",
+    "SYS-IMPORT-P11": "beads",
+    "SYS-IMPORT-P12": "beads",
+    "SYS-IMPORT-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-IMPORT-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と申し送り・未決事項の解決担当の割り当て",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p01",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-import-screen/sys-import-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "取込規則純関数と IMPORT_LIMITS・検査と確定の API・migration 0050・画面分割のワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P01"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-import-screen/sys-import-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "上限・仮置き・Origin・レート制限・公開範囲の契約の独立レビュー",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P02"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-import-screen/sys-import-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 境界値・上限の字面・API 契約・migration・DOM の失敗テスト先行作成",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P03"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/import-screen.test.ts",
+        "packages/api/src/import-screen.integration.test.ts",
+        "packages/api/src/import-migration-0050.test.ts",
+        "packages/web/src/pages/import/import-screen.dom.test.tsx",
+        "packages/api/src/import-limits-literal.test.ts"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-import-screen/sys-import-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "import-screen 純関数・検査と確定の API・migration 0050・データ取込画面の分割と旧操作の移設の最終実装",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P04"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/import-screen.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/api/src/import-pipeline.ts",
+        "packages/api/src/import-lifecycle.ts",
+        "packages/api/src/import-active.ts",
+        "packages/api/src/import-diff.ts",
+        "packages/api/src/import-history-discard.ts",
+        "packages/api/src/import-rate-limit.ts",
+        "packages/api/src/scheduled-maintenance-budget.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/index.ts",
+        "migrations/0050_import_inspections.sql",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/Import.tsx",
+        "packages/web/src/pages/import/",
+        "packages/web/src/components/ImportDiff.tsx",
+        "packages/web/src/components/ImportDeletion.tsx",
+        "packages/web/src/import-retry.ts",
+        "packages/web/src/pages/Import.dom.test.tsx",
+        "packages/web/src/pages/Import.diff.test.tsx",
+        "packages/web/src/pages/Import.discard.test.tsx",
+        "packages/web/src/pages/Import.deletion.test.tsx"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-import-screen/sys-import-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと型検査と lint と verify:full の実行記録",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P05"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-import-screen/sys-import-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 S1 から S6 の検証",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P06"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-import-screen/sys-import-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "上限値と取込規則の重複・旧参照の読取専用監査",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p08",
+        "audit"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P07"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-import-screen/sys-import-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・ファイル名の無害化・xlsx 展開のメモリ・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P08"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-import-screen/sys-import-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P09"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-import-screen/sys-import-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P10"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/evidence.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-import-screen/sys-import-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "ファイルの状態・上限値・取込可否・要約・エラー文言の規則表の docs 最終同期",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P11"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/rules.md",
+        "docs/import-screen/design-decisions.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-import-screen/sys-import-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-IMPORT-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信と migration 0050 の適用とクローズアウト",
+      "project_id": "feature-package-feat-import-screen",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "import-screen",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T23:18:31Z",
+      "updated_at": "2026-09-21T23:18:31Z",
+      "depends_on": [
+        "SYS-IMPORT-P12"
+      ],
+      "related_nodes": [
+        "arch-import-screen-auth",
+        "arch-import-screen-backend",
+        "arch-import-screen-database",
+        "arch-import-screen-frontend",
+        "arch-import-screen-infrastructure",
+        "arch-import-screen-maintenance-ops",
+        "arch-import-screen-security",
+        "arch-import-screen-ui-ux",
+        "spec-import-screen"
+      ],
+      "resource_scope": [
+        "docs/import-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-import-screen",
+      "feature_package_id": "feature-package/feat-import-screen",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-import-screen/sys-import-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-import-screen/plan-findings.json",
+        "evaluated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-import-screen/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+        "imported_at": "2026-09-21T23:18:31Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-import-screen/sys-import-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T23:14:02Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

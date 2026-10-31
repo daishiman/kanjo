@@ -5,6 +5,8 @@
 import {
   type BalanceRow,
   type CashEntry,
+  type CashOverrideRule,
+  DEFAULT_OWNER_LABELS,
   type Dataset,
   FINGERPRINT_VERSION,
   type FreeeDeal,
@@ -17,6 +19,8 @@ import {
   freeePersistedRow,
   isCashTxId,
   mfPersistedIdentityRow,
+  settingsChangeEntries,
+  sortCashOverrides,
 } from '@kanjo/core';
 import {
   type AuditAttribute,
@@ -29,6 +33,7 @@ import {
 import { JSON_ACTIVE_TARGET, invalidateJsonSnapshotStatement } from './import-active.js';
 import { type ParsedUnit, fingerprintCanonical } from './import-pipeline.js';
 import { LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT, aggRowsFromDataset } from './store.js';
+import { subscriptionRestoreBarrierStatement } from './subscription-restore-barrier.js';
 import { txEditRestoreRow } from './tx-edit-codec.js';
 
 export type ImportOutcome = 'processing' | 'applying' | 'committed' | 'failed' | 'duplicate';
@@ -311,11 +316,13 @@ export interface ImportQueryPlan {
     heartbeats: number;
     unitTransitions: number;
     commitStatements: number;
+    /** 検査の読み込み・レート制限・run の件数更新。POST /imports では無い */
+    screen?: number;
   };
 }
 
 const sumPlan = (breakdown: ImportQueryPlan['breakdown']): ImportQueryPlan => {
-  const total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
+  const total = Object.values(breakdown).reduce((sum: number, value) => sum + (value ?? 0), 0);
   return { total, limit: D1_FREE_QUERY_LIMIT, accepted: total < D1_FREE_QUERY_LIMIT, breakdown };
 };
 
@@ -329,9 +336,13 @@ export function planMultipartImportQueries(args: {
   applicableUnitCount: number;
   jsonUnitCount: number;
   commitStatementCounts: number[];
+  /** 検査を経る確定 (POST /imports/runs) が同じ invocation で使う query 数 */
+  extraQueries?: number;
 }): ImportQueryPlan {
-  const { fileCount, unitCount, applicableUnitCount, jsonUnitCount, commitStatementCounts } = args;
+  const { fileCount, unitCount, applicableUnitCount, jsonUnitCount, commitStatementCounts, extraQueries } =
+    args;
   return sumPlan({
+    ...(extraQueries ? { screen: extraQueries } : {}),
     // canonical planning snapshot(norm/cash/freee/splits) + loadDataset(cash snapshot)
     preflightReads: 1 + LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT,
     // run create + worst claim + attempt inserts + initial reconcile + release + outer catch cleanup(2)
@@ -410,12 +421,16 @@ export async function updateImportRun(
     .run();
 }
 
-/** INSERT..ON CONFLICT..WHEREの1 statementで単一writerをclaimする。 */
+/**
+ * INSERT..ON CONFLICT..WHEREの1 statementで単一writerをclaimする。
+ * ttlMs は取込の 15 分が既定。サブスク等の短い変更は canonical-mutation-fence が 2 分を渡す。
+ */
 export async function acquireImportWriter(
   database: D1Database,
   userId: string,
   runId: string,
   nowMs = Date.now(),
+  ttlMs = IMPORT_CLAIM_TTL_MS,
 ): Promise<boolean> {
   const prior = await database
     .prepare('SELECT run_id, expires_at FROM import_writer_claims WHERE user_id=?')
@@ -433,7 +448,7 @@ export async function acquireImportWriter(
           OR import_writer_claims.run_id = excluded.run_id
        RETURNING run_id`,
     )
-    .bind(userId, runId, nowMs, nowMs + IMPORT_CLAIM_TTL_MS);
+    .bind(userId, runId, nowMs, nowMs + ttlMs);
   const recovering = !!prior && prior.run_id !== runId && prior.expires_at <= nowMs;
   const reason = '処理中に中断されたため、新しい取込で回復しました';
   const now = new Date(nowMs).toISOString();
@@ -618,6 +633,54 @@ export const insertJsonRows = (
       .bind(...scalarColumns.map(({ value }) => value), payload),
   );
 };
+
+/** 設定の変更履歴 1 行: [target, targetKey, before, after] */
+export type SettingsChangeLogRow = readonly [string, string, string | null, string | null];
+
+/**
+ * 設定の変更履歴の changed_at。revision (MAX(changed_at)) を必ず進めるため、
+ * 時計が直前の revision 以前を指していても『直前 + 1ms』より前にはしない。
+ */
+export function settingsChangedAt(now: string, revision: string | null | undefined): string {
+  if (!revision) return now;
+  const next = new Date(Date.parse(revision) + 1).toISOString();
+  return next > now ? next : now;
+}
+
+/**
+ * 設定の変更履歴を追記する。seq は利用者ごとの連番で、文ごとに MAX(seq) を読み直すので
+ * payload を分けても番号は続く (同じ batch の中で直列に評価される)。
+ */
+export function settingsChangeLogStatements(
+  database: D1Database,
+  userId: string,
+  rows: ReadonlyArray<SettingsChangeLogRow>,
+  meta: { changedAt: string; changedBy: string; origin: 'screen' | 'restore' | 'migration' },
+): D1PreparedStatement[] {
+  return chunkJsonRowsByBytes(rows).map((payload) =>
+    database
+      .prepare(
+        `INSERT INTO settings_change_log
+           (user_id,seq,target,target_key,before,after,changed_by,changed_at,origin)
+         SELECT ?,
+                (SELECT ifnull(MAX(seq),0) FROM settings_change_log WHERE user_id=?) + item.key + 1,
+                json_extract(item.value,'$[0]'), json_extract(item.value,'$[1]'),
+                json_extract(item.value,'$[2]'), json_extract(item.value,'$[3]'), ?, ?, ?
+         FROM json_each(?) AS item`,
+      )
+      .bind(userId, userId, meta.changedBy, meta.changedAt, meta.origin, payload),
+  );
+}
+
+/** settings_cash_overrides の 1 行: [override_id, kind, amount, scope, month, memo] */
+export const settingsCashOverrideRow = (rule: CashOverrideRule): unknown[] => [
+  rule.overrideId,
+  rule.kind,
+  rule.amount,
+  rule.scope,
+  rule.month,
+  rule.memo,
+];
 
 const deleteJsonValues = (
   database: D1Database,
@@ -951,6 +1014,8 @@ export interface RestoreWriteSet {
   editRows: unknown[][];
   ownerRows: unknown[][];
   budgetRows: unknown[][];
+  /** 0050: 期間別の年額予算。(period_start, account) 順で指紋を安定させる */
+  budgetPlanRows: unknown[][];
   cashOverrideRows: unknown[][];
   restoredAggRows: unknown[][];
   unrecordedMonths: string[];
@@ -991,7 +1056,19 @@ export interface RestoreWriteSet {
   txEditsDestinationEmpty: boolean;
   institutionOwnersDestinationEmpty: boolean;
   budgetsDestinationEmpty: boolean;
+  budgetPlansDestinationEmpty: boolean;
   cashOverridesDestinationEmpty: boolean;
+  /**
+   * 0052: 設定画面の現金上書き。復元後の最終の集合 (変わらないときは復元先の集合)。
+   * 指紋はこの最終行だけを使い、書くかどうか (Changed) と履歴・revision は含めない。
+   */
+  settingsCashOverrideRows: unknown[][];
+  settingsCashOverridesChanged: boolean;
+  settingsCashOverridesDestinationEmpty: boolean;
+  /** 0053: 復元で変わった設定の履歴 (origin migration・system)。 */
+  settingsChangeLogRows: SettingsChangeLogRow[];
+  /** 復元前の revision。changed_at をこれより後にする */
+  settingsRevision: string | null;
 }
 
 /** サブスク登録本体のJSON形状には無い、D1 canonicalの補助属性 */
@@ -999,6 +1076,15 @@ export interface RestoreSubVendorMetadata {
   name: string;
   category: string | null;
   reviewedAt: string | null;
+  /**
+   * 0058: 統合先の名前。統合元は Dataset.subs に載らないので、この行だけが統合を運ぶ。
+   * キーが無い・null は統合なし (0058 より前の JSON には統合が存在しない)
+   */
+  mergedIntoName?: string | null;
+  /** 保存定義。実効 aliases は統合元も畳んだ表示用なので書き戻しに使わない。旧 JSON は省略可。 */
+  aliases?: string[];
+  accounts?: string[];
+  sortOrder?: number;
 }
 
 /** 復元で置き換えるサブスク見直し判断 */
@@ -1056,6 +1142,43 @@ export interface RestoreTotalCashflowOperation {
   createdAt: string;
 }
 
+/**
+ * 復元で upsert するベンダー行。根 (Dataset.subs) の後ろに、統合元 (mergedIntoName を持つ metadata) を並べる。
+ * metadata の保存別名・対象科目を優先する。旧 JSON の統合元の欠落は null とし、既存定義を保つ。
+ * 7 番目の要素 (統合先の名前) は統合元の行だけに付ける。統合の無い JSON の指紋は 0058 の前と同じになる。
+ */
+const restoreVendorRows = (
+  data: Dataset,
+  metadataRows: ReadonlyArray<RestoreSubVendorMetadata>,
+  metadataByName: ReadonlyMap<string, RestoreSubVendorMetadata>,
+): unknown[][] => {
+  const roots = [...new Set(data.subs.vendors)];
+  const rootNames = new Set(roots);
+  const merged = metadataRows.filter((row) => row.mergedIntoName && !rootNames.has(row.name));
+  return [
+    ...roots.map((name, index) => {
+      const metadata = metadataByName.get(name);
+      return [
+        name,
+        JSON.stringify(metadata?.aliases ?? [...new Set(data.subs.aliases?.[name] ?? [])].sort()),
+        JSON.stringify(metadata?.accounts ?? [...new Set(data.subs.accounts?.[name] ?? [])].sort()),
+        metadata?.sortOrder ?? index,
+        metadata?.category ?? null,
+        metadata?.reviewedAt ?? null,
+      ];
+    }),
+    ...merged.map((row, index) => [
+      row.name,
+      row.aliases === undefined ? null : JSON.stringify(row.aliases),
+      row.accounts === undefined ? null : JSON.stringify(row.accounts),
+      row.sortOrder ?? roots.length + index,
+      row.category,
+      row.reviewedAt,
+      row.mergedIntoName,
+    ]),
+  ];
+};
+
 /** restoreのmerge/default適用後に、実際にpersistするtable行を一度だけ構成する。 */
 export function prepareRestoreWriteSet(args: {
   userId: string;
@@ -1079,6 +1202,11 @@ export function prepareRestoreWriteSet(args: {
   duplicateVerdicts?: ReadonlyArray<RestoreDuplicateVerdict> | null;
   freeeDealExclusions?: ReadonlyArray<RestoreFreeeDealExclusion> | null;
   totalCashflowOperations?: ReadonlyArray<RestoreTotalCashflowOperation> | null;
+  /**
+   * 0052: 復元後の設定画面の現金上書き。null/未指定は復元先の集合を保つ。
+   * 復元先の集合は existingDestinationRowCounts.settingsCashOverrideRules から読む。
+   */
+  settingsCashOverrides?: ReadonlyArray<CashOverrideRule> | null;
   /** 移行先の既存件数。未指定は「行があるかもしれない」として DELETE を残す */
   existingDestinationRowCounts?: {
     subVendorReviewDecisions: number;
@@ -1091,9 +1219,39 @@ export function prepareRestoreWriteSet(args: {
     txEdits: number;
     institutionOwners: number;
     budgets: number;
+    budgetPlans?: number;
     cashOverrides: number;
+    settingsCashOverrides?: number;
+    settingsRevision?: string | null;
+    settingsCashOverrideRules?: ReadonlyArray<CashOverrideRule>;
   };
 }): RestoreWriteSet {
+  const existingCashOverrides = sortCashOverrides(
+    args.existingDestinationRowCounts?.settingsCashOverrideRules ?? [],
+  );
+  const nextCashOverrides = args.settingsCashOverrides
+    ? sortCashOverrides(args.settingsCashOverrides)
+    : existingCashOverrides;
+  const settingsCashOverrideRows = nextCashOverrides.map(settingsCashOverrideRow);
+  const settingsCashOverridesChanged =
+    canonicalEncode(settingsCashOverrideRows) !==
+    canonicalEncode(existingCashOverrides.map(settingsCashOverrideRow));
+  const existingStatMinMonths = args.existingStatMinMonths ?? 6;
+  // 名義・集計ルールは全データ復元では書かないので、両側に同じ値を置いて差分から外す
+  const settingsChangeLogRows = settingsChangeEntries(
+    {
+      normRules: [],
+      ownerLabels: DEFAULT_OWNER_LABELS,
+      statMinMonths: existingStatMinMonths,
+      cashOverrides: existingCashOverrides,
+    },
+    {
+      normRules: [],
+      ownerLabels: DEFAULT_OWNER_LABELS,
+      statMinMonths: args.statMinMonths ?? 6,
+      cashOverrides: nextCashOverrides,
+    },
+  ).map((entry): SettingsChangeLogRow => [entry.target, entry.targetKey, entry.before, entry.after]);
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));
   const subVendorMetadata = new Map((args.subVendorMetadata ?? []).map((row) => [row.name, row]));
   return {
@@ -1101,17 +1259,7 @@ export function prepareRestoreWriteSet(args: {
     mfRows: rawTxs
       .map(mfPersistedIdentityRow)
       .sort((a, b) => canonicalEncode(a).localeCompare(canonicalEncode(b))),
-    vendorRows: [...new Set(args.data.subs.vendors)].map((name, index) => {
-      const metadata = subVendorMetadata.get(name);
-      return [
-        name,
-        JSON.stringify([...new Set(args.data.subs.aliases?.[name] ?? [])].sort()),
-        JSON.stringify([...new Set(args.data.subs.accounts?.[name] ?? [])].sort()),
-        index,
-        metadata?.category ?? null,
-        metadata?.reviewedAt ?? null,
-      ];
-    }),
+    vendorRows: restoreVendorRows(args.data, args.subVendorMetadata ?? [], subVendorMetadata),
     subVendorReviewDecisionRows: args.subVendorReviewDecisions
       ? [...args.subVendorReviewDecisions]
           .sort((a, b) => a.vendorKey.localeCompare(b.vendorKey))
@@ -1147,6 +1295,17 @@ export function prepareRestoreWriteSet(args: {
     editRows: editRows(args.data.edits).sort(([a], [b]) => String(a).localeCompare(String(b))),
     ownerRows: Object.entries(args.data.institutionOwners).sort(([a], [b]) => a.localeCompare(b)),
     budgetRows: Object.entries(args.data.budgets).sort(([a], [b]) => a.localeCompare(b)),
+    budgetPlanRows: [...(args.data.budgetPlans ?? [])]
+      .sort((a, b) => a.periodStart.localeCompare(b.periodStart) || a.account.localeCompare(b.account))
+      .map((plan) => [
+        plan.periodStart,
+        plan.account,
+        plan.kind,
+        plan.annualAmount,
+        plan.planAdjustment,
+        plan.planReason,
+        plan.updatedAt,
+      ]),
     cashOverrideRows: Object.entries(args.data.cashOverride)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([month, value]) => [month, value.revenue, value.expense]),
@@ -1190,6 +1349,9 @@ export function prepareRestoreWriteSet(args: {
         entry.transitTo ?? null,
         entry.transitRound ? 1 : 0,
         entry.receiptWaived ? 1 : 0,
+        // 0052。旧バックアップ由来は null(未設定)のまま入れる
+        entry.owner ?? null,
+        entry.transitPurpose ?? null,
       ]),
     // DBでは (kind,itemKey) / month を主キーとする集合。配列順を指紋へ混ぜない
     reviewSnoozeRows: args.reviewSnoozes
@@ -1245,7 +1407,13 @@ export function prepareRestoreWriteSet(args: {
     txEditsDestinationEmpty: args.existingDestinationRowCounts?.txEdits === 0,
     institutionOwnersDestinationEmpty: args.existingDestinationRowCounts?.institutionOwners === 0,
     budgetsDestinationEmpty: args.existingDestinationRowCounts?.budgets === 0,
+    budgetPlansDestinationEmpty: args.existingDestinationRowCounts?.budgetPlans === 0,
     cashOverridesDestinationEmpty: args.existingDestinationRowCounts?.cashOverrides === 0,
+    settingsCashOverrideRows,
+    settingsCashOverridesChanged,
+    settingsCashOverridesDestinationEmpty: args.existingDestinationRowCounts?.settingsCashOverrides === 0,
+    settingsChangeLogRows,
+    settingsRevision: args.existingDestinationRowCounts?.settingsRevision ?? null,
   };
 }
 
@@ -1264,11 +1432,22 @@ export async function restoreWriteSetFingerprint(writeSet: RestoreWriteSet): Pro
     txEditsDestinationEmpty: _editsEmpty,
     institutionOwnersDestinationEmpty: _ownersEmpty,
     budgetsDestinationEmpty: _budgetsEmpty,
+    budgetPlansDestinationEmpty: _budgetPlansEmpty,
     cashOverridesDestinationEmpty: _overridesEmpty,
+    settingsCashOverridesChanged: _settingsOverridesChanged,
+    settingsCashOverridesDestinationEmpty: _settingsOverridesEmpty,
+    settingsChangeLogRows: _settingsLog,
+    settingsRevision: _settingsRevision,
     ...rows
   } = writeSet;
   return fingerprintCanonical(`v${FINGERPRINT_VERSION}:json-write-set:${canonicalEncode(rows)}`);
 }
+
+/** 0058: 復元がサブスクの画面の状態 (ベンダー・判断・除外) に触れるか。触れるときだけ revision を進める */
+export const restoreTouchesSubscriptions = (writeSet: RestoreWriteSet): boolean =>
+  writeSet.vendorRows.length > 0 ||
+  writeSet.subVendorReviewDecisionRows !== null ||
+  (writeSet.subVendorExclusionsChanged && writeSet.subVendorExclusionRows.length > 0);
 
 /** multipart JSONとPOST /restoreが共有するrestore commandのD1 write-set。 */
 export function restoreCommitStatements(args: {
@@ -1284,8 +1463,12 @@ export function restoreCommitStatements(args: {
   const { database, userId, runId, writeSet, importId, contentHash, targetKeys } = args;
   const now = args.now ?? new Date().toISOString();
   const mfStatements = mfReplaceOnlyStatements(database, userId, writeSet.mfRows, importId);
+  const mergedVendorPayloads = chunkJsonRowsByBytes(
+    writeSet.vendorRows.filter((row) => typeof row[6] === 'string'),
+  );
   return [
     ...beginImportCommitStatements({ database, userId, runId, importId }),
+    ...(restoreTouchesSubscriptions(writeSet) ? [subscriptionRestoreBarrierStatement(database, userId)] : []),
     ...mfStatements,
     database.prepare('DELETE FROM tx_splits WHERE user_id=?').bind(userId),
     ...insertJsonRows(
@@ -1309,25 +1492,52 @@ export function restoreCommitStatements(args: {
       writeSet.splitRows,
       [{ column: 'user_id', value: userId }],
     ),
+    // 根と統合元の upsert は1文にまとめる。旧 JSON の統合元は null を保存定義の欠落として扱う。
     ...chunkJsonRowsByBytes(writeSet.vendorRows).map((payload) =>
       database
         .prepare(
-          `INSERT INTO sub_vendors
-             (user_id,name,aliases,accounts,sort_order,category,reviewed_at,created_at)
-           SELECT ?,
-                  CAST(json_extract(item.value,'$[0]') AS TEXT),
-                  CAST(json_extract(item.value,'$[1]') AS TEXT),
-                  CAST(json_extract(item.value,'$[2]') AS TEXT),
-                  CAST(json_extract(item.value,'$[3]') AS INTEGER),
-                  json_extract(item.value,'$[4]'),
-                  json_extract(item.value,'$[5]'), ?
-           FROM json_each(?) AS item WHERE 1
-           ON CONFLICT(user_id,name) DO UPDATE SET
-             aliases=excluded.aliases, accounts=excluded.accounts, sort_order=excluded.sort_order,
-             category=excluded.category, reviewed_at=excluded.reviewed_at`,
+          `INSERT INTO sub_vendors (user_id,name,aliases,accounts,sort_order,category,reviewed_at,created_at)
+         SELECT ?1, json_extract(item.value,'$[0]'),
+           COALESCE(json_extract(item.value,'$[1]'),'[]'), COALESCE(json_extract(item.value,'$[2]'),'[]'),
+           json_extract(item.value,'$[3]'), json_extract(item.value,'$[4]'), json_extract(item.value,'$[5]'), ?2
+         FROM json_each(?3) AS item WHERE 1
+         ON CONFLICT(user_id,name) DO UPDATE SET
+           aliases=COALESCE((SELECT json_extract(value,'$[1]') FROM json_each(?3)
+             WHERE json_extract(value,'$[0]')=excluded.name),sub_vendors.aliases),
+           accounts=COALESCE((SELECT json_extract(value,'$[2]') FROM json_each(?3)
+             WHERE json_extract(value,'$[0]')=excluded.name),sub_vendors.accounts),
+           sort_order=excluded.sort_order, category=excluded.category,
+           reviewed_at=excluded.reviewed_at, merged_into_id=NULL`,
         )
         .bind(userId, now, payload),
     ),
+    // バックアップの統合を名前で入れ直す。id は環境ごとに変わるので、全ての upsert の後に名前で引く
+    ...mergedVendorPayloads.map((payload) =>
+      database
+        .prepare(
+          `UPDATE sub_vendors SET merged_into_id=(
+             SELECT target.id FROM sub_vendors AS target, json_each(?1) AS item
+              WHERE target.user_id=sub_vendors.user_id
+                AND target.name=json_extract(item.value,'$[6]')
+                AND json_extract(item.value,'$[0]')=sub_vendors.name)
+           WHERE user_id=?2 AND name IN (SELECT json_extract(value,'$[0]') FROM json_each(?1))`,
+        )
+        .bind(payload, userId),
+    ),
+    // 復元の前に開いた画面の base を古くする (次の書込みを 409 にする)。操作の記録は書き戻さない。
+    // ベンダーは upsert だけで消さないので、サブスクの行を運ばない復元は画面の状態を変えない。
+    // その場合は文を足さない (最悪の復元が上限 50 に対して 49 で、無条件に足すと 413 になる)
+    ...(restoreTouchesSubscriptions(writeSet)
+      ? [
+          database
+            .prepare(
+              `INSERT INTO subscription_revisions (user_id,revision,updated_at) VALUES (?,1,?)
+               ON CONFLICT(user_id) DO UPDATE SET
+                 revision=subscription_revisions.revision+1, updated_at=excluded.updated_at`,
+            )
+            .bind(userId, now),
+        ]
+      : []),
     ...(writeSet.subVendorReviewDecisionRows
       ? [
           ...(writeSet.subVendorReviewDecisionsDestinationEmpty
@@ -1514,6 +1724,16 @@ export function restoreCommitStatements(args: {
     ...insertJsonRows(database, 'budgets', ['account', 'monthly_amount'], writeSet.budgetRows, [
       { column: 'user_id', value: userId },
     ]),
+    ...(writeSet.budgetPlansDestinationEmpty
+      ? []
+      : [database.prepare('DELETE FROM budget_plans WHERE user_id=?').bind(userId)]),
+    ...insertJsonRows(
+      database,
+      'budget_plans',
+      ['period_start', 'account', 'kind', 'annual_amount', 'plan_adjustment', 'plan_reason', 'updated_at'],
+      writeSet.budgetPlanRows,
+      [{ column: 'user_id', value: userId }],
+    ),
     ...(writeSet.cashOverridesDestinationEmpty
       ? []
       : [database.prepare('DELETE FROM cash_overrides WHERE user_id=?').bind(userId)]),
@@ -1524,6 +1744,30 @@ export function restoreCommitStatements(args: {
       writeSet.cashOverrideRows,
       [{ column: 'user_id', value: userId }],
     ),
+    // 0052: 変わったときだけ置き換える。変わらない復元で DELETE+INSERT を撃つと、上限 50 本を無駄に使う
+    ...(writeSet.settingsCashOverridesChanged
+      ? [
+          ...(writeSet.settingsCashOverridesDestinationEmpty
+            ? []
+            : [database.prepare('DELETE FROM settings_cash_overrides WHERE user_id=?').bind(userId)]),
+          ...insertJsonRows(
+            database,
+            'settings_cash_overrides',
+            ['override_id', 'kind', 'amount', 'scope', 'month', 'memo'],
+            writeSet.settingsCashOverrideRows,
+            [
+              { column: 'user_id', value: userId },
+              { column: 'updated_at', value: settingsChangedAt(now, writeSet.settingsRevision) },
+              { column: 'updated_by', value: 'system' },
+            ],
+          ),
+        ]
+      : []),
+    ...settingsChangeLogStatements(database, userId, writeSet.settingsChangeLogRows, {
+      changedAt: settingsChangedAt(now, writeSet.settingsRevision),
+      changedBy: 'system',
+      origin: 'migration',
+    }),
     database.prepare('DELETE FROM restored_monthly_agg WHERE user_id=?').bind(userId),
     ...insertJsonRows(
       database,
@@ -1574,6 +1818,8 @@ function restoreCashEntryStatements(
       'transit_to',
       'transit_round',
       'receipt_waived',
+      'owner',
+      'transit_purpose',
     ],
     rows,
     [

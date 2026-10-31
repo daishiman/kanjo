@@ -1,0 +1,1226 @@
+{
+  "feature_package_id": "feature-package/feat-budget-screen",
+  "parent_feature": "feat-budget-screen",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/00-requirements-definition.md",
+      "system-spec/completeness-findings.json",
+      "specs/spec-budget-screen.md",
+      "features/feat-budget-screen.md",
+      "features/feat-budget-screen.context.json"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "id": "SYS-BUDGET-P01",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "要件ベースライン確定と未決事項 7 件の着手時整理",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p01",
+        "preparation"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P01",
+      "depends_on": [],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p01.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "受入 S1〜S5 と AT-01〜AT-22 が検証可能な文として docs に列挙され、各文に対応する spec の節番号が付いている。",
+        "goal-spec.json の open_items 7 件 (Q-7 保存 batch の文数と D1 上限、収入行の差額の色、年額の下限、snapshot consumer とバックアップ write-set の整合、その他収入の manualOnly 行の扱い、Q-5 増減率・季節性補正の読み、migration 0048 の予定番号) が docs に転記され、それぞれの resolution_owner task (主に SYS-BUDGET-P05、migration 番号は SYS-BUDGET-P05 と SYS-BUDGET-P13) が明記されている。",
+        "スコープ外 (予算の版管理、外部 LLM・外部データ、個人(家計)の予算、共通シェルの作り直し、トレードオフ画面、web 以外の専用アプリ、旧 API の削除、既存 budgets 表の削除・書き換え) が docs に明記されている。"
+      ],
+      "verification": [
+        "pnpm lint"
+      ],
+      "rollback": "docs の追記を revert する。コードと表の変更を伴わない。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P01",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p01.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P01"
+      },
+      "secondary_workstreams": [
+        "quality"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P02",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "budgetScreen・applyBudgetInputs・monthlyBudgetsAt・3 API・migration 0048 のワークストリーム設計決定記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p02",
+        "preparation"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P02",
+      "depends_on": [
+        "SYS-BUDGET-P01"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p02.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "budgetScreen / applyBudgetInputs / monthlyBudgetsAt (packages/core/src/budget-screen.ts 新設) の入出力と BR-01〜BR-25 の算出規則が docs に書かれている。",
+        "GET /api/budget-screen・GET /api/budget-plans・PUT /api/budget-plans の応答形・zod 許可リストが spec の API 契約と一致している。",
+        "migration 0048_budget_plans.sql (budget_plans の新設、主キー (user_id, period_start, account)) が追加のみである方針と、番号が予定番号であり着手時に origin/main と突き合わせる旨が docs に明記されている。",
+        "既存 budgets の読み手 (診断の予算カバー率・着地見込み・analytics の予算表) を monthlyBudgetsAt 経由に寄せる設計 (BR-22・BR-23) が docs に明記されている。",
+        "budget_plans を JSON snapshot の consumer (JSON_SNAPSHOT_MUTATION_CONSUMERS) とバックアップ・復元の write-set (import-lifecycle.ts) の両方に入れる設計 (BR-24) が docs に明記されている。"
+      ],
+      "verification": [
+        "pnpm lint"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P02",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p02.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P02"
+      },
+      "secondary_workstreams": [
+        "backend",
+        "frontend",
+        "api",
+        "data"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P03",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "算出契約・API 契約・migration 契約・snapshot/バックアップ整合の独立レビュー",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p03",
+        "design-review"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P03",
+      "depends_on": [
+        "SYS-BUDGET-P02"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p03.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "レビュー指摘が docs に列挙され、全件が解消済みか理由付きで持ち越されている。",
+        "PUT /api/budget-plans が canonicalMutationFence の内側にあること、GET 2 本はフェンス対象外であることが確認されている。",
+        "budget_plans を JSON_SNAPSHOT_MUTATION_CONSUMERS とバックアップ・復元の write-set の両方に入れる設計が揃っていることが確認されている (open item: snapshot consumer とバックアップ write-set の整合)。",
+        "収入の行の差額の色規則・年額の下限・その他収入 (manualOnly) の扱いが未決のまま実装へ渡され、agent 推定の値として実装し DOM テストで表現を変えられる前提であることがレビュー結果として明記されている。"
+      ],
+      "verification": [
+        "pnpm lint"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P03",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p03.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P03"
+      },
+      "secondary_workstreams": [
+        "backend",
+        "security",
+        "data"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P04",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "core 不変条件・API 契約・migration・DOM の失敗テスト先行作成",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p04",
+        "test-design"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P04",
+      "depends_on": [
+        "SYS-BUDGET-P03"
+      ],
+      "write_scope": [
+        "packages/core/test/budget-screen.test.ts",
+        "packages/api/src/routes/budget-plans.test.ts",
+        "packages/web/src/pages/budget/budget.dom.test.tsx",
+        "packages/web/src/pages/budget/view-model.test.ts"
+      ],
+      "deploy_unit": "N/A: テストコードは配布物に含まれない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p04.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "core 不変条件 (KPI の各式、一覧の来期予算の和 = KPI = グラフの月次予算の年合計 = 今後の見通しの累計、自動提案の式、前期実績の式、増減率の頭打ちと 24 か月未満・P=0 で 0、季節性補正の 0 になる条件、見通し・過不足・インパクトの式、monthlyBudgetsAt の期間選択) の失敗テストが packages/core/test/budget-screen.test.ts にあり、現行実装 (budget-screen.ts が存在しない) で失敗する。",
+        "3 API (GET /api/budget-screen・GET/PUT /api/budget-plans) の統合テストが packages/api/src/routes/budget-plans.test.ts にあり、401・fence の 409・不正値の 400・他利用者の初期値返却・migration 未適用の 503 を検査し、現行実装で失敗する。",
+        "DOM テスト packages/web/src/pages/budget/budget.dom.test.tsx が AT-01〜AT-12・AT-20〜AT-22 に対応する構成要素・文言・状態を検査し、現行実装で失敗する。",
+        "migration 0048 が既存 budgets 行を書き換えないことを検査する migration テストがある。",
+        "packages/web/src/route-task-detail.test.tsx の旧文言『±10%』の固定箇所が、新しい routeMetadata の task/taskDetail 文言に合わせて更新する対象として失敗テスト側に含まれている (更新前は旧文言のまま緑になる状態を維持し、本 task では失敗させるところまでを行う)。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test"
+      ],
+      "rollback": "テストの追加を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P04",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p04.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P04"
+      },
+      "secondary_workstreams": [
+        "backend",
+        "frontend"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P05",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "budget-screen.ts・3 API・migration 0048・/budget 画面の最終実装",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p05",
+        "mutation"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "frontend",
+      "build_target_kind": "application-code",
+      "phase_ref": "P05",
+      "depends_on": [
+        "SYS-BUDGET-P04"
+      ],
+      "write_scope": [
+        "packages/core/src/budget-screen.ts",
+        "packages/core/src/analysis.ts",
+        "packages/core/src/dataset.ts",
+        "packages/core/src/fingerprint.ts",
+        "packages/core/src/types.ts",
+        "packages/core/src/period.ts",
+        "packages/core/src/index.ts",
+        "packages/core/src/diagnosis-detectors.ts",
+        "packages/core/src/diagnosis-screen.ts",
+        "packages/api/src/routes/budget-plans.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/api/src/routes/settings.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/import-active.ts",
+        "packages/api/src/import-lifecycle.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/index.ts",
+        "migrations/0048_budget_plans.sql",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/budget/",
+        "packages/web/src/pages/Budget.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/route-task-detail.test.tsx",
+        "packages/web/src/analysis-query-invalidation.ts",
+        "packages/web/src/components/Layout.tsx"
+      ],
+      "deploy_unit": "web ビルドと Worker と D1 migration (0048_budget_plans.sql の追加のみ)",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p05.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "packages/core/src/budget-screen.ts (新設) の budgetScreen / applyBudgetInputs / monthlyBudgetsAt が BR-01〜BR-25 を満たし、P04 の core テストが緑である。",
+        "GET /api/budget-screen・GET /api/budget-plans・PUT /api/budget-plans が既存 authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の内側で動き、許可リスト外のクエリと上限超過に 400 を返す。",
+        "migration 0048_budget_plans.sql が追加のみで、runtimeSchemaGuard の EXPECTED_D1_MIGRATION に反映される。既存 budgets 表は 1 行も書き換えない。",
+        "/budget 画面が spec §7 の構成要素を全て描画し、収入の行 (売上高・その他収入) が一覧の先頭に出る。",
+        "下書きが端末 (localStorage) 保存・復元され、サーバへは保存操作でだけ送られる。",
+        "budget_plans が JSON_SNAPSHOT_MUTATION_CONSUMERS とバックアップ・復元 (import-lifecycle.ts) の write-set の両方に登録され、揃っている (open item: snapshot consumer とバックアップ write-set の整合)。",
+        "packages/web/src/route-task-detail.test.tsx の旧文言『±10%』を新しい routeMetadata の task/taskDetail 文言に更新し、テストが緑になる。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm typecheck"
+      ],
+      "rollback": "本 task のコミットを revert する。migration 0048 は追加のみの表なので既存行の書き換えは無く、表が残っても既存画面は動く。配信済みなら直前のビルドへ戻し、表の削除は行わない。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P05",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p05.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P05"
+      },
+      "secondary_workstreams": [
+        "backend",
+        "api",
+        "data",
+        "security"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P06",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "全テストと型検査と lint の実行記録",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p06",
+        "test-run"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P06",
+      "depends_on": [
+        "SYS-BUDGET-P05"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 実行記録のみで配布物を持たない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p06.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "P05 の最終コードに対して pnpm test と pnpm typecheck と pnpm lint が緑である。",
+        "既存の診断・概要・家計収支・総収支・決算書・明細仕分けの数値テストが緑である。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P06",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p06.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P06"
+      }
+    },
+    {
+      "id": "SYS-BUDGET-P07",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "受入基準 S1 から S5（AT-01〜AT-22）の検証",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p07",
+        "acceptance"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P07",
+      "depends_on": [
+        "SYS-BUDGET-P06"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 検証記録のみで配布物を持たない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p07.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "受入 S1〜S5・AT-01〜AT-22 の各項目に合否と証跡の所在が記録されている。",
+        "AT-13 (core の等式群: KPI の内訳、一覧の来期予算の和 = KPI = グラフの月次予算の年合計 = 今後の見通しの累計、防衛ライン余裕の式) が実測値で確認されている。",
+        "AT-22 (外部送信 0 件) が fetch の監視で確認されている。",
+        "既知の逸脱・未実施・一部適合が 1 件でも残る受入項目は PASS にしない。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm --filter @kanjo/web lint"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P07",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p07.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P07"
+      },
+      "secondary_workstreams": [
+        "frontend"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P08",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "旧 Budget.tsx 参照・重複判定ロジック・budgets 表書き換え有無の読取専用監査",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p08",
+        "audit"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P08",
+      "depends_on": [
+        "SYS-BUDGET-P07"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 読取専用監査のみ",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p08.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "packages/web/src/pages/Budget.tsx が互換の re-export 1 行だけであり、旧 317 行の実装への参照が repository 内で 0 件である。",
+        "予算の算出ロジックが packages/core/src/budget-screen.ts の純関数以外で再実装されていない (api / web に重複判定が無い)。",
+        "migration 0048 適用前後で既存 budgets 表の行数と内容が変わらないこと (UPDATE・DELETE が 0 件) が確認されている。",
+        "P06 / P07 の証跡が最終コードに対応し、既知逸脱・未実施・一部適合が PASS に含まれていない。"
+      ],
+      "verification": [
+        "rg による旧 pages/Budget.tsx 参照と重複判定ロジックの検査",
+        "P06 / P07 の証跡と git diff の照合"
+      ],
+      "rollback": "監査記録に誤りがあれば docs の追記だけを revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P08",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p08.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P08"
+      },
+      "secondary_workstreams": [
+        "documentation"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P09",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "アクセシビリティ・入力検証・変更系フェンス・外部送信ゼロ・JS バンドル予算の保証確認",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P09",
+      "depends_on": [
+        "SYS-BUDGET-P08"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 保証確認の記録のみで配布物を持たない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p09.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "build:bundle 直後の js-budget が予算内である (/budget は既存の lazy route のまま初期 JS に含まれない)。",
+        "年額・調整額の ±10,000,000,000 以内、科目名 1〜60 字、理由 100 字以内、1 回の保存 1〜200 行の境界が 400 で拒否される (BR-17)。年額の下限を 0 未満まで許容する現状の実装 (open item: 年額の下限は未確定) が zod と migration の CHECK 制約で一致していることが確認されている。",
+        "PUT /api/budget-plans が canonicalMutationFence に登録され、フェンス違反が 409 になる。",
+        "外部への送信が 0 件である (fetch の宛先が同一オリジンの /api だけ、AT-22)。",
+        "差額・過不足・予算純収支・防衛ライン余裕が色だけで区別されず、符号と文言が併記される。画面に『AI』の文字列が無い (AT-12)。"
+      ],
+      "verification": [
+        "pnpm --filter @kanjo/web build:bundle",
+        "pnpm --filter @kanjo/web js-budget"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P09",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p09.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P09"
+      },
+      "secondary_workstreams": [
+        "security",
+        "frontend"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P10",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "独立最終レビュー",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p10",
+        "independent-review"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "quality",
+      "build_target_kind": "application-code",
+      "phase_ref": "P10",
+      "depends_on": [
+        "SYS-BUDGET-P09"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p10.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "scope_out (予算の版管理・担当者・承認フロー、外部 LLM・外部データ、個人(家計)の予算、共通シェルの作り直し、トレードオフ画面、web 以外の専用アプリ、旧 API の削除、既存 budgets 表の削除・書き換え) の侵犯が 0 件である。",
+        "受入 S1〜S5・AT-01〜AT-22 の全項目が合格で記録されている。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P10",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p10.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P10"
+      }
+    },
+    {
+      "id": "SYS-BUDGET-P11",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "再現可能な証跡索引の作成",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p11",
+        "evidence"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P11",
+      "depends_on": [
+        "SYS-BUDGET-P10"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "N/A: 索引のみで配布物を持たない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p11.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "受入 S1〜S5・AT-01〜AT-22 の各項目から、証跡のファイルと再現コマンドへ辿れる。"
+      ],
+      "verification": [
+        "pnpm lint (既存の文書検査が緑のままであることを確認する)"
+      ],
+      "rollback": "索引の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P11",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p11.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P11"
+      },
+      "secondary_workstreams": [
+        "quality"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P12",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "算出規則・API・migration・未決事項の docs 最終同期",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p12",
+        "documentation-sync"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "documentation",
+      "build_target_kind": "application-code",
+      "phase_ref": "P12",
+      "depends_on": [
+        "SYS-BUDGET-P11"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p12.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "docs/data-schema.md に budget_plans 表と monthlyBudgetsAt の読み出し規則 (BR-22・BR-23) が記されている。",
+        "docs/ui-decisions.md に画面の文言・状態遷移・KPI/一覧/科目パネルの表示規則が記されている。",
+        "open_items 7 件 (Q-7・収入行の差額の色・年額の下限・snapshot/バックアップ整合・その他収入の扱い・Q-5・migration 0048 予定番号) の最終的な決定または未決のままである旨が docs に明記されている (本書は値を決めない)。",
+        "Q-7 の D1 上限の確認結果 (202 文で実装したか、19 文へまとめ直したか) が docs/budget-screen/design-decisions.md に記されている。"
+      ],
+      "verification": [
+        "pnpm lint",
+        "pnpm test"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P12",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p12.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P12"
+      },
+      "secondary_workstreams": [
+        "operations"
+      ]
+    },
+    {
+      "id": "SYS-BUDGET-P13",
+      "feature_package_id": "feature-package/feat-budget-screen",
+      "parent_feature": "feat-budget-screen",
+      "title": "単一 PR での配信と migration 0048 適用とクローズアウト",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "budget-screen",
+        "p13",
+        "release"
+      ],
+      "related_nodes": [
+        "arch-budget-auth",
+        "arch-budget-backend",
+        "arch-budget-database",
+        "arch-budget-frontend",
+        "arch-budget-infrastructure",
+        "arch-budget-maintenance-ops",
+        "arch-budget-security",
+        "arch-budget-ui-ux",
+        "spec-budget-screen"
+      ],
+      "workstream_kind": "operations",
+      "build_target_kind": "application-code",
+      "phase_ref": "P13",
+      "depends_on": [
+        "SYS-BUDGET-P12"
+      ],
+      "write_scope": [
+        "docs/budget-screen/design-decisions.md"
+      ],
+      "deploy_unit": "web ビルドと Worker と D1 migration (単一 PR で同時に配信する)",
+      "source_lineage": [
+        "docs/budget-screen/design-decisions.md",
+        "specs/spec-budget-screen.md"
+      ],
+      "classification": {
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "confidence": 0.95,
+            "candidate_path": "tasks/feat-budget-screen/sys-budget-p13.md"
+          }
+        ]
+      },
+      "tracker_binding_intent": "beads",
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "pr_completion_policy": "linked_pr_merged_all",
+      "branch_policy": {
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true,
+        "completion_projection": "default-branch-reconciliation",
+        "assignment_owner": "dev-graph-scheduler"
+      },
+      "acceptance": [
+        "着手時に origin/main を fetch し直し、0048 が空き番号であることを再確認した上で PR が default branch へ merge され、CI の Migrate と Deploy が緑である (open item: migration 番号 0048 は予定番号)。main が進んで 0048 が埋まっていた場合は次の空き番号へ繰り上げ、schema-guard.ts の EXPECTED_D1_MIGRATION と本書の参照を揃えたことが記録されている。",
+        "配信後に /budget の KPI・一覧・診断の予算カバー率が同じ budgetScreen / monthlyBudgetsAt から出て、値がずれていない。"
+      ],
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck"
+      ],
+      "rollback": "PR を revert して直前のビルドへ戻す。migration 0048 は追加のみの表なので削除しない。",
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-21T15:00:00Z"
+      },
+      "graph_node_registration": {
+        "graph_node_id": "SYS-BUDGET-P13",
+        "file_path": "tasks/feat-budget-screen/sys-budget-p13.md",
+        "parent_feature": "feat-budget-screen",
+        "feature_package_id": "feature-package/feat-budget-screen",
+        "phase_ref": "P13"
+      },
+      "secondary_workstreams": [
+        "quality"
+      ]
+    }
+  ]
+}

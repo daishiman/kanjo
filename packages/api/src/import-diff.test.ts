@@ -236,6 +236,7 @@ describe('件数', () => {
     const created = await jsonRequest('/cash-entries', 'POST', {
       date: '2026-07-15',
       side: 'per',
+      owner: 'business',
       io: 'expense',
       amount: 500,
       description: '架空の現金記帳',

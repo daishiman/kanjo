@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 /** Better Auth が所有する D1 tables の Drizzle 正本。 */
 import { customType, index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
-// 0050 は既存 D1 runtime と互換な ISO-8601 文字列を保存する。Drizzle の
+// 0059 は既存 D1 runtime と互換な ISO-8601 文字列を保存する。Drizzle の
 // timestamp_ms (整数) は使わず、Better Auth の Date と migration の DATE を変換する。
 const isoDate = customType<{ data: Date; driverData: string }>({
   dataType: () => 'date',

@@ -123,6 +123,7 @@
      行が多い表はこの中で縦スクロールさせ、見出し行を箱の上端に留める。
      画面の高さから固定ヘッダーと余白を引いた分。短い表はこの値に達しないので影響しない。 */
   --table-max-h: calc(100vh - var(--header-h) - 96px);
+  --selection-control-size: 20px;
   scroll-padding-top: calc(var(--header-h) + 8px);
 }
 
@@ -171,6 +172,83 @@ body {
 :where(a[href], button, input:not([type="hidden"]), textarea, select, summary) {
   min-width: var(--tap-target-min);
   min-height: var(--tap-target-min);
+}
+
+/* 選択checkboxは20pxの表示と44pxの操作領域を分け、全画面で同じnative意味を使う。 */
+.selection-checkbox {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: var(--selection-control-size) minmax(0, auto);
+  align-items: center;
+  gap: 6px;
+  min-inline-size: var(--tap-target-min);
+  min-block-size: var(--tap-target-min);
+  cursor: pointer;
+}
+.selection-checkbox--icon-only {
+  grid-template-columns: var(--selection-control-size);
+  place-items: center;
+  inline-size: var(--tap-target-min);
+  block-size: var(--tap-target-min);
+}
+.selection-checkbox__native {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  inline-size: 100%;
+  block-size: 100%;
+  min-inline-size: 100%;
+  min-block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.selection-checkbox__indicator {
+  display: inline-grid;
+  inline-size: var(--selection-control-size);
+  block-size: var(--selection-control-size);
+  place-items: center;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+  background: var(--surface);
+  pointer-events: none;
+}
+.selection-checkbox__native:hover:not(:disabled) + .selection-checkbox__indicator {
+  border-color: var(--control-border-hover);
+}
+.selection-checkbox__native:focus-visible {
+  outline: 0;
+}
+.selection-checkbox__native:focus-visible + .selection-checkbox__indicator {
+  outline: 2px solid var(--biz);
+  outline-offset: 2px;
+}
+.selection-checkbox__native:checked + .selection-checkbox__indicator,
+.selection-checkbox__native:indeterminate + .selection-checkbox__indicator {
+  border-color: var(--biz);
+  background: var(--biz);
+}
+.selection-checkbox__native:checked + .selection-checkbox__indicator::after {
+  inline-size: 9px;
+  block-size: 5px;
+  border-bottom: 2px solid var(--on-primary);
+  border-left: 2px solid var(--on-primary);
+  content: "";
+  transform: translateY(-1px) rotate(-45deg);
+}
+.selection-checkbox__native:indeterminate + .selection-checkbox__indicator::after {
+  inline-size: 10px;
+  block-size: 2px;
+  border-radius: 999px;
+  background: var(--on-primary);
+  content: "";
+}
+.selection-checkbox:has(.selection-checkbox__native:disabled) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.selection-checkbox__native:disabled {
+  cursor: not-allowed;
 }
 a[href] {
   display: inline-flex;
@@ -1514,6 +1592,11 @@ table.data td:first-child {
 table.data th.left,
 table.data td.left {
   text-align: left;
+}
+table.data :is(th, td).selection-cell {
+  inline-size: var(--tap-target-min);
+  padding: 0;
+  text-align: center;
 }
 /* 特別な行は縞より優先する。塗りは --row-bg に入れて、固定した先頭列とも色を合わせる */
 table.data tbody tr.total {
@@ -4068,7 +4151,7 @@ label.check {
   margin: 12px 10px;
 }
 
-/* ===== 改善要望(モーダル前に撮影 → 指示文の受け渡し) ===== */
+/* ===== 改善リクエスト(撮影パネル → 指示文の受け渡し) ===== */
 
 /*
  * 右下に固定する浮きボタン。
@@ -4128,114 +4211,6 @@ label.check {
     box-shadow: var(--shadow-floating-action-compact);
   }
 }
-/* 撮影中の告知は読み上げ用。視覚的には trigger のラベル変化で足りる */
-.improve-capturing {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
-
-/* ネイティブ <dialog>。焦点の閉じ込めと Escape はブラウザ側が持つ */
-.improve-modal {
-  width: min(720px, calc(100vw - 32px));
-  max-height: calc(100vh - 48px);
-  padding: 20px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--ink);
-  overflow-y: auto;
-  box-shadow: var(--shadow-overlay);
-}
-.improve-modal::backdrop {
-  background: var(--scrim);
-}
-.improve-modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.improve-modal h2 {
-  margin: 0;
-  font-size: var(--fs-lg);
-}
-.improve-modal label {
-  font-size: var(--fs-sm);
-  font-weight: 650;
-}
-.improve-modal input[type="text"],
-.improve-modal input:not([type]),
-.improve-modal textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid var(--control-border);
-  border-radius: var(--radius);
-  font: inherit;
-}
-.improve-attach {
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--bg);
-}
-.improve-attach h3 {
-  margin: 0 0 6px;
-  font-size: var(--fs-sm);
-}
-.improve-attach label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 400;
-}
-/* プレビューは「何が送られるか」を確かめる用途。原寸は要らない */
-.improve-preview,
-.improvement-shot {
-  display: block;
-  max-width: 100%;
-  max-height: 320px;
-  margin-bottom: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  object-fit: contain;
-}
-.improvement-shot {
-  max-height: 520px;
-}
-.improve-prompt {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--bg);
-  font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: var(--fs-xs);
-}
-.improve-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-.improve-actions button {
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  font: inherit;
-  cursor: pointer;
-}
-.improve-actions button:hover {
-  background: var(--bg);
-}
-.improve-copied {
-  color: var(--good);
-  font-size: var(--fs-sm);
-}
 .improve-note {
   margin: 6px 0 0;
   color: var(--ink-soft);
@@ -4243,6 +4218,27 @@ label.check {
 }
 
 /* ---- スクリーンショットへの書き込み ---- */
+.improve-annotate-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.improve-annotate-tools legend {
+  float: left;
+  margin-right: 4px;
+  padding: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+/* マスクは塗る道具なので、枠やペンと見分けられるよう指先を変える */
+.improve-annotate-canvas.is-mask {
+  cursor: cell;
+}
 .improve-annotate-canvas {
   position: relative;
   display: block;
@@ -4291,6 +4287,138 @@ label.check {
 .improve-annotate-actions button[disabled] {
   color: var(--ink-soft);
   cursor: default;
+}
+
+/* 道具の列と「拡大して書き込む」を1行に並べる。狭い画面では折り返す */
+.improve-annotate-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 6px;
+}
+.improve-annotate-bar .improve-annotate-tools {
+  margin: 0;
+}
+/* 色の見本。枠・ペン・文字の色を選ぶ。値は design tokens(annotate-image.ts の ANNOTATION_COLORS と同じ)
+   押された色は太い枠で示す。色だけで区別しないよう、ボタンには色名の文字も出す */
+.improve-annotate-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.improve-annotate-color[aria-pressed="true"] {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+  font-weight: 700;
+}
+.improve-annotate-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--annotate-halo);
+  box-shadow: 0 0 0 1px var(--line);
+  background: var(--swatch);
+}
+.improve-annotate-color.is-red,
+.improve-annotate-text-input.is-red {
+  --swatch: var(--annotate-stroke);
+}
+.improve-annotate-color.is-blue,
+.improve-annotate-text-input.is-blue {
+  --swatch: var(--income);
+}
+.improve-annotate-color.is-green,
+.improve-annotate-text-input.is-green {
+  --swatch: var(--good);
+}
+.improve-annotate-color.is-orange,
+.improve-annotate-text-input.is-orange {
+  --swatch: var(--warn-fill);
+}
+.improve-annotate-color.is-black,
+.improve-annotate-text-input.is-black {
+  --swatch: var(--ink);
+}
+/* マスクを選んでいる間は色を選べない。押せないことが見て分かるよう薄くする */
+.improve-annotate-colors[disabled] .improve-annotate-color {
+  opacity: 0.5;
+}
+.improve-annotate-colors .improve-note {
+  margin: 0;
+}
+/* 文字の道具で押した場所に出す入力欄。焼き込む文字と同じ色・大きさで、押した点が左上になる */
+.improve-annotate-canvas.is-text {
+  cursor: text;
+}
+.improve-annotate-canvas.is-move {
+  cursor: grab;
+}
+.improve-annotate-canvas.is-move.is-moving {
+  cursor: grabbing;
+}
+.improve-annotate-text-input {
+  position: absolute;
+  z-index: 1;
+  min-width: 8em;
+  max-width: calc(100% - 8px);
+  padding: 2px 4px;
+  border: 1px dashed var(--swatch);
+  border-radius: 4px;
+  background: var(--annotate-halo);
+  color: var(--swatch);
+  /* 焼き込みは TYPOGRAPHY.fontHead で描く。入力中と焼き込み後で字形が変わらないよう揃える */
+  font-family: var(--font-head);
+  font-weight: 700;
+  line-height: 1.2;
+  user-select: text;
+  cursor: text;
+}
+/* 拡大して書き込むダイアログ。縮小画像では細かい場所を塗れないので、画面いっぱいに開く */
+.improve-annotate-dialog {
+  width: calc(100vw - 32px);
+  max-width: none;
+  height: calc(100dvh - 32px);
+  max-height: none;
+  padding: 12px 20px 16px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-overlay);
+  overflow: auto;
+}
+.improve-annotate-dialog::backdrop {
+  background: var(--scrim);
+}
+.improve-annotate-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.improve-annotate-dialog-head h3 {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+.improve-annotate-dialog-head h3:focus-visible {
+  outline: 2px solid var(--biz);
+  outline-offset: 4px;
+}
+/* 拡大表示では、表示枠を画像の大きさに縮める。枠が画像より広いと、canvas と画像の位置がずれる。
+   画像は見出し・道具・操作の行を除いた高さに収め、縦長の画面では幅に収める */
+.improve-annotate.is-expanded .improve-annotate-canvas {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+.improve-annotate.is-expanded .improve-annotate-canvas img {
+  width: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 200px);
 }
 
 /* ---- 一緒に送られる情報 ---- */
@@ -4620,10 +4748,10 @@ label.check {
   align-items: flex-start;
   gap: 10px;
 }
-.import-options input {
+.import-options .selection-checkbox__indicator {
   margin-top: 4px;
 }
-.import-options label > span {
+.import-options .selection-checkbox__label > span {
   display: grid;
   gap: 1px;
 }
@@ -4833,164 +4961,6 @@ label.check {
   min-height: 84px;
   padding: 20px;
   font-size: var(--fs-sm);
-}
-
-/* 取込前差分: 件数を先に、選ぶ必要のある例外だけを後ろへ。 */
-.import-diff {
-  margin-top: 12px;
-}
-.import-diff > button {
-  min-height: var(--tap-target-min);
-  white-space: nowrap;
-}
-.import-diff-result {
-  margin-top: 12px;
-  padding: 16px;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-.import-diff-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-}
-.import-diff-heading strong {
-  display: block;
-  font-size: var(--fs-base);
-}
-.import-diff-counts {
-  margin: 12px 0 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  background: var(--surface);
-  border-block: 1px solid var(--line);
-}
-.import-diff-counts > div {
-  padding: 12px;
-  border-right: 1px solid var(--line);
-}
-.import-diff-counts > div:last-child {
-  border-right: 0;
-}
-.import-diff-counts dt {
-  color: var(--ink-soft);
-  font-size: var(--fs-xs);
-}
-.import-diff-counts dd {
-  margin: 1px 0 0;
-  color: var(--ink);
-  font-size: var(--fs-xl);
-  font-weight: 700;
-}
-.import-diff-message {
-  margin: 12px 0 0;
-  padding: 10px 12px;
-  display: grid;
-  gap: 2px;
-  background: var(--warn-soft);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  font-size: var(--fs-sm);
-}
-.import-diff-message.calm {
-  background: var(--good-soft);
-}
-.import-conflict {
-  margin-top: 10px;
-  padding: 14px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-left-width: 1px;
-  border-radius: var(--radius);
-}
-.import-conflict-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-.import-conflict-table {
-  margin-top: 10px;
-  overflow-x: auto;
-}
-.import-conflict-table table {
-  width: 100%;
-  min-width: 560px;
-  border-collapse: collapse;
-  font-size: var(--fs-sm);
-}
-.import-conflict-table th,
-.import-conflict-table td {
-  padding: 7px 8px;
-  text-align: left;
-  border-bottom: 1px solid var(--line);
-}
-.import-conflict-table thead th {
-  color: var(--ink-soft);
-  font-size: var(--fs-xs);
-  white-space: nowrap;
-}
-.import-conflict-options {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-.import-conflict-options label,
-.import-remember-choice {
-  min-height: var(--tap-target-min);
-  padding: 9px 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  font-size: var(--fs-sm);
-}
-.import-conflict-options label:has(input:checked) {
-  background: var(--biz-soft);
-  border-color: var(--biz-soft-line);
-}
-.import-remember-choice {
-  margin-top: 8px;
-  width: fit-content;
-}
-.import-suggestions {
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-.import-suggestions > p {
-  margin: 2px 0 8px;
-}
-.import-suggestions ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.import-suggestions li {
-  min-height: 56px;
-  padding: 8px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  border-top: 1px solid var(--line);
-}
-.import-suggestions li > span {
-  min-width: 0;
-  display: grid;
-}
-.import-suggestions small {
-  color: var(--ink-soft);
-  font-size: var(--fs-xs);
-}
-.import-suggestions button {
-  flex: none;
-  white-space: nowrap;
 }
 
 /* 削除は最頻操作ではないため畳む。開いた後だけ3段階を見せる。 */
@@ -5503,20 +5473,16 @@ label.check {
     flex-wrap: wrap;
   }
   .import-count-grid,
-  .import-diff-counts,
   .deletion-count-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .import-conflict-options,
   .deletion-scope-options {
     grid-template-columns: 1fr;
   }
-  .import-suggestions li,
   .deletion-check-action {
     align-items: stretch;
     flex-direction: column;
   }
-  .import-suggestions button,
   .deletion-check-action button {
     width: 100%;
   }
@@ -6109,7 +6075,12 @@ label.check {
     margin: 0;
   }
   .improve-trigger {
-    display: none;
+    /* アイコンレール内には文言が収まらないため、本文の右下で入口を保つ */
+    left: auto;
+    right: 14px;
+    bottom: 14px;
+    width: auto;
+    padding: 10px 16px;
   }
   .header {
     align-content: center;

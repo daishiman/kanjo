@@ -1,0 +1,128 @@
+{
+  "evaluator": {"name": "assign-system-spec-completeness-evaluator", "version": "0.1.0", "context": "fork"},
+  "spec_dir": "system-spec",
+  "verdict": "PASS",
+  "aspects": {
+    "foundation_trace": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "U1-U9 と O6 の承認 (appr-foundation-import-screen-001/-002) は前回から変わっていない。今回の再確定 4 セルは G3/S3 (取込可否は core の関数だけが決め、api と web に重複実装 0 件) を上限値にも当てはめたもので、上位概念をたどれる。validate-coverage-matrix --require-foundation と validate-spec-doc-sync はどちらも exit 0。",
+      "evidence": ["validate-coverage-matrix.py --require-complete --require-basis --require-foundation exit 0", "validate-spec-doc-sync.py exit 0"]
+    },
+    "decision_guidance": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "decisions[] は 0 件のまま。今回は新しい選択を伴わない agent-inference の具体化だけで、利用者決定の provenance (008/009/011 は 2〜3 案・推奨・理由つき) は変わっていない。010 の 2 択問題は matrix_coverage の C06 F-1 (medium・繰越) として扱う。",
+      "evidence": ["qa-imp-*-web-005/004 basis=agent-inference"]
+    },
+    "matrix_coverage": {
+      "verdict": "PASS",
+      "auditor": "system-spec-matrix-auditor",
+      "component": "C07",
+      "summary": "C07 は PASS (loop_pass / final_ready)。4 種のゲートと required-info は exit 0、ungrounded_blocking_items は空、48 セルの内訳は確定 8・対象外 40・未収集 0。reopen_log (22:40:55Z) と新しい qa 4 件は対応が取れ、4 件とも basis=agent-inference を正しく宣言している。利用者決定を装ったものは 0 件。sub-input の C06 も PASS で、新しい数値は足していない (25/10/30/60/1,000 はすべて decision-006/007/009 の値)。C06 F-1 (decision-010 の 4 論点一括確認、medium) と F-2 (low) は未対処のまま繰り越している。前回と同じく、F-1 は接地を崩していないので観点は FAIL にしない。",
+      "evidence": ["C07 verdict PASS (FAIL 相当の finding なし)", "C06 verdict PASS (新規分 4 軸すべて問題なし、繰越 F-1 medium / F-2 low)", "validate-knowledge-graph --profile required-info status ok"]
+    },
+    "design_knowledge_reflection": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "前回 FAIL の原因だった、frontend の適用記述と送信前判定の確定セルの食い違いは解消した。frontend (web-005 と L182 の適用記述)、ui-ux (web-004)、backend (web-005 と application-architecture の doctrine 行) の 3 章が同じことを書いている。上限値は core の import-screen.ts の IMPORT_LIMITS に置き、超過の理由を返す判定関数も core に置く。web の送信前判定と api の 413 (hono/body-limit の maxSize を含む) はどちらもそれを import する。maintenance-ops は、数値リテラルが無いことの字面検査と、web と api が同じ境界表を読むテストでこれを固定する。Dependency Rule を確定セルの具体的な置き場所まで当てはめており、ポインタがあるだけの状態ではない。web と api はすでに @kanjo/core に依存しており (package.json)、core に上限定数を置く前例 (DIAGNOSTIC_MAX_BYTES) もあるので実現できる。残りは low 2 件 (frontend の doctrine 表の行が未更新、リテラル検査の指紋があいまい)。機械層 (knowledge/doctrine/required-info/cross) はすべて exit 0。",
+      "evidence": ["frontend.md:74, :182", "ui-ux.md:73", "backend.md:31, :74", "maintenance-ops.md:73", "aggregate-completeness.py --knowledge-graph exit 0"]
+    },
+    "doc_freshness": {
+      "verdict": "PASS",
+      "auditor": "system-spec-doc-freshness-auditor",
+      "component": "C08",
+      "summary": "形式層の validate-source-citation は exit 0 (12/12 件が 1 対 1 で対応)。内容鮮度層では hono body-limit を WebFetch で再照合した。maxSize: number に import した定数を渡す設計、および onError 未指定時の既定の 413 は公式仕様と矛盾しない。hono は 4.13.8 のままで、これが最新。残る 11 件も変化なし。前回の low (『宣言と実長のずれは Workers ランタイムに任せる』に一次出典が無い) は継続している。Cloudflare 側にも、この挙動が未文書化であることを扱う open issue がある。",
+      "evidence": ["validate-source-citation.py exit 0", "C08 verdict PASS (low 1 継続)"]
+    },
+    "prompt_quality": {
+      "verdict": "PASS",
+      "auditor": "assign-system-spec-completeness-evaluator",
+      "component": "C05",
+      "summary": "system-spec-harness の prompt 21 本 (skills/*/prompts 18 本 + agents 3 本) で、validate-prompt.py --input と verify-completeness.py --input が全件 exit 0。",
+      "evidence": ["prompt-creator run-prompt-creator-7layer validate-prompt.py / verify-completeness.py 21/21 exit 0"]
+    }
+  },
+  "gate_results": [
+    {"id": "G-matrix-complete-basis-foundation", "name": "validate-coverage-matrix --require-complete --require-basis --require-foundation", "exit_code": 0, "stdout": "OK: 収集マトリクス網羅性 (final(未収集0)+basis(根拠の性質宣言)+foundation(上位概念トレース)) を満たす"},
+    {"id": "G-matrix-loop", "name": "validate-coverage-matrix", "exit_code": 0},
+    {"id": "G-spec-doc-sync", "name": "validate-spec-doc-sync", "exit_code": 0, "stdout": "OK: 正本 spec-state.json の goal・根拠・出典が章へ投影されている"},
+    {"id": "G-knowledge-graph", "name": "aggregate-completeness --knowledge-graph (knowledge/doctrine/required-info/cross)", "exit_code": 0},
+    {"id": "G-source-citation", "name": "validate-source-citation (C08 実行)", "exit_code": 0},
+    {"id": "G-prompt", "name": "validate-prompt + verify-completeness (21 prompts)", "exit_code": 0}
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "bucket": "matrix_coverage (C06 F-1 誘導質問・繰越)",
+      "observation": "qa-imp-decision-010 は、一括削除 100 件・夜間保守 500 件・ファイル名 255 文字・認可の 404 統一という 4 論点を、1 つの『確定する / 修正する』に束ねたままである。今回は任意として未対処。4 つの値は質問本文に具体的に示されていたので、接地そのものは崩れていない。観点は FAIL にしない。",
+      "suggested_fix": "任意。次の elicit の回で、認可方針 (404 に統一するか、403/410 を分けるか) だけを数値パラメータから切り離し、案ごとの利点と欠点を対で示して単独で再確認する。今後、補完値を確定するときは論点ごとに分けて問う。",
+      "evidence": ["spec-state.json qa_log qa-imp-decision-010", "matrix.auth.web.qa_ref"]
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage (トレース)",
+      "observation": "今回の再確定セルの本文には、上限の数値が IMPORT_LIMITS の中身として並んでいる。しかし、その数値を決めた利用者決定 qa が qa_refs に入っていないセルがある。backend.web は 25MB・10 ファイル (decision-006) とエントリ 1,000 件 (decision-009) を書いているのに、qa_refs に 006 と 009 が無い。ui-ux.web は合計 30MB (decision-007) を書いているのに、qa_refs に 007 が無い。新しい qa の provenance は『数値は decision-006/-009 のまま』と述べているが、そのセルからはたどれない。dangling ではないので、R7 SSOT の基準では FAIL にならない。",
+      "suggested_fix": "apply-spec-transition.py add-qa-ref で backend.web に qa-imp-decision-006 と -009、ui-ux.web に qa-imp-decision-007 を足す (reopen は不要)。",
+      "evidence": ["matrix.backend.web.qa_refs", "matrix.ui-ux.web.qa_refs", "backend.md:74", "ui-ux.md:73"]
+    },
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection",
+      "observation": "frontend.md の doctrine 表の application-architecture 行 (L32) は、Dependency Rule をサーバー状態と画面状態の分離にしか当てはめていない。『web は判定を持たず、core の IMPORT_LIMITS と判定関数を import する』という今回の具体化が載っていない。同じ章の適用記述 (L182) と backend の doctrine 行には反映されているので、食い違いではなく書き漏れである。",
+      "suggested_fix": "次に frontend を compile し直すとき、doctrine_application に『上限値と超過の判定は core から import し、web に判定を書かない』を 1 文足す。",
+      "evidence": ["frontend.md:32", "frontend.md:182", "backend.md:31"]
+    },
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection",
+      "observation": "maintenance-ops の字面検査は『上限の数値リテラル (25MB・30MB・60MB・10 ファイル・1,000 件) が無い』ことを固定するとしているが、何を指紋として探すかが決まっていない。10 や 1000 はありふれた値なので、素朴に grep すると誤検出が多い。一方で、26214400 や 25 * 1024 * 1024 のような書き方の揺れは見逃しうる。テストは旧実装で落ちることを確かめるという原則に照らすと、指紋の定義が要る。",
+      "suggested_fix": "実装計画 (dev-graph / system-dev-plan) の段階で、指紋を定める。バイト値の 3 表記 (MB 乗算式・10 進の積・リテラル) と、取込経路のファイルにある maxSize: / .size > の比較式が対象。現行の imports.ts:1410 の 25MB 判定でこの検査が落ちることも確かめる。仕様書の差し戻しは不要。",
+      "evidence": ["maintenance-ops.md:73", "security.md:61 (imports.ts:1410)"]
+    },
+    {
+      "severity": "low",
+      "bucket": "matrix_coverage (C06 F-2・繰越)",
+      "observation": "qa-imp-decision-009 の選択肢は、推奨の 1,000 件に欠点が書かれておらず、非推奨の 2 案には欠点しか書かれていない。提示が非対称で、未対処。",
+      "suggested_fix": "数値上限の選択肢は、案ごとに利点と欠点を対で示す。"
+    },
+    {
+      "severity": "low",
+      "bucket": "doc_freshness (C08・繰越)",
+      "observation": "security の hono-body-limit にある『宣言と実長のずれは HTTP の枠組み (Workers ランタイム) に任せる』には、hono.dev にも Cloudflare 公式にも裏付けとなる記述が無い。Cloudflare docs には、この挙動が未文書化であることを扱う open issue がある。",
+      "suggested_fix": "この一文を、出典の無い設計判断 (agent-inference) だと明示する。または、ずれた要求を実測するテストを maintenance-ops に足す。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace (繰越)",
+      "observation": "O6 の『本文を読む前に 413』は、Content-Length の無い要求には厳密には成り立たない。maintenance-ops の境界テストは有無の両方を挙げているが、『無い場合は上限 +1 byte を読んだ時点で止まる』という注記が今回も入っていない。",
+      "suggested_fix": "maintenance-ops の境界テストの節に 1 文注記する。O6 の再承認は不要。"
+    },
+    {
+      "severity": "low",
+      "bucket": "foundation_trace (繰越)",
+      "observation": "今回の reopen 4 件と再確定 qa 4 件は、すべて 2026-09-21T22:40:55Z の同じ 1 秒に記録されている。reopen → 再確定の順序を時刻から復元できない。C06 は、agent が一括で処理したことを示す情報事項として扱った。",
+      "suggested_fix": "C01 の writer が、reopen の時刻と再確定の時刻をそれぞれ実測して記録する。"
+    },
+    {
+      "severity": "low",
+      "bucket": "design_knowledge_reflection (繰越)",
+      "observation": "infrastructure の『ピーク約 90MB で 128MB に収まる』は、展開後 60MB の xlsx をパースしたときの膨張を数えていない推定である。実測の手順も後退策も書かれていない。infrastructure は今回 reopen の対象外だった。",
+      "suggested_fix": "maintenance-ops に、Workers ランタイムで展開後 60MB 近くのファイルを通す実測テストと、収まらない場合の後退策 (展開後の上限を下げる) を足す。"
+    },
+    {
+      "severity": "info",
+      "bucket": "design_knowledge_reflection / matrix_coverage",
+      "observation": "前回 gaps[0] への対処を確認した。上限値を core の IMPORT_LIMITS と判定関数の 1 か所に置き、web の送信前判定と api の 413 (bodyLimit の maxSize を含む) がどちらも import することが、frontend・ui-ux・backend の 3 章で揃っている。ui-ux には、同じ検査 ID への追加と累計 10 ファイル・30MB の事前判定が入った (前回の low『ui-ux 本文に累計が無い』も解消)。maintenance-ops には、数値リテラルの字面検査と共通境界表のテストが入った。4 件とも basis=agent-inference で、新しい具体値は 0 件。"
+    },
+    {
+      "severity": "info",
+      "bucket": "prompt_quality",
+      "observation": "確認した観点: prompt 21 本の validate-prompt.py --input と verify-completeness.py --input が全件 exit 0。"
+    }
+  ],
+  "gaps": []
+}

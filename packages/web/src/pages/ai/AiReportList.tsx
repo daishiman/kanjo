@@ -9,6 +9,7 @@ import type { AiReportListResponse } from '../../api.js';
 import { Button } from '../../components/Button.js';
 import { DataTable, termColumn } from '../../components/DataTable.js';
 import { describeError } from '../../components/Page.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { AiSelectableRow } from './AiSelectableRow.js';
 
 export function AiReportList({
@@ -37,10 +38,12 @@ export function AiReportList({
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
-        <label className="sub">
-          <input type="checkbox" checked={showArchived} onChange={(e) => onShowArchived(e.target.checked)} />{' '}
-          アーカイブを表示
-        </label>
+        <SelectionCheckbox
+          className="sub"
+          label="アーカイブを表示"
+          checked={showArchived}
+          onChange={(event) => onShowArchived(event.target.checked)}
+        />
       </div>
       {query.isLoading ? (
         <p className="sub">レポートを読み込み中…</p>

@@ -1,0 +1,656 @@
+/* 予算: 色は styles.css のトークンだけを使う (直書き色を置かない)。 */
+.budget {
+  display: grid;
+  /* 横長の表が main を押し広げないよう列の下限を 0 にする */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  transition: opacity var(--motion-fast) var(--ease-standard);
+}
+
+/* 期間や予算対象を変えて取り直す間は、直前の数字を薄く残す(空白にしない) */
+.budget.is-stale > :not(.budget-save-bar) {
+  opacity: 0.55;
+}
+
+.budget .card {
+  margin: 0;
+}
+
+.budget h2 {
+  margin: 0 0 8px;
+  font-size: var(--fs-md);
+}
+
+.budget h3 {
+  margin: 16px 0 6px;
+  font-size: var(--fs-sm);
+}
+
+.budget-question {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--primary);
+  font-size: var(--fs-xl);
+  line-height: 1.35;
+}
+
+.budget-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+  align-items: start;
+  gap: 16px;
+}
+
+.budget-target {
+  display: grid;
+  gap: 4px;
+}
+
+.budget-target label {
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+
+.budget-target select {
+  min-height: var(--tap-target-min);
+}
+
+.budget-target-note,
+.budget-empty-note,
+.budget-unit,
+.budget-chart-notes,
+.budget-impact-note,
+.budget-reason-count,
+.budget-before,
+.budget-manual-note {
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+}
+
+.budget-target-note {
+  margin: 0;
+}
+
+.budget-kpis {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.budget-kpis .kpi {
+  position: relative;
+  min-width: 0;
+}
+
+.budget-kpis .kpi-icon {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-start: 14px;
+  display: grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 50%;
+  color: var(--biz-strong);
+  background: var(--biz-soft);
+}
+
+.budget-kpis .kpi:nth-child(2) .kpi-icon {
+  color: var(--warn);
+  background: var(--warn-soft);
+}
+
+.budget-kpis .kpi:nth-child(3) .kpi-icon {
+  color: var(--income);
+  background: var(--surface-alt);
+}
+
+.budget-kpis .kpi:nth-child(4) .kpi-icon {
+  color: var(--good);
+  background: var(--good-soft);
+}
+
+.budget-kpis .kpi-icon .ui-icon {
+  inline-size: 18px;
+  block-size: 18px;
+}
+
+.budget-kpis .kpi-content .label {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  padding-inline-start: 40px;
+}
+
+.budget-kpis .kpi .value {
+  margin-block-start: 2px;
+  font-size: clamp(var(--fs-lg), 1.7vw, var(--fs-3xl));
+  line-height: 1.25;
+}
+
+.budget-shortfall {
+  color: var(--danger);
+}
+
+.budget-shortfall-note {
+  margin-left: 4px;
+  font-size: var(--fs-2xs);
+}
+
+.budget-up {
+  color: var(--danger);
+}
+
+.budget-down {
+  color: var(--good);
+}
+
+.budget-grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.budget-grid-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, var(--aside-panel-w, 22rem));
+  align-items: start;
+  gap: 16px;
+}
+
+/* 月次グラフ (SVG の自前描画) */
+.budget-chart-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.budget-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+
+.budget-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.budget-chart-notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.budget-chart-notes span {
+  display: grid;
+  gap: 2px;
+}
+
+.budget-chart-notes span::before {
+  content: "";
+  border-top: 1px solid var(--line-strong);
+}
+
+.budget-chart-notes span:only-child {
+  grid-column: 1 / -1;
+}
+
+.budget-swatch {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.budget-swatch-income-actual {
+  background: var(--income);
+}
+
+.budget-swatch-income-budget {
+  background: var(--surface);
+  border: 1px solid var(--income);
+}
+
+.budget-swatch-expense-actual {
+  background: var(--expense);
+}
+
+.budget-swatch-expense-budget {
+  background: var(--surface);
+  border: 1px solid var(--expense);
+}
+
+.budget-swatch-forecast {
+  height: 2px;
+  background: var(--accent);
+}
+
+.budget-chart-frame svg,
+.budget-recent svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.budget-recent {
+  margin: 0;
+}
+
+.budget-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.budget-axis-zero {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+
+.budget-tick {
+  fill: var(--ink-soft);
+  font-size: var(--fs-2xs);
+}
+
+.budget-bar-income-actual {
+  fill: var(--income);
+}
+
+.budget-bar-income-budget {
+  fill: var(--income);
+  fill-opacity: 0.18;
+  stroke: var(--income);
+  stroke-width: 1;
+}
+
+.budget-bar-expense-actual {
+  fill: var(--expense);
+}
+
+.budget-bar-expense-budget {
+  fill: var(--expense);
+  fill-opacity: 0.18;
+  stroke: var(--expense);
+  stroke-width: 1;
+}
+
+.budget-bar-recent {
+  fill: var(--biz);
+}
+
+.budget-line-forecast {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.budget-dot-forecast {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.budget-boundary {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+/* 見通し */
+.budget-outlook-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.budget-outlook-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.budget-outlook-list dt {
+  color: var(--ink-soft);
+}
+
+.budget-outlook-list dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 予算一覧 */
+.budget-table-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.budget-table-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.budget-button-target {
+  margin-inline-start: 4px;
+  color: var(--ink-soft);
+  font-size: var(--fs-2xs);
+}
+
+.budget-search {
+  min-width: 0;
+  width: 16rem;
+  max-width: 100%;
+  min-height: var(--tap-target-min);
+}
+
+.budget-table-scroll {
+  overflow-x: auto;
+}
+
+.budget-table,
+.budget-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-table th,
+.budget-table td,
+.budget-mini-table th,
+.budget-mini-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.budget-table thead th,
+.budget-mini-table thead th {
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* 表の行は共通の44px密度。checkboxの見た目と操作領域は分ける。 */
+.budget-table tr {
+  block-size: var(--tap-target-min);
+}
+
+.budget-table th,
+.budget-table td {
+  padding-block: 0;
+}
+
+.budget-table .num,
+.budget-mini-table .num {
+  text-align: right;
+}
+
+.budget-mini-table caption {
+  text-align: left;
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+  padding: 8px 0 4px;
+}
+
+.budget-row {
+  cursor: pointer;
+}
+
+/* 選択行は左帯で示す (色だけに頼らず aria-selected と併用) */
+.budget-row.selected > :is(th, td) {
+  background: var(--biz-soft);
+}
+
+.budget-row.selected > :first-child {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .budget-row:not(.selected):hover > :is(th, td) {
+    background: var(--row-hover);
+  }
+}
+
+.budget-account {
+  font-weight: 600;
+}
+
+.budget-manual-note {
+  display: block;
+  font-weight: 400;
+}
+
+.budget-table .budget-col-check {
+  inline-size: var(--tap-target-min);
+  padding-inline: 0;
+  text-align: center;
+}
+
+.budget-input-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.budget-amount {
+  width: 9rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-amount[aria-invalid="true"],
+.budget-adjust input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.budget-unsaved-mark {
+  color: var(--warn);
+  font-size: var(--fs-2xs);
+}
+
+.budget-field-error {
+  margin: 4px 0 0;
+  color: var(--danger);
+  font-size: var(--fs-2xs);
+  white-space: normal;
+}
+
+/* 科目パネル */
+.budget-panel {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.budget-panel-empty p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.budget-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.budget-panel-head h2 {
+  margin: 0;
+}
+
+.budget-panel-body > :first-child {
+  margin-top: 0;
+}
+
+.budget-suggestion-value {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-calc {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.budget-calc div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.budget-calc dt {
+  color: var(--ink-soft);
+}
+
+.budget-calc dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-calc div:last-child {
+  border-top: 1px solid var(--line);
+  padding-top: 4px;
+  font-weight: 600;
+}
+
+.budget-adjust {
+  display: grid;
+  gap: 6px;
+}
+
+.budget-adjust label {
+  display: grid;
+  gap: 2px;
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+
+.budget-adjust input {
+  min-height: var(--tap-target-min);
+}
+
+.budget-reason-count {
+  margin: 0;
+  text-align: right;
+}
+
+.budget-evidence {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+/* 過不足・インパクト */
+.budget-gaps .segment {
+  margin-bottom: 8px;
+}
+
+.budget-notice {
+  margin: 0;
+}
+
+.budget-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 保存バー: 画面下端に固定し、ホームインジケータに重ならないよう safe-area を足す */
+.budget-save-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-floating-action);
+}
+
+.budget-save-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  font-size: var(--fs-2xs);
+  color: var(--ink-soft);
+}
+
+.budget-unsaved-count {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.budget-save-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* 共通シェルが残る中間幅では、一覧を主・科目詳細を従の比率に戻す。 */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .budget-grid-main {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+  }
+
+  .budget-table th,
+  .budget-table td {
+    padding-inline: 6px;
+  }
+
+  .budget-amount {
+    width: 7.5rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .budget-grid-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .budget-head,
+  .budget-grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .budget-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .budget-search {
+    width: 100%;
+  }
+
+  .budget-save-actions {
+    width: 100%;
+  }
+
+  .budget-save-actions > * {
+    flex: 1;
+  }
+}

@@ -1,5 +1,5 @@
 /** 全ページ共通の Focus Ledger シェル。 */
-import type { AnalysisHubReport } from '@kanjo/core';
+import { AI_DATA_NOTICE, type AnalysisHubReport } from '@kanjo/core';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -11,6 +11,9 @@ import {
   api,
 } from '../api.js';
 import { monthLabel, yen } from '../format.js';
+import { clearAllBudgetDrafts } from '../pages/budget/draft.js';
+import { clearAllCashDrafts } from '../pages/cash/draft.js';
+import { clearAllSettingsDrafts } from '../pages/settings/draft-storage.js';
 import { clearAllLiabilityDrafts } from '../pages/statements/liability-draft.js';
 import { PeriodPicker, usePeriod } from '../period.js';
 import {
@@ -148,6 +151,9 @@ function UserMenu() {
       await api('/auth/sign-out', { method: 'POST', body: '{}' });
       // 同じブラウザを次に使う人へ負債の下書きを残さない (spec-statements-screen §4)
       clearAllLiabilityDrafts();
+      clearAllBudgetDrafts();
+      clearAllCashDrafts();
+      clearAllSettingsDrafts();
       window.dispatchEvent(new Event(AUTH_EVENT));
     } catch {
       setError('ログアウトできません。もう一度お試しください。');
@@ -489,9 +495,10 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
 
       <footer className="footer">
         <div className="footer-trust">
-          <span>
+          {/* 取込データそのものは送らない。AI 実行時に集計データを渡すことは title・プライバシー欄・使い方画面で補う (qa-guide-decision-011) */}
+          <span title={`${AI_DATA_NOTICE}。`}>
             <UiIcon name="lock" className="trust-icon" />
-            アプリからは自動送信しません。AI実行時は確認した集計データを選択したAIへ渡します
+            取込データは外部送信しません
           </span>
           <span>
             <UiIcon name="badge-check" className="trust-icon" />
@@ -509,7 +516,7 @@ export function Layout({ children, locked = false }: { children: ReactNode; lock
           </details>
           <details id="privacy-help">
             <summary>プライバシー</summary>
-            <p>取り込んだ明細は収支管理と復元のためにだけ使用します。</p>
+            <p>取り込んだ明細は収支管理と復元のためにだけ使用します。{AI_DATA_NOTICE}。</p>
           </details>
           {locked ? <a href="#privacy-help">データ出典</a> : <Link to="/guide">データ出典</Link>}
           <span>v1.0</span>

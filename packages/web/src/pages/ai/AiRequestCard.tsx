@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 import { type AiTaskCreateBody, type AiTaskCreateResponse, type AiTaskView, api } from '../../api.js';
 import { Button } from '../../components/Button.js';
 import { describeError } from '../../components/Page.js';
+import { SelectionCheckbox } from '../../components/SelectionCheckbox.js';
 import { type PeriodMeta, usePeriod } from '../../period.js';
 import { AiInventoryCard } from './AiInventoryCard.js';
 import { AiPromptFallback } from './AiPromptFallback.js';
@@ -256,14 +257,12 @@ export function AiRequestCard({
               onChange={(event) => setBackgroundFact(event.target.value)}
               placeholder="例：4月に事業所を移転した、6月から新サービスを始めた"
             />
-            <label className="ai-external-research">
-              <input
-                type="checkbox"
-                checked={externalResearch}
-                onChange={(event) => setExternalResearch(event.target.checked)}
-              />
-              公的資料など外部情勢も調べる
-            </label>
+            <SelectionCheckbox
+              className="ai-external-research"
+              label="公的資料など外部情勢も調べる"
+              checked={externalResearch}
+              onChange={(event) => setExternalResearch(event.target.checked)}
+            />
             <span className="sub">
               既定はOFF。ONでも取引先名・個人名・具体的な金額・明細は検索語へ送りません。
             </span>

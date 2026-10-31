@@ -1,0 +1,46 @@
+{
+  "graph_node_id": "feat-cash-screen",
+  "artifact_kind": "feature",
+  "purpose": "現金入力画面を、利用者 (個人事業主とその家族の家計を 1 人で管理する本人) が、銀行・カードの取込に乗らない現金の支払い・受け取りと交通費を外出から戻ったその場で入力し、同じ画面で一覧と合計を見て訂正まで済ませられる場にする。入力途中の離脱と誤削除で記録が欠けないこと (下書きの自動保存と、論理削除による元に戻す) を通じて、集計・月次クローズ・AI分析の入力である台帳から現金の欠けを無くす。",
+  "goal": "/cash が 17-cash.png の構成 (問いの見出し・共通の期間と対象期間カード・通常入力 / 交通費入力のタブ・入力 2 枚・現金明細の一覧 (月送り・検索・4 種の絞り込み・詳細検索・収入 / 支出 / 差額の合計・選択・ページング)・インラインの削除確認と元に戻すトースト・空状態・下部固定の追加バー) を領収書欄だけ除いてトークンと共通部品で描画し、合計・絞り込み・ページング・入力経路・交通費合計・入力検証が core の cash-screen 1 か所で導かれて API と web が写すだけになり、追加のみの migration 0052 と削除・復元・一括削除・一括復元の経路で削除した明細が同じ id のまま戻り、削除中の行が cash_entries を読む全経路 5 本から外れ (JSON 復元の件数判定だけは例外、qa-cash-decision-009)、30 日後に夜間処理で完全に消え、他の利用者の行は 404、不正な入力は 400 になり、旧 Cash.tsx の操作を失わず分割された状態。",
+  "scope_in": [
+    "現金入力画面 (17-cash.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直し。packages/web/src/pages/Cash.tsx を packages/web/src/pages/cash/ 配下 (画面本体・view-model・下書き・通常入力・交通費入力・一覧・削除確認・ResultNotices・空状態・下部固定バー) へ分割し、選択中のタブ・月・絞り込み・ページを URL に保つ (I1)",
+    "通常入力と交通費入力の 2 タブ。交通費は出発駅・到着駅の入替、往復の自動計算、業務の目的 (固定選択肢＋その他)",
+    "一覧の月送り (共通の期間の範囲内)、キーワード検索、収支・カテゴリ・担当者・入力経路の絞り込み、詳細検索 (金額と日付の範囲)、収入 / 支出 / 差額の合計、選択と一括削除、ページング",
+    "packages/core/src/cash-screen.ts の純関数 (合計・絞り込み・ページング・入力経路・交通費合計・入力検証) (I2)",
+    "追加のみの migration 0052 (cash_entries への owner・transit_purpose・deleted_at と索引)。schema.ts と runtimeSchemaGuard の期待 migration を 0052 へ進める (I3)",
+    "API: DELETE /api/cash-entries/:id の論理削除化、POST /api/cash-entries/:id/restore・POST /api/cash-entries/bulk-delete・POST /api/cash-entries/bulk-restore の新設、GET / POST / PUT の変更、cash_entries を読む全経路 5 本 (loadCashEntries・BACKUP_SNAPSHOT_SQL・loadImportRestoreSettingsSnapshot・loadCategoryUsageContext・PUT の既存行取得) への deleted_at IS NULL と JSON 復元の件数の例外 (qa-cash-decision-009) (I3)",
+    "夜間 scheduled 処理 (0 18 * * *) への完全消去 job の相乗りと、計画上限 SCHEDULED_D1_QUERY_PLAN_MAX を 47→49 へ上げること (qa-cash-decision-008)。cron は guard の外で動くため Migrate→Deploy の順序で守る",
+    "下書きのブラウザ内自動保存と保存時刻の表示、インラインの削除確認と削除完了トーストの『元に戻す』、画面内だけのサンプル表示、下部固定の追加バー (I4 / I5)",
+    "入力検証 (名義・業務の目的・カテゴリの候補、文字数、金額の範囲) を core と API の zod で揃え、他の利用者の行を 404 にする (I6)",
+    "core・API・DOM テストと、web の check:cash-screen の verify:full への組み込み"
+  ],
+  "scope_out": [
+    "領収書ファイルの保存。以前の廃止決定を維持し、欄の代わりに freee への保管を案内する (qa-cash-decision-001)",
+    "取込 (MF / freee) の現金明細を一覧に混ぜること (qa-cash-decision-004)",
+    "共通シェル (パンくず・取引ライン・最終更新・検索・サイドバーの月次クローズ・フッター) の変更。既存の PageShell / Layout のまま使う",
+    "担当者の自由登録と管理画面 (qa-cash-decision-002)。表示名は既存の名義ラベル (owner_labels) の設定に従う",
+    "モバイル・タブレット・デスクトップ専用アプリ (web SPA 1 系統のレスポンシブで扱う)",
+    "既存の cash_entries の行と、集計結果 (cashToDeal / cashToTx) の書き換え",
+    "税務判断 (税務上の正本は freee)"
+  ],
+  "acceptance": [
+    "S1 (G1): /cash で 17-cash.png の構成要素 (領収書欄を除く) がすべて描画され、色・余白・部品はトークンと共通部品経由で、直書き色の lint が 0 件、読込 / 空 / 失敗の各状態が DOM テストで固定されている。",
+    "S2 (G2): 削除した現金明細が『元に戻す』(単体と一括) で同じ id のまま一覧に戻り、削除中は一覧・合計・取引・集計・バックアップ・取込時の設定スナップショット・科目使用状況のどこにも現れず (JSON 復元の件数判定だけ例外)、30 日の期限が 29 日と 31 日の境界値で固定され、入力途中の内容が再読込後に復元される。",
+    "S3 (G3): 合計・絞り込み・ページング・入力経路・交通費合計・入力検証が core の cash-screen だけで計算され、API と web はその結果を写すだけであることが core の境界値テストと API の Contract tests で固定されている。",
+    "S4 (G4): 他の利用者の明細の取得・変更・削除・復元・一括削除・一括復元が 404 になり (一括は 1 件でも他人の id を含めば何も変えない)、不正な入力 (実在しない日付、範囲外の金額、候補外の名義・カテゴリ・業務の目的、長すぎる文字列) が 400 になり、削除中の行の PUT も 404 になる。",
+    "S5 (全体): migration 0052 の適用で既存行の更新が 0 件、夜間予算テストが total === PLAN_MAX (49) を固定し、verify:full・skills:test・初期 JS 予算が緑で、旧 Cash.tsx にあった操作がすべて新しい構成から実行できる。受入は実行済みの最新のテスト証跡だけで判定する。"
+  ],
+  "architecture_refs": [
+    "architecture/cash-ui-ux.md",
+    "architecture/cash-frontend.md",
+    "architecture/cash-backend.md",
+    "architecture/cash-database.md",
+    "architecture/cash-auth.md",
+    "architecture/cash-security.md",
+    "architecture/cash-infrastructure.md",
+    "architecture/cash-maintenance-ops.md",
+    "specs/spec-cash-screen.md"
+  ],
+  "updated_at": "2026-09-21T23:02:14Z"
+}

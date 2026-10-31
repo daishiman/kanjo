@@ -1,3 +1,5 @@
+import { DEFENSE_LINE_BASIS } from '@kanjo/core';
+
 /**
  * 用語辞書(単一の正本)。
  * - 画面上の用語ホバー(`<Term id="…">`)と「指標ガイド」ページの説明は、どちらもこの辞書から生成する(二重管理しない)。
@@ -44,9 +46,11 @@ export interface GlossaryEntry {
 export const GLOSSARY = {
   defenseLine: {
     term: '防衛ライン',
-    short:
-      '毎月最低これだけ出ていく金額。個人の生活費(直近3ヶ月平均)+事業の固定費。これより多く稼ぐ必要がある。',
-    desc: '個人生活費の直近3ヶ月平均+事業固定費。毎月最低これだけ出ていく=これ以上稼ぐ必要がある金額。',
+    // 算出の説明は core の DEFENSE_LINE_BASIS から組む (算出の月数を直したとき文言が取り残されないように)
+    // biome-ignore lint/style/useTemplate: check-glossary.mjs が short の先頭をシングルクォートの字面で読む
+    short: '毎月最低これだけ出ていく金額。' + DEFENSE_LINE_BASIS + '。これより多く稼ぐ必要がある。',
+    // biome-ignore lint/style/useTemplate: short と同じ組み方に揃える
+    desc: DEFENSE_LINE_BASIS + '。毎月最低これだけ出ていく=これ以上稼ぐ必要がある金額。',
     bench: '収入見込みが110%以上で「余裕」、100%未満は「要注意」',
     aliases: ['防衛ライン', '防衛線', '最低稼得基準額', '最低必要月商'],
   },
@@ -407,30 +411,21 @@ export const GLOSSARY = {
   },
 
   /* -------- 予算・やりくり -------- */
-  variance: {
-    term: '差異',
-    short: '実績 − 予算。プラスなら予算を使いすぎ、マイナスなら予算内に収まっている。',
-    bench: '直近3ヶ月平均が予算の±10%を外れたら「超過」「余裕」として扱う',
-    aliases: ['予算差異', '差異額'],
+  budgetSuggestion: {
+    term: '自動提案',
+    short:
+      '前期実績 × (1 + 増減率) + 季節性補正 + 計画による調整 を千円に丸めた額です。外部の推論は使いません。',
+    desc: '増減率は直近12か月と、その前の12か月の実績の比(±30%に収める)。実績が24か月に満たないときは、増減率と季節性補正を0として計算する。',
+    bench: '来期予算を決める出発点。事業の予定は「計画による調整」に理由と一緒に足す',
+    aliases: ['自動提案'],
   },
-  landing: {
-    term: '着地見込み',
-    short: '年度末にいくらになりそうかの予想。実績の累計 + 直近3ヶ月平均 × 残りの月数。',
-    desc: '年の途中では「今のペースが続いたら」を仮定するしかない。残り月数が多いほど予想の幅は大きいので、年度後半ほど信頼できる。',
-    bench: '着地見込みが年間予算を超えていれば、残り月で調整する余地がまだある',
-    aliases: ['着地見込み', '着地予測'],
-  },
-  budgetOver: {
-    term: '予算超過',
-    short: '直近3ヶ月平均が予算の1.1倍を超えた科目。超えた分がそのまま削減候補の金額になる。',
-    bench: '超過額を予算まで戻すのが最初の削減目標',
-    aliases: ['予算超過', '予算オーバー'],
-  },
-  unexplained: {
-    term: '精査期待値',
-    short: '中身が分かっていない支出を調べれば、これくらいは減らせそう、という見積もり額。確定額ではない。',
-    desc: '「未分類」「使途不明」に溜まった金額の一部は、見直せば削れることが多い。あくまで期待値なので、選ぶ前に明細を確認する。',
-    aliases: ['精査期待値'],
+  defenseMargin: {
+    term: '防衛ライン余裕',
+    short: '年間収入予算 − 防衛ライン × 12。ヘッダの防衛ラインと同じ値から計算しています。',
+    desc: 'マイナスなら、予算どおりに収入が入っても、1年分の最低限の支出を賄えない。',
+    bench: 'プラスを保てる収入予算になっているかを見る',
+    // 表示名は「防衛ライン」を丸ごと含むため、本文の自動リンクは短い表記だけにする。KPI は <Term id> で直接指す
+    aliases: ['防衛余裕'],
   },
   vendor: {
     term: 'ベンダー',
@@ -507,16 +502,7 @@ export const GUIDE_SECTIONS: readonly GuideSection[] = [
   {
     title: '画面が出す判断',
     lead: 'アプリが数字を見て先に付けた札。何を根拠にその言葉が出ているかを書いてある。',
-    ids: [
-      'judge',
-      'signal',
-      'classification',
-      'fixedCost',
-      'variance',
-      'landing',
-      'budgetOver',
-      'unexplained',
-    ],
+    ids: ['judge', 'signal', 'classification', 'fixedCost', 'budgetSuggestion', 'defenseMargin'],
   },
   {
     title: 'サブスクと家計',

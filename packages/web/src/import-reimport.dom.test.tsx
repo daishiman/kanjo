@@ -1,41 +1,27 @@
 // @vitest-environment jsdom
 
 /**
- * 取込履歴からの「やり直し(再取込)」の画面契約。
- * 押しただけでは何も書き換わらず、月単位の洗い替えは通常の取込と同じ確認を経てから起きること。
+ * 取込履歴からの「置換」(保存した原本で取り込み直す) の画面契約。
+ * 押しただけでは何も書き換わらず、月単位の洗い替えはアプリ内の確認を経てから起きること。
+ *
+ * 取込画面の作り直し (spec-import-screen) で、旧「やり直し」(原本を取込枠へ戻してから通常の取込で送る)
+ * は履歴の行の「置換」(`POST /imports/runs/:id/reimport`) に置き換わった。
+ * 押しただけでは書き換えない・window.confirm を使わない・原本が無ければ理由を出す、の 3 点は旧契約から引き継ぐ。
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ImportHistoryRow } from './api.js';
+import type { ImportRunCommitResponse, ImportRunRowView } from './api.js';
 import { ImportPage } from './pages/Import.js';
-
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
-
-const historyRow = (over: Partial<ImportHistoryRow> = {}): ImportHistoryRow => ({
-  id: 41,
-  filename: '架空-2026-07.csv',
-  kind: 'freee',
-  months: ['2026-07'],
-  rows: 12,
-  status: 'committed',
-  duplicateOf: null,
-  failureReason: null,
-  generationState: 'superseded',
-  committedAt: '2026-07-31T00:00:00.000Z',
-  createdAt: '2026-07-31T00:00:00.000Z',
-  originalRecorded: true,
-  ...over,
-});
+import { createImportServer, jsonResponse, runRow } from './pages/import/import-test-fakes.js';
 
 function renderPage() {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
-  // 取込画面は資産推移の説明から他ページへリンクするため、Router が無いと描画できない
+  // 取込画面は結果の案内から他ページへリンクするため、Router が無いと描画できない
   return render(
     <QueryClientProvider client={client}>
       <MemoryRouter>{(<ImportPage />) as ReactNode}</MemoryRouter>
@@ -43,21 +29,36 @@ function renderPage() {
   );
 }
 
-/** 履歴GETと原本GETだけを返す fetch。原本は呼ばれた回数を数える */
-const stubFetch = (imports: ImportHistoryRow[], original: () => Response) => {
-  const calls: string[] = [];
-  vi.stubGlobal(
-    'fetch',
-    vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const path = String(input);
-      calls.push(`${init?.method ?? 'GET'} ${path}`);
-      if (path.endsWith('/original')) return original();
-      if (path.startsWith('/api/imports')) return json({ imports });
-      throw new Error(`unexpected request: ${path}`);
-    }),
-  );
-  return calls;
+const reimported = (filename: string, remaining: string[]): ImportRunCommitResponse => ({
+  run: {
+    id: 'run-2',
+    result: 'success',
+    files: [{ id: filename, filename, state: 'imported', rowCount: 12, reason: null }],
+    impact: { added: 12, skipped: 0, subsCandidates: 0 },
+    duplicateCandidates: 0,
+  },
+  remaining,
+});
+
+/** 置換 POST の応答を差し替えられる偽サーバ */
+const stub = (runs: ImportRunRowView[], reimport: (body: unknown, index: number) => Response) => {
+  let index = 0;
+  const server = createImportServer({
+    runs,
+    route: (method, path, init) => {
+      if (method === 'POST' && /^\/api\/imports\/runs\/[^/]+\/reimport$/.test(path)) {
+        const body = typeof init?.body === 'string' ? JSON.parse(init.body) : null;
+        return reimport(body, index++);
+      }
+      return undefined;
+    },
+  });
+  vi.stubGlobal('fetch', vi.fn(server.fetch));
+  vi.stubGlobal('XMLHttpRequest', server.XMLHttpRequest);
+  return server;
 };
+
+const replaceButtons = () => screen.findAllByRole('button', { name: /の取込を置換$/ });
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -71,86 +72,116 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('取込履歴のやり直し', () => {
-  it('押すと原本を取込枠へ戻すだけで、取込POSTは走らない', async () => {
-    const calls = stubFetch([historyRow()], () => new Response('収支区分,発生日\n'));
+describe('取込履歴の置換', () => {
+  it('押すとアプリ内の確認を出すだけで、書き換え系の要求は走らない', async () => {
+    const server = stub([runRow({ id: 'run-1' })], () => jsonResponse(reimported('架空.csv', []), 201));
     renderPage();
 
-    fireEvent.click(await screen.findByRole('button', { name: 'この取込をやり直す' }));
-
-    expect(await screen.findByText(/取込履歴 #41/)).toBeTruthy();
-    expect(screen.getByText(/まだ何も書き換えていません/)).toBeTruthy();
-    expect(screen.getByRole('heading', { name: '1件のファイルを選択中' })).toBeTruthy();
-    expect(screen.getAllByText('架空-2026-07.csv')).toHaveLength(2);
-    const cancel = screen.getAllByRole('button', { name: 'やり直しをやめる' });
-    expect(cancel).toHaveLength(2);
-    // 戻しただけの段階では書き換え系のリクエストを一切出さない
-    expect(calls.filter((call) => call.startsWith('POST'))).toEqual([]);
-    expect(confirm).not.toHaveBeenCalled();
-
-    fireEvent.click(cancel[1]);
-    expect(screen.queryByRole('heading', { name: '1件のファイルを選択中' })).toBeNull();
-    expect(screen.getByRole('button', { name: 'この取込をやり直す' })).toBeTruthy();
-  });
-
-  it('戻した原本は「取込を実行」で初めて、月単位の洗い替え確認を経て送られる', async () => {
-    const calls = stubFetch([historyRow()], () => new Response('収支区分,発生日\n'));
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-        const path = String(input);
-        calls.push(`${init?.method ?? 'GET'} ${path}`);
-        if (init?.method === 'POST') return json({ results: [] });
-        if (path.endsWith('/original')) return new Response('収支区分,発生日\n');
-        return json({ imports: [historyRow()] });
-      }),
-    );
-    renderPage();
-
-    fireEvent.click(await screen.findByRole('button', { name: 'この取込をやり直す' }));
-    fireEvent.click(await screen.findByRole('button', { name: '取込を実行' }));
+    const [trigger] = await replaceButtons();
+    fireEvent.click(trigger);
 
     /*
       確認は画面の中に出す。window.confirm はブラウザの「このページでこれ以上ダイアログを
       表示しない」抑止が効くと即 false を返し、押しても何も起きないボタンになる。
-      呼び出し側は抑止を知る手立てが無く、原因も画面に出ない。
       window.confirm を残した実装をここで落とすため、呼ばれていないことまで固定する。
     */
+    const dialog = await screen.findByRole('dialog', { name: 'この取込を保存した原本で置換しますか？' });
     expect(confirm).not.toHaveBeenCalled();
-    const dialog = await screen.findByRole('dialog');
-    expect(dialog.textContent).toContain('月単位の洗い替え');
-    // 確認を出した時点ではまだ何も書き換わっていない
-    expect(calls.filter((call) => call.startsWith('POST'))).toEqual([]);
+    expect(dialog.textContent).toContain('同じ月の明細を洗い替えます');
+    expect(server.calls.filter((call) => call.startsWith('POST'))).toEqual([]);
 
-    fireEvent.click(within(dialog).getByRole('button', { name: '置き換えて取り込む' }));
-    await waitFor(() => expect(calls).toContain('POST /api/imports'));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'やめる' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(server.calls.filter((call) => call.startsWith('POST'))).toEqual([]);
+    expect(document.activeElement).toBe(trigger);
   });
 
-  it('原本がR2に無ければ理由をその行に出し、取込枠へは何も入れない', async () => {
-    stubFetch([historyRow()], () =>
-      json(
+  it('確認してから押すと送り、残りのファイルは同じ置換先へ続けて送る', async () => {
+    const bodies: unknown[] = [];
+    const server = stub([runRow({ id: 'run-1', fileCount: 2 })], (body, index) => {
+      bodies.push(body);
+      return jsonResponse(index === 0 ? reimported('a.csv', ['b.csv']) : reimported('b.csv', []), 201);
+    });
+    renderPage();
+
+    fireEvent.click((await replaceButtons())[0]);
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: '原本で置換する' }));
+
+    expect(await screen.findByText('保存した原本で置換しました。')).toBeTruthy();
+    expect(server.calls.filter((call) => call.startsWith('POST'))).toEqual([
+      'POST /api/imports/runs/run-1/reimport',
+      'POST /api/imports/runs/run-1/reimport',
+    ]);
+    // 2 回目以降は、1 回目が作った取込へ残りを足す (取込 1 回が 2 つに割れない)
+    expect(bodies).toEqual([null, { filenames: ['b.csv'], intoRunId: 'run-2' }]);
+  });
+
+  it('続きが 429 なら Retry-After だけ待って同じ要求を送り直し、置換を最後まで続ける', async () => {
+    const bodies: unknown[] = [];
+    stub([runRow({ id: 'run-1', fileCount: 2 })], (body, index) => {
+      bodies.push(body);
+      if (index === 0) return jsonResponse(reimported('a.csv', ['b.csv']), 201);
+      if (index === 1) {
+        const limited = jsonResponse({ error: { code: 'rate_limited', message: '集中しました' } }, 429);
+        limited.headers.set('Retry-After', '1');
+        return limited;
+      }
+      return jsonResponse(reimported('b.csv', []), 201);
+    });
+    renderPage();
+
+    fireEvent.click((await replaceButtons())[0]);
+    fireEvent.click(
+      within(await screen.findByRole('dialog')).getByRole('button', { name: '原本で置換する' }),
+    );
+
+    expect(
+      await screen.findByText('短時間に操作が集中したため、1秒待ってから続きを置換します。'),
+    ).toBeTruthy();
+    expect(
+      await screen.findByText('保存した原本で置換しました。', undefined, { timeout: 3000 }),
+    ).toBeTruthy();
+    const continuation = { filenames: ['b.csv'], intoRunId: 'run-2' };
+    expect(bodies).toEqual([null, continuation, continuation]);
+  });
+
+  it('原本がR2に無ければ理由を出し、取込ファイル一覧へは何も入れない', async () => {
+    stub([runRow({ id: 'run-1' })], () =>
+      jsonResponse(
         { error: { code: 'import_original_missing', message: '取込の原本が保管先に見つかりません' } },
         404,
       ),
     );
     renderPage();
 
-    fireEvent.click(await screen.findByRole('button', { name: 'この取込をやり直す' }));
-
-    fireEvent.click(await screen.findByText('詳細を見る'));
-    expect(await screen.findByRole('alert')).toHaveProperty(
-      'textContent',
-      '取込の原本が保管先に見つかりません',
+    fireEvent.click((await replaceButtons())[0]);
+    fireEvent.click(
+      within(await screen.findByRole('dialog')).getByRole('button', { name: '原本で置換する' }),
     );
-    expect(screen.queryByRole('heading', { name: /ファイルを選択中/ })).toBeNull();
+
+    const alert = await screen.findByRole('alert');
+    expect(alert.textContent).toContain('取込の原本が保管先に見つかりません');
+    expect(screen.queryByRole('table', { name: '取込ファイル一覧' })).toBeNull();
+    expect(screen.queryByRole('region', { name: '選択中のファイル' })).toBeNull();
   });
 
-  it('原本を保存していない履歴にはボタンを出さない', async () => {
-    stubFetch([historyRow({ originalRecorded: false }), historyRow({ id: 42 })], () => new Response(''));
+  it('原本を保存していない履歴では置換を押せない', async () => {
+    stub(
+      [
+        runRow({
+          id: 'run-1',
+          createdAt: '2026-09-20T01:00:00.000Z',
+          hasOriginal: false,
+          replaceable: false,
+        }),
+        runRow({ id: 'run-2', createdAt: '2026-09-19T01:00:00.000Z' }),
+      ],
+      () => jsonResponse(reimported('架空.csv', []), 201),
+    );
     renderPage();
 
-    const legacy = (await screen.findByText('原本なし')).closest('.import-record');
-    expect(legacy).toBeTruthy();
-    expect(screen.getAllByRole('button', { name: 'この取込をやり直す' })).toHaveLength(1);
+    const buttons = (await replaceButtons()) as HTMLButtonElement[];
+    expect(buttons.map((button) => button.disabled)).toEqual([true, false]);
   });
 });

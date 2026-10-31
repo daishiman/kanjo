@@ -2,6 +2,7 @@
  * 集計・統計・診断。HTML版の計算仕様（spec §8、変更禁止16項目）を移植。
  * 年次比較はHTML版の '2025'/'2026' 固定を「前年/当年（データ最終月の年）」に一般化した。
  */
+import { budgetsInEffect } from './budget-screen.js';
 import { mean, median, movingAvg, std, sum, yearOf } from './stats.js';
 import {
   type CatProfile,
@@ -935,11 +936,12 @@ export function judgeBudget(recentAvg: number, budget: number | null): Pick<Budg
 }
 
 export function budgetTable(data: Dataset): BudgetRow[] {
+  const budgets = budgetsInEffect(data);
   return data.biz.categories
     .filter((c) => sum(catSeries(data, c)) > 0)
     .map((c) => {
       const p = catProfile(data, c);
-      const b = data.budgets[c] ?? null;
+      const b = budgets[c] ?? null;
       return { account: c, type: p.type, recentAvg: p.rAvg, budget: b, ...judgeBudget(p.rAvg, b) };
     });
 }
@@ -1026,6 +1028,7 @@ export interface BudgetOutlook {
  */
 export function budgetOutlook(data: Dataset): BudgetOutlook {
   const { curr } = yearPair(data);
+  const budgets = budgetsInEffect(data);
   const un = new Set(data.unrecordedExpMonths);
   const currIdx = data.months.map((_, i) => i).filter((i) => yearOf(data.months[i]) === curr);
   const recordedIdx = currIdx.filter((i) => !un.has(data.months[i]));
@@ -1038,7 +1041,7 @@ export function budgetOutlook(data: Dataset): BudgetOutlook {
       const series = catSeries(data, c);
       const ytd = sum(recordedIdx.map((i) => series[i] || 0));
       const recentAvg = catProfile(data, c).rAvg;
-      const budget = data.budgets[c] ?? null;
+      const budget = budgets[c] ?? null;
       const annualBudget = budget == null ? null : budget * 12;
       const landing = ytd + recentAvg * remainingMonths;
       const judged = judgeBudget(landing, annualBudget);
@@ -1074,7 +1077,7 @@ export function budgetOutlook(data: Dataset): BudgetOutlook {
 /* ======================== FR-08 防衛ライン ======================== */
 
 export interface DefenseLine {
-  /** 防衛ライン = 個人生活費の直近3ヶ月平均 + 事業固定費（CV<0.6科目）の直近3ヶ月平均 */
+  /** 防衛ライン = 個人生活費の直近 DEFENSE_LINE_RECENT_MONTHS か月平均 + 事業固定費（CV<0.6科目）の平均 */
   line: number;
   personalAvg: number;
   bizFixedAvg: number;
@@ -1087,9 +1090,18 @@ export interface DefenseLine {
   status: 'ok' | 'tight' | 'danger' | 'nodata';
 }
 
+/**
+ * 防衛ラインの個人生活費を平均する月数 (直近 N か月)。算出と説明文 (使い方・用語集) の正本。
+ * 値を変えると /defense-line の値も説明文も同時に変わる (qa-guide-decision-009)。
+ */
+export const DEFENSE_LINE_RECENT_MONTHS = 3;
+
+/** 防衛ラインの算出の説明。使い方画面と用語集が同じ文を使う */
+export const DEFENSE_LINE_BASIS = `個人生活費の直近${DEFENSE_LINE_RECENT_MONTHS}か月平均＋事業固定費の平均`;
+
 export function defenseLine(data: Dataset): DefenseLine {
   const pMonths = Object.keys(data.personal).sort();
-  const recent = pMonths.slice(-3);
+  const recent = pMonths.slice(-DEFENSE_LINE_RECENT_MONTHS);
   const personalAvg = recent.length
     ? mean(recent.map((m) => sum(Object.values(data.personal[m].expense))))
     : 0;

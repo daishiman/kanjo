@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  CONFIDENCE_TIER_HIGH_MIN,
+  CONFIDENCE_TIER_MEDIUM_MIN,
   CONFLICT_CONFIDENCE_PENALTY,
   MF_MID_CONFIDENCE,
   REVIEW_CONFIDENCE_THRESHOLD,
@@ -9,6 +11,8 @@ import {
   classifyCounts,
   classifyStatus,
   classifySuggestion,
+  confidenceTier,
+  confidenceTierText,
   isContradiction,
   matchesSuggestion,
   payeeOf,
@@ -345,5 +349,41 @@ describe('payeeOf (BR-12)', () => {
   it('正規化した取引先キーを返し、作れなければ内容をそのまま返す', () => {
     expect(payeeOf('アマゾン ウェブ サービス')).toBe('アマゾンウェブサービス');
     expect(payeeOf('  ')).toBe('  ');
+  });
+});
+
+describe('信頼度の段階 (高 80 以上・中 50〜79・低 49 以下)', () => {
+  it('境界の前後を段階へ振り分ける', () => {
+    expect([0, 49, 50, 79, 80, 100].map(confidenceTier)).toEqual([
+      'low',
+      'low',
+      'medium',
+      'medium',
+      'high',
+      'high',
+    ]);
+  });
+
+  it('範囲外・数でない値は段階を持たない', () => {
+    expect([-1, 101, Number.NaN, null, undefined].map(confidenceTier)).toEqual([
+      null,
+      null,
+      null,
+      null,
+      null,
+    ]);
+    expect(confidenceTierText(101)).toBe('—');
+  });
+
+  it('表示は『段階＋%』', () => {
+    expect(confidenceTierText(92)).toBe('高 92%');
+    expect(confidenceTierText(55)).toBe('中 55%');
+    expect(confidenceTierText(0)).toBe('低 0%');
+  });
+
+  it('要確認の閾値と高の下限はともに 80 (閾値は変えない)', () => {
+    expect(REVIEW_CONFIDENCE_THRESHOLD).toBe(80);
+    expect(CONFIDENCE_TIER_HIGH_MIN).toBe(REVIEW_CONFIDENCE_THRESHOLD);
+    expect(CONFIDENCE_TIER_MEDIUM_MIN).toBe(50);
   });
 });

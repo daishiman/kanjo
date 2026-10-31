@@ -1,30 +1,29 @@
 // @vitest-environment jsdom
 
-/** 帳簿データの取消と、失敗・重複履歴の破棄を混同しない画面契約。 */
+/**
+ * 帳簿データの取消と、失敗・重複履歴の破棄を混同しない画面契約。
+ * ファイル単位の操作は、取込 1 回の詳細 (?run=) の中から呼ぶ (spec-import-screen 「既存 API の扱い」)。
+ */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { ImportHistoryRow } from '../api.js';
+import type { ImportRunDetail, ImportRunDetailFile } from '../api.js';
 import { ImportPage } from './Import.js';
+import { createImportServer, jsonResponse, runDetail, runRow } from './import/import-test-fakes.js';
 
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
-
-const row = (over: Partial<ImportHistoryRow> = {}): ImportHistoryRow => ({
-  id: 41,
+const file = (over: Partial<ImportRunDetailFile> = {}): ImportRunDetailFile => ({
+  importId: 41,
   filename: '架空-失敗.csv',
-  kind: 'mf',
-  months: ['2026-09'],
-  rows: 0,
+  source: 'mf',
+  state: 'failed',
   status: 'failed',
-  duplicateOf: null,
-  failureReason: '架空の形式エラー',
+  rowCount: 0,
+  months: ['2026-09'],
+  reason: '架空の形式エラー',
+  hasOriginal: true,
   generationState: null,
-  committedAt: null,
-  createdAt: '2026-09-01T00:00:00.000Z',
-  originalRecorded: true,
   cancelable: false,
   discardable: true,
   ...over,
@@ -36,32 +35,33 @@ function renderPage() {
   });
   return render(
     <QueryClientProvider client={client}>
-      <MemoryRouter>{(<ImportPage />) as ReactNode}</MemoryRouter>
+      <MemoryRouter initialEntries={['/?run=run-1']}>{(<ImportPage />) as ReactNode}</MemoryRouter>
     </QueryClientProvider>,
   );
 }
 
-const stubFetch = (
-  imports: ImportHistoryRow[],
+/** run-1 の詳細にファイルを並べ、破棄したファイルはその場で詳細から外す */
+const stubServer = (
+  files: ImportRunDetailFile[],
   originalDisposition: 'delete' | 'keep_shared' | 'none' = 'delete',
   discardGate?: Promise<void>,
 ) => {
-  const calls: Array<{ path: string; method: string; body?: string }> = [];
-  let currentImports = [...imports];
-  vi.stubGlobal(
-    'fetch',
-    vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const path = String(input);
-      const method = init?.method ?? 'GET';
-      calls.push({ path, method, body: typeof init?.body === 'string' ? init.body : undefined });
+  const row = runRow({ id: 'run-1', fileCount: files.length, undoable: false });
+  const details: Record<string, ImportRunDetail> = { 'run-1': runDetail(row, { files: [...files] }) };
+  const server = createImportServer({
+    runs: [row],
+    details,
+    route: async (method, path) => {
       if (path.endsWith('/original')) return new Response('収支区分,発生日\n');
       if (path.endsWith('/discard/preflight'))
-        return json({ fingerprint: 'v1:import-discard:架空', originalDisposition });
-      if (path.endsWith('/discard')) {
+        return jsonResponse({ fingerprint: 'v1:import-discard:架空', originalDisposition });
+      const discard = /^\/api\/imports\/(\d+)\/discard$/.exec(path);
+      if (discard && method === 'POST') {
         await discardGate;
-        const discardedId = Number(/\/imports\/(\d+)\/discard$/.exec(path)?.[1]);
-        currentImports = currentImports.filter(({ id }) => id !== discardedId);
-        return json({
+        const id = Number(discard[1]);
+        const detail = details['run-1'];
+        details['run-1'] = { ...detail, files: detail.files.filter((entry) => entry.importId !== id) };
+        return jsonResponse({
           discarded: true,
           original:
             originalDisposition === 'delete'
@@ -71,13 +71,15 @@ const stubFetch = (
                 : 'not_recorded',
         });
       }
-      if (path === '/api/data/operations') return json({ operations: [] });
-      if (path.startsWith('/api/imports')) return json({ imports: currentImports });
-      throw new Error(`unexpected request: ${path}`);
-    }),
-  );
-  return calls;
+      return undefined;
+    },
+  });
+  vi.stubGlobal('fetch', vi.fn(server.fetch));
+  vi.stubGlobal('XMLHttpRequest', server.XMLHttpRequest);
+  return server;
 };
+
+const detailPane = () => screen.findByRole('complementary', { name: '履歴の詳細' });
 
 afterEach(() => {
   cleanup();
@@ -86,9 +88,9 @@ afterEach(() => {
 
 describe('履歴を削除する確認', () => {
   it('帳簿データを変えない不可逆操作としてdialogで確認し、やめるへ初期focusする', async () => {
-    stubFetch([row()]);
+    stubServer([file()]);
     renderPage();
-    const trigger = await screen.findByRole('button', { name: 'この取込履歴を削除' });
+    const trigger = await within(await detailPane()).findByRole('button', { name: 'この取込履歴を削除' });
     fireEvent.click(trigger);
 
     const dialog = await screen.findByRole('dialog', { name: 'この取込履歴を削除しますか？' });
@@ -104,44 +106,27 @@ describe('履歴を削除する確認', () => {
   });
 
   it('共有原本は残すことを実行前に明示する', async () => {
-    stubFetch([row()], 'keep_shared');
+    stubServer([file()], 'keep_shared');
     renderPage();
-    fireEvent.click(await screen.findByRole('button', { name: 'この取込履歴を削除' }));
+    fireEvent.click(await within(await detailPane()).findByRole('button', { name: 'この取込履歴を削除' }));
 
     const dialog = await screen.findByRole('dialog');
     expect(within(dialog).getByText(/保存原本はほかの取込でも使われているため残します/)).toBeTruthy();
   });
 
   it('preflightの指紋を実行APIへ渡し、完了後も帳簿を変えていないと示す', async () => {
-    const calls = stubFetch([row()]);
+    const server = stubServer([file()]);
     renderPage();
-    fireEvent.click(await screen.findByRole('button', { name: 'この取込履歴を削除' }));
+    fireEvent.click(await within(await detailPane()).findByRole('button', { name: 'この取込履歴を削除' }));
     fireEvent.click(await screen.findByRole('button', { name: '履歴を削除する' }));
 
     expect(await screen.findByRole('heading', { name: '履歴を削除しました' })).toBeTruthy();
     expect(screen.getByText('帳簿データは変更していません。')).toBeTruthy();
-    const execute = calls.find(({ path }) => path === '/api/imports/41/discard');
-    expect(execute).toMatchObject({ method: 'POST' });
-    expect(JSON.parse(execute?.body ?? '{}')).toEqual({ fingerprint: 'v1:import-discard:架空' });
+    expect(server.calls).toContain('POST /api/imports/41/discard');
+    expect(server.bodies.find(({ path }) => path === '/api/imports/41/discard')?.body).toEqual({
+      fingerprint: 'v1:import-discard:架空',
+    });
 
-    fireEvent.click(screen.getByRole('button', { name: '閉じる' }));
-    await waitFor(() => expect(screen.queryByText('架空-失敗.csv')).toBeNull());
-  });
-
-  it('やり直し中の失敗履歴を削除したら、選択中の原本も手元から外す', async () => {
-    stubFetch([row()]);
-    renderPage();
-
-    fireEvent.click(await screen.findByRole('button', { name: 'この取込をやり直す' }));
-    expect(await screen.findByRole('heading', { name: '1件のファイルを選択中' })).toBeTruthy();
-
-    const record = screen.getByRole('listitem', { name: '架空-失敗.csvの取込履歴' });
-    expect(within(record).getByRole('button', { name: 'やり直しをやめる' })).toBeTruthy();
-    fireEvent.click(within(record).getByRole('button', { name: 'この取込履歴を削除' }));
-    fireEvent.click(await screen.findByRole('button', { name: '履歴を削除する' }));
-
-    expect(await screen.findByRole('heading', { name: '履歴を削除しました' })).toBeTruthy();
-    expect(screen.queryByRole('heading', { name: '1件のファイルを選択中' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '閉じる' }));
     await waitFor(() => expect(screen.queryByText('架空-失敗.csv')).toBeNull());
   });
@@ -151,10 +136,10 @@ describe('履歴を削除する確認', () => {
     const discardGate = new Promise<void>((resolve) => {
       releaseDiscard = resolve;
     });
-    stubFetch([row()], 'delete', discardGate);
+    stubServer([file()], 'delete', discardGate);
     renderPage();
 
-    fireEvent.click(await screen.findByRole('button', { name: 'この取込履歴を削除' }));
+    fireEvent.click(await within(await detailPane()).findByRole('button', { name: 'この取込履歴を削除' }));
     const dialog = await screen.findByRole('dialog');
     fireEvent.click(within(dialog).getByRole('button', { name: '履歴を削除する' }));
     await within(dialog).findByRole('button', { name: '削除中…' });
@@ -169,56 +154,65 @@ describe('履歴を削除する確認', () => {
 
 describe('履歴状態ごとの操作', () => {
   it('active/partialだけは取消、failed/duplicateだけは履歴削除を出す', async () => {
-    stubFetch([
-      row({
-        id: 1,
+    stubServer([
+      file({
+        importId: 1,
         filename: 'active.csv',
         status: 'committed',
+        state: 'imported',
         generationState: 'active',
         cancelable: true,
         discardable: false,
       }),
-      row({
-        id: 2,
+      file({
+        importId: 2,
         filename: 'partial.csv',
         status: 'committed',
+        state: 'imported',
         generationState: 'partial',
         cancelable: true,
         discardable: false,
       }),
-      row({
-        id: 3,
+      file({
+        importId: 3,
         filename: 'superseded.csv',
         status: 'committed',
+        state: 'imported',
         generationState: 'superseded',
         cancelable: false,
         discardable: false,
       }),
-      row({ id: 4, filename: 'failed.csv' }),
-      row({ id: 5, filename: 'duplicate.csv', status: 'duplicate', failureReason: null }),
-      row({ id: 6, filename: 'processing.csv', status: 'processing', discardable: false }),
-      row({ id: 7, filename: 'applying.csv', status: 'applying', discardable: false }),
-      row({ id: 8, filename: 'legacy.csv', status: 'ok', generationState: 'legacy', discardable: false }),
+      file({ importId: 4, filename: 'failed.csv' }),
+      file({ importId: 5, filename: 'duplicate.csv', status: 'duplicate', state: 'imported', reason: null }),
+      file({ importId: 6, filename: 'processing.csv', status: 'processing', discardable: false }),
+      file({ importId: 7, filename: 'applying.csv', status: 'applying', discardable: false }),
+      file({
+        importId: 8,
+        filename: 'legacy.csv',
+        status: 'ok',
+        generationState: 'legacy',
+        discardable: false,
+      }),
     ]);
     renderPage();
-    await screen.findByText('active.csv');
+    const pane = await detailPane();
+    await within(pane).findByText('active.csv');
 
-    expect(screen.getAllByRole('button', { name: 'この取込を取り消す' })).toHaveLength(2);
-    expect(screen.getAllByRole('button', { name: 'この取込履歴を削除' })).toHaveLength(2);
-    const superseded = screen.getByRole('listitem', { name: 'superseded.csvの取込履歴' });
-    expect(within(superseded).queryByRole('button', { name: /取り消す|履歴を削除/ })).toBeNull();
-    for (const filename of ['processing.csv', 'applying.csv', 'legacy.csv']) {
-      const record = screen.getByRole('listitem', { name: `${filename}の取込履歴` });
+    expect(within(pane).getAllByRole('button', { name: 'この取込を取り消す' })).toHaveLength(2);
+    expect(within(pane).getAllByRole('button', { name: 'この取込履歴を削除' })).toHaveLength(2);
+    for (const filename of ['superseded.csv', 'processing.csv', 'applying.csv', 'legacy.csv']) {
+      const record = within(pane).getByRole('listitem', { name: `${filename}の取込履歴` });
       expect(within(record).queryByRole('button', { name: /取り消す|履歴を削除/ })).toBeNull();
     }
   });
 
   it('更新済み表示でもサーバが帳簿参照を検出した履歴は取り消せる', async () => {
-    stubFetch([
-      row({
-        id: 9,
+    stubServer([
+      file({
+        importId: 9,
         filename: 'superseded-with-reference.json',
         status: 'committed',
+        state: 'imported',
         generationState: 'superseded',
         cancelable: true,
         discardable: false,
@@ -226,60 +220,57 @@ describe('履歴状態ごとの操作', () => {
     ]);
     renderPage();
 
-    const record = await screen.findByRole('listitem', {
+    const record = await within(await detailPane()).findByRole('listitem', {
       name: 'superseded-with-reference.jsonの取込履歴',
     });
+    expect(within(record).getByText('更新済み')).toBeTruthy();
     expect(within(record).getByRole('button', { name: 'この取込を取り消す' })).toBeTruthy();
     expect(within(record).queryByRole('button', { name: 'この取込履歴を削除' })).toBeNull();
   });
 });
 
 describe('データを消した取込の履歴', () => {
-  const deletedRow = (over: Partial<ImportHistoryRow> = {}) =>
-    row({
-      status: 'committed',
-      generationState: 'deleted',
-      failureReason: null,
-      cancelable: false,
-      discardable: true,
-      ...over,
-    });
+  const deleted = (over: Partial<ImportRunDetailFile> = {}) =>
+    file({ status: 'committed', state: 'imported', generationState: 'deleted', reason: null, ...over });
 
   it('消したデータの履歴を「取込完了」と表示しない', async () => {
-    stubFetch([deletedRow({ id: 11, filename: 'deleted.csv' })]);
+    stubServer([deleted({ importId: 11, filename: 'deleted.csv' })]);
     renderPage();
 
-    const record = await screen.findByRole('listitem', { name: 'deleted.csvの取込履歴' });
+    const record = await within(await detailPane()).findByRole('listitem', { name: 'deleted.csvの取込履歴' });
     expect(within(record).getByText('データ削除済み')).toBeTruthy();
     expect(within(record).queryByText('取込完了')).toBeNull();
   });
 
   it('取り消しの控えが残る間は片づけず、その旨を出す', async () => {
-    stubFetch([deletedRow({ id: 12, filename: 'undoable.csv', discardable: false })]);
+    stubServer([deleted({ importId: 12, filename: 'undoable.csv', discardable: false })]);
     renderPage();
 
-    const record = await screen.findByRole('listitem', { name: 'undoable.csvの取込履歴' });
+    const record = await within(await detailPane()).findByRole('listitem', {
+      name: 'undoable.csvの取込履歴',
+    });
     expect(within(record).getByText('取り消し可能')).toBeTruthy();
     expect(within(record).queryByRole('button', { name: 'この取込履歴を削除' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'データ削除済みの取込履歴をまとめて片づける' })).toBeNull();
   });
 
   it('片づけられる削除済みだけを数え、1件ずつ破棄して一覧から消す', async () => {
-    const calls = stubFetch([
-      deletedRow({ id: 13, filename: 'deleted-a.csv' }),
-      deletedRow({ id: 14, filename: 'deleted-b.csv' }),
-      deletedRow({ id: 15, filename: 'undoable.csv', discardable: false }),
-      row({
-        id: 16,
+    const server = stubServer([
+      deleted({ importId: 13, filename: 'deleted-a.csv' }),
+      deleted({ importId: 14, filename: 'deleted-b.csv' }),
+      deleted({ importId: 15, filename: 'undoable.csv', discardable: false }),
+      file({
+        importId: 16,
         filename: 'active.csv',
         status: 'committed',
+        state: 'imported',
         generationState: 'active',
         discardable: false,
       }),
     ]);
     renderPage();
 
-    const bulk = await screen.findByRole('button', {
+    const bulk = await within(await detailPane()).findByRole('button', {
       name: 'データ削除済みの取込履歴をまとめて片づける',
     });
     expect(bulk.textContent).toContain('2件');
@@ -289,9 +280,9 @@ describe('データを消した取込の履歴', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'まとめて片づける' }));
 
     expect(await screen.findByRole('heading', { name: '片づけが終わりました' })).toBeTruthy();
-    expect(calls.filter(({ path }) => path.endsWith('/discard')).map(({ path }) => path)).toEqual([
-      '/api/imports/13/discard',
-      '/api/imports/14/discard',
+    expect(server.calls.filter((call) => call.startsWith('POST') && call.endsWith('/discard'))).toEqual([
+      'POST /api/imports/13/discard',
+      'POST /api/imports/14/discard',
     ]);
 
     fireEvent.click(screen.getByRole('button', { name: '閉じる' }));

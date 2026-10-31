@@ -2,12 +2,21 @@
  * JSON restore が読む利用者別 canonical data の更新を、取込と同じ lease で直列化する。
  * route 側の read -> write -> recompute 全体を next() が解決するまで囲う。
  */
-import type { MiddlewareHandler } from 'hono';
+import type { Context, MiddlewareHandler } from 'hono';
 import type { AuthEnv } from './auth.js';
 import type { JsonSnapshotMutationConsumer } from './import-active.js';
 import { acquireImportWriter, releaseImportWriter } from './import-lifecycle.js';
+import { PRIVATE_NO_STORE, errorBody } from './public-validation.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
+
+/** lease を取れなかった書込みと、更新と重なった読取りの 409。画面は同じ key で待って送り直す */
+export const canonicalWriteBusy = (c: Context) =>
+  c.json(
+    errorBody('canonical_write_busy', '別の取込みまたは更新が進行中です。完了後に再試行してください'),
+    409,
+    PRIVATE_NO_STORE,
+  );
 
 export type CanonicalMutationClass = 'canonical-mutation' | 'self-managed-import' | 'not-canonical-mutation';
 
@@ -32,7 +41,35 @@ type CanonicalConsumer =
    * 「消えかけの明細に一括保存が当たる」「消えた明細の履歴だけが残る」が作れる。
    */
   | 'saved_filters'
-  | 'tx_history';
+  | 'tx_history'
+  /*
+   * 0058: サブスクの書込み 1 回ぶんの記録と、利用者ごとの版番号。
+   * JSON バックアップの write-set には入らない (復元は操作の記録を書き戻さない) が、
+   * サブスクの書込みはすべてこの 2 表を同じ batch で書くので、同じ lease の下で直列化する。
+   */
+  | 'subscription_operations'
+  | 'subscription_revisions';
+
+/** サブスクの書込みがすべて足す 2 表 (spec-subscriptions-merge §データモデル) */
+const SUBSCRIPTION_OPERATION_CONSUMERS: readonly CanonicalConsumer[] = [
+  'subscription_operations',
+  'subscription_revisions',
+];
+
+/**
+ * サブスク等の短い変更が持つ lease の期限。取込の 15 分 (IMPORT_CLAIM_TTL_MS) と分ける。
+ * 変更の途中で Worker が落ちても、次の変更は 2 分で回復できる。
+ */
+export const CANONICAL_MUTATION_CLAIM_TTL_MS = 2 * 60 * 1000;
+
+/** 設定画面の保存・設定だけの復元が書く表 (spec-settings-screen §API契約) */
+const SETTINGS_SCREEN_CONSUMERS: readonly CanonicalConsumer[] = [
+  'settings_norm_rules',
+  'settings_cash_overrides',
+  'settings_change_log',
+  'owner_labels',
+  'analysis_settings',
+];
 
 export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -46,6 +83,10 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
     path: /^\/api\/cash-entries\/[^/]+$/,
     consumers: ['cash_entries', 'tx_edits'],
   },
+  // 論理削除の戻しと一括の削除・戻し。明細を読んでから書くので、取込・JSON復元と同じleaseで直列化する
+  { method: 'POST', path: /^\/api\/cash-entries\/[^/]+\/restore$/, consumers: ['cash_entries'] },
+  { method: 'POST', path: /^\/api\/cash-entries\/bulk-delete$/, consumers: ['cash_entries'] },
+  { method: 'POST', path: /^\/api\/cash-entries\/bulk-restore$/, consumers: ['cash_entries'] },
   {
     method: 'PUT',
     path: /^\/api\/transactions\/[^/]+\/(?:class|edit)$/,
@@ -155,10 +196,35 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
   { method: 'PUT', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },
   { method: 'DELETE', path: /^\/api\/rules\/[^/]+$/, consumers: ['rules'] },
   { method: 'PUT', path: /^\/api\/budgets$/, consumers: ['budgets'] },
+  { method: 'PUT', path: /^\/api\/budget-plans$/, consumers: ['budget_plans'] },
   {
     method: 'PUT',
     path: /^\/api\/settings$/,
-    consumers: ['account_norm_map', 'unrecorded_months', 'cash_overrides', 'analysis_settings'],
+    // 旧経路の normMap・cashOverrides は新表と変更履歴にも同期して書く (BR-22・R-2)
+    consumers: [
+      'account_norm_map',
+      'unrecorded_months',
+      'cash_overrides',
+      'analysis_settings',
+      'settings_norm_rules',
+      'settings_cash_overrides',
+      'settings_change_log',
+    ],
+  },
+  /*
+   * 0051〜0053: 設定画面。保存と設定だけの復元は 3 表・名義・統計を 1 回の batch で置き換える。
+   * プレビューと比較は読むだけなのでここに載せない。
+   */
+  {
+    method: 'PUT',
+    path: /^\/api\/settings\/screen$/,
+    consumers: SETTINGS_SCREEN_CONSUMERS,
+  },
+  { method: 'POST', path: /^\/api\/settings\/restore$/, consumers: SETTINGS_SCREEN_CONSUMERS },
+  {
+    method: 'POST',
+    path: /^\/api\/backups\/\d{4}-\d{2}-\d{2}\/restore$/,
+    consumers: SETTINGS_SCREEN_CONSUMERS,
   },
   { method: 'POST', path: /^\/api\/category-options$/, consumers: ['category_options'] },
   {
@@ -173,44 +239,77 @@ export const CANONICAL_MUTATION_ROUTES: ReadonlyArray<{
    * 名義の割当て (PUT /classification) と同じ利用者設定の更新なので、同じ変更系保護の下で直列化する。
    * 4 名義を 1 回で差し替えるため、2 つの保存が重なると名義ごとに別の保存の値が残りうる。
    */
-  { method: 'PUT', path: /^\/api\/settings\/owner-labels$/, consumers: ['owner_labels'] },
-  { method: 'POST', path: /^\/api\/sub-vendors$/, consumers: ['sub_vendors'] },
   {
     method: 'PUT',
-    path: /^\/api\/sub-vendors\/[^/]+$/,
-    consumers: ['sub_vendors', 'sub_vendor_review_decisions'],
+    path: /^\/api\/settings\/owner-labels$/,
+    consumers: ['owner_labels', 'settings_change_log'],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/sub-vendors$/,
+    consumers: ['sub_vendors', ...SUBSCRIPTION_OPERATION_CONSUMERS],
+  },
+  {
+    method: 'PUT',
+    path: /^\/api\/sub-vendors\/[1-9]\d*$/,
+    consumers: ['sub_vendors', 'sub_vendor_review_decisions', ...SUBSCRIPTION_OPERATION_CONSUMERS],
   },
   // 名称の統合 (別名の追加)。別名は集計の正本に効くので PUT と同じく lease で直列化する
-  { method: 'POST', path: /^\/api\/sub-vendors\/[^/]+\/aliases$/, consumers: ['sub_vendors'] },
+  {
+    method: 'POST',
+    path: /^\/api\/sub-vendors\/[1-9]\d*\/aliases$/,
+    consumers: ['sub_vendors', ...SUBSCRIPTION_OPERATION_CONSUMERS],
+  },
   {
     method: 'DELETE',
-    path: /^\/api\/sub-vendors\/[^/]+$/,
-    consumers: ['sub_vendors', 'sub_vendor_review_decisions'],
+    path: /^\/api\/sub-vendors\/[1-9]\d*$/,
+    consumers: ['sub_vendors', 'sub_vendor_review_decisions', ...SUBSCRIPTION_OPERATION_CONSUMERS],
   },
   // 見直し日と候補への判断もbackup/restore対象。restore snapshotと重ねない
-  { method: 'POST', path: /^\/api\/sub-vendors\/[^/]+\/review$/, consumers: ['sub_vendors'] },
+  {
+    method: 'POST',
+    path: /^\/api\/sub-vendors\/[1-9]\d*\/review$/,
+    consumers: ['sub_vendors', ...SUBSCRIPTION_OPERATION_CONSUMERS],
+  },
   {
     method: 'POST',
     path: /^\/api\/subscriptions\/review-decisions$/,
-    consumers: ['sub_vendor_review_decisions'],
+    consumers: ['sub_vendor_review_decisions', ...SUBSCRIPTION_OPERATION_CONSUMERS],
   },
   {
     method: 'DELETE',
     path: /^\/api\/subscriptions\/review-decisions$/,
-    consumers: ['sub_vendor_review_decisions'],
+    consumers: ['sub_vendor_review_decisions', ...SUBSCRIPTION_OPERATION_CONSUMERS],
   },
-  { method: 'POST', path: /^\/api\/sub-vendors\/exclusions$/, consumers: ['sub_vendor_exclusions'] },
+  {
+    method: 'POST',
+    path: /^\/api\/sub-vendors\/exclusions$/,
+    consumers: ['sub_vendor_exclusions', ...SUBSCRIPTION_OPERATION_CONSUMERS],
+  },
   {
     method: 'DELETE',
     path: /^\/api\/sub-vendors\/exclusions\/[^/]+$/,
-    consumers: ['sub_vendor_exclusions'],
+    consumers: ['sub_vendor_exclusions', ...SUBSCRIPTION_OPERATION_CONSUMERS],
+  },
+  // 0058: 統合と取り消し。統合元の付け替え・判断の移し替え・subs 範囲の集計の置換えを 1 batch で行う
+  {
+    method: 'POST',
+    path: /^\/api\/sub-vendors\/merge$/,
+    consumers: ['sub_vendors', 'sub_vendor_review_decisions', ...SUBSCRIPTION_OPERATION_CONSUMERS],
+  },
+  {
+    method: 'POST',
+    path: /^\/api\/subscription-operations\/[^/]+\/undo$/,
+    consumers: ['sub_vendors', 'sub_vendor_review_decisions', ...SUBSCRIPTION_OPERATION_CONSUMERS],
   },
 ];
 
-export const SELF_MANAGED_IMPORT_CONSUMERS: readonly JsonSnapshotMutationConsumer[] = [
+export const SELF_MANAGED_IMPORT_CONSUMERS: readonly CanonicalConsumer[] = [
   'freee_deals',
   'mf_transactions',
   'restored_monthly_agg',
+  'subscription_operations',
+  'subscription_revisions',
 ];
 
 /**
@@ -237,16 +336,10 @@ export const canonicalMutationFence = (): MiddlewareHandler<Ctx> => async (c, ne
 
   const userId = c.get('userId');
   const leaseToken = `mutation:${crypto.randomUUID()}`;
-  if (!(await acquireImportWriter(c.env.DB, userId, leaseToken))) {
-    return c.json(
-      {
-        error: {
-          code: 'canonical_write_busy',
-          message: '別の取込みまたは更新が進行中です。完了後に再試行してください',
-        },
-      },
-      409,
-    );
+  if (
+    !(await acquireImportWriter(c.env.DB, userId, leaseToken, Date.now(), CANONICAL_MUTATION_CLAIM_TTL_MS))
+  ) {
+    return canonicalWriteBusy(c);
   }
 
   try {

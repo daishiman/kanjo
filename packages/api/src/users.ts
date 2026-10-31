@@ -25,7 +25,7 @@ export const USER_STATUSES = ['active', 'suspended'] as const;
 export type UserStatus = (typeof USER_STATUSES)[number];
 
 /**
- * 認証の正本は Better Auth の "user" 表 (0050)。パスワードは account(providerId='credential') に置き、
+ * 認証の正本は Better Auth の "user" 表 (0059)。パスワードは account(providerId='credential') に置き、
  * この行には持たない。列名は Better Auth の camelCase のまま読む。
  */
 export interface UserRow {

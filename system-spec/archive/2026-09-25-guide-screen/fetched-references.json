@@ -1,0 +1,94 @@
+{
+  "references": [
+    {
+      "target_id": "wcag22-use-of-color",
+      "retrieved_at": "2026-09-23T12:39:53Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
+      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
+      "official_host": "www.w3.org",
+      "last_updated": "2025-09-16",
+      "latest_checked_at": "2026-09-23T12:39:53Z",
+      "summary": "WCAG 2.2 SC 1.4.1 Use of Color (レベル A)。色を情報伝達の唯一の手段にしない。信頼度を『高 / 中 / 低』の文字と % で示し、防衛ライン (取引ライン) の状態を『正常 / 注意 / 要対応』の文字で示す、色だけに頼らない表示の根拠。"
+    },
+    {
+      "target_id": "react-router-searchparams",
+      "retrieved_at": "2026-09-23T12:39:53Z",
+      "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
+      "official_publisher": "React Router (Shopify / Remix team)",
+      "official_host": "reactrouter.com",
+      "version": "8.4.0",
+      "latest_checked_at": "2026-09-23T12:39:53Z",
+      "summary": "useSearchParams は現在の URLSearchParams と、更新して新しい URL へ遷移する setSearchParams を返す (文書の現行版 8.4.0、リポジトリは react-router-dom 7 系で API は同形)。使い方画面の選択トピック (?topic=) と検索語 (?q=) を URL に持ち、再読込と共有で同じ表示へ戻す根拠。"
+    },
+    {
+      "target_id": "tanstack-query-keys",
+      "retrieved_at": "2026-09-23T12:39:53Z",
+      "source_url": "https://github.com/TanStack/query/blob/main/packages/react-query/package.json",
+      "official_publisher": "TanStack",
+      "official_host": "github.com",
+      "version": "5.103.2",
+      "latest_checked_at": "2026-09-23T12:39:53Z",
+      "summary": "@tanstack/react-query の現行版は 5.103.2 (リポジトリは同じメジャー 5)。公式ガイド Query Keys は、問い合わせ関数が依存する変数を query key に含めれば独立にキャッシュされ変化時に自動で再取得されるとする。/api/guide の query key に期間を含める根拠。"
+    },
+    {
+      "target_id": "hono-routing",
+      "retrieved_at": "2026-09-23T12:39:53Z",
+      "source_url": "https://github.com/honojs/hono/blob/main/package.json",
+      "official_publisher": "Hono (honojs)",
+      "official_host": "github.com",
+      "version": "4.13.8",
+      "latest_checked_at": "2026-09-23T12:39:53Z",
+      "summary": "Hono の現行版は 4.13.8。app.get で GET ルートを定義し、別の Hono インスタンスを app.route で束ねる (登録順を誤ると 404)。GET /api/guide を既存の analyticsRoute に足し、authGuard 配下の /api/* に載せる根拠。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-23T12:39:53Z",
+      "source_url": "https://github.com/OWASP/ASVS/blob/master/README.md",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "github.com",
+      "version": "5.0.0",
+      "latest_checked_at": "2026-09-23T12:39:53Z",
+      "summary": "ASVS の最新安定版は 5.0.0 (2025 年 5 月)。Web アプリとサービスのためのセキュリティ要件集。/api/guide を利用者ごとに分離し、期間・トピック・検索語を許可リストと長さ上限で検証し、利用者に見せる送信の説明を事実どおりに保つ要件の根拠。"
+    },
+    {
+      "target_id": "mdn-set-cookie",
+      "retrieved_at": "2026-09-23T12:39:53Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie",
+      "official_publisher": "Mozilla (MDN Web Docs)",
+      "official_host": "developer.mozilla.org",
+      "last_updated": "2026-09-01",
+      "latest_checked_at": "2026-09-23T12:39:53Z",
+      "summary": "Set-Cookie の HttpOnly は JavaScript からの読み取りを禁じ、Secure は HTTPS でだけ送り、SameSite=Strict は同一サイトからの要求でだけ送る (CSRF 対策)。/api/guide が既存のセッション Cookie の認証をそのまま使い、新しい認証経路を足さない根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1",
+      "retrieved_at": "2026-09-23T12:39:53Z",
+      "source_url": "https://developers.cloudflare.com/d1/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-30",
+      "latest_checked_at": "2026-09-23T12:39:53Z",
+      "summary": "D1 は SQLite の SQL 意味論を持つ Cloudflare の管理型サーバーレスデータベースで、Workers から読み書きする。本サイクルは表・列を足さず、防衛ラインの同月平均もガイドの数値も既存の D1 の明細から導く根拠。"
+    },
+    {
+      "target_id": "cloudflare-workers-static-assets",
+      "retrieved_at": "2026-09-23T12:39:53Z",
+      "source_url": "https://developers.cloudflare.com/workers/static-assets/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-07-03",
+      "latest_checked_at": "2026-09-23T12:39:53Z",
+      "summary": "Workers は Worker のコードと静的アセットを 1 つの単位で配備し、利用者に近い拠点から配信・キャッシュする。使い方画面の新しい chunk も既存の静的配信に載り、新しいバインディングや配信経路を足さない根拠。"
+    },
+    {
+      "target_id": "vitest-expect",
+      "retrieved_at": "2026-09-23T12:39:53Z",
+      "source_url": "https://vitest.dev/api/expect",
+      "official_publisher": "Vitest (VoidZero)",
+      "official_host": "vitest.dev",
+      "version": "5.0.1",
+      "latest_checked_at": "2026-09-23T12:39:53Z",
+      "summary": "Vitest 5.0.1 の expect は Chai と Jest 互換の検証を提供する。core の guide-screen・信頼度の段階・防衛ラインの同月平均と、/api/guide の利用者分離を固定する単体・API テストの根拠。"
+    }
+  ]
+}

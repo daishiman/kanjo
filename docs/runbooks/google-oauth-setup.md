@@ -13,7 +13,7 @@ Google Cloud Console で OAuth クライアントを作り、その Client ID / 
 ローカル設定の不足は `pnpm run auth:readiness` で確認します。値を表示せず、設定名と充足状態だけを返します。
 Google/メールの4項目（`GOOGLE_CLIENT_ID`、`GOOGLE_CLIENT_SECRET`、`RESEND_API_KEY`、`MAIL_FROM`）はローカルで未設定です。
 GitHub Repository Variableは `APP_URL` のみ、`MAIL_FROM` は未登録です。`production` EnvironmentのCloudflare接続用secret名2本は存在します。
-現在のCloudflare資格情報ではWorker secret一覧が認証エラー10000、D1一覧が権限エラー7403になるため、本番secretと0050適用状態は確認できていません。
+現在のCloudflare資格情報ではWorker secret一覧が認証エラー10000、D1一覧が権限エラー7403になるため、本番secretと0059適用状態は確認できていません。
 下の9月23日の記録を、現在の本番状態と読み替えないでください。
 
 配信は次の順で行います。必須secretが未確認のまま `main` に入れると自動Deployが止まるため、設定を先に整えます。

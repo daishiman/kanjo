@@ -280,7 +280,56 @@ describe('D1 statement budget', () => {
     expect(planRestoreImportQueries(50 - restoreBase)).toMatchObject({ total: 50, accepted: false });
   });
 
-  it('実builderがfreee/MF/restoreすべて49未満のenvelopeに収まる', () => {
+  it('サブスク復元はbarrierとrevisionを予算化し、統合元upsertを根と共有する', () => {
+    const data = emptyDataset();
+    data.subs.vendors = ['架空根'];
+    data.subs.aliases = { 架空根: [] };
+    data.subs.accounts = { 架空根: [] };
+    data.subs.matrix = { 架空根: [] };
+    const writeSet = prepareRestoreWriteSet({
+      userId: 'synthetic-user',
+      data,
+      restored: emptyDataset(),
+      subVendorMetadata: [
+        { name: '架空根', category: null, reviewedAt: null, aliases: [], accounts: [] },
+        {
+          name: '架空元',
+          category: null,
+          reviewedAt: null,
+          mergedIntoName: '架空根',
+          aliases: ['架空別名'],
+          accounts: ['通信費'],
+        },
+      ],
+    });
+    const sqls: string[] = [];
+    const database = {
+      prepare: (sql: string) => {
+        sqls.push(sql);
+        return fakeStatement;
+      },
+    } as unknown as D1Database;
+    const statements = restoreCommitStatements({
+      database,
+      userId: 'synthetic-user',
+      runId: 'test-run',
+      writeSet,
+      importId: 1,
+      contentHash: 'synthetic-hash',
+      targetKeys: ['json:global'],
+    });
+    expect(sqls.filter((sql) => sql.includes('restoreBarrier'))).toHaveLength(1);
+    expect(sqls.filter((sql) => sql.includes('INSERT INTO subscription_revisions'))).toHaveLength(1);
+    expect(sqls.filter((sql) => sql.includes('INSERT INTO sub_vendors'))).toHaveLength(1);
+    expect(planRestoreImportQueries(statements.length).total).toBeLessThan(50);
+    expect(planRestoreImportQueries(statements.length).accepted).toBe(true);
+    expect(writeSet.vendorRows.find((row) => row[0] === '架空元')?.slice(1, 3)).toEqual([
+      '["架空別名"]',
+      '["通信費"]',
+    ]);
+  });
+
+  it('実builderがfreee/MF/restoreすべて上限50のenvelopeに収まる', () => {
     const wide = '幅'.repeat(20_000);
     const data = emptyDataset();
     const common = {
@@ -360,7 +409,8 @@ describe('D1 statement budget', () => {
       contentHash: common.contentHash,
       targetKeys: ['json:global'],
     }).length;
-    expect(planRestoreImportQueries(restoreCount)).toMatchObject({ total: 48, accepted: true });
+    // 0050: 移行先に budget_plans の行があると DELETE が 1 本増える (上限 50 に対して 49)
+    expect(planRestoreImportQueries(restoreCount)).toMatchObject({ total: 49, accepted: true });
   });
 
   /**
@@ -697,9 +747,13 @@ describe('JSON pointer invalidation consumers', () => {
       'tx_splits',
       'institution_owners',
       'budgets',
+      'budget_plans',
       'account_norm_map',
       'unrecorded_months',
       'cash_overrides',
+      'settings_norm_rules',
+      'settings_cash_overrides',
+      'settings_change_log',
       'sub_vendors',
       'sub_vendor_review_decisions',
       'sub_vendor_exclusions',
@@ -718,11 +772,25 @@ describe('JSON pointer invalidation consumers', () => {
 });
 
 describe('canonical mutation lease predicate', () => {
+  it('汎用sub-vendor IDは正整数に限り、除外経路と重複しない', () => {
+    expect(classifyCanonicalMutation('PUT', '/api/sub-vendors/123')).toBe('canonical-mutation');
+    expect(classifyCanonicalMutation('PUT', '/api/sub-vendors/candidates')).toBe('not-canonical-mutation');
+    const matching = CANONICAL_MUTATION_ROUTES.filter(
+      (route) => route.method === 'DELETE' && route.path.test('/api/sub-vendors/exclusions/123'),
+    );
+    expect(matching).toHaveLength(1);
+    expect(matching[0].consumers).toContain('sub_vendor_exclusions');
+    expect(SELF_MANAGED_IMPORT_CONSUMERS).toContain('subscription_operations');
+    expect(SELF_MANAGED_IMPORT_CONSUMERS).toContain('subscription_revisions');
+  });
   it('全mutating routeを3分類にMECEで固定する', () => {
     const canonical = [
       ['POST', '/api/cash-entries'],
       ['PUT', '/api/cash-entries/1'],
       ['DELETE', '/api/cash-entries/1'],
+      ['POST', '/api/cash-entries/1/restore'],
+      ['POST', '/api/cash-entries/bulk-delete'],
+      ['POST', '/api/cash-entries/bulk-restore'],
       ['PUT', '/api/transactions/tx-1/class'],
       ['PUT', '/api/transactions/tx-1/edit'],
       ['PUT', '/api/transactions/tx-1/splits'],
@@ -759,7 +827,13 @@ describe('canonical mutation lease predicate', () => {
       ['DELETE', '/api/rules/1'],
       ['PATCH', '/api/rules'],
       ['PUT', '/api/budgets'],
+      // 0050: 予算対象の期間別の年額。復元の write-set に入る
+      ['PUT', '/api/budget-plans'],
       ['PUT', '/api/settings'],
+      // 0051〜0053: 設定画面の保存・設定だけの復元 (ファイル/バックアップ)。3 表・名義・統計を 1 回で置き換える
+      ['PUT', '/api/settings/screen'],
+      ['POST', '/api/settings/restore'],
+      ['POST', '/api/backups/2026-09-21/restore'],
       ['POST', '/api/category-options'],
       ['PUT', '/api/category-options'],
       ['DELETE', '/api/category-options'],
@@ -775,12 +849,27 @@ describe('canonical mutation lease predicate', () => {
       ['DELETE', '/api/subscriptions/review-decisions'],
       ['POST', '/api/sub-vendors/exclusions'],
       ['DELETE', '/api/sub-vendors/exclusions/1'],
+      // 0058: 統合と取り消し。既存 9 本と同じ lease で直列化する
+      ['POST', '/api/sub-vendors/merge'],
+      ['POST', '/api/subscription-operations/op-1/undo'],
     ] as const;
     const selfManaged = [
       ['POST', '/api/imports'],
       ['POST', '/api/restore'],
     ] as const;
     const nonCanonicalMutations = [
+      // データ取込画面の検査は明細の表に書かず、検査の行と R2 の仮置きだけを作る。
+      ['POST', '/api/imports/inspections'],
+      ['POST', '/api/imports/inspections/x/files'],
+      ['DELETE', '/api/imports/inspections/x/files/y'],
+      // 確定・置換は取込本体 (runMultipartImport) が自前の lease を取る。
+      // 取り消しは経路表に一致しないため、handler の中で同じ mutation lease を取る。
+      ['POST', '/api/imports/runs'],
+      ['POST', '/api/imports/runs/x/reimport'],
+      ['POST', '/api/imports/runs/x/undo'],
+      ['POST', '/api/imports/runs/x/undo/preflight'],
+      // 履歴の非表示は import_runs.hidden_at だけを書き、明細にも世代にも触れない。
+      ['POST', '/api/imports/runs/hide'],
       ['POST', '/api/auth/login'],
       ['POST', '/api/auth/logout'],
       // 自分のパスワード変更。users 1行と監査だけを触り、明細のlease層には一切入らない。
@@ -793,6 +882,8 @@ describe('canonical mutation lease predicate', () => {
       // アーカイブは表示の出し分けだけを変え、記帳の正本には触れない。
       ['PUT', '/api/ai/reports/1/archive'],
       ['POST', '/api/tradeoff'],
+      // 候補ごとの必要度とメモの上書き。tradeoff_candidate_notes の自分の行だけを触る。
+      ['PUT', '/api/tradeoff/candidates/1'],
       // コピー記録は「いつ操作したか」だけで、記帳の正本に触れない。
       ['POST', '/api/ai/tasks/1/copied'],
       // 依頼の取り消し・再実行も ai_tasks の自分の行だけを触り、記帳の正本には触れない。
@@ -811,6 +902,9 @@ describe('canonical mutation lease predicate', () => {
       ['POST', '/api/imports/diff'],
       // ルールのプレビューも同じく読むだけ。何が変わるかを数えて返す
       ['POST', '/api/rules/preview'],
+      // 設定の復元プレビューは差分を数えて返すだけ。1 件も書き換えない
+      ['POST', '/api/settings/restore/preview'],
+      ['POST', '/api/backups/2026-09-21/restore/preview'],
     ] as const;
     for (const [method, path] of canonical) {
       expect(classifyCanonicalMutation(method, path), `${method} ${path}`).toBe('canonical-mutation');
@@ -839,8 +933,11 @@ describe('canonical mutation lease predicate', () => {
       'routes/reconciliation.ts',
       'routes/saved-filters.ts',
       'routes/settings.ts',
+      'routes/settings-screen.ts',
+      'routes/backups.ts',
       'routes/subs.ts',
       'routes/total-cashflow.ts',
+      'routes/tradeoff.ts',
       'routes/vendor-memory.ts',
     ];
     const discovered = routeSources.flatMap((filename) => {
@@ -854,6 +951,9 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/cash-entries',
       'PUT /api/cash-entries/:id',
       'DELETE /api/cash-entries/:id',
+      'POST /api/cash-entries/:id/restore',
+      'POST /api/cash-entries/bulk-delete',
+      'POST /api/cash-entries/bulk-restore',
       'PUT /api/transactions/:txId/class',
       'PUT /api/transactions/:txId/edit',
       'PUT /api/transactions/:txId/splits',
@@ -875,6 +975,11 @@ describe('canonical mutation lease predicate', () => {
       'DELETE /api/category-options',
       'PUT /api/classification',
       'PUT /api/settings/owner-labels',
+      'PUT /api/settings/screen',
+      'POST /api/settings/restore/preview',
+      'POST /api/settings/restore',
+      'POST /api/backups/:date/restore/preview',
+      'POST /api/backups/:date/restore',
       'POST /api/sub-vendors',
       'PUT /api/sub-vendors/:id',
       'POST /api/sub-vendors/:id/aliases',
@@ -884,12 +989,22 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/sub-vendors/:id/review',
       'POST /api/sub-vendors/exclusions',
       'DELETE /api/sub-vendors/exclusions/:id',
+      'POST /api/sub-vendors/merge',
+      'POST /api/subscription-operations/:id/undo',
       'POST /api/imports',
       'POST /api/imports/diff',
       'POST /api/imports/:id/undo',
       'POST /api/imports/:id/undo/preflight',
       'POST /api/imports/:id/discard',
       'POST /api/imports/:id/discard/preflight',
+      'POST /api/imports/inspections',
+      'POST /api/imports/inspections/:id/files',
+      'DELETE /api/imports/inspections/:id/files/:fileId',
+      'POST /api/imports/runs',
+      'POST /api/imports/runs/:id/reimport',
+      'POST /api/imports/runs/:id/undo/preflight',
+      'POST /api/imports/runs/:id/undo',
+      'POST /api/imports/runs/hide',
       'POST /api/data/deletions',
       'POST /api/data/deletions/preflight',
       'POST /api/data/undo/:operationId',
@@ -906,6 +1021,7 @@ describe('canonical mutation lease predicate', () => {
       'POST /api/reconciliation/actions/:id/undo',
       'POST /api/restore',
       'POST /api/tradeoff',
+      'PUT /api/tradeoff/candidates/:key',
       'POST /api/ai/tasks',
       'POST /api/ai/tasks/:id/copied',
       'POST /api/ai/tasks/:id/cancel',

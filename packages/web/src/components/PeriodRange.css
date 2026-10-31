@@ -1,0 +1,20 @@
+.period-range {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.period-range-label {
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 639px) {
+  .period-range {
+    justify-content: flex-start;
+  }
+}

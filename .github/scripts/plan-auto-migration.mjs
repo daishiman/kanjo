@@ -2,6 +2,8 @@ import { appendFileSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { isApproved, readApprovals } from './migration-approvals.mjs';
+import { requiresR2CleanupReleaseGate } from './verify-r2-cleanup-release-gate.mjs';
 import { parseWranglerMigrationListResult, runWranglerMigrationList } from './wrangler-output.mjs';
 
 /**
@@ -10,10 +12,13 @@ import { parseWranglerMigrationListResult, runWranglerMigrationList } from './wr
  * 自動適用は「取り返しがつく変更」に限る。列や行を失う変更は Time Travel が
  * あっても復旧に人の判断が要るので、判定できない場合を含めて fail-closed で止め、
  * 手動の Migrate workflow へ倒す。
+ *
+ * ただし PR で承認済み (.github/migration-approvals.json に本文の sha256 がある) なら、
+ * 人の判断は merge の時点で済んでいるので自動適用する。承認は merge 前に CI が必須にする。
  */
 
 export const BLOCKED_REMEDIATION =
-  '自動適用できないD1 migrationがあります。承認manifestを用意してMigrate workflowをAPPLYで手動実行し、その後Deployを再実行してください。';
+  '自動適用できないD1 migrationがあります。内容を確かめて .github/migration-approvals.json に承認を追加するPRをmergeしてください（mergeで Deploy が再び走ります）。';
 
 /**
  * パターン照合の前に、コメントとリテラルを空白へ潰す。
@@ -67,14 +72,25 @@ export function planAutoMigration({
   migrationsDir,
   runRemoteList = runWranglerMigrationList,
   findings = destructiveFindings,
+  approvals = null,
 }) {
   const parsed = parseWranglerMigrationListResult(runRemoteList());
-  if (parsed.state === 'no-pending') return { decision: 'skip', filenames: [], blockers: [] };
+  if (parsed.state === 'no-pending') return { decision: 'skip', filenames: [], blockers: [], approved: [] };
   if (parsed.state !== 'pending' || parsed.filenames.length === 0) {
-    return { decision: 'blocked', filenames: [], blockers: ['本番D1のpendingを判定できませんでした'] };
+    return {
+      decision: 'blocked',
+      filenames: [],
+      blockers: ['本番D1のpendingを判定できませんでした'],
+      approved: [],
+    };
   }
 
   const blockers = [];
+  const approved = [];
+  // 0040 は R2 の残件を数えてからでないと適用できない。承認台帳では代われないので常に止める
+  if (requiresR2CleanupReleaseGate(parsed.filenames)) {
+    blockers.push('R2 cleanup の残件確認が要る migration が含まれています（Migrate workflow で手動適用）');
+  }
   for (const filename of parsed.filenames) {
     let sql;
     try {
@@ -83,12 +99,18 @@ export function planAutoMigration({
       blockers.push(`${filename}: 本文を読み取れません`);
       continue;
     }
-    for (const label of findings(sql)) blockers.push(`${filename}: ${label}`);
+    const labels = findings(sql);
+    if (labels.length === 0) continue;
+    if (approvals !== null && isApproved(approvals, filename, sql)) {
+      approved.push(filename);
+      continue;
+    }
+    for (const label of labels) blockers.push(`${filename}: ${label}`);
   }
 
   return blockers.length > 0
-    ? { decision: 'blocked', filenames: parsed.filenames, blockers }
-    : { decision: 'apply', filenames: parsed.filenames, blockers: [] };
+    ? { decision: 'blocked', filenames: parsed.filenames, blockers, approved }
+    : { decision: 'apply', filenames: parsed.filenames, blockers: [], approved };
 }
 
 function isMainModule() {
@@ -97,7 +119,10 @@ function isMainModule() {
 
 if (isMainModule()) {
   const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-  const plan = planAutoMigration({ migrationsDir: resolve(repositoryRoot, 'migrations') });
+  const plan = planAutoMigration({
+    migrationsDir: resolve(repositoryRoot, 'migrations'),
+    approvals: readApprovals(repositoryRoot),
+  });
 
   if (process.env.GITHUB_OUTPUT) {
     appendFileSync(process.env.GITHUB_OUTPUT, `decision=${plan.decision}\n`);
@@ -111,5 +136,7 @@ if (isMainModule()) {
     console.log('✅ 適用待ちのD1 migrationはありません。');
   } else {
     console.log(`▶ 自動適用します: ${plan.filenames.join(', ')}`);
+    if (plan.approved.length > 0)
+      console.log(`  うち PR で承認済みの破壊的変更: ${plan.approved.join(', ')}`);
   }
 }

@@ -1,0 +1,75 @@
+{
+  "receipt_kind": "spec-reflection",
+  "parent_feature": "feat-cash-screen",
+  "graph_node_id": "feat-cash-screen",
+  "beads_epic": "kanjo-tf6",
+  "recorded_at": "2026-09-22T13:53:52Z",
+  "verdict": "IMPACTED_AND_REFLECTED",
+  "summary": "現金入力画面 (/cash) の作り直しは仕様・設計へ影響があると判定し、system-spec/ specs/ architecture/ features/ tasks/ docs/ へ反映した。main との merge で見つかった migration 番号の衝突 (0050 → 0051) と、復元 snapshot の束縛数の食い違い (20 → 21) も正本へ戻した。checkbox を共通部品へ寄せた変更は main の既存契約への追随であり、仕様の変更は不要と判定した。",
+  "impacts": [
+    {
+      "id": "I1",
+      "finding": "現金入力画面 (担当者・業務の目的・論理削除と元に戻す・一括操作・下書きの復元・絞り込みとページング) の正本が無い。",
+      "action": "specs/spec-cash-screen.md を新設し、features/feat-cash-screen.md と context.json を置いた。規則は packages/core/src/cash-screen.ts の 1 か所に置き、docs/cash-screen/rules.md で規則・実装・テストを対応させた。",
+      "files": ["specs/spec-cash-screen.md", "features/feat-cash-screen.md", "features/feat-cash-screen.context.json", "docs/cash-screen/rules.md"]
+    },
+    {
+      "id": "I2",
+      "finding": "system-spec のカテゴリ章に、現金明細の論理削除 (30 日で完全消去)・担当者・下書きの決定が無い。",
+      "action": "system-spec-harness の正規フロー (elicit → doc-fetch → compile → completeness evaluator) で要件定義書と 8 章を現金のサイクルへ更新した。main で先に確定した予算のサイクルは merge 時に system-spec/archive/2026-09-22-budget-screen/ へ退避し、arch-budget-* 8 件の source_path を退避先へ付け替えた (内容は同一なので digest は不変)。architecture/cash-*.md 8 件を新設し architecture/graph.json に登録した (150 ノード、check-graph-lineage PASS)。",
+      "files": ["system-spec/00-requirements-definition.md", "system-spec/index.md", "system-spec/spec-state.json", "system-spec/archive/2026-09-22-budget-screen/", "architecture/cash-auth.md", "architecture/cash-backend.md", "architecture/cash-database.md", "architecture/cash-frontend.md", "architecture/cash-infrastructure.md", "architecture/cash-maintenance-ops.md", "architecture/cash-security.md", "architecture/cash-ui-ux.md", "architecture/graph.json"]
+    },
+    {
+      "id": "I3",
+      "finding": "計画時の migration 予定番号 0050 は、main へ先に merge された予算画面 (#67, 0050_budget_plans.sql) と衝突した。",
+      "action": "0051_cash_entry_owner_soft_delete.sql に繰り上げ、schema-guard の EXPECTED_D1_MIGRATION・migration テスト (cash-migration-0051.test.ts)・コードのコメント・仕様・feature・architecture・task・docs の参照を統一した。予算の前例 (feat-budget-screen I4) にならい、.dev-graph/plans/ の promotion 記録と確定済みの system-spec 章は計画時点の不変の証跡として 0050 のまま保持した。",
+      "files": ["migrations/0051_cash_entry_owner_soft_delete.sql", "packages/api/src/schema-guard.ts", "packages/api/src/cash-migration-0051.test.ts", "docs/data-schema.md", "docs/cash-screen/design-decisions.md", "specs/spec-cash-screen.md", "tasks/feat-cash-screen/"]
+    },
+    {
+      "id": "I4",
+      "finding": "loadImportRestoreSettingsSnapshot の destination_counts を、予算 (budgetPlans) と現金 (cashEntries) がそれぞれ 19 → 20 に増やしていた。bind の行が同じ字面になったため merge で衝突せず、? 21 個に対して 20 個を渡し、取込と復元が 500 になった (api テスト 47 件が失敗)。",
+      "action": "束縛数を SQL の ? から数える形へ改め、import-lifecycle と cash-screen.integration の 106 件が通ることを確かめた。spec と design-decisions の束縛数の記述を 21 に直した。",
+      "files": ["packages/api/src/store.ts", "specs/spec-cash-screen.md", "docs/cash-screen/design-decisions.md"]
+    },
+    {
+      "id": "I5",
+      "finding": "担当者 (owner) と業務の目的を API で必須にすると、旧クライアントとバックアップの行が書けなくなる。",
+      "action": "API は任意 (allowUnset) とし、値の検査は画面と同じ CASH_LIMITS を使う決定を spec・architecture/cash-backend.md・docs/cash-screen/design-decisions.md に記録した。",
+      "files": ["specs/spec-cash-screen.md", "architecture/cash-backend.md", "docs/cash-screen/design-decisions.md"]
+    },
+    {
+      "id": "I6",
+      "finding": "画面の決定の経緯・受入の証跡・データ構造の変更を読む場所が無い。",
+      "action": "docs/cash-screen/design-decisions.md と evidence.md を置き、docs/ui-decisions.md と docs/data-schema.md に現金の節を予算の節の後へ追記した。",
+      "files": ["docs/cash-screen/design-decisions.md", "docs/cash-screen/evidence.md", "docs/ui-decisions.md", "docs/data-schema.md"]
+    },
+    {
+      "id": "I7",
+      "finding": "PR 作成の直前に origin/main を取り直すと、トレードオフ画面 (#68, 683226b) が 0051_tradeoff_notes.sql と system-spec 直下のサイクルを先に取っていた。",
+      "action": "現金の migration を 0052_cash_entry_owner_soft_delete.sql へもう一段繰り上げ (schema-guard の EXPECTED_D1_MIGRATION・cash-migration-0052.test.ts・コード注釈・spec・feature・architecture・task・docs を統一)、トレードオフの確定章 14 ファイルを system-spec/archive/2026-09-22-tradeoff-screen/ へ退避して arch-tradeoff-* 8 件の source_path を付け替えた (内容同一のため digest は不変)。docs/data-schema.md・docs/ui-decisions.md・architecture/graph.json の末尾衝突は両方の節を残して並べた (158 ノード)。",
+      "files": ["migrations/0052_cash_entry_owner_soft_delete.sql", "packages/api/src/schema-guard.ts", "packages/api/src/cash-migration-0052.test.ts", "system-spec/archive/2026-09-22-tradeoff-screen/", "architecture/graph.json", "specs/spec-cash-screen.md", "docs/cash-screen/design-decisions.md", "docs/cash-screen/evidence.md"]
+    }
+  ],
+  "no_impact": [
+    {
+      "id": "N1",
+      "change": "現金入力画面の往復・ページ全選択・行選択の checkbox を共通 SelectionCheckbox へ寄せた (main の selection-checkbox-source-contract への追随)。",
+      "reason": "main が既に定めた契約 (type=checkbox は SelectionCheckbox.tsx だけ) に合わせただけで、操作・意味・受入条件は変わらない。見出しを持たない checkbox には labelHidden で読み上げ名を残した。仕様の変更は不要。"
+    },
+    {
+      "id": "N2",
+      "change": "Layout のログアウト時に予算と現金の両方の下書きを消すよう、merge で呼び出しを並べた。",
+      "reason": "どちらも各 spec が既に定めた「ログアウトで下書きを消す」の実装で、新しい振る舞いではない。"
+    }
+  ],
+  "not_committed": [
+    {
+      "path": "packages/web/src/pages/cash/.artifact-delivery/",
+      "reason": "外部操作ガードの受領書置き場で、.gitignore の対象。"
+    },
+    {
+      "path": ".dev-graph/state/graph.json",
+      "reason": "worktree ごとのローカル状態で、git の追跡対象外。"
+    }
+  ]
+}

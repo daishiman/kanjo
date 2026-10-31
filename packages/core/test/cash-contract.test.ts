@@ -36,6 +36,8 @@ const meeting: CashEntry = {
   transitTo: null,
   transitRound: false,
   receiptWaived: false,
+  owner: null,
+  transitPurpose: null,
 };
 const lunch: CashEntry = {
   id: 8,
@@ -52,6 +54,8 @@ const lunch: CashEntry = {
   transitTo: null,
   transitRound: false,
   receiptWaived: false,
+  owner: null,
+  transitPurpose: null,
 };
 
 const fileDeals: FreeeDeal[] = [

@@ -1,7 +1,7 @@
 import { type AuditResult, buildAuditStatements } from './audit-log.js';
 import { newRowId } from './auth-tokens.js';
 /**
- * ログイン v2 で増えた認証操作の監査 (auth_audit_log, 0050)。
+ * ログイン v2 で増えた認証操作の監査 (auth_audit_log, 0059)。
  *
  * audit_log の action CHECK を広げると既存 migration の表を作り直すことになるため、
  * 招待・MFA・再設定・連携は別表に置く (design-decisions K-4)。ログイン/ログアウトの

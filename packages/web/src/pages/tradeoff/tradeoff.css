@@ -1,0 +1,507 @@
+/* トレードオフ画面 (spec-tradeoff-screen)。色・角丸・影は共通トークンだけを使う */
+
+.tradeoff-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, var(--aside-panel-w));
+  align-items: start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.tradeoff-intro {
+  max-width: 68ch;
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+.tradeoff-period.card {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  border-color: var(--biz-soft-line);
+}
+.tradeoff-period h2,
+.tradeoff-period p {
+  margin: 0;
+}
+.tradeoff-period h2 {
+  color: var(--biz);
+  font-size: var(--fs-sm);
+}
+.tradeoff-period strong {
+  font-size: var(--fs-base);
+}
+.tradeoff-period p {
+  color: var(--ink-soft);
+  font-size: var(--fs-xs);
+}
+
+.tradeoff-notice,
+.tradeoff-inline-error {
+  display: block;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--biz-soft-line);
+  border-radius: var(--radius);
+  background: var(--biz-soft);
+  color: var(--ink);
+}
+.tradeoff-inline-error {
+  margin-bottom: 16px;
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* 上段は 1・2 と試算結果、下段の 3 と計算例は全幅。狭い幅では縦に積む */
+.tradeoff-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.tradeoff-primary {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.tradeoff-layout .tradeoff-step,
+.tradeoff-layout .tradeoff-panel {
+  margin-bottom: 0;
+}
+@media (min-width: 1024px) {
+  .tradeoff-layout {
+    grid-template-columns: minmax(0, 1fr) var(--aside-panel-w);
+    align-items: start;
+  }
+  .tradeoff-side {
+    position: sticky;
+    top: calc(var(--header-h) + 16px);
+  }
+  .tradeoff-notice,
+  .tradeoff-recommendations,
+  .tradeoff-calculations,
+  .tradeoff-selection {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 767px) {
+  .tradeoff-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.tradeoff-panel > h2 {
+  margin: 0 0 12px;
+}
+.tradeoff-panel h3 {
+  margin: 16px 0 8px;
+  font-size: var(--fs-sm);
+}
+.tradeoff-step-heading {
+  margin-bottom: 12px;
+}
+.tradeoff-step-heading h2 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+.tradeoff-step-heading p {
+  margin: 6px 0 0 40px;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.tradeoff-step-number {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--biz);
+  color: var(--surface);
+  font-weight: 900;
+}
+.tradeoff-step-qualifier {
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+
+/* 1. 新しい支出 */
+.tradeoff-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    "title title frequency"
+    "amount start memo";
+  gap: 12px 16px;
+}
+.tradeoff-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.tradeoff-field--wide {
+  grid-area: title;
+}
+.tradeoff-field--amount {
+  grid-area: amount;
+}
+.tradeoff-field--frequency {
+  grid-area: frequency;
+}
+.tradeoff-field--start {
+  grid-area: start;
+}
+.tradeoff-field--memo {
+  grid-area: memo;
+}
+.tradeoff-field input,
+.tradeoff-field textarea,
+.tradeoff-field select {
+  width: 100%;
+  min-height: var(--tap-target-min);
+}
+.tradeoff-field-error {
+  color: var(--danger);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+}
+@media (max-width: 720px) {
+  .tradeoff-form {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: none;
+  }
+  .tradeoff-field--wide,
+  .tradeoff-field--amount,
+  .tradeoff-field--frequency,
+  .tradeoff-field--start,
+  .tradeoff-field--memo {
+    grid-area: auto;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .tradeoff-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "title title"
+      "amount frequency"
+      "start memo";
+  }
+}
+
+/* 2. 候補表 */
+.tradeoff-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+.tradeoff-toolbar input,
+.tradeoff-toolbar select {
+  min-height: var(--tap-target-min);
+}
+.tradeoff-scroll {
+  overflow-x: auto;
+}
+.tradeoff-candidates {
+  min-width: 640px;
+}
+.tradeoff-candidates tr.is-selected,
+.tradeoff-combos tr.is-selected {
+  background: var(--biz-soft);
+}
+.tradeoff-need-cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.tradeoff-need {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+.tradeoff-need--low {
+  background: var(--good-soft);
+  color: var(--good);
+}
+.tradeoff-need--mid {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.tradeoff-need--high {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.tradeoff-need-menu {
+  min-height: var(--tap-target-min);
+}
+.tradeoff-trend--up {
+  color: var(--danger);
+}
+.tradeoff-trend--down {
+  color: var(--good);
+}
+.tradeoff-memo-cell {
+  min-width: 200px;
+}
+.tradeoff-memo-edit {
+  display: grid;
+  gap: 6px;
+}
+.tradeoff-memo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tradeoff-memo-edit textarea {
+  width: 100%;
+}
+.tradeoff-related {
+  margin-inline-start: 6px;
+}
+.tradeoff-row-error {
+  margin: 4px 0 0;
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+.tradeoff-table-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+
+/* 3. 推奨の理由 */
+.tradeoff-recommendation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, calc(var(--aside-panel-w) * 0.75));
+  gap: 12px;
+  align-items: start;
+}
+.tradeoff-scroll table.tradeoff-combos {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+.tradeoff-scroll .tradeoff-combos thead th {
+  white-space: normal;
+}
+.tradeoff-scroll .tradeoff-combos :is(th, td):first-child {
+  position: static;
+  width: 46%;
+  white-space: normal;
+  box-shadow: none;
+}
+.tradeoff-combos :is(th, td):nth-child(2) {
+  width: 18%;
+}
+.tradeoff-combos :is(th, td):nth-child(3) {
+  width: 10%;
+}
+.tradeoff-combos :is(th, td):nth-child(4) {
+  width: 15%;
+}
+.tradeoff-combos :is(th, td):nth-child(5) {
+  width: 11%;
+}
+.tradeoff-combos td:first-child button {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+.tradeoff-reason {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.tradeoff-reason h3 {
+  margin: 0 0 8px;
+  font-size: var(--fs-sm);
+}
+.tradeoff-reason p {
+  margin: 0 0 8px;
+}
+.tradeoff-reason ul {
+  margin: 0;
+  padding-inline-start: 20px;
+}
+@media (max-width: 1199px) {
+  .tradeoff-recommendation-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 計算例 */
+.tradeoff-examples {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tradeoff-examples li {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.tradeoff-examples p {
+  margin: 4px 0 0;
+}
+.tradeoff-examples .num,
+.tradeoff-defense .num {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* 試算結果 */
+.tradeoff-summary-block {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.tradeoff-summary-block h3 {
+  margin-top: 0;
+  color: var(--biz);
+}
+.tradeoff-figures {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+.tradeoff-difference {
+  margin-top: 12px;
+  padding: 0 12px;
+}
+.tradeoff-figures div,
+.tradeoff-selection-figures div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tradeoff-figures dt,
+.tradeoff-selection-figures dt {
+  color: var(--ink-soft);
+}
+.tradeoff-figures dd,
+.tradeoff-selection-figures dd {
+  margin: 0;
+  font-weight: 700;
+}
+.tradeoff-figures-total {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.tradeoff-over {
+  color: var(--danger);
+}
+.tradeoff-ok {
+  color: var(--good);
+}
+.tradeoff-message {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+.tradeoff-message--warn {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.tradeoff-message--ok {
+  background: var(--good-soft);
+  color: var(--good);
+}
+.tradeoff-defense {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.tradeoff-defense p {
+  margin: 0;
+}
+.tradeoff-defense-verdict {
+  padding: 2px 8px;
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+.tradeoff-defense-verdict--keep {
+  background: var(--good-soft);
+  color: var(--good);
+}
+.tradeoff-defense-verdict--break {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.tradeoff-assumptions {
+  margin: 0;
+  padding-inline-start: 20px;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+
+/* 選択中バー (サブスク画面の選択中バーと同じ置き方) */
+.tradeoff-selection {
+  position: sticky;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 10px 16px;
+  border: 1px solid var(--biz-soft-line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-floating-action);
+}
+.tradeoff-selection > p {
+  margin: 0;
+  font-weight: 700;
+}
+.tradeoff-selection-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  margin-inline-end: auto;
+}
+.tradeoff-selection-actions {
+  margin: 0;
+}
+.tradeoff-selection-feedback {
+  flex-basis: 100%;
+  display: grid;
+  gap: 4px;
+  margin-left: auto;
+  font-size: var(--fs-sm);
+}
+.tradeoff-selection-feedback p {
+  margin: 0;
+}
+.tradeoff-submit-status--success {
+  color: var(--good);
+  font-weight: 700;
+}
+.tradeoff-submit-status--error {
+  color: var(--danger);
+  font-weight: 700;
+}
+@media (max-width: 767px) {
+  .tradeoff-selection {
+    bottom: calc(var(--tabbar-h) + 8px + env(safe-area-inset-bottom, 0px));
+  }
+}

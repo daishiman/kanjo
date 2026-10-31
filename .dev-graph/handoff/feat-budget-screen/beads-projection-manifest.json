@@ -1,0 +1,151 @@
+{
+  "feature": {
+    "graph_node_id": "feat-budget-screen",
+    "title": "予算画面 (14-budget) の作り直しと期間別の年額予算・自動提案・防衛ライン余裕の core 一本化",
+    "description": "dev-graph feature projection (features/feat-budget-screen.md)",
+    "bd_issue_id": "kanjo-inc"
+  },
+  "children": [
+    {
+      "graph_node_id": "SYS-BUDGET-P01",
+      "phase_ref": "P01",
+      "parent_feature": "feat-budget-screen",
+      "title": "P01 要件ベースライン確定と未決事項 7 件の着手時整理",
+      "description": "dev-graph P01 projection (tasks/feat-budget-screen/sys-budget-p01.md)",
+      "depends_on": [],
+      "bd_issue_id": "kanjo-inc.1"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P02",
+      "phase_ref": "P02",
+      "parent_feature": "feat-budget-screen",
+      "title": "P02 budgetScreen・applyBudgetInputs・monthlyBudgetsAt・3 API・migration 0048 のワークストリーム設計決定記録",
+      "description": "dev-graph P02 projection (tasks/feat-budget-screen/sys-budget-p02.md)",
+      "depends_on": [
+        "SYS-BUDGET-P01"
+      ],
+      "bd_issue_id": "kanjo-inc.2"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P03",
+      "phase_ref": "P03",
+      "parent_feature": "feat-budget-screen",
+      "title": "P03 算出契約・API 契約・migration 契約・snapshot/バックアップ整合の独立レビュー",
+      "description": "dev-graph P03 projection (tasks/feat-budget-screen/sys-budget-p03.md)",
+      "depends_on": [
+        "SYS-BUDGET-P02"
+      ],
+      "bd_issue_id": "kanjo-inc.3"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P04",
+      "phase_ref": "P04",
+      "parent_feature": "feat-budget-screen",
+      "title": "P04 core 不変条件・API 契約・migration・DOM の失敗テスト先行作成",
+      "description": "dev-graph P04 projection (tasks/feat-budget-screen/sys-budget-p04.md)",
+      "depends_on": [
+        "SYS-BUDGET-P03"
+      ],
+      "bd_issue_id": "kanjo-inc.4"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P05",
+      "phase_ref": "P05",
+      "parent_feature": "feat-budget-screen",
+      "title": "P05 budget-screen.ts・3 API・migration 0048・/budget 画面の最終実装",
+      "description": "dev-graph P05 projection (tasks/feat-budget-screen/sys-budget-p05.md)",
+      "depends_on": [
+        "SYS-BUDGET-P04"
+      ],
+      "bd_issue_id": "kanjo-inc.5"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P06",
+      "phase_ref": "P06",
+      "parent_feature": "feat-budget-screen",
+      "title": "P06 全テストと型検査と lint の実行記録",
+      "description": "dev-graph P06 projection (tasks/feat-budget-screen/sys-budget-p06.md)",
+      "depends_on": [
+        "SYS-BUDGET-P05"
+      ],
+      "bd_issue_id": "kanjo-inc.6"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P07",
+      "phase_ref": "P07",
+      "parent_feature": "feat-budget-screen",
+      "title": "P07 受入基準 S1 から S5（AT-01〜AT-22）の検証",
+      "description": "dev-graph P07 projection (tasks/feat-budget-screen/sys-budget-p07.md)",
+      "depends_on": [
+        "SYS-BUDGET-P06"
+      ],
+      "bd_issue_id": "kanjo-inc.7"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P08",
+      "phase_ref": "P08",
+      "parent_feature": "feat-budget-screen",
+      "title": "P08 旧 Budget.tsx 参照・重複判定ロジック・budgets 表書き換え有無の読取専用監査",
+      "description": "dev-graph P08 projection (tasks/feat-budget-screen/sys-budget-p08.md)",
+      "depends_on": [
+        "SYS-BUDGET-P07"
+      ],
+      "bd_issue_id": "kanjo-inc.8"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P09",
+      "phase_ref": "P09",
+      "parent_feature": "feat-budget-screen",
+      "title": "P09 アクセシビリティ・入力検証・変更系フェンス・外部送信ゼロ・JS バンドル予算の保証確認",
+      "description": "dev-graph P09 projection (tasks/feat-budget-screen/sys-budget-p09.md)",
+      "depends_on": [
+        "SYS-BUDGET-P08"
+      ],
+      "bd_issue_id": "kanjo-inc.9"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P10",
+      "phase_ref": "P10",
+      "parent_feature": "feat-budget-screen",
+      "title": "P10 独立最終レビュー",
+      "description": "dev-graph P10 projection (tasks/feat-budget-screen/sys-budget-p10.md)",
+      "depends_on": [
+        "SYS-BUDGET-P09"
+      ],
+      "bd_issue_id": "kanjo-inc.10"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P11",
+      "phase_ref": "P11",
+      "parent_feature": "feat-budget-screen",
+      "title": "P11 再現可能な証跡索引の作成",
+      "description": "dev-graph P11 projection (tasks/feat-budget-screen/sys-budget-p11.md)",
+      "depends_on": [
+        "SYS-BUDGET-P10"
+      ],
+      "bd_issue_id": "kanjo-inc.11"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P12",
+      "phase_ref": "P12",
+      "parent_feature": "feat-budget-screen",
+      "title": "P12 算出規則・API・migration・未決事項の docs 最終同期",
+      "description": "dev-graph P12 projection (tasks/feat-budget-screen/sys-budget-p12.md)",
+      "depends_on": [
+        "SYS-BUDGET-P11"
+      ],
+      "bd_issue_id": "kanjo-inc.12"
+    },
+    {
+      "graph_node_id": "SYS-BUDGET-P13",
+      "phase_ref": "P13",
+      "parent_feature": "feat-budget-screen",
+      "title": "P13 単一 PR での配信と migration 0048 適用とクローズアウト",
+      "description": "dev-graph P13 projection (tasks/feat-budget-screen/sys-budget-p13.md)",
+      "depends_on": [
+        "SYS-BUDGET-P12"
+      ],
+      "bd_issue_id": "kanjo-inc.13"
+    }
+  ]
+}

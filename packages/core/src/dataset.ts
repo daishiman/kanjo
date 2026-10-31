@@ -2,10 +2,12 @@
  * データセット操作（取込の洗い替え・月枠の確保・JSON入出力）。
  * HTML版 ensureMonth / importFreee / importMF / importJSON の挙動を忠実に移植。
  */
-import { isCashTxId } from './cash.js';
+import type { BudgetPlanRow } from './budget-screen.js';
+import { type CashOverrideRule, isCashTxId } from './cash.js';
 import { applyClassification, overridesFromEdits } from './classify.js';
+import type { NormRule } from './norm-rules.js';
 import { applySplits, reconcileTxSplits, txSplitsFromSnapshot, txSplitsSnapshot } from './splits.js';
-import { type SubVendor, matchSubVendor } from './subs.js';
+import { type ResolvedSubVendors, type SubVendor, matchSubVendor, subsDefinitionsOf } from './subs.js';
 import {
   type Cls,
   type Dataset,
@@ -17,6 +19,7 @@ import {
   type OwnerMonth,
   type Rule,
   type TxEdit,
+  emptyDataset,
   isMfCountable,
   normalizeOwner,
 } from './types.js';
@@ -73,16 +76,22 @@ export function subVendorDefs(data: Dataset): SubVendor[] {
     name,
     aliases: data.subs.aliases?.[name] ?? [],
     accounts: data.subs.accounts?.[name] ?? [],
+    ...(data.subs.exactNames?.[name] ? { exactNames: data.subs.exactNames[name] } : {}),
   }));
 }
 
 /**
  * freee仕訳を月単位洗い替えで反映する。
  * 対象月の売上・科目別経費・サブスクベンダー行列をゼロクリアしてから加算（HTML版と同一）。
+ * 統合を含む再計算では vendorDefs に解決済み定義を渡し、統合元正規名の完全一致情報を保つ。
  * 取り込んだ月は未記帳月から解除する。
  */
-export function applyFreeeDeals(data: Dataset, deals: FreeeDeal[], months: string[]): void {
-  const vendorDefs = subVendorDefs(data);
+export function applyFreeeDeals(
+  data: Dataset,
+  deals: FreeeDeal[],
+  months: string[],
+  vendorDefs: SubVendor[] = subVendorDefs(data),
+): void {
   months.forEach((m) => {
     const i = ensureMonth(data, m);
     data.biz.revenue[i] = 0;
@@ -118,6 +127,85 @@ export function applyFreeeDeals(data: Dataset, deals: FreeeDeal[], months: strin
   data.unrecordedExpMonths = data.unrecordedExpMonths.filter((m) => !months.includes(m));
 }
 
+/** monthly_agg の1行 (userId を除く) */
+export interface SubsAggRow {
+  month: string;
+  scope: string;
+  amount: number;
+}
+
+/** monthly_agg の scope `subs:<ベンダー名>` からベンダー名を取り出す。subs_other を含むそれ以外の scope は null */
+export const subsVendorOfScope = (scope: string): string | null =>
+  scope.startsWith('subs:') ? scope.slice('subs:'.length) : null;
+
+/** 事業の復元 baseline が「その月の事業集計を持っている」と数える scope (api の businessBaselineMonths と同じ) */
+export const isBusinessBaselineScope = (scope: string): boolean =>
+  scope === 'biz_rev' || scope === 'subs_other' || scope.startsWith('biz_exp:') || scope.startsWith('subs:');
+
+/**
+ * 統合・取り消しの後に書く monthly_agg の subs 範囲 (`subs:<根>` と subs_other) を組み立てる。
+ * 全体の再計算 (planRecomputeFromDeals) を呼ばずに、subs の行だけを同じ規則で作り直すための関数。
+ * - 再計算月 = freee の月 ∪ 事業 baseline の月 ∪ 現金の月。current の値は捨て、applyFreeeDeals の規則で組み直す
+ * - 再計算月のうち freee の無い月は、baseline の subs 行を根へ寄せて足す (照合一覧に無い名前は落とす)
+ * - 再計算月でない月は current を持ち越し、根へ寄せる (照合一覧に無い名前は落とす)
+ * - 金額 0 の行は出さない (aggRowsFromDataset と同じ)
+ */
+export function projectSubsAggregate(args: {
+  resolved: ResolvedSubVendors;
+  deals: readonly FreeeDeal[];
+  cashDeals: readonly FreeeDeal[];
+  businessBaseline: readonly SubsAggRow[];
+  current: readonly SubsAggRow[];
+}): SubsAggRow[] {
+  const { resolved } = args;
+  const freeeMonths = new Set(args.deals.map((deal) => deal.month));
+  const months = new Set([
+    ...freeeMonths,
+    ...args.businessBaseline.filter((row) => isBusinessBaselineScope(row.scope)).map((row) => row.month),
+    ...args.cashDeals.map((deal) => deal.month),
+  ]);
+
+  const data = emptyDataset();
+  data.subs.vendors = resolved.vendors.map((vendor) => vendor.name);
+  Object.assign(data.subs, subsDefinitionsOf(resolved));
+  data.subs.matrix = Object.fromEntries(resolved.vendors.map((vendor) => [vendor.name, []]));
+  applyFreeeDeals(data, [...args.deals, ...args.cashDeals], [...months].sort(), resolved.vendors);
+
+  const totals = new Map<string, SubsAggRow>();
+  const add = (month: string, scope: string, amount: number) => {
+    const key = `${month}\u0000${scope}`;
+    const row = totals.get(key) ?? { month, scope, amount: 0 };
+    row.amount += amount;
+    totals.set(key, row);
+  };
+  /** 統合元の列を根の列へ寄せる。照合一覧に無い名前 (削除済み) と subs 以外の scope は null */
+  const rootScopeOf = (scope: string): string | null => {
+    if (scope === 'subs_other') return scope;
+    const name = subsVendorOfScope(scope);
+    if (name === null) return null;
+    const root = resolved.rootNameOf.get(name);
+    return root === undefined ? null : `subs:${root}`;
+  };
+
+  data.months.forEach((month, i) => {
+    for (const vendor of data.subs.vendors) add(month, `subs:${vendor}`, data.subs.matrix[vendor]?.[i] ?? 0);
+    add(month, 'subs_other', data.subs.other[i] ?? 0);
+  });
+  for (const row of args.businessBaseline) {
+    if (!months.has(row.month) || freeeMonths.has(row.month)) continue;
+    const scope = rootScopeOf(row.scope);
+    if (scope) add(row.month, scope, row.amount);
+  }
+  for (const row of args.current) {
+    if (months.has(row.month)) continue;
+    const scope = rootScopeOf(row.scope);
+    if (scope) add(row.month, scope, row.amount);
+  }
+  return [...totals.values()]
+    .filter((row) => row.amount !== 0)
+    .sort((a, b) => (a.month < b.month ? -1 : a.month > b.month ? 1 : 0));
+}
+
 /** MF明細を月単位洗い替えで反映し、公私仕分けを再計算する。現金の記帳(cash:*)は取込値ではないので洗い替えの対象外 */
 export function applyMfTxs(data: Dataset, txs: MfTx[]): void {
   const monthsIn = new Set(txs.map((t) => t.m));
@@ -139,7 +227,13 @@ export function countableMfTxs(txs: MfTx[]): MfTx[] {
 /** ルール・手動判定・明細の現状から personal / bizPersonal を再生成する */
 export function recomputeClassification(data: Dataset, replaceMonths?: ReadonlySet<string>): void {
   data.overrides = overridesFromEdits(data.edits);
-  const r = applyClassification(countableMfTxs(data.mfTx), data.rules, data.edits, data.institutionOwners);
+  const r = applyClassification(
+    countableMfTxs(data.mfTx),
+    data.rules,
+    data.edits,
+    data.institutionOwners,
+    data.normRules ?? [],
+  );
   // raw MF行がある月は、集計対象が0件でも「空の再計算結果」で旧値を置換する。
   // cash:*だけの月やraw MF行自体が無いJSON復元月は対象にせず、既存baselineを温存する。
   const rawMfMonths = new Set(data.mfTx.filter((tx) => !isCashTxId(tx.id)).map((tx) => tx.m));
@@ -188,7 +282,11 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
   }
   if (obj.personal) data.personal = obj.personal as Dataset['personal'];
   if (obj.budgets) data.budgets = obj.budgets as Record<string, number>;
+  if (Array.isArray(obj.budgetPlans)) data.budgetPlans = obj.budgetPlans as BudgetPlanRow[];
   if (obj.cashOverride) data.cashOverride = obj.cashOverride as Dataset['cashOverride'];
+  if (Array.isArray(obj.normRules)) data.normRules = obj.normRules as NormRule[];
+  if (Array.isArray(obj.cashOverrideRules))
+    data.cashOverrideRules = obj.cashOverrideRules as CashOverrideRule[];
   if (obj.mfTx) data.mfTx = obj.mfTx as MfTx[];
   if (Object.prototype.hasOwnProperty.call(obj, 'txSplits'))
     data.txSplits = txSplitsFromSnapshot(obj.txSplits);
@@ -235,10 +333,11 @@ export function importJSON(data: Dataset, obj: Record<string, unknown>): void {
 
 /** HTML版互換の統合JSONへ書き出す */
 export function exportJSON(data: Dataset): Record<string, unknown> {
+  const { exactNames: _exactNames, ...subs } = data.subs;
   return {
     months: data.months,
     biz: data.biz,
-    subs: data.subs,
+    subs,
     personal: data.personal,
     bizPersonal: data.bizPersonal,
     // 個人分の現金明細(cash:*)は cash_entries が正本なので、取込明細の写しには含めない
@@ -251,7 +350,10 @@ export function exportJSON(data: Dataset): Record<string, unknown> {
     personalByOwner: data.personalByOwner,
     ownerSchemaVersion: OWNER_SCHEMA_VERSION,
     budgets: data.budgets,
+    budgetPlans: data.budgetPlans ?? [],
     cashOverride: data.cashOverride,
+    normRules: data.normRules ?? [],
+    cashOverrideRules: data.cashOverrideRules ?? [],
     unrecordedExpMonths: data.unrecordedExpMonths,
     exportedAt: new Date().toISOString(),
   };

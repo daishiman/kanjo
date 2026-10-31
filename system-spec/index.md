@@ -7,6 +7,13 @@ kind: index
 収集マトリクス (カテゴリ×プラットフォーム) の各章と集約状態の相互参照。
 集約状態は 未着手 / 収集中 / 確定 / 対象外 の 4 値 (真理値表導出)。
 
+## 現行Login v2の実装・配信情報
+
+実行時の移行は `migrations/0059_login_v2_better_auth.sql`。以下の章は着手時の確定仕様の履歴を含む。
+現行の認証方式・安全な戻し・検証結果は [`設計・実行記録`](../docs/login-v2/design-decisions.md) と
+[`認証運用`](../docs/runbooks/account-login-operations.md) を参照する。最新mainの統合前仕様は
+`archive/2026-10-31-pre-login-v2-main/` にそのまま保存した。
+
 ## 要件定義書 (上位概念・憲法)
 
 - [要件定義書](./00-requirements-definition.md) — 上位概念 U1-U9 の正本 (確定マーカー: `confirmed`)。各技術章は serves_goals でここのゴールへトレース (anchor) する。

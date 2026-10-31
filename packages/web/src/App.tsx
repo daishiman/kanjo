@@ -9,7 +9,7 @@ import type { AuthFlow } from './features/auth/flow.js';
 import { loginPathFor, sanitizeNext } from './features/auth/view-model.js';
 import { isPublicRoute, publicRoutePolicy } from './routeMetadata.js';
 
-// 収集は最初の描画より前に始める。エラーは改善要望ボタンを押す「前」に起きているため、
+// 収集は最初の描画より前に始める。エラーは「改善を送る」ボタンを押す前に起きているため、
 // useEffect まで待つと肝心の1件目を取り逃がす。二重 install は buffer 側が弾く
 installDiagnostics();
 

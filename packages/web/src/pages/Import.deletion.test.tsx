@@ -16,6 +16,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { DeletionOperation, DeletionPreflight, ImportHistoryRow } from '../api.js';
 import { ImportPage } from './Import.js';
+import { runDetail, runRow } from './import/import-test-fakes.js';
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -67,13 +68,16 @@ const operationRow = (over: Partial<DeletionOperation> = {}): DeletionOperation 
   ...over,
 });
 
-function renderPage() {
+/** 取込 1 回 (run-1) に #41 のファイルが 1 件。ファイル単位の取り消しは、その詳細から呼ぶ */
+const RUN = runRow({ id: 'run-1' });
+
+function renderPage(initialEntries = ['/']) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   return render(
     <QueryClientProvider client={client}>
-      <MemoryRouter>{(<ImportPage />) as ReactNode}</MemoryRouter>
+      <MemoryRouter initialEntries={initialEntries}>{(<ImportPage />) as ReactNode}</MemoryRouter>
     </QueryClientProvider>,
   );
 }
@@ -102,6 +106,8 @@ const stubFetch = (
       if (path.startsWith('/api/data/undo/'))
         return json({ operationId: 'op-undo', restored: {}, months: [] });
       if (/^\/api\/imports\/\d+\/undo$/.test(path)) return json(DELETED);
+      if (path === '/api/imports/runs') return json({ runs: [RUN] });
+      if (path === '/api/imports/runs/run-1') return json({ run: runDetail(RUN) });
       if (path.startsWith('/api/imports'))
         return options.historyError
           ? json({ error: { code: 'history_unavailable', message: '履歴を読み込めません' } }, 500)
@@ -348,9 +354,10 @@ describe('データを入れ替える', () => {
 });
 
 describe('取込ごとの取り消し', () => {
+  // 取込 1 回の詳細を開いた状態から始める (履歴の行の「詳細」を押した後)
   it('履歴の行から、その取込だけを確認つきで消せる', async () => {
     const calls = stubFetch();
-    renderPage();
+    renderPage(['/?run=run-1']);
 
     fireEvent.click(await screen.findByRole('button', { name: 'この取込を取り消す' }));
     await screen.findByText('消える内容');
@@ -365,7 +372,7 @@ describe('取込ごとの取り消し', () => {
 
   it('やめると確認が閉じ、何も送らない', async () => {
     const calls = stubFetch();
-    renderPage();
+    renderPage(['/?run=run-1']);
 
     const trigger = await screen.findByRole('button', { name: 'この取込を取り消す' });
     fireEvent.click(trigger);

@@ -9,7 +9,9 @@
 import {
   DIAGNOSTIC_MAX_ENTRIES,
   type DiagnosticPayload,
-  redactSecrets,
+  EMPTY_MASK_DICTIONARY,
+  type MaskDictionary,
+  redactPersonalInfo,
   sanitizeDiagnosticPayload,
 } from '@kanjo/core';
 import { diagnosticPayloadSchema } from './contract.js';
@@ -36,6 +38,7 @@ export function parseDiagnosticsField(
   raw: string | null,
   fallbackRoute: string,
   now: string,
+  dictionary: MaskDictionary = EMPTY_MASK_DICTIONARY,
 ): ParsedDiagnostics {
   if (!raw || !raw.trim()) return { payload: emptyDiagnostics(fallbackRoute, now), rejected: false };
   let json: unknown;
@@ -47,11 +50,21 @@ export function parseDiagnosticsField(
   const parsed = diagnosticPayloadSchema.safeParse(json);
   if (!parsed.success) return { payload: emptyDiagnostics(fallbackRoute, now), rejected: true };
   // 件数上限を超える入力は弾かずに切り詰め、捨てた件数を omittedCount へ足す
-  return { payload: sanitizeDiagnosticPayload(parsed.data as DiagnosticPayload), rejected: false };
+  return {
+    payload: sanitizeDiagnosticPayload(parsed.data as DiagnosticPayload, dictionary),
+    rejected: false,
+  };
 }
 
-/** 本文と画面パスにもマスクを掛ける。利用者が誤ってトークンやメールを貼る経路がある */
-export const redactText = (text: string, max: number): string => redactSecrets(text).slice(0, max);
+/**
+ * 本文と画面パスにもマスクを掛ける。利用者が誤ってトークン・メール・電話・金額・取引先名を貼る経路がある。
+ * 辞書 (取引先名・持ち主の名前) は呼び出し側がリクエストごとに作って渡す。
+ */
+export const redactText = (
+  text: string,
+  max: number,
+  dictionary: MaskDictionary = EMPTY_MASK_DICTIONARY,
+): string => redactPersonalInfo(text, dictionary).slice(0, max);
 
 /** 上限を超えた入力かどうか。画面へ「省略された」と出すために使う */
 export const exceededEntryLimit = (payload: DiagnosticPayload): boolean =>

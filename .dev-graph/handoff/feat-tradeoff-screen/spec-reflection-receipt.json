@@ -1,0 +1,88 @@
+{
+  "receipt_kind": "spec-reflection",
+  "feature_id": "feat-tradeoff-screen",
+  "beads_epic": "kanjo-4ib",
+  "tasks": [
+    "SYS-TRADEOFF-P01",
+    "SYS-TRADEOFF-P02",
+    "SYS-TRADEOFF-P03",
+    "SYS-TRADEOFF-P04",
+    "SYS-TRADEOFF-P05",
+    "SYS-TRADEOFF-P06",
+    "SYS-TRADEOFF-P07",
+    "SYS-TRADEOFF-P08",
+    "SYS-TRADEOFF-P09",
+    "SYS-TRADEOFF-P10",
+    "SYS-TRADEOFF-P11",
+    "SYS-TRADEOFF-P12",
+    "SYS-TRADEOFF-P13"
+  ],
+  "recorded_at": "2026-09-22T07:56:00Z",
+  "base": "origin/main 0ed2d8c",
+  "impact": "yes",
+  "changes": [
+    {
+      "topic": "migration 番号",
+      "decision": "0050 は main の 0050_budget_plans.sql が使ったため 0051_tradeoff_notes.sql へ繰り上げ",
+      "reflected_in": [
+        "specs/spec-tradeoff-screen.md",
+        "architecture/tradeoff-*.md",
+        "tasks/feat-tradeoff-screen/*.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md",
+        "docs/tradeoff-screen/design-decisions.md"
+      ]
+    },
+    {
+      "topic": "候補キーの形式",
+      "decision": "v1: + JSON 配列 [account_norm, partner](上限300字)を正本とする",
+      "reflected_in": [
+        "docs/spec-v1.1.md",
+        "docs/data-schema.md"
+      ]
+    },
+    {
+      "topic": "予算画面サイクルの章の退避",
+      "decision": "main の予算画面の章を system-spec/archive/2026-09-22-budget-screen/ へ退避し、graph の arch-budget-* 8件の source_path を付け替え",
+      "reflected_in": [
+        "architecture/graph.json",
+        "system-spec/archive/2026-09-22-budget-screen/README.md"
+      ]
+    },
+    {
+      "topic": "spec-v1.1 の digest",
+      "decision": "arch-tax-preparation-boundary の source_digest を打ち直し(税の境界の内容は変更なし)",
+      "reflected_in": [
+        "architecture/graph.json"
+      ]
+    }
+  ],
+  "not_changed": [
+    {
+      "path": "system-spec/ 直下の章",
+      "reason": "章は 0050 を予定番号と明記しており、確定章を巻き戻さない"
+    },
+    {
+      "path": ".dev-graph/plans/** と features/*",
+      "reason": "digest で凍結された計画成果物。lineage に従い据え置く"
+    }
+  ],
+  "gates": {
+    "lint": "EXIT 0",
+    "typecheck": "EXIT 0",
+    "tests": "core 1052 / api 64 / web 44 PASS"
+  },
+  "digests": {
+    "specs/spec-tradeoff-screen.md": "e4aed091690b68667dd6c57efd683a35edfab4c443f0d4eb8b59ce0ba8ff8f9e",
+    "architecture/tradeoff-backend.md": "997f07f79b9131ccea25595c55e26ba6e217ce420a1cea951714def18cdd6bd1",
+    "architecture/tradeoff-database.md": "1c3ebf62c284d0f2b8baa61e88fafe733a69f7e3988535679f9c18611af93092",
+    "architecture/tradeoff-infrastructure.md": "1647614a904b6c2e6f5c71a7761096c8ffd8f7d881ec624c2bb1aa7815d501ab",
+    "architecture/tradeoff-maintenance-ops.md": "2866621eb6bfd621088bf3e8f77f690d2e609031055d533e8118e8580a2609ac",
+    "architecture/graph.json": "22c72524ea8a51e42ed525f6458976f6a4f2a7d88d2990d6046bdaa401404d33",
+    "docs/spec-v1.1.md": "2a71bc09587c695730d50099652871dcb24540464fab518e9a40c081774ea5a7",
+    "docs/data-schema.md": "f0316862900c1b46671c0688e7121fe5c67ea71e8d3f5b90ca1d14cec8405921",
+    "docs/ui-decisions.md": "75ab2a028378a466c8d8838145a8874938b18b080b49b173cacef8615ddde7fd",
+    "docs/tradeoff-screen/design-decisions.md": "baedb1bdfb71780fe697ed8cf49f52838b2c66f6b74de8ed5c0b2ba80afa8363",
+    "docs/tradeoff-screen/evidence.md": "489083717b63d3a0c8603ec06d5f6debb8b3cad9f70c3be6ff29265115b51a3d"
+  }
+}

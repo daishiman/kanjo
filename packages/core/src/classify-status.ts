@@ -42,6 +42,43 @@ export interface ClassifyCounts {
 /** 信頼度がこれ未満の提案は疑う (BR-03。79 は要確認・80 は要確認でない) */
 export const REVIEW_CONFIDENCE_THRESHOLD = 80;
 
+/**
+ * 信頼度の段階 (spec-guide-screen、qa-guide-decision-008)。
+ * 高 80 以上・中 50〜79・低 49 以下。境界の比較はこの関数だけに置き、画面は結果を描くだけにする。
+ * 高の下限は要確認の閾値と同じ 80 だが、意味が違う (表示の段階 / 疑う基準) ので別の定数として持ち、
+ * 両者が 80 であることは単体テストで固定する。
+ */
+export const CONFIDENCE_TIER_HIGH_MIN = 80;
+export const CONFIDENCE_TIER_MEDIUM_MIN = 50;
+
+export type ConfidenceTier = 'high' | 'medium' | 'low';
+
+export const CONFIDENCE_TIER_LABEL: Record<ConfidenceTier, string> = {
+  high: '高',
+  medium: '中',
+  low: '低',
+};
+
+/** 0〜100 の数だけを段階にする。範囲外・非数・null は null (画面は「—」) */
+export function confidenceTier(confidence: number | null | undefined): ConfidenceTier | null {
+  if (confidence == null || !Number.isFinite(confidence) || confidence < 0 || confidence > 100) return null;
+  if (confidence >= CONFIDENCE_TIER_HIGH_MIN) return 'high';
+  if (confidence >= CONFIDENCE_TIER_MEDIUM_MIN) return 'medium';
+  return 'low';
+}
+
+/** 画面に出す『段階＋%』。段階が主、% が副。範囲外は「—」 */
+export function confidenceTierText(confidence: number | null | undefined): string {
+  const tier = confidenceTier(confidence);
+  if (tier == null || confidence == null) return '—';
+  return `${CONFIDENCE_TIER_LABEL[tier]} ${Math.round(confidence)}%`;
+}
+
+/** よくある疑問・用語の説明文。境界の数字を定数から組む */
+export const CONFIDENCE_TIER_DESCRIPTION = `高 (${CONFIDENCE_TIER_HIGH_MIN} 以上)・中 (${CONFIDENCE_TIER_MEDIUM_MIN}〜${
+  CONFIDENCE_TIER_HIGH_MIN - 1
+})・低 (${CONFIDENCE_TIER_MEDIUM_MIN - 1} 以下) の3段階＋%で表示`;
+
 /** 衝突したときに提案の信頼度から引く点数 (BR-05) */
 export const CONFLICT_CONFIDENCE_PENALTY = 20;
 

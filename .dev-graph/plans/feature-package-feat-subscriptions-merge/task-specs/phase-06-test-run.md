@@ -1,0 +1,124 @@
+# System task overlay: 全テストと型検査と lint の実行記録
+
+## Machine-readable registration fields
+
+- feature_package_id: feature-package/feat-subscriptions-merge
+- owners: ["daishiman"]
+- tags: ["subscriptions-merge", "p06", "test-run"]
+- related_nodes: ["arch-subscriptions-merge-auth", "arch-subscriptions-merge-backend", "arch-subscriptions-merge-database", "arch-subscriptions-merge-frontend", "arch-subscriptions-merge-infrastructure", "arch-subscriptions-merge-maintenance-ops", "arch-subscriptions-merge-security", "arch-subscriptions-merge-ui-ux", "spec-subscriptions-merge"]
+- parent_feature: feat-subscriptions-merge
+- phase_ref: P06
+- classification: confidence 0.95、reason 単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない、candidate tasks/feat-subscriptions-merge/sys-subsmerge-p06.md
+- tracker_binding_intent: beads
+- github_publication: mode local_only、project_aliases []、labels []、milestone null
+- branch_policy: one-task-one-branch + worktree lease required + default-branch reconciliation + assignment_owner=dev-graph-scheduler
+
+## 目的
+
+P05 の後で全パッケージのテスト・型検査・lint を実行し、結果を記録する。
+
+## 背景
+
+core・api・web の 3 パッケージに変更が及ぶため、1 パッケージの緑では他の回帰を見落とす。
+
+## 前提条件
+
+- Required spec/architecture/phase/task nodes: arch-subscriptions-merge-auth, arch-subscriptions-merge-backend, arch-subscriptions-merge-database, arch-subscriptions-merge-frontend, arch-subscriptions-merge-infrastructure, arch-subscriptions-merge-maintenance-ops, arch-subscriptions-merge-security, arch-subscriptions-merge-ui-ux, spec-subscriptions-merge, SYS-SUBSMERGE-P05
+- Entry gate: staging run plan-feat-subscriptions-merge-20260930T1525Z の goal-spec.json が readiness_pin.status=complete であること、かつ SYS-SUBSMERGE-P05 が完了していること
+- Source pin: system-spec-harness v0.1.14 / run-system-spec-compile / assign-system-spec-completeness-evaluator (evidence: system-spec/completeness-findings.json と利用者の例外承認 docs/evidence/subscriptions-merge/spec-evaluation-waiver.json)
+- Repository context: repo_identity github:daishiman/kanjo / root_resolution_source git / .dev-graph/config.json
+制約: 失敗したテストを緑にするために契約を緩めない。失敗は P05 へ差し戻す。
+
+## Workstream applicability
+
+- Frontend: N/A: 本 phase の責務に含まれない
+- Backend: N/A: 本 phase の責務に含まれない
+- API: N/A: 本 phase の責務に含まれない
+- Data: N/A: 本 phase の責務に含まれない
+- Infrastructure: N/A: 本 phase の責務に含まれない
+- Security: N/A: 本 phase の責務に含まれない
+- Quality: applicable: 本 phase の主責務として扱う
+- Documentation: N/A: 本 phase の責務に含まれない
+- Operations: N/A: 本 phase の責務に含まれない
+
+## Architecture and deploy unit
+
+- Architecture decisions: arch-subscriptions-merge-auth, arch-subscriptions-merge-backend, arch-subscriptions-merge-database, arch-subscriptions-merge-frontend, arch-subscriptions-merge-infrastructure, arch-subscriptions-merge-maintenance-ops, arch-subscriptions-merge-security, arch-subscriptions-merge-ui-ux, spec-subscriptions-merge
+- Deploy unit/environment: N/A: 実行記録のみで配布物を持たない
+- Compatibility/migration/backfill: コードと表の変更を伴わない
+
+## 成果物
+
+- Produced artifacts:
+- docs/subscriptions-screen.md
+- Consumed artifacts:
+- migrations/0058_subscription_merge_operations.sql
+- packages/core/src/subs.ts
+- packages/core/src/subs-screen.ts
+- packages/core/src/dataset.ts
+- packages/core/src/expense-projection.ts
+- packages/core/src/index.ts
+- packages/core/test/subs-contract.test.ts
+- packages/core/test/subs-screen-contract.test.ts
+- packages/api/src/subs-screen.integration.test.ts
+- packages/api/src/subs-merge-operations.integration.test.ts
+- packages/api/src/subs-vendor-scope.test.ts
+- packages/api/src/expense-projection.integration.test.ts
+- packages/web/src/subscriptions-screen.dom.test.tsx
+- Write scope/touches:
+- docs/subscriptions-screen.md
+
+## Tracker publication and completion
+
+本 spec は tracker_binding_intent と GitHub 公開 intent だけを宣言し、永続 binding の解決・起票・完了収束は dev-graph が所有する。
+
+- Tracker binding intent: beads
+- Publication mode: local_only
+- Project aliases / labels / milestone: いずれも値なし (local_only のため)
+- PR completion policy: linked_pr_merged_all
+- PR body contract: dev-graph graph_node_id SYS-SUBSMERGE-P06 を本文に記載し、default branch を対象にする
+- Ownership boundary: system-dev-planner は intent を宣言するのみで、dev-graph が実際の mutation/reconciliation を行う
+
+## Branch and worktree execution
+
+- Branch: dev-graph 登録後に C15 が devgraph/SYS-SUBSMERGE-P06 として割り当てる。system-dev-planner は事前割り当てを行わない
+- Worktree lease: 実装着手前に SYS-SUBSMERGE-P06 の worktree lease を claim し、heartbeat/release を行う
+- Parallel safety: depends_on (SYS-SUBSMERGE-P05) が完了し、write_scope が他の active lease と重複しないこと
+- Completion projection: feature branch は pending event のみを記録し、default branch へのクリーンな書き込みが durable な done を確定する
+
+## スコープ外
+
+- features/feat-subscriptions-merge.context.json の scope_out (他画面のデザインの作り直し、取込方式の変更、未照合明細の算入、AI による自動統合、Web 以外の専用アプリ、DO・Queues・新しい有料サービス・新しい夜間 job、楽観更新、取り消しの権限の分割)
+- feature の resource_scope の外にあるファイル (package.json・packages/web/package.json・scripts 配下など) への書込み
+- 本 phase の責務外にある他 phase の成果物への書込み
+
+## Verification and evidence
+
+- Acceptance:
+- pnpm test・pnpm typecheck・pnpm lint が全て exit 0 で、件数と所要時間が記録されている。
+- P04 で失敗したテストが全て緑になったことが記録されている。
+- Automated commands:
+- pnpm test
+- pnpm typecheck
+- pnpm lint
+- Required evidence:
+- docs/subscriptions-screen.md
+
+## Rollout and rollback
+
+- Rollout: 単一の PR で配信し、default branch への merge をもって反映する
+- Rollback trigger and steps: 記録の追記を revert する。
+
+## Handoff
+
+- Executor: task-graph build / capability-build への application-code handoff (build_target_kind=application-code)
+- Ready when: confirmed かつ evaluation pass かつ implementation_readiness complete かつ promoted digest かつ dev-graph registration complete
+
+## 参照情報
+
+- System specification: system-spec/00-requirements-definition.md (system-spec-harness v0.1.14 出力)
+- Screen specification: specs/spec-subscriptions-merge.md
+- Architecture: arch-subscriptions-merge-auth, arch-subscriptions-merge-backend, arch-subscriptions-merge-database, arch-subscriptions-merge-frontend, arch-subscriptions-merge-infrastructure, arch-subscriptions-merge-maintenance-ops, arch-subscriptions-merge-security, arch-subscriptions-merge-ui-ux, spec-subscriptions-merge
+- Feature: feat-subscriptions-merge
+- Phase doc: 別文書は生成しない (references/feature-execution-package-contract.md により本 task spec 自体が phase の実行単位)
+- Dependencies: SYS-SUBSMERGE-P05

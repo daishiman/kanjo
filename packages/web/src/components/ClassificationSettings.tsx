@@ -25,6 +25,7 @@ import { Button } from './Button.js';
 import { AddCategoryInline, CategoryPicker } from './CategoryPicker.js';
 import { ConfirmDialog, usePendingConfirm } from './ConfirmDialog.js';
 import { DataTable, termColumn } from './DataTable.js';
+import { SelectionCheckbox } from './SelectionCheckbox.js';
 import { Term } from './Term.js';
 import { useInvalidateClassification } from './classification-invalidate.js';
 
@@ -235,9 +236,12 @@ export function RulesCard({ candidates, initial }: { candidates: Candidates; ini
       )}
       <form onSubmit={submit} className="toolbar">
         <RuleFields value={draft} onChange={setDraft} candidates={candidates} />
-        <label style={{ fontSize: 12 }}>
-          <input type="checkbox" checked={top} onChange={(e) => setTop(e.target.checked)} /> 最優先に追加
-        </label>
+        <SelectionCheckbox
+          label="最優先に追加"
+          checked={top}
+          onChange={(e) => setTop(e.target.checked)}
+          style={{ fontSize: 12 }}
+        />
         <Button
           type="submit"
           variant="primary"

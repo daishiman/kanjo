@@ -1,3 +1,6 @@
+import type { BudgetPlanRow } from './budget-screen.js';
+import type { CashOverrideRule } from './cash.js';
+import type { NormRule } from './norm-rules.js';
 /** 公私判定の区分 */
 export type Cls = 'biz' | 'per';
 
@@ -283,6 +286,8 @@ export interface Dataset {
     aliases: Record<string, string[]>;
     /** ベンダーごとの対象勘定科目の原本名。空配列・未設定なら全科目を数える */
     accounts?: Record<string, string[]>;
+    /** 統合の保存行から導出する完全一致名。保存 aliases と分離し、バックアップには出さない */
+    exactNames?: Record<string, string[]>;
     matrix: Record<string, number[]>;
     other: number[];
   };
@@ -301,7 +306,15 @@ export interface Dataset {
   /** 個人分の名義別(事業/妻/家族/未設定)の月別 収入・支出（edits/rules/institutionOwners から導出） */
   personalByOwner: Record<string, Record<OwnerKey, OwnerMonth>>;
   budgets: Record<string, number>;
+  /** 予算対象の期間ごとの年額 (budget_plans)。読み手は monthlyBudgetsAt 経由で読む */
+  budgetPlans?: BudgetPlanRow[];
+  /** 予算の基準月 (今月・日本時間 'YYYY-MM')。api が要求時刻から入れる (BR-23) */
+  budgetAsOf?: string;
   cashOverride: Record<string, { revenue: number; expense: number }>;
+  /** 集計ルール(設定画面)。account は取込時の正規化、vendor は集計時の大項目 */
+  normRules?: NormRule[];
+  /** 現金上書き(設定画面)。読み手は resolveCashOverride 経由で読む */
+  cashOverrideRules?: CashOverrideRule[];
   unrecordedExpMonths: string[];
 }
 
@@ -335,7 +348,10 @@ export function emptyDataset(): Dataset {
     institutionOwners: {},
     personalByOwner: {},
     budgets: {},
+    budgetPlans: [],
     cashOverride: {},
+    normRules: [],
+    cashOverrideRules: [],
     unrecordedExpMonths: [],
   };
 }

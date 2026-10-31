@@ -117,9 +117,9 @@ export const APP_ROUTES = [
     id: 'budget',
     path: '/budget',
     label: '予算',
-    task: '科目別の予算を決め、実績との差を確認します。',
+    task: '実績をもとに、来期12か月の科目別の予算を決めます。',
     taskDetail:
-      '直近3ヶ月平均が予算の±10%の外かどうかで予算差異を判定する。着地見込み(実績累計+直近3ヶ月平均×残り月数)も並べて見る。',
+      '前期実績・増減率・季節性補正・計画による調整から自動提案を組み、年間の純収支と防衛ラインの余裕を確かめながら予算対象の期間ごとに保存する。',
     icon: 'calendar-range',
     navGroup: '計画',
     mobileLabel: null,
@@ -131,7 +131,7 @@ export const APP_ROUTES = [
     label: 'トレードオフ',
     task: '新しい支出をどこから捻出するか試算します。',
     taskDetail:
-      '予算超過・重複契約疑い・基準レンジ超過の科目を削減候補として並べ、新しい支出を賄えるかを試算する。',
+      '直近3か月の経費を科目と取引先ごとに削減候補として並べ、固定費かどうかと推移から必要度を付ける。選んだ候補の削減額を年換算して、新しい支出を賄えるかと防衛ラインへの影響を試算する。',
     icon: 'scale',
     navGroup: null,
     mobileLabel: null,
@@ -141,9 +141,9 @@ export const APP_ROUTES = [
     id: 'settings',
     path: '/settings',
     label: '設定',
-    task: '分類ルール、名義、科目、復元方法を管理します。',
+    task: '集計ルール・名義・統計・現金上書きと、設定の書き出し・復元・バックアップを管理します。',
     taskDetail:
-      '分類ルール、口座の名義、勘定科目の正規化、未記帳月、夜間バックアップからの復元をここで管理する。',
+      '勘定科目と取引先の表記ゆれをまとめる集計ルール、名義の表示名、統計の最小月数、現金上書きを 1 回の保存で管理し、設定だけの JSON の書き出しと復元、夜間バックアップとの比較と設定の復元を行う。未記帳月の扱いもここで決める。',
     icon: 'sliders-horizontal',
     navGroup: '管理',
     mobileLabel: null,
@@ -427,7 +427,7 @@ export function routeContentWidth(pathname: string): 'reading' | 'data' {
 export function routePageTitle(pathname: string): string {
   const tab = ANALYSIS_TABS.find((candidate) => candidate.path === pathname);
   if (tab) return `${tab.label} | 支出分析 | Focus Ledger`;
-  if (pathname === '/improvement') return '改善要望 | Focus Ledger';
+  if (pathname === '/improvement') return '改善リクエスト | Focus Ledger';
   const publicRoute = PUBLIC_ROUTES.find((candidate) => candidate.path === pathname);
   if (publicRoute) return `${publicRoute.label} | Focus Ledger`;
   const route = APP_ROUTES.find((candidate) =>

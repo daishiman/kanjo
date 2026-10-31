@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "feature_id": "feat-guide-screen",
+  "parent_feature": "feat-guide-screen",
+  "feature_package_id": "feature-package/feat-guide-screen",
+  "handoff_target": "task-graph",
+  "selected_nodes": [
+    "spec-guide-screen",
+    "arch-guide-ui-ux",
+    "arch-guide-frontend",
+    "arch-guide-backend",
+    "arch-guide-database",
+    "arch-guide-auth",
+    "arch-guide-security",
+    "arch-guide-infrastructure",
+    "arch-guide-maintenance-ops",
+    "feat-guide-screen",
+    "SYS-GUIDE-P01",
+    "SYS-GUIDE-P02",
+    "SYS-GUIDE-P03",
+    "SYS-GUIDE-P04",
+    "SYS-GUIDE-P05",
+    "SYS-GUIDE-P06",
+    "SYS-GUIDE-P07",
+    "SYS-GUIDE-P08",
+    "SYS-GUIDE-P09",
+    "SYS-GUIDE-P10",
+    "SYS-GUIDE-P11",
+    "SYS-GUIDE-P12",
+    "SYS-GUIDE-P13"
+  ],
+  "artifact_kinds": [
+    "specification",
+    "architecture",
+    "feature",
+    "task"
+  ],
+  "closure_status": "complete",
+  "missing_nodes": [],
+  "snapshot_digest": "sha256:88f509652793e9015d4022278c6d537fea241faace4bb7140fbe03902daafb0a"
+}

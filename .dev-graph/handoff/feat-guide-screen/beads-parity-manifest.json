@@ -1,0 +1,114 @@
+{
+  "feature_id": "feat-guide-screen",
+  "workspace_id": "bdw_e880d8c2fef2fbed5ceb187f",
+  "nodes": [
+    {
+      "graph_node_id": "feat-guide-screen",
+      "bd_issue_id": "kanjo-ogz",
+      "graph_status": "active",
+      "depends_on": []
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P01",
+      "bd_issue_id": "kanjo-ogz.1",
+      "graph_status": "active",
+      "depends_on": []
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P02",
+      "bd_issue_id": "kanjo-ogz.2",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P01"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P03",
+      "bd_issue_id": "kanjo-ogz.3",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P02"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P04",
+      "bd_issue_id": "kanjo-ogz.4",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P03"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P05",
+      "bd_issue_id": "kanjo-ogz.5",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P04"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P06",
+      "bd_issue_id": "kanjo-ogz.6",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P05"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P07",
+      "bd_issue_id": "kanjo-ogz.7",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P06"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P08",
+      "bd_issue_id": "kanjo-ogz.8",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P07"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P09",
+      "bd_issue_id": "kanjo-ogz.9",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P08"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P10",
+      "bd_issue_id": "kanjo-ogz.10",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P09"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P11",
+      "bd_issue_id": "kanjo-ogz.11",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P10"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P12",
+      "bd_issue_id": "kanjo-ogz.12",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P11"
+      ]
+    },
+    {
+      "graph_node_id": "SYS-GUIDE-P13",
+      "bd_issue_id": "kanjo-ogz.13",
+      "graph_status": "active",
+      "depends_on": [
+        "SYS-GUIDE-P12"
+      ]
+    }
+  ]
+}

@@ -1,7 +1,9 @@
+import { NORM_RULE_CAT_SRC, type NormRule, resolveVendorRule } from './norm-rules.js';
 /**
  * 公私仕分けと属性の解決。
  * 公私の優先順位: 手動編集 > ルール > materialize済みvendor memory > MF中項目 > 既定。
  * vendor memory由来のeditだけは、後から効いたルールに譲る。
+ * 大項目の優先順位: 手動編集 > 仕分けルール > 集計ルール(取引先) > 取込値(BR-06)。
  *   - cls  の既定: 'per'
  *   - big/mid の既定: 取込値（MFの大項目/中項目）
  *   - owner の既定: 保有金融機関→名義の設定（institutionOwners）。無ければ null（未設定）
@@ -46,7 +48,7 @@ export interface ResolvedTx {
   clsSrc: ClassificationSource;
   big: string;
   mid: string;
-  catSrc: '手動' | 'ルール' | '取込値';
+  catSrc: '手動' | 'ルール' | typeof NORM_RULE_CAT_SRC | '取込値';
   owner: Owner | null;
   ownerSrc: '手動' | 'ルール' | '口座' | '既定';
   /** 振替後の口座(保有金融機関)。手当てが無ければ取込値そのまま。 */
@@ -200,6 +202,7 @@ export function resolveTx(
   rules: Rule[],
   edits: Record<string, TxEdit>,
   institutionOwners: Record<string, Owner> = {},
+  normRules: readonly NormRule[] = [],
 ): ResolvedTx {
   const e = t.projectedEdit ?? edits[t.id];
   // 口座の振替は3点比較に載せない(TxEdit.inst の注記)。手当てがあればそれ、無ければ取込値。
@@ -269,6 +272,16 @@ export function resolveTx(
     { cls: incoming.cls, big: incoming.big, mid: incoming.mid, owner: incoming.owner },
     e?.baseKnown,
   );
+  // 集計ルール(取引先)は取込値のカテゴリにだけ効く。三点比較の後に置き、手動編集の衝突判定の意味を変えない。
+  // 保存済みの明細・編集は書き換えず、決まるのは大項目だけ(中項目は空、公私・名義は変えない)。
+  if (catSrc === '取込値') {
+    const vendorRule = resolveVendorRule(t.c, normRules);
+    if (vendorRule) {
+      big = vendorRule.norm;
+      mid = '';
+      catSrc = NORM_RULE_CAT_SRC;
+    }
+  }
   return {
     cls,
     clsSrc,
@@ -369,6 +382,7 @@ export function applyClassification(
   rules: Rule[],
   edits: Record<string, TxEdit>,
   institutionOwners: Record<string, Owner> = {},
+  normRules: readonly NormRule[] = [],
 ): ClassificationResult {
   const byM: Record<string, MfTx[]> = {};
   mfTx.forEach((t) => {
@@ -385,7 +399,7 @@ export function applyClassification(
     let bIn = 0;
     let bOut = 0;
     byM[m].forEach((t) => {
-      const r = resolveTx(t, rules, edits, institutionOwners);
+      const r = resolveTx(t, rules, edits, institutionOwners, normRules);
       if (r.cls === 'biz') {
         if (t.a > 0) bIn += t.a;
         else bOut += -t.a;

@@ -60,7 +60,7 @@ SPA・未認証ガード・招待承諾・Better Authログインに加え、架
 自動停止する。人が画面を確認するときは必ず
 `pnpm run preview`(8787、Workersランタイム)を使う。`pnpm dev`(3000、Vite)は画面開発の補助。
 
-現在のmigration headは`0050_login_v2_better_auth.sql`。未適用migrationの自動/手動判定と、
+現在のmigration headは`0059_login_v2_better_auth.sql`。未適用migrationの自動/手動判定と、
 列・テーブル削除の段階適用ゲートは
 [`CI/CD・本番運用ガイド`](docs/ci-cd-operations.md#63-列を削除する場合contract)を正本とする。
 
@@ -68,7 +68,7 @@ SPA・未認証ガード・招待承諾・Better Authログインに加え、架
 
 main への反映後、CIが成功したコミットだけをGitHub Actionsが自動デプロイする。公開後は30秒後と、さらに90秒後の2回、本番URLを自動確認する。
 
-D1マイグレーションも同じDeployが適用する。Worker配信の**前に**pendingを判定し、追加だけの変更ならTime Travelの復元地点を記録してから自動適用する。列や行を失う変更（`DROP TABLE` / `DROP COLUMN` / `DELETE` など）と、本番D1のpendingを判定できなかった場合はDeployを止める。この場合だけGitHub Actionsの「Migrate」を承認manifestつきで手動実行し、確認欄へ `APPLY` と入力してから、Deployを再実行する。
+D1マイグレーションも同じDeployが適用する。Worker配信の**前に**pendingを判定し、追加だけの変更ならTime Travelの復元地点を記録してから自動適用する。列や行を失う変更（`DROP TABLE` / `DROP COLUMN` / `DELETE` など）は、同じPRで `.github/migration-approvals.json` に承認を足す（無いと `pnpm lint` が落ちる）。mergeが承認になり、Deployが復元地点を記録してから適用する。本番へ届かなかったときは「本番に反映されていません」Issueが開き、次に届いた配信が閉じる。
 
 DeployとMigrateは同じconcurrency群 `production-mutation` に入れており、本番D1への書き換えが重なることはない。
 

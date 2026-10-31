@@ -1,0 +1,48 @@
+{
+  "feature_id": "feat-settings-screen",
+  "feature_package_id": "feature-package/feat-settings-screen",
+  "graph_revision": 3,
+  "graph_snapshot_digest": "01b68705f76752ce0d2f1e852bd777b545d57bb45a3dd844d19dc95cfb693936",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-settings-screen/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-settings-screen/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-settings-screen/task-graph.json"
+  },
+  "plan_validated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-SETTINGS-P01",
+    "SYS-SETTINGS-P02",
+    "SYS-SETTINGS-P03",
+    "SYS-SETTINGS-P04",
+    "SYS-SETTINGS-P05",
+    "SYS-SETTINGS-P06",
+    "SYS-SETTINGS-P07",
+    "SYS-SETTINGS-P08",
+    "SYS-SETTINGS-P09",
+    "SYS-SETTINGS-P10",
+    "SYS-SETTINGS-P11",
+    "SYS-SETTINGS-P12",
+    "SYS-SETTINGS-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-settings-screen/sys-settings-p01.md",
+    "tasks/feat-settings-screen/sys-settings-p02.md",
+    "tasks/feat-settings-screen/sys-settings-p03.md",
+    "tasks/feat-settings-screen/sys-settings-p04.md",
+    "tasks/feat-settings-screen/sys-settings-p05.md",
+    "tasks/feat-settings-screen/sys-settings-p06.md",
+    "tasks/feat-settings-screen/sys-settings-p07.md",
+    "tasks/feat-settings-screen/sys-settings-p08.md",
+    "tasks/feat-settings-screen/sys-settings-p09.md",
+    "tasks/feat-settings-screen/sys-settings-p10.md",
+    "tasks/feat-settings-screen/sys-settings-p11.md",
+    "tasks/feat-settings-screen/sys-settings-p12.md",
+    "tasks/feat-settings-screen/sys-settings-p13.md"
+  ]
+}

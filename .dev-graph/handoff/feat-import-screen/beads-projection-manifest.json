@@ -1,0 +1,151 @@
+{
+ "feature": {
+  "graph_node_id": "feat-import-screen",
+  "title": "データ取込画面 (16-import) の作り直しと検査→確定の 2 段階化・取込規則と上限値の core 単一化",
+  "description": "dev-graph feature projection (features/feat-import-screen.md)",
+  "bd_issue_id": "kanjo-y7q"
+ },
+ "children": [
+  {
+   "graph_node_id": "SYS-IMPORT-P01",
+   "phase_ref": "P01",
+   "parent_feature": "feat-import-screen",
+   "title": "P01 要件ベースライン確定と申し送り・未決事項の解決担当の割り当て",
+   "description": "dev-graph P01 projection (tasks/feat-import-screen/sys-import-p01.md)",
+   "depends_on": [],
+   "bd_issue_id": "kanjo-y7q.1"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P02",
+   "phase_ref": "P02",
+   "parent_feature": "feat-import-screen",
+   "title": "P02 取込規則純関数と IMPORT_LIMITS・検査と確定の API・migration 0050・画面分割のワークストリーム設計決定記録",
+   "description": "dev-graph P02 projection (tasks/feat-import-screen/sys-import-p02.md)",
+   "depends_on": [
+    "SYS-IMPORT-P01"
+   ],
+   "bd_issue_id": "kanjo-y7q.2"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P03",
+   "phase_ref": "P03",
+   "parent_feature": "feat-import-screen",
+   "title": "P03 上限・仮置き・Origin・レート制限・公開範囲の契約の独立レビュー",
+   "description": "dev-graph P03 projection (tasks/feat-import-screen/sys-import-p03.md)",
+   "depends_on": [
+    "SYS-IMPORT-P02"
+   ],
+   "bd_issue_id": "kanjo-y7q.3"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P04",
+   "phase_ref": "P04",
+   "parent_feature": "feat-import-screen",
+   "title": "P04 core 境界値・上限の字面・API 契約・migration・DOM の失敗テスト先行作成",
+   "description": "dev-graph P04 projection (tasks/feat-import-screen/sys-import-p04.md)",
+   "depends_on": [
+    "SYS-IMPORT-P03"
+   ],
+   "bd_issue_id": "kanjo-y7q.4"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P05",
+   "phase_ref": "P05",
+   "parent_feature": "feat-import-screen",
+   "title": "P05 import-screen 純関数・検査と確定の API・migration 0050・データ取込画面の分割と旧操作の移設の最終実装",
+   "description": "dev-graph P05 projection (tasks/feat-import-screen/sys-import-p05.md)",
+   "depends_on": [
+    "SYS-IMPORT-P04"
+   ],
+   "bd_issue_id": "kanjo-y7q.5"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P06",
+   "phase_ref": "P06",
+   "parent_feature": "feat-import-screen",
+   "title": "P06 全テストと型検査と lint と verify:full の実行記録",
+   "description": "dev-graph P06 projection (tasks/feat-import-screen/sys-import-p06.md)",
+   "depends_on": [
+    "SYS-IMPORT-P05"
+   ],
+   "bd_issue_id": "kanjo-y7q.6"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P07",
+   "phase_ref": "P07",
+   "parent_feature": "feat-import-screen",
+   "title": "P07 受入基準 S1 から S6 の検証",
+   "description": "dev-graph P07 projection (tasks/feat-import-screen/sys-import-p07.md)",
+   "depends_on": [
+    "SYS-IMPORT-P06"
+   ],
+   "bd_issue_id": "kanjo-y7q.7"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P08",
+   "phase_ref": "P08",
+   "parent_feature": "feat-import-screen",
+   "title": "P08 上限値と取込規則の重複・旧参照の読取専用監査",
+   "description": "dev-graph P08 projection (tasks/feat-import-screen/sys-import-p08.md)",
+   "depends_on": [
+    "SYS-IMPORT-P07"
+   ],
+   "bd_issue_id": "kanjo-y7q.8"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P09",
+   "phase_ref": "P09",
+   "parent_feature": "feat-import-screen",
+   "title": "P09 アクセシビリティ・ファイル名の無害化・xlsx 展開のメモリ・JS バンドル予算の保証確認",
+   "description": "dev-graph P09 projection (tasks/feat-import-screen/sys-import-p09.md)",
+   "depends_on": [
+    "SYS-IMPORT-P08"
+   ],
+   "bd_issue_id": "kanjo-y7q.9"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P10",
+   "phase_ref": "P10",
+   "parent_feature": "feat-import-screen",
+   "title": "P10 独立最終レビュー",
+   "description": "dev-graph P10 projection (tasks/feat-import-screen/sys-import-p10.md)",
+   "depends_on": [
+    "SYS-IMPORT-P09"
+   ],
+   "bd_issue_id": "kanjo-y7q.10"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P11",
+   "phase_ref": "P11",
+   "parent_feature": "feat-import-screen",
+   "title": "P11 再現可能な証跡索引の作成",
+   "description": "dev-graph P11 projection (tasks/feat-import-screen/sys-import-p11.md)",
+   "depends_on": [
+    "SYS-IMPORT-P10"
+   ],
+   "bd_issue_id": "kanjo-y7q.11"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P12",
+   "phase_ref": "P12",
+   "parent_feature": "feat-import-screen",
+   "title": "P12 ファイルの状態・上限値・取込可否・要約・エラー文言の規則表の docs 最終同期",
+   "description": "dev-graph P12 projection (tasks/feat-import-screen/sys-import-p12.md)",
+   "depends_on": [
+    "SYS-IMPORT-P11"
+   ],
+   "bd_issue_id": "kanjo-y7q.12"
+  },
+  {
+   "graph_node_id": "SYS-IMPORT-P13",
+   "phase_ref": "P13",
+   "parent_feature": "feat-import-screen",
+   "title": "P13 単一 PR での配信と migration 0050 の適用とクローズアウト",
+   "description": "dev-graph P13 projection (tasks/feat-import-screen/sys-import-p13.md)",
+   "depends_on": [
+    "SYS-IMPORT-P12"
+   ],
+   "bd_issue_id": "kanjo-y7q.13"
+  }
+ ]
+}

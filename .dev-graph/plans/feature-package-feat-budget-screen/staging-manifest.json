@@ -1,0 +1,40 @@
+{
+  "canonical_digest": "sha256:feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067",
+  "feature_package_id": "feature-package/feat-budget-screen",
+  "files": {
+    "feature-package.json": "b32e5efdc8ca4654ce4289dee73fef6d8ce79fd7cf4b72d15b922e26853a79eb",
+    "system-build-handoff.json": "b842468584c8de36cdfbd564d9e8ce811de1007c5e540ffcd522f6cdf3fdd43f",
+    "task-graph.json": "436ba0568228aaf451de3fd3ec12b960396f61c90e7a3d8c7fa2ad520a94dfef",
+    "task-specs/phase-01-requirements.md": "3b489ca4d590139a04ac5eeb6aac53b680a5c62aab1aa6eb019c1f014f5d4d14",
+    "task-specs/phase-02-architecture.md": "09725e19c2ffdb60c406bb6db20bf86d097447b08750e692180bedef6acd8e94",
+    "task-specs/phase-03-design-review.md": "dc1614984ce641fb7147c00c67525ee5beca994bced44db65f1861b2a677bda7",
+    "task-specs/phase-04-test-design.md": "20082eec2b7d5c8668f8e73b9f97fb50a49b38273c07f1a62b80f250cfaf9307",
+    "task-specs/phase-05-implementation.md": "3f8947475ef4b9042b070d054a4b4fa6d421871980db39a6cb77cd4459be50f4",
+    "task-specs/phase-06-test-run.md": "28003dfe5259b9a281dfd9aeb2cc88763c1dbcc12eb401e0b88e02186082e974",
+    "task-specs/phase-07-acceptance.md": "5327d694ef76ea39fa3a397a91cf46d7aea355c260c06cc8d4ce1454f997b9e0",
+    "task-specs/phase-08-refactoring-migration.md": "7e3d3a6a746ce072e001f595451caa2bb78744bfac4e160f4c37a9ebe23d75a2",
+    "task-specs/phase-09-quality-assurance.md": "57dbf30f9c965f5ae1b161d0b109593ec9fc95f89790eb670238db47608f3ed0",
+    "task-specs/phase-10-final-review.md": "6abeacf728e33f664523a60cf34937386904e432c0e29b31e21eb3a0bb71e988",
+    "task-specs/phase-11-evidence.md": "e075bc915d761b3527cc2a7d6df8d006090ce95b28d1985bf313c7bf8aa11cd9",
+    "task-specs/phase-12-documentation-operations.md": "c3913dc9fe9fc0bd5a50277433d8c9740bce9ea4d0b19be62c7d405428272ad8",
+    "task-specs/phase-13-release-deploy.md": "a30b1a0ae4545372dbe8594728b182985180a29b21c96ee4c8ceea586f1c405e",
+    "workstream-inventory.json": "9fc1ccafa7c04f13fc4f07b102e01e5c2fdaaad61b5de0d8d7e261afdd98d8e6"
+  },
+  "goal_spec": {
+    "note": "digest はこの staging run の入力 goal-spec.json のバイト列から実測。build-system-handoff.py の source_inputs/canonical_digest 対象 (feature-package.json・workstream-inventory.json・task-graph.json・task-specs 13件) には含まれない、参照用の記録",
+    "path": "goal-spec.json",
+    "sha256": "7aff8eabda07578c27295320d944b284649a16470f51f49673199fc94bf71cd1"
+  },
+  "handoff_contract": {
+    "manifest_is_commit_point": true,
+    "path": "system-build-handoff.json",
+    "schema_version": "1.0.0",
+    "self_reference_policy": "handoff hash and final digest are manifest-only",
+    "sha256": "b842468584c8de36cdfbd564d9e8ce811de1007c5e540ffcd522f6cdf3fdd43f",
+    "source_canonical_digest": "sha256:70187812f26efb5d24e03634b837174a983aa7e474efec9e61d10037228b3dd4"
+  },
+  "note": "system-build-handoff.json は本 manifest の対象外。build-system-handoff.py 実行後に別途生成・追記され、canonical_digest はその時点で handoff を含む値へ更新される (handoff_contract も追記される)。",
+  "parent_feature": "feat-budget-screen",
+  "schema_version": "1.0.0",
+  "staging_run": "run-feat-budget-screen-20260921T142755Z"
+}

@@ -144,9 +144,10 @@ const get = async (path: string): Promise<Response> =>
 
 async function create(): Promise<{ id: string; token: string }> {
   const form = new FormData();
-  form.set('title', '架空の不具合');
   form.set('body', '一覧の並び順が保存されません');
   form.set('route', '/classify');
+  form.set('privacyConfirmed', 'true');
+  form.set('privacyConsented', 'true');
   form.set('screenshot', new File([jpeg()], 'screen.jpg', { type: 'image/jpeg' }));
   const res = await app.request(
     '/api/improvements',
@@ -197,6 +198,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await d1.prepare('DELETE FROM improvement_requests').run();
+  await d1.prepare('DELETE FROM improvement_request_counters').run();
   // R2 も空にする。残すと前のテストの画像が次のテストで孤児として数えられる
   for (const object of (await files.list({ prefix: 'improvements/' })).objects) {
     await files.delete(object.key);
@@ -252,12 +254,12 @@ describe('添付の30日削除', () => {
     await markDoneDaysAgo(id, IMPROVEMENT_RETENTION_DAYS + 1, NOW);
     await runImprovementRetention(env(), NOW);
 
-    const json = (await (await get('/improvements')).json()) as {
-      requests: { id: string; screenshot: { available: boolean } }[];
+    const list = (await (await get('/improvements')).json()) as { items: { id: string }[] };
+    expect(list.items.map((r) => r.id)).toContain(id);
+    const detail = (await (await get(`/improvements/${id}`)).json()) as {
+      request: { screenshot: { available: boolean } };
     };
-    const row = json.requests.find((r) => r.id === id);
-    expect(row).toBeDefined();
-    expect(row?.screenshot.available).toBe(false);
+    expect(detail.request.screenshot.available).toBe(false);
   });
 
   it('同じ実行を二度掛けても対象が増えず、二重削除で落ちない', async () => {
@@ -275,8 +277,8 @@ describe('添付の30日削除', () => {
       .prepare(
         `WITH RECURSIVE seq(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM seq WHERE n<500)
          INSERT INTO improvement_requests
-           (id,user_id,title,body,route,status,screenshot_key,done_at,created_at,updated_at)
-         SELECT printf('bulk-%03d',n),'default','架空','架空','/','done',
+           (id,user_id,seq,title,body,route,status,screenshot_key,done_at,created_at,updated_at)
+         SELECT printf('bulk-%03d',n),'default',n,'架空','架空','/','done',
                 printf('improvements/default/bulk-%03d.jpg',n),
                 '2026-01-01T00:00:00.000Z','2026-01-01T00:00:00.000Z','2026-01-01T00:00:00.000Z'
            FROM seq`,
@@ -327,6 +329,7 @@ describe('添付の30日削除', () => {
     expect(result).toEqual({
       selected: 500,
       purged: 500,
+      erased: 0,
       failed: 0,
       orphans: 0,
       orphanScanned: 0,
@@ -347,8 +350,8 @@ describe('添付の30日削除', () => {
       .prepare(
         `WITH RECURSIVE seq(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM seq WHERE n<1001)
          INSERT INTO improvement_requests
-           (id,user_id,title,body,route,status,screenshot_key,created_at,updated_at)
-         SELECT printf('live-%04d',n),'default','架空','架空','/','open',
+           (id,user_id,seq,title,body,route,status,screenshot_key,created_at,updated_at)
+         SELECT printf('live-%04d',n),'default',n,'架空','架空','/','open',
                 printf('improvements/default/live-%04d.jpg',n),
                 '2026-01-01T00:00:00.000Z','2026-01-01T00:00:00.000Z'
            FROM seq`,
@@ -385,6 +388,7 @@ describe('添付の30日削除', () => {
     expect(result).toEqual({
       selected: 0,
       purged: 0,
+      erased: 0,
       failed: 0,
       orphans: 0,
       orphanScanned: IMPROVEMENT_ORPHAN_SCAN_LIMIT,
@@ -455,8 +459,8 @@ describe('添付の30日削除', () => {
       .prepare(
         `WITH RECURSIVE seq(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM seq WHERE n<300)
          INSERT INTO improvement_requests
-           (id,user_id,title,body,route,status,screenshot_key,created_at,updated_at)
-         SELECT printf('page-live-%03d',n),'default','架空','架空','/','open',
+           (id,user_id,seq,title,body,route,status,screenshot_key,created_at,updated_at)
+         SELECT printf('page-live-%03d',n),'default',n,'架空','架空','/','open',
                 printf('improvements/default/page-live-%03d.jpg',n),
                 '2026-01-01T00:00:00.000Z','2026-01-01T00:00:00.000Z'
            FROM seq`,
@@ -641,6 +645,85 @@ describe('添付の30日削除', () => {
     });
     expect(synthetic.deleteCalls).toContainEqual([boundary]);
     expect(synthetic.deleteCalls.flat()).not.toContain(recent);
+  });
+});
+
+describe('論理削除から30日の完全消去 (AC-010)', () => {
+  const NOW = '2026-06-01T00:00:00.000Z';
+
+  /** 画面から削除し、削除の時刻を指定の日数だけ過去へ動かす */
+  async function deleteDaysAgo(id: string, days: number): Promise<void> {
+    const res = await app.request(
+      `/api/improvements/${id}`,
+      { method: 'DELETE', headers: { cookie } },
+      env(),
+    );
+    expect(res.status).toBe(200);
+    const deletedAt = new Date(Date.parse(NOW) - days * 24 * 60 * 60 * 1000).toISOString();
+    await d1.prepare('UPDATE improvement_requests SET deleted_at = ? WHERE id = ?').bind(deletedAt, id).run();
+  }
+
+  const count = async (sql: string, id: string) =>
+    (await d1.prepare(sql).bind(id).first<{ n: number }>())?.n ?? -1;
+  const rowCount = (id: string) => count('SELECT COUNT(*) AS n FROM improvement_requests WHERE id = ?', id);
+  const activityCount = (id: string) =>
+    count('SELECT COUNT(*) AS n FROM improvement_request_activities WHERE request_id = ?', id);
+
+  it(`削除から${IMPROVEMENT_RETENTION_DAYS}日を1日でも過ぎた行は画像・行・履歴が消え、1日でも足りなければ残る`, async () => {
+    const expired = await create();
+    const notYet = await create();
+    await deleteDaysAgo(expired.id, IMPROVEMENT_RETENTION_DAYS + 1);
+    await deleteDaysAgo(notYet.id, IMPROVEMENT_RETENTION_DAYS - 1);
+    // 作成と削除の 2 行ずつ。消えたことを 0 件で確かめる前に、あったことを固定する
+    expect(await activityCount(expired.id)).toBe(2);
+
+    const result = await runImprovementRetention(env(), NOW);
+    expect(result).toMatchObject({ selected: 1, purged: 0, erased: 1, failed: 0 });
+    expect(await files.head(`improvements/default/${expired.id}.jpg`)).toBeNull();
+    expect(await rowCount(expired.id)).toBe(0);
+    expect(await activityCount(expired.id)).toBe(0);
+
+    expect(await files.head(`improvements/default/${notYet.id}.jpg`)).not.toBeNull();
+    expect(await rowCount(notYet.id)).toBe(1);
+    expect(await activityCount(notYet.id)).toBe(2);
+  });
+
+  it('R2 の画像削除に失敗した行は残り、翌晩の実行で消える', async () => {
+    const { id } = await create();
+    await deleteDaysAgo(id, IMPROVEMENT_RETENTION_DAYS + 1);
+    const key = `improvements/default/${id}.jpg`;
+    // 対象の画像の削除だけを失敗させる。ほかの操作 (孤立画像の照合) は本物の R2 へ流す
+    const failing = new Proxy(files, {
+      get(target, prop) {
+        if (prop === 'delete')
+          return async (k: string | string[]) => {
+            if (k === key) throw new Error('synthetic R2 failure');
+            return await target.delete(k);
+          };
+        const value = Reflect.get(target, prop);
+        return typeof value === 'function' ? value.bind(target) : value;
+      },
+    });
+
+    const first = await runImprovementRetention({ DB: d1, FILES: failing }, NOW);
+    expect(first).toMatchObject({ selected: 1, erased: 0, failed: 1 });
+    expect(await rowCount(id)).toBe(1);
+    expect(await files.head(key)).not.toBeNull();
+
+    const second = await runImprovementRetention(env(), NOW);
+    expect(second).toMatchObject({ selected: 1, erased: 1, failed: 0 });
+    expect(await rowCount(id)).toBe(0);
+    expect(await files.head(key)).toBeNull();
+  });
+
+  it('削除中でも期限前なら、完了から30日を過ぎていても添付だけを消すことはしない', async () => {
+    const { id } = await create();
+    await markDoneDaysAgo(id, IMPROVEMENT_RETENTION_DAYS + 1, NOW);
+    await deleteDaysAgo(id, 1);
+
+    const result = await runImprovementRetention(env(), NOW);
+    expect(result).toMatchObject({ selected: 0, purged: 0, erased: 0 });
+    expect(await files.head(`improvements/default/${id}.jpg`)).not.toBeNull();
   });
 });
 

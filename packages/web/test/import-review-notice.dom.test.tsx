@@ -15,9 +15,12 @@ import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ImportPage } from '../src/pages/Import.js';
-
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+import {
+  chooseImportFiles,
+  createImportServer,
+  csvFile,
+  jsonResponse,
+} from '../src/pages/import/import-test-fakes.js';
 
 const month = (reviewCount: number) => ({
   month: '2026-08',
@@ -35,33 +38,19 @@ const month = (reviewCount: number) => ({
   trend: '判定不可' as const,
 });
 
-/** 取込 POST は成功し、トータル収支 GET が要確認件数を返す fetch */
+/** 検査と確定は成功し、トータル収支 GET が要確認件数を返す偽サーバ */
 const stub = (reviewCount: number) => {
-  const calls: string[] = [];
-  vi.stubGlobal(
-    'fetch',
-    vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const path = String(input);
-      calls.push(`${init?.method ?? 'GET'} ${path}`);
-      if (init?.method === 'POST' && path.startsWith('/api/imports')) {
-        return json({
-          results: [
-            {
-              filename: '架空-2026-08.csv',
-              kind: 'mf',
-              months: ['2026-08'],
-              rows: 3,
-              skipped: 0,
-              status: 'committed',
-            },
-          ],
-        });
-      }
-      if (path.startsWith('/api/total-cashflow')) return json({ months: [month(reviewCount)], review: [] });
-      return json({ imports: [] });
-    }),
-  );
-  return calls;
+  const server = createImportServer({
+    // freee の取込後に出る要確認件数の導線だけを検証する。
+    inspect: () => ({ source: 'freee', periodFrom: '2026-08', periodTo: '2026-08' }),
+    route: (method, path) =>
+      method === 'GET' && path.startsWith('/api/total-cashflow')
+        ? jsonResponse({ months: [month(reviewCount)], review: [] })
+        : undefined,
+  });
+  vi.stubGlobal('fetch', vi.fn(server.fetch));
+  vi.stubGlobal('XMLHttpRequest', server.XMLHttpRequest);
+  return server.calls;
 };
 
 function renderPage() {
@@ -76,17 +65,16 @@ function renderPage() {
 }
 
 async function uploadOne() {
-  const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-  const file = new File(['収支区分,発生日\n'], '架空-2026-08.csv', { type: 'text/csv' });
-  Object.defineProperty(input, 'files', { value: [file], configurable: true });
-  fireEvent.change(input);
-  fireEvent.click(await screen.findByRole('button', { name: '取込を実行' }));
+  chooseImportFiles([csvFile('架空-2026-08.csv')]);
+  const commit = await screen.findByRole('button', { name: '✓ 1ファイルを取り込む' });
+  await waitFor(() => expect((commit as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(commit);
   // 確認はアプリ内 dialog。window.confirm はブラウザ抑止で無反応になるため通さない
   fireEvent.click(
-    within(await screen.findByRole('dialog')).getByRole('button', { name: '置き換えて取り込む' }),
+    within(await screen.findByRole('dialog')).getByRole('button', { name: '会計データに追加する' }),
   );
   // 取込が完了して結果欄が出るところまで進める。ここが出ない状態で警告の有無を語らない
-  await waitFor(() => expect(screen.getByText('取込完了')).toBeTruthy());
+  await screen.findByText('1 件のファイルを正常に取り込みました');
 }
 
 afterEach(() => {
@@ -136,7 +124,7 @@ describe('受入A8 取込完了時に要確認が残っていれば警告が出�
     stub(2);
     renderPage();
 
-    await waitFor(() => expect(screen.getByRole('button', { name: 'ファイルを選ぶ' })).toBeTruthy());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'ファイルを選択' })).toBeTruthy());
     expect(screen.queryByRole('alert', { name: '重複の要確認' })).toBeNull();
 
     await uploadOne();

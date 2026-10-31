@@ -1,0 +1,210 @@
+{
+  "feature_package_id": "feature-package/feat-settings-screen",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と未決事項 19 件の着手時整理"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P01"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P02",
+      "title": "settingsScreen・取引先ルール照合/適用・現金上書き解決・10 API・migration 0051-0053 のワークストリーム設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P02"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P03",
+      "title": "算出契約・API 契約・migration 契約・変更フェンス整合の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P03"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P04",
+      "title": "core 不変条件・API 契約・migration・DOM の失敗テスト先行作成"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P04"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P05",
+      "title": "settings-screen.ts・settings-json.ts・norm-rules.ts・10 API・migration 0051-0053・/settings 画面の最終実装"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P05"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P06",
+      "title": "全テストと型検査と lint の実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P06"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P07",
+      "title": "受入基準 S1 から S5（AT-01〜AT-22）の検証"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P07"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P08",
+      "lifecycle_role": "audit",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P08",
+      "title": "旧 Settings.tsx 参照・現金上書き重複判定・account_norm_map/cash_overrides 表書き換え有無の読取専用監査"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P08"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・入力検証・変更系フェンス・外部送信ゼロ・JS バンドル予算の保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P09"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P10"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P11"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P12",
+      "title": "算出規則・API・migration・未決事項の docs 最終同期"
+    },
+    {
+      "depends_on": [
+        "SYS-SETTINGS-P12"
+      ],
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "id": "SYS-SETTINGS-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-settings-screen",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信と migration 0051-0053 適用とクローズアウト"
+    }
+  ],
+  "parent_feature": "feat-settings-screen",
+  "schema_version": "1.0.0",
+  "edges": [
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P02",
+      "to": "SYS-SETTINGS-P01"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P03",
+      "to": "SYS-SETTINGS-P02"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P04",
+      "to": "SYS-SETTINGS-P03"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P05",
+      "to": "SYS-SETTINGS-P04"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P06",
+      "to": "SYS-SETTINGS-P05"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P07",
+      "to": "SYS-SETTINGS-P06"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P08",
+      "to": "SYS-SETTINGS-P07"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P09",
+      "to": "SYS-SETTINGS-P08"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P10",
+      "to": "SYS-SETTINGS-P09"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P11",
+      "to": "SYS-SETTINGS-P10"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P12",
+      "to": "SYS-SETTINGS-P11"
+    },
+    {
+      "type": "depends_on",
+      "from": "SYS-SETTINGS-P13",
+      "to": "SYS-SETTINGS-P12"
+    }
+  ]
+}

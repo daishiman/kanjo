@@ -1,0 +1,221 @@
+{
+ "feature_id": "feat-import-screen",
+ "gates": {
+  "C08": "complete",
+  "C11": true,
+  "validate_system_plan": "pass"
+ },
+ "graph_revision": 3,
+ "graph_snapshot_digest": "d37d974634ea8a8c18db08e0fb9bf2e8d8c300285843d2b0a2557c0fdb1ccf5d",
+ "missing_sections": [],
+ "nodes": [
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [],
+   "domain": "documentation",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P01",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P01",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P01"
+   ],
+   "domain": "documentation",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P02",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P02",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P02"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P03",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P03",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P03"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P04",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P04",
+   "resource_scope_count": 5,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P04"
+   ],
+   "domain": "frontend",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P05",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P05",
+   "resource_scope_count": 24,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P05"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P06",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P06",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P06"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P07",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P07",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P07"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P08",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P08",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P08"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P09",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P09",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P09"
+   ],
+   "domain": "quality",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P10",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P10",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P10"
+   ],
+   "domain": "documentation",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P11",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P11",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P11"
+   ],
+   "domain": "documentation",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P12",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P12",
+   "resource_scope_count": 4,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  },
+  {
+   "confirmation_status": "confirmed",
+   "depends_on": [
+    "SYS-IMPORT-P12"
+   ],
+   "domain": "operations",
+   "evaluation_status": "pass",
+   "gate_problems": [],
+   "graph_node_id": "SYS-IMPORT-P13",
+   "implementation_readiness": "complete",
+   "missing_sections": [],
+   "phase_ref": "P13",
+   "resource_scope_count": 1,
+   "source_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+   "source_version": "0.1.0"
+  }
+ ],
+ "plan_validated_digest": "fa224df0033b3c1ab8a8b635f5b81cf08198f48aca9f810af472bf695fd896b4",
+ "status": "ready"
+}

@@ -260,6 +260,8 @@ export const subVendors = sqliteTable('sub_vendors', {
   createdAt: text('created_at').notNull().$defaultFn(nowIso),
   /** 0043: 利用者が上書きしたカテゴリ。NULL は既定辞書 (core の SUBS_CATEGORY_DICTIONARY) に従う */
   category: text('category'),
+  /** 0058: 統合先の id。NULL は統合されていない (根)。統合元の行は消さずに残し、取り消しで NULL へ戻す */
+  mergedIntoId: integer('merged_into_id'),
 });
 
 /** 「これはサブスクではない」と記録した支払先。候補一覧から外すためだけに使う */
@@ -342,11 +344,74 @@ export const totalCashflowOperations = sqliteTable(
   (t) => [index('idx_total_cashflow_operations_user_created').on(t.userId, t.createdAt)],
 );
 
+/**
+ * 0058: サブスクの書込み 1 回ぶんの記録。統合の取り消しと、同時の書込みの判定に使う。
+ *
+ * (user_id, base_revision) の一意制約が「同じ版を土台にした書込みは 1 件だけ勝つ」を DB で強制する。
+ * payload_json / before_json は 30 日で NULL、行は 400 日で消す。
+ */
+export const subscriptionOperations = sqliteTable(
+  'subscription_operations',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    actorUserId: text('actor_user_id').notNull(),
+    idempotencyKey: text('idempotency_key').notNull(),
+    kind: text('kind', {
+      enum: [
+        'merge',
+        'unmerge',
+        'vendor_create',
+        'vendor_update',
+        'vendor_delete',
+        'review',
+        'review_decision',
+        'exclusion',
+      ],
+    }).notNull(),
+    targetVendorId: integer('target_vendor_id'),
+    payloadJson: text('payload_json'),
+    beforeJson: text('before_json'),
+    baseRevision: integer('base_revision').notNull(),
+    undoesId: text('undoes_id'),
+    undoneAt: text('undone_at'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('uq_subscription_operations_idempotency').on(t.userId, t.actorUserId, t.idempotencyKey),
+    uniqueIndex('uq_subscription_operations_revision').on(t.userId, t.baseRevision),
+    index('idx_subscription_operations_user_created').on(t.userId, t.createdAt),
+  ],
+);
+
+/** 0058: 利用者ごとのサブスクの版番号。行が無ければ 0 */
+export const subscriptionRevisions = sqliteTable('subscription_revisions', {
+  userId: text('user_id').primaryKey(),
+  revision: integer('revision').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
 export const budgets = sqliteTable('budgets', {
   userId: text('user_id').notNull(),
   account: text('account').notNull(),
   monthlyAmount: integer('monthly_amount'),
 });
+
+/** 0050: 予算対象の期間別の年額表。同じ期間は上書きで、版は持たない (spec-budget-screen) */
+export const budgetPlans = sqliteTable(
+  'budget_plans',
+  {
+    userId: text('user_id').notNull(),
+    periodStart: text('period_start').notNull(),
+    account: text('account').notNull(),
+    kind: text('kind', { enum: ['income', 'expense'] }).notNull(),
+    annualAmount: integer('annual_amount').notNull(),
+    planAdjustment: integer('plan_adjustment').notNull().default(0),
+    planReason: text('plan_reason'),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.periodStart, t.account] })],
+);
 
 export const cashOverrides = sqliteTable('cash_overrides', {
   userId: text('user_id').notNull(),
@@ -354,6 +419,65 @@ export const cashOverrides = sqliteTable('cash_overrides', {
   revenue: integer('revenue'),
   expense: integer('expense'),
 });
+
+/** 0051: 集計ルール (勘定科目・取引先)。並び順は sort_order、同じ照合キーは上の行が効く (spec-settings-screen) */
+export const settingsNormRules = sqliteTable(
+  'settings_norm_rules',
+  {
+    userId: text('user_id').notNull(),
+    ruleId: text('rule_id').notNull(),
+    kind: text('kind', { enum: ['account', 'vendor'] }).notNull(),
+    raw: text('raw').notNull(),
+    norm: text('norm').notNull(),
+    sortOrder: integer('sort_order').notNull(),
+    enabled: integer('enabled').notNull().default(1),
+    updatedAt: text('updated_at').notNull(),
+    updatedBy: text('updated_by').notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.ruleId] }),
+    index('settings_norm_rules_order').on(t.userId, t.sortOrder),
+  ],
+);
+
+/** 0052: 現金上書き (支払い・受け取り × 全期間・月指定)。amount の null は『上書きしない』 */
+export const settingsCashOverrides = sqliteTable(
+  'settings_cash_overrides',
+  {
+    userId: text('user_id').notNull(),
+    overrideId: text('override_id').notNull(),
+    kind: text('kind', { enum: ['payment', 'receipt'] }).notNull(),
+    amount: integer('amount'),
+    scope: text('scope', { enum: ['all', 'month'] }).notNull(),
+    month: text('month'),
+    memo: text('memo').notNull().default(''),
+    updatedAt: text('updated_at').notNull(),
+    updatedBy: text('updated_by').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.overrideId] })],
+);
+
+/** 0053: 設定の変更履歴。seq は利用者ごとの連番、保持は無期限 */
+export const settingsChangeLog = sqliteTable(
+  'settings_change_log',
+  {
+    userId: text('user_id').notNull(),
+    seq: integer('seq').notNull(),
+    target: text('target', {
+      enum: ['norm_rule', 'owner_label', 'stat_min_months', 'cash_override'],
+    }).notNull(),
+    targetKey: text('target_key').notNull(),
+    before: text('before'),
+    after: text('after'),
+    changedBy: text('changed_by').notNull(),
+    changedAt: text('changed_at').notNull(),
+    origin: text('origin', { enum: ['screen', 'restore', 'migration'] }).notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.seq] }),
+    index('settings_change_log_target').on(t.userId, t.target, t.targetKey, t.seq),
+  ],
+);
 
 export const unrecordedMonths = sqliteTable('unrecorded_months', {
   userId: text('user_id').notNull(),
@@ -404,8 +528,72 @@ export const importRuns = sqliteTable(
     failureReason: text('failure_reason'),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
+    /** 0050: 取込 1 回の影響の値 (確定時の記録)。既存の行は NULL のまま読む。 */
+    fileCount: integer('file_count'),
+    rowCount: integer('row_count'),
+    addedCount: integer('added_count'),
+    skippedCount: integer('skipped_count'),
+    subsCandidateCount: integer('subs_candidate_count'),
+    result: text('result', { enum: ['success', 'partial', 'failed'] }),
+    keepPrevious: integer('keep_previous'),
+    /** 0050: 履歴の非表示 (記録の一括削除)。imports と明細の行は消さない。 */
+    hiddenAt: text('hidden_at'),
+    /** 0050: 同じ検査 ID の 2 本目以降の確定の親。親が取込 1 回の 1 行で、子は単独では履歴に出さない。 */
+    parentRunId: text('parent_run_id'),
   },
   (table) => [index('idx_import_runs_user_created').on(table.userId, table.createdAt)],
+);
+
+/** 0050: 検査 1 要求 = 1 行。確定後は再送用の完了記録を持ち、期限切れ (24 時間) で消す。 */
+export const importInspections = sqliteTable(
+  'import_inspections',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    /** 検査を作った本人 (SessionActor.id)。user_id は共有テナントキーなので本人の判定に使えない。 */
+    actorId: text('actor_id').notNull(),
+    status: text('status', { enum: ['open', 'committing'] }).notNull(),
+    /** 最初の確定で作った取込 1 回の run。2 本目以降の確定はこの run の子になる。 */
+    runId: text('run_id'),
+    expiresAt: text('expires_at').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [index('idx_import_inspections_user_expires').on(table.userId, table.expiresAt)],
+);
+
+/** 0050: 検査のファイル項目。累計 (件数・サイズ) はこの表から合計し、検査の行に持たない。 */
+export const importInspectionFiles = sqliteTable(
+  'import_inspection_files',
+  {
+    id: text('id').primaryKey(),
+    inspectionId: text('inspection_id')
+      .notNull()
+      .references(() => importInspections.id, { onDelete: 'cascade' }),
+    userId: text('user_id').notNull(),
+    position: integer('position').notNull(),
+    filename: text('filename').notNull(),
+    source: text('source'),
+    periodFrom: text('period_from'),
+    periodTo: text('period_to'),
+    size: integer('size').notNull(),
+    contentHash: text('content_hash'),
+    summaryJson: text('summary_json').notNull(),
+    errorKind: text('error_kind'),
+    r2Key: text('r2_key'),
+  },
+  (table) => [index('idx_import_inspection_files_inspection').on(table.inspectionId)],
+);
+
+/** 0050: 取込のレート制限 (利用者 × 経路の種別 × 1 分の時間枠)。ログイン用とは分ける。 */
+export const importRateLimits = sqliteTable(
+  'import_rate_limits',
+  {
+    userId: text('user_id').notNull(),
+    kind: text('kind', { enum: ['inspection', 'commit'] }).notNull(),
+    windowStart: integer('window_start').notNull(),
+    count: integer('count').notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.kind, table.windowStart] })],
 );
 
 /**
@@ -457,10 +645,20 @@ export const cashEntries = sqliteTable(
     transitRound: integer('transit_round').notNull().default(0),
     /** 0010: 1 = 証憑不要(電車代など領収書が出ない支出) */
     receiptWaived: integer('receipt_waived').notNull().default(0),
+    /** 0052: 名義。NULL = 未設定(旧画面で記帳した行) */
+    owner: text('owner', { enum: ['business', 'spouse', 'family'] }),
+    /** 0052: 交通費の業務の目的。固定候補か「その他:<記述>」。区間の無い行は NULL */
+    transitPurpose: text('transit_purpose'),
+    /** 0052: 論理削除の時刻。NULL = 有効。30日を過ぎた行は夜間 job が完全に消す */
+    deletedAt: text('deleted_at'),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
     updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
   },
-  (t) => [index('idx_cash_month').on(t.userId, t.month)],
+  (t) => [
+    index('idx_cash_month').on(t.userId, t.month),
+    index('idx_cash_user_deleted').on(t.userId, t.deletedAt),
+    index('idx_cash_deleted_purge').on(t.deletedAt, t.id),
+  ],
 );
 
 /**
@@ -617,7 +815,23 @@ export const tradeoffPlans = sqliteTable('tradeoff_plans', {
   covered: integer('covered'),
   verdict: text('verdict'),
   createdAt: text('created_at').$defaultFn(nowIso),
+  /* 0051。試算に使う新しい支出の開始月 (YYYY-MM) とメモ。既存行は NULL */
+  startMonth: text('start_month'),
+  memo: text('memo'),
 });
+
+/** 見直し候補ごとの必要度とメモの上書き (0051)。need が NULL なら必要度は推定のまま */
+export const tradeoffCandidateNotes = sqliteTable(
+  'tradeoff_candidate_notes',
+  {
+    userId: text('user_id').notNull(),
+    candidateKey: text('candidate_key').notNull(),
+    need: text('need', { enum: ['low', 'mid', 'high'] }),
+    memo: text('memo'),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [uniqueIndex('tradeoff_candidate_notes_user_key').on(t.userId, t.candidateKey)],
+);
 
 /** AI分析の依頼(期間 + 使い捨てトークンのハッシュ)。原文トークンは保存しない */
 export const aiTasks = sqliteTable(

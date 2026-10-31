@@ -54,7 +54,9 @@ describe('ページヘッダーの情報量', () => {
     // 凡例は表を開いて初めて見えるので、ヘッダーの文言でも先に示しておく
     expect(detail('matrix')).toContain('増=赤');
     expect(detail('matrix')).toContain('減=緑');
-    expect(detail('budget')).toContain('±10%');
+    // 自動提案の根拠 (何から組んだ額か) と、判断のものさし (防衛ライン)
+    expect(detail('budget')).toContain('季節性補正');
+    expect(detail('budget')).toContain('防衛ライン');
     // 編集を信頼してよい根拠
     expect(detail('classify')).toContain('残る');
     expect(detail('cash')).toContain('消えない');

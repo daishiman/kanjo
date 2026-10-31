@@ -1,0 +1,1305 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-settings-screen/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-settings-screen",
+  "parent_feature": "feat-settings-screen",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-SETTINGS-P01": "beads",
+    "SYS-SETTINGS-P02": "beads",
+    "SYS-SETTINGS-P03": "beads",
+    "SYS-SETTINGS-P04": "beads",
+    "SYS-SETTINGS-P05": "beads",
+    "SYS-SETTINGS-P06": "beads",
+    "SYS-SETTINGS-P07": "beads",
+    "SYS-SETTINGS-P08": "beads",
+    "SYS-SETTINGS-P09": "beads",
+    "SYS-SETTINGS-P10": "beads",
+    "SYS-SETTINGS-P11": "beads",
+    "SYS-SETTINGS-P12": "beads",
+    "SYS-SETTINGS-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-SETTINGS-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と未決事項 19 件の着手時整理",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p01",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p01.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "settingsScreen・取引先ルール照合/適用・現金上書き解決・10 API・migration 0051-0053 のワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P01"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p02.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "算出契約・API 契約・migration 契約・変更フェンス整合の独立レビュー",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P02"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p03.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core 不変条件・API 契約・migration・DOM の失敗テスト先行作成",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P03"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "packages/core/test/settings-screen.test.ts",
+        "packages/core/test/settings-json.test.ts",
+        "packages/api/src/routes/settings-screen.test.ts",
+        "packages/web/src/pages/settings/settings.dom.test.tsx",
+        "packages/web/src/pages/settings/view-model.test.ts"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p04.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "settings-screen.ts・settings-json.ts・norm-rules.ts・10 API・migration 0051-0053・/settings 画面の最終実装",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "frontend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P04"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "packages/core/src/settings-screen.ts",
+        "packages/core/src/settings-json.ts",
+        "packages/core/src/norm-rules.ts",
+        "packages/core/src/classify.ts",
+        "packages/core/src/cash.ts",
+        "packages/core/src/exports.ts",
+        "packages/core/src/types.ts",
+        "packages/core/src/fingerprint.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/settings-screen.ts",
+        "packages/api/src/routes/settings.ts",
+        "packages/api/src/routes/backups.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/store.ts",
+        "packages/api/src/import-active.ts",
+        "packages/api/src/import-lifecycle.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/index.ts",
+        "migrations/0051_settings_norm_rules.sql",
+        "migrations/0052_settings_cash_overrides.sql",
+        "migrations/0053_settings_change_log.sql",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/settings/",
+        "packages/web/src/pages/Settings.tsx",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/src/analysis-query-invalidation.ts"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p05.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テストと型検査と lint の実行記録",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P05"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p06.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 S1 から S5（AT-01〜AT-22）の検証",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P06"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p07.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "旧 Settings.tsx 参照・現金上書き重複判定・account_norm_map/cash_overrides 表書き換え有無の読取専用監査",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p08",
+        "audit"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P07"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p08.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "アクセシビリティ・入力検証・変更系フェンス・外部送信ゼロ・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P08"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p09.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P09"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p10.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P10"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p11.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "算出規則・API・migration・未決事項の docs 最終同期",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P11"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p12.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    },
+    {
+      "graph_node_id": "SYS-SETTINGS-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信と migration 0051-0053 適用とクローズアウト",
+      "project_id": "feature-package-feat-settings-screen",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "settings-screen",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-22T11:15:01Z",
+      "updated_at": "2026-09-22T11:15:01Z",
+      "depends_on": [
+        "SYS-SETTINGS-P12"
+      ],
+      "related_nodes": [
+        "arch-settings-auth",
+        "arch-settings-backend",
+        "arch-settings-database",
+        "arch-settings-frontend",
+        "arch-settings-infrastructure",
+        "arch-settings-maintenance-ops",
+        "arch-settings-security",
+        "arch-settings-ui-ux",
+        "spec-settings-screen"
+      ],
+      "resource_scope": [
+        "docs/settings-screen/design-decisions.md"
+      ],
+      "parent_feature": "feat-settings-screen",
+      "feature_package_id": "feature-package/feat-settings-screen",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-settings-screen/sys-settings-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-settings-screen/plan-findings.json",
+        "evaluated_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-settings-screen/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "77f7061b14dcbfea15f2ac0317596681a94f2b6b509fe6e4b94d53b7d987f5fa",
+        "imported_at": "2026-09-22T11:15:01Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "confidence": 0.95,
+          "candidate_path": "tasks/feat-settings-screen/sys-settings-p13.md"
+        }
+      ],
+      "github_publication": {
+        "mode": "local_only",
+        "project_aliases": [],
+        "labels": [],
+        "milestone": null
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "status": "complete",
+        "missing_sections": [],
+        "checked_at": "2026-09-22T10:41:00Z"
+      }
+    }
+  ]
+}

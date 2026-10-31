@@ -9,7 +9,7 @@
  * 期間が効かないという、画面を見ても気づけないバグになる。
  * ここで切れば下流は1行も変えずに全部が期間対応になる。
  */
-import { monthLabel } from './month.js';
+import { monthIndex, monthKey, monthLabel } from './month.js';
 import type { Dataset } from './types.js';
 
 /**
@@ -217,4 +217,46 @@ export function periodLabel(range: PeriodRange | null): string {
   return range.from === range.to
     ? monthLabel(range.from)
     : `${monthLabel(range.from)} 〜 ${monthLabel(range.to)}`;
+}
+
+/** 前後移動の入力。API の period (applied と全期間の範囲) の形 */
+export interface PeriodNavigation {
+  applied: PeriodRange | null;
+  full: PeriodRange | null;
+}
+
+/**
+ * 期間の前後移動。同じ長さだけずらした任意期間を返す (決算書と使い方画面で共有)。
+ * 全期間 (applied=null) と、データの範囲の外へ出る向きは null (ボタンを無効にする)。
+ */
+export function shiftedPeriod(
+  meta: PeriodNavigation | null | undefined,
+  direction: -1 | 1,
+): { mode: 'custom'; from: string; to: string } | null {
+  const applied = meta?.applied;
+  const full = meta?.full;
+  if (!applied || !full) return null;
+  const length = monthIndex(applied.to) - monthIndex(applied.from) + 1;
+  const shifted = {
+    mode: 'custom',
+    from: monthKey(monthIndex(applied.from) + direction * length),
+    to: monthKey(monthIndex(applied.to) + direction * length),
+  } as const;
+  return shifted.from < full.from || shifted.to > full.to ? null : shifted;
+}
+
+const dayLabel = (month: string, day: number) =>
+  `${Number(month.slice(0, 4))}年${Number(month.slice(5, 7))}月${day}日`;
+
+/** 月の末日 (うるう年を含む) */
+const lastDay = (month: string) =>
+  new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0)).getUTCDate();
+
+/**
+ * 期間の定義文。開始日は最初の月の 1 日、終了日は最後の月の末日。
+ * 全期間 (null) は「すべての取引データを集計しています。」
+ */
+export function periodDefinitionText(range: PeriodRange | null): string {
+  if (!range) return 'すべての取引データを集計しています。';
+  return `${dayLabel(range.from, 1)} 〜 ${dayLabel(range.to, lastDay(range.to))}の取引データを集計しています。`;
 }

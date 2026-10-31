@@ -1,0 +1,86 @@
+{
+  "receipt_kind": "spec-reflection",
+  "feature_id": "feat-improvement-screen",
+  "beads_epic": "kanjo-kkp",
+  "tasks": [
+    "SYS-IMPSCR-P01",
+    "SYS-IMPSCR-P02",
+    "SYS-IMPSCR-P03",
+    "SYS-IMPSCR-P04",
+    "SYS-IMPSCR-P05",
+    "SYS-IMPSCR-P06",
+    "SYS-IMPSCR-P07",
+    "SYS-IMPSCR-P08",
+    "SYS-IMPSCR-P09",
+    "SYS-IMPSCR-P10",
+    "SYS-IMPSCR-P11",
+    "SYS-IMPSCR-P12",
+    "SYS-IMPSCR-P13"
+  ],
+  "recorded_at": "2026-09-24T09:32:11Z",
+  "base": "origin/main ef7ee82 (設定画面 #71。ローカル main へ取り込み済みで、本ブランチへ merge 済み)",
+  "impact": "yes",
+  "changes": [
+    {
+      "topic": "書き込み (注釈) の道具",
+      "decision": "FR-27 を番号マークから、枠・ペン・文字・マスク・移動の 5 つの道具と 5 色に改めた (利用者依頼 2026-09-24)。『1つ戻す』は最後の操作 (描く・動かす・全部消す) を最大 100 手まで戻す。『拡大して書き込む』ダイアログを設け、マスクの焼き込みは失敗したら送らない (fail-closed)。system-spec の章は『注釈を付ける』という方針だけを持ち、道具の種類を定めていないため影響なしと判断した",
+      "reflected_in": [
+        "specs/spec-improvement-screen.md",
+        "architecture/improvement-screen-frontend.md",
+        "architecture/improvement-screen-ui-ux.md",
+        "tasks/feat-improvement-screen/sys-impscr-p05.md",
+        "features/feat-improvement-screen.md",
+        "docs/improvement-request.md",
+        "docs/ui-decisions.md",
+        "docs/improvement-screen/design-decisions.md"
+      ]
+    },
+    {
+      "topic": "migration 番号",
+      "decision": "計画時の 0053 は取込画面 (#69) が先に使ったので 0054 に進めた。その後、設定画面 (#71) が 0054〜0056 を先に main へ入れたため、main 取り込みの merge で 0057_improvement_request_screen.sql へもう一度進め、EXPECTED_D1_MIGRATION も 0057 にした。system-spec の章、.dev-graph/plans、features の frontmatter と context.json は digest 追跡下 (または promotion で凍結) なので書き換えず、予定番号として読む",
+      "reflected_in": [
+        "migrations/0057_improvement_request_screen.sql",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/deletion-schema.test.ts",
+        "packages/api/src/improvement-migration-0057.test.ts",
+        "packages/api/src/improvement/contract.ts",
+        "packages/core/src/improvement.ts",
+        "architecture/improvement-screen-database.md",
+        "architecture/improvement-screen-infrastructure.md",
+        "architecture/improvement-screen-backend.md",
+        "docs/data-schema.md",
+        "docs/improvement-request.md",
+        "docs/improvement-screen/design-decisions.md"
+      ]
+    },
+    {
+      "topic": "設定画面サイクルの章の退避",
+      "decision": "system-spec は現行 1 世代で運用する。main (ef7ee82) の設定サイクルの章を system-spec/archive/2026-09-24-settings-screen/ へ丸ごと退避した。graph の arch-settings-* 8 件は source_lineage.source_path を退避先へ付け替えた。内容が同一なので digest はそのままで、check-graph-lineage は 182 ノードすべて一致した。取込サイクルの退避 (2026-09-23-import-screen) は両側で本文が同一で、README だけが違ったため main 側を採った",
+      "reflected_in": [
+        "system-spec/archive/2026-09-24-settings-screen/README.md",
+        "architecture/graph.json"
+      ]
+    },
+    {
+      "topic": "改善リクエストサイクルの章の確定",
+      "decision": "system-spec 直下の章 (00-requirements-definition.md と 9 カテゴリ章・spec-state.json・fetched-references.json・completeness-findings.json) は、改善リクエストサイクルの世代を現行とする",
+      "reflected_in": [
+        "system-spec/index.md",
+        "system-spec/spec-state.json"
+      ]
+    },
+    {
+      "topic": "merge の結合点",
+      "decision": "packages/web/package.json は check:improvement-screen と check:settings-visual の両方を残した。.dev-graph/render は本ブランチの feature を描いた版を採った (receipt の output_sha256 は実体と一致)",
+      "reflected_in": [
+        "packages/web/package.json",
+        ".dev-graph/render/index.html",
+        ".dev-graph/render/receipt.json"
+      ]
+    }
+  ],
+  "open_items": [
+    "P13: PR の merge、本番 D1 への 0057 の適用 (DROP TABLE を含むため migrate.yml の手動経路で APPLY)、Worker の deploy は未実施",
+    "system-spec と .dev-graph/plans と features の frontmatter に残る 0053/0054 は予定番号で、実体は 0057"
+  ]
+}

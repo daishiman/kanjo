@@ -1,0 +1,1248 @@
+{
+  "feature_package_id": "feature-package/feat-guide-screen",
+  "parent_feature": "feat-guide-screen",
+  "repo_context": {
+    "config_path": ".dev-graph/config.json",
+    "repo_identity": "github:daishiman/kanjo",
+    "root_resolution_source": "git"
+  },
+  "schema_version": "1.0.0",
+  "source_lineage": {
+    "compile_entrypoint": "run-system-spec-compile",
+    "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+    "confirmed": true,
+    "source_paths": [
+      "system-spec/00-requirements-definition.md",
+      "system-spec/completeness-findings.json",
+      "specs/spec-guide-screen.md",
+      "features/feat-guide-screen.md",
+      "features/feat-guide-screen.context.json"
+    ],
+    "source_plugin": "system-spec-harness",
+    "source_version": "0.1.0"
+  },
+  "tasks": [
+    {
+      "acceptance": [
+        "受入 S1〜S4 が検証可能な文として docs に列挙され、各文に対応する spec の節 (機能要件 FR-1〜FR-17・ビジネスルール・API 契約・テストと受入条件) が付いている。",
+        "信頼度を出す画面の列挙 (OI-1) が確定し、対象画面ごとに ファイルと行・現行の表示・変更後の『段階＋%』表示・色の扱いが表で記されている。診断と AI 画面の『確度』を含めるか否かとその理由が記されている。",
+        "概況 Overview.tsx:209-210 の 80/60 色境界の扱い (段階の 80/50 に揃えるか据え置くか) が決まり、決定が利用者確認済みか agent 推定かが区別して書かれている。",
+        "goal-spec.json の open_items 全件が docs に原文の意味を保って転記され、各件の resolution_owner task (SYS-GUIDE-P02〜P05・P12) が割り当てられている。",
+        "REVIEW_CONFIDENCE_THRESHOLD = 80 (classify-status.ts:43) を変えないこと、DB の追加をしないことが制約として明記されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p01.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p01.md",
+        "graph_node_id": "SYS-GUIDE-P01",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P01"
+      },
+      "id": "SYS-GUIDE-P01",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P01",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "docs の追記を revert する。コードと表の変更を伴わない。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p01",
+        "preparation"
+      ],
+      "title": "要件ベースライン確定と信頼度を出す画面の列挙の確定",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "packages/core/src/guide-screen.ts (新設) の入出力 (GuideScreen の period・totals・dataUpdatedAt・sources・closeStatus)、節 7 つ・ステップ 4 つ・よくある疑問 5 行・期間の表 4 行・このページの数値 4 項目・関連ページ 5 件・ガイド内検索の純関数の分け方が docs に記されている。",
+        "信頼度の段階関数と境界定数 (80 / 50) の置き場所が決まり、REVIEW_CONFIDENCE_THRESHOLD = 80 と別の定数にするか共有するか、どちらでも単体テストで両者が 80 であることを固定する方針が記されている。",
+        "防衛ラインの算出期間の名前付き定数 (値 3) の置き場所と、それを使う説明文の組み方 (glossary.ts:45-49・guide-sections.ts:57-60 の置き換え、analysis.ts:1095 の置き換え) が記されている。",
+        "GET /api/guide を packages/api/src/routes/analytics.ts の analyticsRoute に置き、loadScoped の 1 回の loadDataset と loadCloseStatus (analytics.ts:199) だけで作り、防衛ラインの値を返さない構成が記されている。index.ts の CSP と authGuard・mustChangePasswordFence は変えない。",
+        "web の分割 (packages/web/src/pages/guide/ 配下、core を import するのは view-model.ts だけ、旧 pages/Guide.tsx は再輸出 1 行) と URL の topic / q の扱いが記されている。",
+        "共通シェルのフッタ 1 文目を『取込データは外部送信しません』にし、AI 送信の補足をフッタの title・プライバシー欄・使い方画面の 3 か所に置き、ヘッダの『防衛ライン』は変えない配置が記されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p02.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P01"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p02.md",
+        "graph_node_id": "SYS-GUIDE-P02",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P02"
+      },
+      "id": "SYS-GUIDE-P02",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P02",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "api",
+        "security"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p02",
+        "preparation"
+      ],
+      "title": "guide-screen・信頼度の段階関数・防衛ライン算出定数・shiftedPeriod の core 移設・GET /api/guide・フッタ文言のワークストリーム設計決定記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "レビュー指摘が docs に列挙され、全件が解消済みか理由付きで持ち越されている。",
+        "GET /api/guide が /api/* の authGuard と mustChangePasswordFence の内側にあり、loadScoped が c.get('userId') で絞った Dataset だけを読むことが確認されている。",
+        "総収支の 3 枚が振替除外の既存集計をそのまま使い、新しい集計規則を足していないことが確認されている。",
+        "/summary・/diagnosis・/defense-line・/statements の応答と、防衛ラインを使う概況・予算・トレードオフ・ヘッダの値が変わらない設計であることが確認されている。",
+        "信頼度の段階の境界比較 (80 / 50) が段階関数以外に置かれない設計であり、Overview.tsx:209-210 の扱いが P01 の決定と一致していることが確認されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p03.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P02"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p03.md",
+        "graph_node_id": "SYS-GUIDE-P03",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P03"
+      },
+      "id": "SYS-GUIDE-P03",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P03",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend",
+        "security"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p03",
+        "design-review"
+      ],
+      "title": "core 1 か所導出・API 写像・利用者分離・フッタ文言の独立設計レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "信頼度の段階の失敗テストが packages/core/src/classify-status.test.ts にあり、49 が低・50 が中・79 が中・80 が高、0 と 100、範囲外 (-1・101・NaN) を検査し、REVIEW_CONFIDENCE_THRESHOLD と高の下限がともに 80 であることを固定する。",
+        "packages/core/src/guide-screen.test.ts が 節 7 つの順・ステップ 4 つと行き先・よくある疑問 5 行・期間の表 4 行・このページの数値 4 項目・関連ページ 5 件を toEqual で固定し、検索 (振替・重複・信頼度・予算、0 件、全角半角と大小の同一視、100 字の切り詰め)・期間の定義文 (1 か月・1 年・全期間)・防衛ラインの説明文が算出定数から組まれることを検査し、現行実装 (guide-screen.ts が存在しない) で失敗する。",
+        "packages/core/src/period-shift.test.ts が core の shiftedPeriod の前後移動・全期間で null・範囲の端で null を検査する。",
+        "packages/api/src/guide-screen.integration.test.ts が GET /api/guide の Contract tests (期間つき・期間なし・壊れた期間で 200、totals が総収支画面の同じ期間の値と一致、振替が totals に入らない、取込 0 件で 0 と null、他の利用者のセッションで数値を返さない、未認証 401、一時パスワード 403、応答に防衛ラインの値が無い) を持ち、現行実装で失敗する。",
+        "packages/web/src/pages/guide/guide-screen.dom.test.tsx が 19-guide.png の構成要素・URL の topic / q の復元・未知 topic の月次の流れへの倒れ・読込 / 失敗 / 検索 0 件・信頼度を出す画面 (P01 で確定した列挙) の『段階＋%』を検査し、現行実装で失敗する。",
+        "common-shell.dom.test.tsx:182-185 が新しいフッタ 1 文目と 3 か所の補足の期待へ書き換えられ、現行実装で失敗する。glossary.test.tsx が防衛ラインの説明と算出定数の一致を検査する。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p04.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P03"
+      ],
+      "deploy_unit": "N/A: テストコードは配布物に含まれない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p04.md",
+        "graph_node_id": "SYS-GUIDE-P04",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P04"
+      },
+      "id": "SYS-GUIDE-P04",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P04",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "テストの追加と書き換えを revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p04",
+        "test-design"
+      ],
+      "title": "core 不変条件・/api/guide 契約・DOM・共通シェル文言の失敗テスト先行作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "packages/core/src/guide-screen.test.ts",
+        "packages/core/src/classify-status.test.ts",
+        "packages/core/src/period-shift.test.ts",
+        "packages/api/src/guide-screen.integration.test.ts",
+        "packages/web/src/pages/guide/guide-screen.dom.test.tsx",
+        "packages/web/src/pages/guide/view-model.test.ts",
+        "packages/web/src/guide.dom.test.tsx",
+        "packages/web/src/guide-sections.test.ts",
+        "packages/web/src/common-shell.dom.test.tsx",
+        "packages/web/src/statements-view-model.test.ts",
+        "packages/web/src/pages/classify/view-model.test.ts",
+        "packages/web/src/glossary.test.tsx"
+      ]
+    },
+    {
+      "acceptance": [
+        "packages/core/src/guide-screen.ts (新設) が節・ステップ・よくある疑問・期間の表・このページの数値・関連ページ・ガイド内検索を純関数で導き、guide-sections.ts の現在値合成が core へ移り、P04 の core テストが緑である。",
+        "信頼度の段階関数が core に 1 つだけあり、P01 で確定した画面 (明細仕分けの表と編集欄・概況の確認待ちを含む) が『高 92%』の形で段階を文字で示す。要確認の閾値 80 による自動判定の結果は変わらない。",
+        "防衛ラインの算出期間が core の名前付き定数 (値 3) になり、analysis.ts の defenseLine・用語集 (glossary.ts)・使い方画面の説明文がその定数から組まれ、defenseLine の既存テストが値を変えずに緑である。",
+        "GET /api/guide が packages/api/src/routes/analytics.ts にあり、loadScoped の結果を core の guide-screen に渡して { screen } に写すだけで、P04 の API テストが緑である。",
+        "/guide が packages/web/src/pages/guide/ 配下に分割され、core を import するのは view-model.ts だけ、旧 pages/Guide.tsx は再輸出 1 行で、P04 の DOM テストが緑である。",
+        "共通シェルのフッタ 1 文目が『取込データは外部送信しません』になり、AI 送信の補足がフッタの title・プライバシー欄・使い方画面の 3 か所にあり、ヘッダは『防衛ライン』のままで、common-shell.dom.test.tsx が緑である。",
+        "packages/web/package.json に check:guide-screen (KANJO_VISUAL_SCOPE=guide node scripts/check-financial-visuals.mjs) が足され、ルートの package.json の verify:full に組み込まれ、check-financial-visuals.mjs が guide スコープで /api/guide の応答を用意する。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p05.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P04"
+      ],
+      "deploy_unit": "web ビルドと Worker (単一 PR で同時に配信する。D1 migration は無い)",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p05.md",
+        "graph_node_id": "SYS-GUIDE-P05",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P05"
+      },
+      "id": "SYS-GUIDE-P05",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P05",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "本 task のコミットを revert する。migration を作らないので、巻き戻しは web と api のコードを戻すだけで済む。配信済みなら直前のビルドへ戻す。",
+      "secondary_workstreams": [
+        "backend",
+        "api",
+        "security",
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p05",
+        "mutation"
+      ],
+      "title": "guide-screen.ts・信頼度の段階表示・防衛ライン算出定数・GET /api/guide・/guide 画面と check:guide-screen の最終実装",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/core test",
+        "pnpm --filter @kanjo/api test",
+        "pnpm --filter @kanjo/web test",
+        "pnpm typecheck",
+        "pnpm --filter @kanjo/web run check:guide-screen"
+      ],
+      "workstream_kind": "frontend",
+      "write_scope": [
+        "packages/core/src/guide-screen.ts",
+        "packages/core/src/classify-status.ts",
+        "packages/core/src/analysis.ts",
+        "packages/core/src/period.ts",
+        "packages/core/src/index.ts",
+        "packages/api/src/routes/analytics.ts",
+        "packages/web/src/api.ts",
+        "packages/web/src/pages/guide/",
+        "packages/web/src/pages/Guide.tsx",
+        "packages/web/src/guide-sections.ts",
+        "packages/web/src/guide-sections.test.ts",
+        "packages/web/src/guide.dom.test.tsx",
+        "packages/web/src/glossary.ts",
+        "packages/web/src/components/Layout.tsx",
+        "packages/web/src/pages/statements/view-model.ts",
+        "packages/web/src/pages/statements/StatementsPage.tsx",
+        "packages/web/src/statements-view-model.test.ts",
+        "packages/web/src/pages/Overview.tsx",
+        "packages/web/src/components/OverviewReviewQueue.tsx",
+        "packages/web/src/pages/classify/view-model.ts",
+        "packages/web/src/pages/classify/view-model.test.ts",
+        "packages/web/src/pages/classify/TransactionTable.tsx",
+        "packages/web/src/pages/classify/EditPanel.tsx",
+        "packages/web/scripts/check-financial-visuals.mjs",
+        "packages/web/package.json",
+        "package.json"
+      ]
+    },
+    {
+      "acceptance": [
+        "P05 の最終コードに対して pnpm test と pnpm typecheck と pnpm lint (check-glossary を含む) が緑である。",
+        "決算書 (statements-view-model.test.ts)・明細仕分け・概況・共通シェル・用語集の既存テストが緑であり、defenseLine と classify-status の既存テストが値を変えずに緑である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p06.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P05"
+      ],
+      "deploy_unit": "N/A: 実行記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p06.md",
+        "graph_node_id": "SYS-GUIDE-P06",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P06"
+      },
+      "id": "SYS-GUIDE-P06",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P06",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "secondary_workstreams": [],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p06",
+        "test-run"
+      ],
+      "title": "全テストと型検査と lint の実行記録",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck",
+        "pnpm lint"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入 S1〜S4 の各項目に合否と証跡の所在が記録されている。",
+        "S1: /guide で 19-guide.png の構成要素がすべて描画され、総収支の 3 枚が選択期間の実データ (振替除外) と一致し、直書き色の lint が 0 件であることが check:guide-screen と DOM テストで確認されている。",
+        "S2: 信頼度 49/50/79/80 が 低/中/中/高 になり、P01 で確定した画面で『段階＋%』が出て、防衛ラインの値と要確認の自動判定が変わらないことが実測で確認されている。",
+        "S3: grep で、web と api にガイドの節・よくある疑問・期間の表・現在値の合成・信頼度の段階の境界比較が guide-screen と段階関数以外に 0 件である。",
+        "S4: ヘッダが『防衛ライン』のまま、フッタ 1 文目と AI 送信の補足 3 か所が読め、他の利用者のセッションで /api/guide が数値を返さないことが確認されている。既知の逸脱・未実施・一部適合が 1 件でも残る受入項目は PASS にしない。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p07.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P06"
+      ],
+      "deploy_unit": "N/A: 検証記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p07.md",
+        "graph_node_id": "SYS-GUIDE-P07",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P07"
+      },
+      "id": "SYS-GUIDE-P07",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P07",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "secondary_workstreams": [
+        "frontend"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p07",
+        "acceptance"
+      ],
+      "title": "受入基準 S1 から S4 の検証",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm --filter @kanjo/web run check:guide-screen"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "packages/web/src/pages/Guide.tsx が再輸出 1 行だけであり、旧実装と guide-sections.ts の現在値合成への参照が repository 内で 0 件である。",
+        "信頼度の境界比較 (80 / 50、および旧 60) が段階関数以外の web と api に 0 件である (Overview.tsx:209-210 を含む。P01 で据え置きと決めた場合はその記録と一致する)。",
+        "『直近3か月』『直近3ヶ月』『slice(-3)』の直書きが、防衛ラインの算出定数とそれを使う説明文以外に 0 件である。",
+        "REVIEW_CONFIDENCE_THRESHOLD の値が 80 のまま、migrations と packages/api/src/db/schema.ts の差分が 0 件である。",
+        "P06 / P07 の証跡が最終コードに対応し、既知逸脱・未実施・一部適合が PASS に含まれていない。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p08.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P07"
+      ],
+      "deploy_unit": "N/A: 読取専用監査のみ",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p08.md",
+        "graph_node_id": "SYS-GUIDE-P08",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P08"
+      },
+      "id": "SYS-GUIDE-P08",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P08",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "監査記録に誤りがあれば docs の追記だけを revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "backend"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p08",
+        "audit"
+      ],
+      "title": "旧 Guide.tsx・guide-sections.ts の参照と直書き定数 (信頼度 80/60・直近3か月) の残存の読取専用監査",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "rg による旧 pages/Guide.tsx 参照と直書き定数の検査",
+        "P06 / P07 の証跡と git diff の照合"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "build:bundle 直後の js-budget が予算内である (/guide は既存の lazy route のまま初期 JS に含まれない)。",
+        "信頼度は段階の文字と %、ヘッダの防衛ラインは『正常 / 注意 / 要対応』の文字、ステッパーは完了の段に文字の印、純収支は符号で示され、状態を色だけで伝えていない。",
+        "検索語が /api へ送られず、React のテキストとして描かれ、100 字で切られ、未知の topic が月次の流れに倒れる。",
+        "外部への送信が 0 件である (fetch の宛先が同一オリジンの /api だけ)。CSP (index.ts:58-75) が変わっていない。",
+        "幅 1024px 未満で目次が横スクロールのタブになり、右カラムが本文の下へ積まれ、下部固定バーに安全領域の余白がある。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p09.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P08"
+      ],
+      "deploy_unit": "N/A: 保証確認の記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p09.md",
+        "graph_node_id": "SYS-GUIDE-P09",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P09"
+      },
+      "id": "SYS-GUIDE-P09",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P09",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "secondary_workstreams": [
+        "frontend",
+        "security",
+        "infrastructure"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p09",
+        "quality-assurance"
+      ],
+      "title": "アクセシビリティ・検索語の扱い・外部送信・JS バンドル予算の保証確認",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm --filter @kanjo/web build:bundle",
+        "pnpm --filter @kanjo/web run check:js-budget"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "scope_out (利用規約・プライバシーの専用ページ、ガイド本文の管理画面や DB 保存、要確認の閾値 80 と由来ごとの信頼度の規則変更、防衛ラインの算出変更、共通ヘッダの呼称変更、サイドバーの並び・バッジ・月次クローズ進捗の変更、DB の表・列・migration の追加、専用アプリ、税務判断) の侵犯が 0 件である。",
+        "受入 S1〜S4 の全項目が合格で記録されている。",
+        "open_items 全件について、実装で採用した値と、confirmed か agent 推定かの区別が docs に記録されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p10.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P09"
+      ],
+      "deploy_unit": "N/A: レビュー記録のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p10.md",
+        "graph_node_id": "SYS-GUIDE-P10",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P10"
+      },
+      "id": "SYS-GUIDE-P10",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P10",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "記録の追記を revert する。",
+      "secondary_workstreams": [],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p10",
+        "independent-review"
+      ],
+      "title": "独立最終レビュー",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm test",
+        "pnpm typecheck"
+      ],
+      "workstream_kind": "quality",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "受入 S1〜S4 の各項目から、証跡のファイル (テスト・check:guide-screen の出力・grep の結果) と再現コマンドへ docs/guide-screen/evidence.md で辿れる。",
+        "各証跡に取得時刻と対象のコミットが記されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p11.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P10"
+      ],
+      "deploy_unit": "N/A: 索引のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p11.md",
+        "graph_node_id": "SYS-GUIDE-P11",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P11"
+      },
+      "id": "SYS-GUIDE-P11",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P11",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "索引の追記を revert する。",
+      "secondary_workstreams": [
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p11",
+        "evidence"
+      ],
+      "title": "再現可能な証跡索引の作成",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint (既存の文書検査が緑のままであることを確認する)"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/guide-screen/evidence.md",
+        "docs/guide-screen/design-decisions.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "docs/guide-screen/design-decisions.md に 信頼度を出す画面の最終的な列挙と色の扱い・段階関数と定数の名前・防衛ラインの算出定数と説明文の組み方・/api/guide の応答形・トピック id と URL の扱い・フッタ文言と 3 か所の補足が記されている。",
+        "open_items 全件の最終的な採用値または対処、および confirmed ではない旨が docs に明記されている (本 task は値を新たに決めない)。",
+        "DB の表・列・migration を足していないことと、巻き戻しがコードの revert だけで済むことが docs に記されている。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p12.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P11"
+      ],
+      "deploy_unit": "N/A: 文書のみで配布物を持たない",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p12.md",
+        "graph_node_id": "SYS-GUIDE-P12",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P12"
+      },
+      "id": "SYS-GUIDE-P12",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P12",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "docs の追記を revert する。",
+      "secondary_workstreams": [
+        "operations"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p12",
+        "documentation-sync"
+      ],
+      "title": "信頼度の段階・防衛ラインの説明・/api/guide・未決事項の docs 最終同期",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm lint",
+        "pnpm test"
+      ],
+      "workstream_kind": "documentation",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md",
+        "docs/guide-screen/evidence.md"
+      ]
+    },
+    {
+      "acceptance": [
+        "pnpm run verify:full (check:guide-screen を含む) が exit 0 であり、PR が default branch へ merge され、CI が緑である。",
+        "配信後に /guide の総収支の 3 枚が総収支画面の同じ期間の値と一致し、防衛ラインの値と要確認の自動判定の結果が配信前と変わっていない。",
+        "配信後もヘッダが『防衛ライン』のまま、フッタ 1 文目が『取込データは外部送信しません』である。"
+      ],
+      "branch_policy": {
+        "assignment_owner": "dev-graph-scheduler",
+        "completion_projection": "default-branch-reconciliation",
+        "strategy": "one-task-one-branch",
+        "worktree_lease_required": true
+      },
+      "build_target_kind": "application-code",
+      "classification": {
+        "candidates": [
+          {
+            "artifact_kind": "task",
+            "candidate_path": "tasks/feat-guide-screen/sys-guide-p13.md",
+            "confidence": 0.95
+          }
+        ],
+        "confidence": 0.95,
+        "reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない"
+      },
+      "depends_on": [
+        "SYS-GUIDE-P12"
+      ],
+      "deploy_unit": "web ビルドと Worker (単一 PR で同時に配信する。D1 migration は無い)",
+      "feature_package_id": "feature-package/feat-guide-screen",
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "graph_node_registration": {
+        "feature_package_id": "feature-package/feat-guide-screen",
+        "file_path": "tasks/feat-guide-screen/sys-guide-p13.md",
+        "graph_node_id": "SYS-GUIDE-P13",
+        "parent_feature": "feat-guide-screen",
+        "phase_ref": "P13"
+      },
+      "id": "SYS-GUIDE-P13",
+      "implementation_readiness": {
+        "checked_at": "2026-09-23T13:50:09Z",
+        "missing_sections": [],
+        "status": "complete"
+      },
+      "owners": [
+        "daishiman"
+      ],
+      "parent_feature": "feat-guide-screen",
+      "phase_ref": "P13",
+      "pr_completion_policy": "linked_pr_merged_all",
+      "related_nodes": [
+        "arch-guide-auth",
+        "arch-guide-backend",
+        "arch-guide-database",
+        "arch-guide-frontend",
+        "arch-guide-infrastructure",
+        "arch-guide-maintenance-ops",
+        "arch-guide-security",
+        "arch-guide-ui-ux",
+        "spec-guide-screen"
+      ],
+      "rollback": "PR を revert して直前のビルドへ戻す。migration は無いので表の操作は不要である。",
+      "secondary_workstreams": [
+        "infrastructure",
+        "quality"
+      ],
+      "source_lineage": [
+        "docs/guide-screen/design-decisions.md",
+        "specs/spec-guide-screen.md"
+      ],
+      "tags": [
+        "guide-screen",
+        "p13",
+        "release"
+      ],
+      "title": "単一 PR での配信とクローズアウト",
+      "tracker_binding_intent": "beads",
+      "verification": [
+        "pnpm run verify:full",
+        "pnpm test",
+        "pnpm typecheck"
+      ],
+      "workstream_kind": "operations",
+      "write_scope": [
+        "docs/guide-screen/design-decisions.md"
+      ]
+    }
+  ]
+}

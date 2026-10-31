@@ -1,4 +1,5 @@
 /** Overview でだけ使う未処理明細の操作UI。共通シェルの初期JSに含めない。 */
+import { confidenceTierText } from '@kanjo/core';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -109,10 +110,11 @@ function ReviewDetailBody({
             <UiIcon name={REVIEW_KIND_ICON[item.kind]} className="review-detail-icon" />
             <span>{REVIEW_KIND_STATUS_LABEL[item.kind]}</span>
           </span>
-          <strong>{item.content || REVIEW_KIND_LABEL[item.kind]}</strong>
+          <strong data-capture-mask="">{item.content || REVIEW_KIND_LABEL[item.kind]}</strong>
         </span>
         <strong
           className={`review-detail-amount num ${item.amount < 0 ? 'pos' : item.amount > 0 ? 'neg' : ''}`}
+          data-capture-mask=""
         >
           {yenS(item.amount)}
         </strong>
@@ -144,7 +146,7 @@ function ReviewDetailBody({
               <span>数値化できる根拠がありません</span>
             ) : (
               <>
-                <span className="num">{item.confidence}%</span>
+                <span className="num">{confidenceTierText(item.confidence)}</span>
                 <span
                   className="confidence-meter"
                   role="progressbar"

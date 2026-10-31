@@ -5,8 +5,7 @@
  * 唯一の例外は万円表の合計列で、これも core が返した円の値を足してから丸める (丸めた値を足さない)。
  */
 import type { StatementsKpi, StatementsRowKey, StatementsScreen } from '@kanjo/core';
-import { deltaCls, gainCls } from '../../format.js';
-import type { PeriodSelection } from '../../period.js';
+import { deltaCls, gainCls, signedYen } from '../../format.js';
 
 export type StatementsTab = 'pl' | 'cf' | 'bs';
 
@@ -38,11 +37,7 @@ export function readStatementsUrl(params: URLSearchParams): StatementsUrlState {
   };
 }
 
-/** 符号つきの円。0 は符号なし。マイナスは全角の − (format.ts の yenS と同じ字) */
-export function signedYen(value: number): string {
-  const body = `¥${Math.abs(Math.round(value)).toLocaleString('ja-JP')}`;
-  return value > 0 ? `+${body}` : value < 0 ? `−${body}` : body;
-}
+export { signedYen };
 
 /** 符号つきの率 (小数 1 桁)。マイナスは全角の − */
 export function signedRate(rate: number): string {
@@ -109,29 +104,11 @@ export function addMonths(month: string, delta: number): string {
   return `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, '0')}`;
 }
 
-function monthsBetween(from: string, to: string): number {
-  const index = (m: string) => Number(m.slice(0, 4)) * 12 + Number(m.slice(5, 7));
-  return index(to) - index(from) + 1;
-}
-
 /**
- * 期間の前後移動 (§1.1)。同じ長さだけずらした任意期間を返す。
+ * 期間の前後移動 (§1.1)。使い方画面と共有するため正本は core の shiftedPeriod に置き、ここからは再輸出する。
  * 全期間 (applied=null) と、データの範囲の外へ出る向きは null (ボタンを無効にする)。
  */
-export function shiftedPeriod(
-  meta: StatementsScreen['period']['navigation'] | undefined,
-  direction: -1 | 1,
-): PeriodSelection | null {
-  const applied = meta?.applied;
-  const full = meta?.full;
-  if (!applied || !full) return null;
-  const length = monthsBetween(applied.from, applied.to);
-  const from = addMonths(applied.from, direction * length);
-  const to = addMonths(applied.to, direction * length);
-  if (direction < 0 && applied.from <= full.from) return null;
-  if (direction > 0 && applied.to >= full.to) return null;
-  return { mode: 'custom', from, to };
-}
+export { shiftedPeriod } from '@kanjo/core';
 
 /** 期間内の月 (from..to) を昇順で返す。基準月の選択肢に使う */
 export function monthsInPeriod(period: StatementsScreen['period']): string[] {

@@ -1,0 +1,48 @@
+{
+  "feature_id": "feat-budget-screen",
+  "feature_package_id": "feature-package/feat-budget-screen",
+  "graph_revision": 3,
+  "graph_snapshot_digest": "364108d5ecfbc6d6eb03e6316efa1ab75f47ffceb0feae2dce2fd592d79516ec",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-budget-screen/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-budget-screen/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-budget-screen/task-graph.json"
+  },
+  "plan_validated_digest": "feeba81f7451b59df51e3830e506ace921410eada67b4f6494010ec6bf19a067",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-BUDGET-P01",
+    "SYS-BUDGET-P02",
+    "SYS-BUDGET-P03",
+    "SYS-BUDGET-P04",
+    "SYS-BUDGET-P05",
+    "SYS-BUDGET-P06",
+    "SYS-BUDGET-P07",
+    "SYS-BUDGET-P08",
+    "SYS-BUDGET-P09",
+    "SYS-BUDGET-P10",
+    "SYS-BUDGET-P11",
+    "SYS-BUDGET-P12",
+    "SYS-BUDGET-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-budget-screen/sys-budget-p01.md",
+    "tasks/feat-budget-screen/sys-budget-p02.md",
+    "tasks/feat-budget-screen/sys-budget-p03.md",
+    "tasks/feat-budget-screen/sys-budget-p04.md",
+    "tasks/feat-budget-screen/sys-budget-p05.md",
+    "tasks/feat-budget-screen/sys-budget-p06.md",
+    "tasks/feat-budget-screen/sys-budget-p07.md",
+    "tasks/feat-budget-screen/sys-budget-p08.md",
+    "tasks/feat-budget-screen/sys-budget-p09.md",
+    "tasks/feat-budget-screen/sys-budget-p10.md",
+    "tasks/feat-budget-screen/sys-budget-p11.md",
+    "tasks/feat-budget-screen/sys-budget-p12.md",
+    "tasks/feat-budget-screen/sys-budget-p13.md"
+  ]
+}

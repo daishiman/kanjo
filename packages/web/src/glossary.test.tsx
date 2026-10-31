@@ -1,4 +1,6 @@
 import {
+  DEFENSE_LINE_BASIS,
+  DEFENSE_LINE_RECENT_MONTHS,
   DIAGNOSIS_FIXED_COST_REVIEW_THRESHOLD,
   DIAGNOSIS_SIGNAL_CHANGE_THRESHOLD,
   DIAGNOSIS_SIGNAL_MIN_AVERAGE,
@@ -12,6 +14,13 @@ describe('用語辞書', () => {
   it('指標ガイドの並び順は辞書の全項目を1回ずつ含む', () => {
     const ids = Object.keys(GLOSSARY).sort();
     expect([...GUIDE_ORDER].sort()).toEqual(ids);
+  });
+
+  it('防衛ラインの説明は算出定数 (直近の月数) と同じ文から組まれる', () => {
+    const entry = GLOSSARY.defenseLine;
+    expect(DEFENSE_LINE_BASIS).toContain(`直近${DEFENSE_LINE_RECENT_MONTHS}か月`);
+    expect(entry.short).toContain(DEFENSE_LINE_BASIS);
+    expect(entry.desc).toContain(DEFENSE_LINE_BASIS);
   });
 
   it('自由文の表記は長いものから照合される(部分一致で短い語が先に当たらない)', () => {

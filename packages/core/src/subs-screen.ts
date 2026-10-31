@@ -14,7 +14,7 @@ import { ensureMonth } from './dataset.js';
 import { type ExpenseFact, buildExpenseProjection, registeredVendorOf } from './expense-projection.js';
 import { monthIndex, monthKey, monthLabel } from './month.js';
 import { type PeriodRange, applyPeriod } from './period.js';
-import { type SubVendor, subsCandidates, vendorKey } from './subs.js';
+import { type SubVendor, resolveVendorMerges, subsCandidates, vendorKey } from './subs.js';
 import type { Dataset, FreeeDeal } from './types.js';
 
 /** 取引名→ベンダー名/別名/除外名の全経路で共有する上限 */
@@ -30,6 +30,8 @@ export interface SubscriptionsScreenVendor {
   /** 利用者のカテゴリ上書き。null は既定辞書に従う */
   category: string | null;
   reviewedAt: string | null;
+  /** 統合先の id。null・省略は統合されていない (統合元は一覧に行を出さず、明細は根へ寄る) */
+  mergedIntoId?: number | null;
 }
 
 export type SubsReviewDecisionKind = 'confirmed' | 'dismissed';
@@ -230,18 +232,26 @@ interface Fact extends ExpenseFact {
 
 interface Context {
   input: SubscriptionsScreenInput;
+  /** 統合を解いた照合一覧 (根だけ。統合元の名前・別名は根の別名に入っている) */
   defs: SubVendor[];
+  /** 一覧に行を出す登録ベンダー (統合元を除いた根だけ、並び順は入力のまま) */
+  roots: SubscriptionsScreenVendor[];
   facts: Fact[];
   /** 全明細の月 (Dataset の月 ∪ 明細の月) */
   months: string[];
 }
 
 function buildContext(input: SubscriptionsScreenInput): Context {
-  const defs: SubVendor[] = input.vendors.map((v) => ({
-    name: v.name,
-    aliases: v.aliases,
-    accounts: v.accounts,
-  }));
+  const { vendors: defs, rootNameOf } = resolveVendorMerges(
+    input.vendors.map((v) => ({
+      id: v.id,
+      name: v.name,
+      aliases: v.aliases,
+      accounts: v.accounts,
+      mergedIntoId: v.mergedIntoId ?? null,
+    })),
+  );
+  const roots = input.vendors.filter((v) => rootNameOf.get(v.name) === v.name);
   const instById = new Map(input.all.mfTx.map((tx) => [tx.id, tx.inst ?? '']));
   const accountOf = (fact: ExpenseFact): string => {
     if (fact.source === 'mf') return instById.get(fact.sourceId) ?? '';
@@ -255,7 +265,7 @@ function buildContext(input: SubscriptionsScreenInput): Context {
     vendor: registeredVendorOf(fact, defs),
   }));
   const months = [...new Set([...input.all.months, ...facts.map((f) => f.month)])].sort();
-  return { input, defs, facts, months };
+  return { input, defs, roots, facts, months };
 }
 
 /** 範囲 null (全期間) を実データの端で閉じる */
@@ -343,7 +353,7 @@ function baseRow(
 
 function baseRows(ctx: Context, range: PeriodRange): BaseRow[] {
   const out: BaseRow[] = [];
-  for (const vendor of ctx.input.vendors) {
+  for (const vendor of ctx.roots) {
     const history = ctx.facts.filter((f) => f.vendor === vendor.name);
     if (!history.some((f) => inRange(f.month, range))) continue;
     out.push(
@@ -556,7 +566,7 @@ function monthlyByCategory(rows: readonly SubscriptionRow[]): Map<string, number
 /** 既存 `subscriptions()` に照合後の明細で作り直した Dataset を通し、直近12か月と売上比を得る */
 function existingNow(ctx: Context, range: PeriodRange | null) {
   const projected = structuredClone(applyPeriod(ctx.input.all, range));
-  const names = ctx.input.vendors.map((v) => v.name);
+  const names = ctx.roots.map((v) => v.name);
   projected.subs.vendors = names;
   projected.subs.matrix = Object.fromEntries(names.map((name) => [name, projected.months.map(() => 0)]));
   projected.subs.other = projected.months.map(() => 0);
@@ -611,9 +621,7 @@ function trendOf(ctx: Context, range: PeriodRange | null): SubscriptionsScreen['
   if (!eff) return { months: [], series: [] };
   const months = monthsBetween(eff.from, eff.to);
   const index = new Map(months.map((m, i) => [m, i]));
-  const vendorCategory = new Map(
-    ctx.input.vendors.map((v) => [v.name, subsCategoryOf(v.name, v.category).category]),
-  );
+  const vendorCategory = new Map(ctx.roots.map((v) => [v.name, subsCategoryOf(v.name, v.category).category]));
   const byCategory = new Map<string, number[]>();
   const add = (category: string, month: string, amount: number) => {
     const i = index.get(month);
@@ -741,7 +749,7 @@ export function subscriptionVendorDetail(
   const row = rowWithContext(ctx, eff, key);
   if (!row) return null;
 
-  const vendor = row.vendorId === null ? null : (input.vendors.find((v) => v.id === row.vendorId) ?? null);
+  const vendor = row.vendorId === null ? null : (ctx.roots.find((v) => v.id === row.vendorId) ?? null);
   const facts = ctx.facts.filter(
     (f) =>
       inRange(f.month, eff) &&
@@ -790,4 +798,19 @@ export function subscriptionVendorDetail(
     bySource,
     related,
   };
+}
+
+/**
+ * 統合先の既定。選んだ行のうち登録済みで推定月額が最大の行 (同額なら先に並ぶ行)。
+ * 未登録の行は sub_vendors に行が無く統合先になれないので選ばない。該当が無ければ null。
+ */
+export function defaultMergeTarget(
+  rows: readonly Pick<SubscriptionRow, 'vendorKey' | 'status' | 'estimatedMonthly'>[],
+): string | null {
+  let best: Pick<SubscriptionRow, 'vendorKey' | 'estimatedMonthly'> | null = null;
+  for (const row of rows) {
+    if (row.status !== 'registered') continue;
+    if (!best || row.estimatedMonthly > best.estimatedMonthly) best = row;
+  }
+  return best?.vendorKey ?? null;
 }

@@ -11,6 +11,7 @@
  * 応答に明細の内容・金額を入れない(DR-9)。衝突行が返すのは tx_id と
  * 種別・科目・名義の3つ組だけで、どの明細かは画面が手元の一覧で解決する。
  */
+import { IMPORT_LIMITS, IMPORT_MB } from '@kanjo/core';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import type { AuthEnv } from '../auth.js';
@@ -40,8 +41,16 @@ importDiffRoute.post('/imports/diff', async (c) => {
   const files = form.getAll('file').filter((entry): entry is File => entry instanceof File);
   if (!files.length)
     return c.json({ error: { code: 'no_file', message: 'ファイルが指定されていません' } }, 400);
-  if (files.some((file) => file.size > 25 * 1024 * 1024))
-    return c.json({ error: { code: 'file_too_large', message: '1ファイルは25MB以下にしてください' } }, 413);
+  if (files.some((file) => file.size > IMPORT_LIMITS.maxFileBytes))
+    return c.json(
+      {
+        error: {
+          code: 'file_too_large',
+          message: `1ファイルは${IMPORT_LIMITS.maxFileBytes / IMPORT_MB}MB以下にしてください`,
+        },
+      },
+      413,
+    );
 
   if (form.get('apply') === '1') {
     return c.json(

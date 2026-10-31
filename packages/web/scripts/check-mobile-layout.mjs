@@ -526,6 +526,32 @@ try {
   const { send, evaluate: evalJs } = session;
   await send('Page.enable');
 
+  const waitForFixture = async (expectedUrl) => {
+    for (let attempt = 0; attempt < 100; attempt += 1) {
+      const ready = await evalJs(`location.href === ${JSON.stringify(expectedUrl)} &&
+        document.readyState === 'complete' &&
+        Boolean(document.querySelector('.tabbar')) &&
+        Boolean(document.querySelector('.sidebar')) &&
+        Boolean(document.querySelector('.split-editor')) &&
+        Boolean(document.querySelector('.tcf-workbench'))`);
+      if (ready) return;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    const state = await evalJs(`JSON.stringify({ url: location.href, readyState: document.readyState,
+      tabbar: Boolean(document.querySelector('.tabbar')),
+      sidebar: Boolean(document.querySelector('.sidebar')),
+      splitEditor: Boolean(document.querySelector('.split-editor')),
+      workbench: Boolean(document.querySelector('.tcf-workbench')) })`);
+    throw new Error(`モバイル画面のfixtureが読み込まれません: ${state}`);
+  };
+  let fixtureLoadId = 0;
+  const navigateFixture = async () => {
+    const url = new URL(pathToFileURL(fixturePath).href);
+    url.searchParams.set('case', String(++fixtureLoadId));
+    await send('Page.navigate', { url: url.href });
+    await waitForFixture(url.href);
+  };
+
   const failures = [];
   for (const { width, zoom } of CASES) {
     await send('Emulation.setDeviceMetricsOverride', {
@@ -534,8 +560,7 @@ try {
       deviceScaleFactor: 1,
       mobile: true,
     });
-    await send('Page.navigate', { url: pathToFileURL(fixturePath).href });
-    await new Promise((r) => setTimeout(r, 600));
+    await navigateFixture();
     await evalJs(`document.body.style.zoom = '${zoom}'`);
     const m = await evalJs(MEASURE);
 
@@ -698,8 +723,7 @@ try {
     deviceScaleFactor: 1,
     mobile: false,
   });
-  await send('Page.navigate', { url: pathToFileURL(fixturePath).href });
-  await new Promise((r) => setTimeout(r, 400));
+  await navigateFixture();
   // 行を詰めるのは「常設幅 かつ タップ環境でない」ときだけ。pointer メディア特性は
   // setEmulatedMedia では動かせず(features に pointer は無い)、タッチのエミュレーションで
   // 決まるので、touch 無効 / 有効 の2状態を実際に切り替えて両方測る。
@@ -755,8 +779,7 @@ try {
     deviceScaleFactor: 1,
     mobile: true,
   });
-  await send('Page.navigate', { url: pathToFileURL(fixturePath).href });
-  await new Promise((r) => setTimeout(r, 400));
+  await navigateFixture();
   await send('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
   });

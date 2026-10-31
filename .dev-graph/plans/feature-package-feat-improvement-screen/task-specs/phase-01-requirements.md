@@ -1,0 +1,111 @@
+# System task overlay: 要件ベースライン確定と持ち越し事項・推定値の確認担当の割り当て
+
+## Machine-readable registration fields
+
+- feature_package_id: feature-package/feat-improvement-screen
+- owners: ["daishiman"]
+- tags: ["improvement", "p01", "preparation"]
+- related_nodes: ["arch-improvement-screen-auth", "arch-improvement-screen-backend", "arch-improvement-screen-database", "arch-improvement-screen-frontend", "arch-improvement-screen-infrastructure", "arch-improvement-screen-maintenance-ops", "arch-improvement-screen-security", "arch-improvement-screen-ui-ux", "spec-improvement-screen"]
+- parent_feature: feat-improvement-screen
+- phase_ref: P01
+- classification: confidence 0.95、reason 単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない、candidate tasks/feat-improvement-screen/sys-impscr-p01.md
+- tracker_binding_intent: beads
+- github_publication: mode local_only、project_aliases []、labels []、milestone null
+- branch_policy: one-task-one-branch + worktree lease required + default-branch reconciliation + assignment_owner=dev-graph-scheduler
+
+## 目的
+
+受入 S1〜S5 を検証可能な文へ分解し、持ち越し事項 OI-01〜OI-08 と『agent 推定・利用者未確認』の値に確認の担当 phase を割り当てる。
+
+## 背景
+
+改善リクエスト画面の規範は specs/spec-improvement-screen.md と仕様章に確定済みだが、画像からの解釈と agent 推定の値 (遷移表・経路名・URL キー・表名・409 の返し方など) と、requirements 段階で確定すべき未決 6 件が残る。実装前にどれを誰が確かめるかを固定しないと、P04 と P05 で期待値が揺れる。
+
+## 前提条件
+
+- Required spec/architecture/phase/task nodes: arch-improvement-screen-auth, arch-improvement-screen-backend, arch-improvement-screen-database, arch-improvement-screen-frontend, arch-improvement-screen-infrastructure, arch-improvement-screen-maintenance-ops, arch-improvement-screen-security, arch-improvement-screen-ui-ux, spec-improvement-screen
+- Entry gate: staging run plan-feat-improvement-screen-20260923T1404Z の goal-spec.json が readiness_pin.status=complete であること
+- Source pin: system-spec-harness v0.1.14 / run-system-spec-compile / assign-system-spec-completeness-evaluator (evidence: system-spec/completeness-findings.json)
+- Repository context: repo_identity github:daishiman/kanjo / root_resolution_source git / .dev-graph/config.json
+
+## Workstream applicability
+
+- Frontend: N/A: 要件の固定のみ
+- Backend: N/A: 要件の固定のみ
+- API: N/A: 要件の固定のみ
+- Data: N/A: 要件の固定のみ
+- Infrastructure: N/A: 要件の固定のみ
+- Security: N/A: 要件の固定のみ
+- Quality: applicable: 受入 S1〜S5 を検証可能な文に分解する
+- Documentation: applicable: 要件ベースラインを docs へ置く
+- Operations: N/A: 要件の固定のみ
+
+## Architecture and deploy unit
+
+- Architecture decisions: arch-improvement-screen-auth, arch-improvement-screen-backend, arch-improvement-screen-database, arch-improvement-screen-frontend, arch-improvement-screen-infrastructure, arch-improvement-screen-maintenance-ops, arch-improvement-screen-security, arch-improvement-screen-ui-ux, spec-improvement-screen
+- Deploy unit/environment: N/A: 文書のみで配布物を持たない
+- Compatibility/migration/backfill: N/A: 文書のみ
+
+## 成果物
+
+- Produced artifacts:
+- docs/improvement-screen/design-decisions.md
+- Consumed artifacts:
+- specs/spec-improvement-screen.md
+- features/feat-improvement-screen.md
+- system-spec/00-requirements-definition.md
+- Write scope/touches:
+- docs/improvement-screen/design-decisions.md
+
+## Tracker publication and completion
+
+本 spec は tracker_binding_intent と GitHub 公開 intent だけを宣言し、永続 binding の解決・起票・完了収束は dev-graph が所有する。
+
+- Tracker binding intent: beads
+- Publication mode: local_only
+- Project aliases / labels / milestone: いずれも値なし (local_only のため)
+- PR completion policy: linked_pr_merged_all
+- PR body contract: dev-graph graph_node_id SYS-IMPSCR-P01 を本文に記載し、default branch を対象にする
+- Ownership boundary: system-dev-planner は intent を宣言するのみで、dev-graph が実際の mutation/reconciliation を行う
+
+## Branch and worktree execution
+
+- Branch: dev-graph 登録後に C15 が devgraph/SYS-IMPSCR-P01 として割り当てる。system-dev-planner は事前割り当てを行わない
+- Worktree lease: 実装着手前に SYS-IMPSCR-P01 の worktree lease を claim し、heartbeat/release を行う
+- Parallel safety: depends_on (なし) が完了し、write_scope が他の active lease と重複しないこと
+- Completion projection: feature branch は pending event のみを記録し、default branch へのクリーンな書き込みが durable な done を確定する
+
+## スコープ外
+
+- goal-spec.json の scope_out (共通シェルの文言 (取引ライン / 最終更新 / 月次クローズ / フッター) の変更。画像の文言は期待値にしない (U7)、改善を起点にした自動修正・自動 PR 作成と、外部の課題管理サービスへの連携 (2026-09-02 サイクルの範囲外を維持)、関連する依頼の手動紐付け。自動導出だけにする (qa-imp-decision-006)、複数利用者の間での依頼の共有と権限分離。単一利用者の運用を維持する、モバイル・タブレット・デスクトップ専用アプリ。狭い幅はレスポンシブ web で扱う (qa-imp-decision-005)、新しい Cron・新しい資格情報の種類・R2 のキーの形の変更)
+- 本 phase の責務外にある他 phase の成果物への書込み
+
+## Verification and evidence
+
+- Acceptance:
+- 受入 S1〜S5 が検証可能な文に分解され docs/improvement-screen/design-decisions.md に載っている。
+- 持ち越し事項 OI-01〜OI-08 それぞれに解決担当 phase が割り当てられている。
+- 『agent 推定・利用者未確認』の値 (一覧を期間で絞らないこと・画像の差し替え・コピー時の再発行・遷移表・経路名・表名など) が一覧になり、利用者確認の要否と担当 phase が決まっている。
+- Automated commands:
+- pnpm lint
+- Required evidence:
+- docs/improvement-screen/design-decisions.md
+
+## Rollout and rollback
+
+- Rollout: 単一の PR で配信し、default branch への merge をもって反映する
+- Rollback trigger and steps: docs の追記を revert する。コードと表の変更を伴わない。
+
+## Handoff
+
+- Executor: task-graph build / capability-build への application-code handoff (build_target_kind=application-code)
+- Ready when: confirmed かつ evaluation pass かつ implementation_readiness complete かつ promoted digest かつ dev-graph registration complete
+
+## 参照情報
+
+- System specification: system-spec/00-requirements-definition.md (system-spec-harness v0.1.14 出力)
+- Screen specification: specs/spec-improvement-screen.md
+- Architecture: arch-improvement-screen-auth, arch-improvement-screen-backend, arch-improvement-screen-database, arch-improvement-screen-frontend, arch-improvement-screen-infrastructure, arch-improvement-screen-maintenance-ops, arch-improvement-screen-security, arch-improvement-screen-ui-ux, spec-improvement-screen
+- Feature: feat-improvement-screen
+- Phase doc: 別文書は生成しない (references/feature-execution-package-contract.md により本 task spec 自体が phase の実行単位)
+- Dependencies: なし

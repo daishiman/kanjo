@@ -13,6 +13,13 @@ const BASE_URL = process.env.KANJO_VISUAL_BASE_URL ?? 'http://127.0.0.1:4175';
 const VISUAL_SCOPE = process.env.KANJO_VISUAL_SCOPE ?? 'all';
 const PERFORMANCE_GATE = process.env.KANJO_PERFORMANCE_GATE === '1';
 const TRACE_INTERACTIONS = process.env.KANJO_VISUAL_TRACE === '1';
+const MATRIX_READY = `(() => {
+  const card = document.querySelector('.matrix-table-card');
+  const label = card?.querySelector('tbody th[scope="row"]');
+  return location.pathname === '/analysis/matrix' && card?.isConnected && label?.isConnected
+    && card.getBoundingClientRect().width > 0 && label.getBoundingClientRect().width > 0
+    && document.querySelectorAll('.matrix-summary table tbody tr').length > 0;
+})()`;
 const VIEWPORT_LABELS = (
   process.env.KANJO_VISUAL_VIEWPORTS ??
   '320,360,375,390,641,768,900,1023,1024,1280,1600,1908,zoom200,rail-zoom200'
@@ -1423,6 +1430,150 @@ const totalCashflow = {
   },
 };
 
+// 現金入力 (KANJO_VISUAL_SCOPE=cash)。1 ページ 20 件を超える 23 件で、ページ送り・交通費・担当者の未設定・長い摘要を同時に描く
+const cashMonth = months.at(-1);
+const cashEntries = {
+  entries: Array.from({ length: 23 }, (_, index) => {
+    const transit = index % 7 === 3;
+    const io = index % 5 === 4 ? 'income' : 'expense';
+    return {
+      id: index + 1,
+      date: `${cashMonth}-${String((index % 28) + 1).padStart(2, '0')}`,
+      month: cashMonth,
+      side: index % 3 === 2 ? 'per' : 'biz',
+      io,
+      amount: transit ? 1_240 : 1_000 + index * 3_700,
+      description:
+        index === 0
+          ? '匿名の打合せで使った会議室の利用料と、その場で買った文具と飲み物をまとめた支払い'
+          : transit
+            ? '匿名駅A → 匿名駅B'
+            : `匿名の現金明細 ${index + 1}`,
+      categoryMajor: transit ? '旅費交通費' : index % 3 === 2 ? '食費' : '消耗品費',
+      categoryMid: '',
+      memo: null,
+      transitFrom: transit ? '匿名駅A' : null,
+      transitTo: transit ? '匿名駅B' : null,
+      transitRound: transit,
+      receiptWaived: transit,
+      owner: index === 1 ? null : index % 3 === 2 ? 'family' : 'business',
+      transitPurpose: transit ? '客先訪問' : null,
+    };
+  }),
+  candidates: {
+    biz: [
+      { name: '消耗品費', source: 'freee', mids: [] },
+      { name: '旅費交通費', source: 'freee', mids: [] },
+    ],
+    per: [{ name: '食費', source: 'mf', mids: [] }],
+  },
+  months: [cashMonth],
+  duplicates: [],
+};
+
+// 使い方 (KANJO_VISUAL_SCOPE=guide)。/api/guide は数値だけを返し、本文は core の定数を web が直接描く
+const guideFixture = {
+  screen: {
+    period: {
+      applied: { from: months.at(-12), to: months.at(-1) },
+      full: { from: months[0], to: months.at(-1) },
+      label: '匿名の直近1年',
+      definition: '匿名の直近1年の取引データを集計しています。',
+    },
+    totals: { income: 4_860_000, expense: 3_912_000, net: 948_000 },
+    dataUpdatedAt: '2026-08-20T03:00:00Z',
+    sources: '取込データ（freee・マネーフォワード）と現金入力',
+    closeStatus: {
+      month: months.at(-1),
+      steps: [
+        { key: 'import', label: '取込', done: true, count: null },
+        { key: 'classification', label: '仕分け', done: true, count: 0 },
+        { key: 'reconciliation', label: '照合', done: false, count: 3 },
+        { key: 'review', label: '確認', done: false, count: null },
+      ],
+      doneCount: 2,
+      total: 4,
+      reviewedAt: null,
+    },
+  },
+};
+
+// 改善リクエスト (KANJO_VISUAL_SCOPE=improvement)。1 ページ 10 件を超える 12 件で、ページ送り・4 つの状態・長い概要を同時に描く
+const improvementStatuses = ['open', 'in_progress', 'done', 'reconfirm'];
+const improvementStatusLabel = { open: '受付', in_progress: '対応中', done: '完了', reconfirm: '再確認' };
+const improvementItem = (index) => {
+  const seq = 12 - index;
+  const status = improvementStatuses[index % 4];
+  return {
+    id: `imp-visual-${seq}`,
+    seq,
+    number: `IMP-${String(seq).padStart(3, '0')}`,
+    route: index % 2 ? '/budget' : '/cash',
+    routeLabel: index % 2 ? '予算' : '現金入力',
+    summary:
+      index === 0
+        ? '匿名の画面で、表の見出しと合計の行が重なって読めなくなるので、狭い幅でも折り返して読めるようにしてほしい'
+        : `匿名の改善の概要 ${seq}`,
+    status,
+    statusLabel: improvementStatusLabel[status],
+    createdAt: `2026-03-${String(seq).padStart(2, '0')}T09:00:00.000Z`,
+    updatedAt: `2026-03-${String(seq).padStart(2, '0')}T10:00:00.000Z`,
+  };
+};
+const improvementItems = Array.from({ length: 12 }, (_, index) => improvementItem(index));
+const improvementList = {
+  items: improvementItems.slice(0, 10),
+  counts: { all: 12, open: 3, in_progress: 3, done: 3, reconfirm: 3 },
+  page: 1,
+  pageSize: 10,
+  total: 12,
+};
+const improvementDetail = {
+  request: {
+    id: improvementItems[0].id,
+    seq: improvementItems[0].seq,
+    title: null,
+    body: `${improvementItems[0].summary}。金額は *** のように伏せています。`,
+    route: '/cash',
+    status: 'open',
+    screenshot: { available: false, size: null },
+    diagnostics: { available: true, entryCount: 2, omittedCount: 0 },
+    token: { status: 'active', expiresAt: '2026-03-20T00:00:00.000Z', fetchCount: 0 },
+    copiedAt: null,
+    copiedTarget: null,
+    doneAt: null,
+    purgedAt: null,
+    attachmentExpiresAt: null,
+    deletedAt: null,
+    createdAt: improvementItems[0].createdAt,
+    updatedAt: improvementItems[0].updatedAt,
+  },
+  number: improvementItems[0].number,
+  summary: improvementItems[0].summary,
+  routeLabel: '現金入力',
+  diagnosticsSummary: {
+    os: 'macOS',
+    browser: 'Chrome',
+    viewport: '1280x800',
+    environment: 'デスクトップ',
+    sessionIdMasked: 'sess-****',
+  },
+  activities: [
+    {
+      id: 'act-visual-1',
+      kind: 'created',
+      fromStatus: null,
+      toStatus: 'open',
+      createdAt: improvementItems[0].createdAt,
+      title: '作成しました',
+      description: '状態: 未対応',
+    },
+  ],
+  related: improvementItems.slice(2, 5),
+  allowedTransitions: ['in_progress', 'done'],
+  diagnostics: null,
+};
+
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
 const responseFor = (url) => {
   const requestUrl = new URL(url);
@@ -1446,6 +1597,8 @@ const responseFor = (url) => {
   if (path === '/api/subscriptions') return subscriptions;
   if (path === '/api/sub-vendors/candidates') return { candidates: [], excluded: [], dealRows: 0 };
   if (path === '/api/sub-vendors') return { vendors: [], accountOptions: [], review: [] };
+  // サブスク画面は「操作」欄のために操作の記録も読む。差し替えないと proxy 先の API が 401 を返し、ログインへ落ちる
+  if (path === '/api/subscription-operations') return { operations: [], revision: 0 };
   if (path === '/api/household') return household;
   if (path === '/api/household/category') return householdCategory;
   if (path === '/api/statements')
@@ -1462,6 +1615,13 @@ const responseFor = (url) => {
     };
   if (path === '/api/ai/reports/anonymous-report-1') return aiReportDetail;
   if (path === '/api/ai/reports') return { reports: [aiReportRow], archivedCount: 0 };
+  if (path === '/api/cash-entries') return cashEntries;
+  if (path === '/api/guide') return guideFixture;
+  // 現金入力は担当者の表示名を読む。fixture に無いと proxy 先の API が Cookie 無しで 401 を返し、
+  // 画面がログインへ切り替わる(描画の途中で切り替わるので、落ち方が実行ごとに変わる)
+  if (path === '/api/settings/owner-labels') return { labels: {} };
+  if (path === '/api/improvements') return improvementList;
+  if (path === `/api/improvements/${improvementDetail.request.id}`) return improvementDetail;
   return undefined;
 };
 
@@ -1514,11 +1674,20 @@ try {
       if (await evaluate(expression)) return;
       await sleep(250);
     }
-    const body = await evaluate('document.body.innerText.slice(0, 500)');
-    throw new Error(`${label} の描画待ちがタイムアウトしました: ${body}`);
+    const state = await evaluate(`JSON.stringify({ url: location.href,
+      readyState: document.readyState,
+      body: document.body?.innerText.slice(0, 500) ?? '',
+      root: document.querySelector('#root')?.innerHTML.slice(0, 500) ?? '',
+      failedResources: performance.getEntriesByType('resource')
+        .filter((item) => item.responseStatus >= 400)
+        .slice(-8)
+        .map((item) => ({ name: item.name, status: item.responseStatus })) })`);
+    throw new Error(
+      `${label} の描画待ちがタイムアウトしました: ${state}; 実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`,
+    );
   };
   const mouseClick = async (selector, label) => {
-    const probe = await evaluate(`(async () => {
+    const probeExpression = `(async () => {
         const node = document.querySelector(${JSON.stringify(selector)});
         if (!node) return null;
         node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
@@ -1553,8 +1722,28 @@ try {
           hit: hit ? { tag: hit.tagName, className: hit.className, text: hit.textContent?.trim() } : null,
           hitWithinTarget: Boolean(hit && (hit === node || node.contains(hit))),
         };
-      })()`);
-    if (!probe) throw new Error(`${label} の実クリック対象が見つかりません: ${selector}`);
+      })()`;
+    // 狭幅の詳細選択後は画面全体の smooth scroll がまだ進むことがある。
+    // 一時的に viewport 外へ出た対象を欠落と誤判定しないよう、座標が取れるまで待つ。
+    let probe = null;
+    for (let attempt = 0; attempt < 15 && !probe; attempt += 1) {
+      probe = await evaluate(probeExpression);
+      if (!probe) await sleep(100);
+    }
+    if (!probe) {
+      const diagnostics = await evaluate(`JSON.stringify((() => {
+        const node = document.querySelector(${JSON.stringify(selector)});
+        const rect = node?.getBoundingClientRect();
+        return {
+          url: location.href,
+          exists: Boolean(node),
+          rect: rect ? { left: rect.left, top: rect.top, width: rect.width, height: rect.height } : null,
+          scrollY,
+          body: document.body.innerText.slice(0, 240),
+        };
+      })())`);
+      throw new Error(`${label} の実クリック対象が見つかりません: ${selector} ${diagnostics}`);
+    }
     if (TRACE_INTERACTIONS) console.log(`${label} click probe ${JSON.stringify(probe)}`);
     if (!probe.hitWithinTarget)
       throw new Error(`${label} のクリック位置が対象外です: ${JSON.stringify(probe)}`);
@@ -1734,6 +1923,562 @@ try {
       `1280px→834px Statements 参照状態 本体=${metrics.scrollWidth}/${metrics.width}px CSS高=${metrics.height}px ${metrics.unsaved}`,
     );
   }
+  if (VISUAL_SCOPE === 'cash') {
+    // 現金入力は図を持たないので、画面の構成要素・横のはみ出し・下部固定バー・行内の削除確認を実ブラウザで測る。
+    // DOM テストでは見えない幅ごとの崩れを止める (qa-cash-maintenance-ops-web-001)
+    const cashViewports = VIEWPORTS.filter(
+      ({ label, width, zoom }) =>
+        (zoom === 1 && [360, 390, 768, 1024, 1280].includes(width)) || label === 'zoom200',
+    );
+    for (const { label: viewportLabel, width, zoom } of cashViewports) {
+      const tag = zoom === 1 ? `${width}px` : viewportLabel;
+      await send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: width < 640,
+      });
+      await send('Emulation.setPageScaleFactor', { pageScaleFactor: zoom });
+      runtimeProblems.length = 0;
+      await send('Page.navigate', { url: `${BASE_URL}/cash?month=${cashMonth}` });
+      await waitFor(
+        "document.querySelectorAll('.cash-table tbody tr').length > 0 && Boolean(document.querySelector('.cash-sticky'))",
+        `${tag} Cash`,
+      );
+      const metrics = JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          const box = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value && value.width > 0 && value.height > 0 ? value : null;
+          };
+          const viewportWidth = document.documentElement.clientWidth;
+          const sticky = box(document.querySelector('.cash-sticky'));
+          const tabs = [...document.querySelectorAll('.cash-tabs [role="tab"]')];
+          return {
+            viewportWidth,
+            viewportHeight: window.innerHeight,
+            pageWidth: document.documentElement.scrollWidth,
+            title: document.querySelector('main h1')?.textContent?.trim() ?? '',
+            question: document.querySelector('main h2.page-question')?.textContent?.trim() ?? '',
+            period: Boolean(box(document.querySelector('.cash-period'))),
+            tabs: tabs.map((tab) => tab.querySelector('.cash-tab-label')?.textContent?.trim() ?? ''),
+            tabHeights: tabs.map((tab) => Math.round(box(tab)?.height ?? 0)),
+            form: Boolean(box(document.querySelector('.cash-form'))),
+            receiptNote: Boolean(box(document.querySelector('.cash-receipt-note'))),
+            fileInputs: document.querySelectorAll('input[type="file"]').length,
+            rows: document.querySelectorAll('.cash-table tbody tr').length,
+            pager: Boolean(box(document.querySelector('.cash-pager'))),
+            totals: document.querySelectorAll('.cash-totals .cash-total-card').length,
+            sticky: sticky
+              ? { left: sticky.left, right: sticky.right, bottom: sticky.bottom, height: sticky.height }
+              : null,
+            overflowing: [...document.querySelectorAll('main *')]
+              .filter((node) => !node.closest('.scroll-x'))
+              .filter((node) => {
+                const value = box(node);
+                return value && (value.left < -1 || value.right > viewportWidth + 1);
+              })
+              .slice(0, 3)
+              .map((node) => node.className || node.tagName),
+          };
+        })())`),
+      );
+      if (metrics.pageWidth > metrics.viewportWidth + 1)
+        failures.push(`${tag} Cash の本体が横にはみ出す(${metrics.pageWidth}/${metrics.viewportWidth}px)`);
+      if (metrics.overflowing.length)
+        failures.push(`${tag} Cash の要素が画面の外へ出る: ${metrics.overflowing.join(', ')}`);
+      if (metrics.title !== '現金入力')
+        failures.push(`${tag} Cash のタイトルが「現金入力」ではない: ${metrics.title}`);
+      if (metrics.question !== '現金と交通費を、漏れなく記録しますか？')
+        failures.push(`${tag} Cash の問いの見出しが一致しない: ${metrics.question}`);
+      if (!metrics.period) failures.push(`${tag} Cash の対象期間カードが描画されない`);
+      if (JSON.stringify(metrics.tabs) !== JSON.stringify(['通常入力', '交通費入力']))
+        failures.push(`${tag} Cash のタブが「通常入力」「交通費入力」ではない: ${metrics.tabs.join(' / ')}`);
+      if (metrics.tabHeights.some((height) => height < 43))
+        failures.push(`${tag} Cash のタブの高さが 44px に届かない: ${metrics.tabHeights.join(', ')}`);
+      if (!metrics.form || !metrics.receiptNote || metrics.fileInputs !== 0)
+        failures.push(`${tag} Cash の入力欄か領収書の案内が無い、または領収書のファイル欄がある`);
+      if (metrics.rows !== 20 || !metrics.pager)
+        failures.push(`${tag} Cash の一覧が 1 ページ 20 件とページ送りで描画されない(${metrics.rows} 行)`);
+      if (metrics.totals !== 3) failures.push(`${tag} Cash の合計が収入・支出・差額の 3 枚ではない`);
+      if (
+        !metrics.sticky ||
+        metrics.sticky.bottom > metrics.viewportHeight + 1 ||
+        metrics.sticky.left < -1 ||
+        metrics.sticky.right > metrics.viewportWidth + 1
+      )
+        failures.push(`${tag} Cash の下部固定バーが画面内に収まらない: ${JSON.stringify(metrics.sticky)}`);
+
+      if (zoom === 1 && [360, 390].includes(width)) {
+        await mouseClick('.cash-tabs [role="tab"]:nth-child(2)', `${tag} Cash 交通費タブ`);
+        await waitFor(
+          "document.querySelector('.cash-tabs [role=\"tab\"]:nth-child(2)')?.getAttribute('aria-selected') === 'true'",
+          `${tag} Cash 交通費タブの選択`,
+        );
+        await mouseClick(
+          '[data-cash-card="transit"] .cash-transit-shared input[type="radio"][value="per"]',
+          `${tag} Cash 個人区分`,
+        );
+        await waitFor(
+          'Boolean(document.querySelector(\'[data-cash-card="transit"] .cash-transit-shared .cat-current\'))',
+          `${tag} Cash 個人カテゴリ`,
+        );
+        const shared = JSON.parse(
+          await evaluate(`(async () => {
+            const root = document.querySelector('[data-cash-card="transit"] .cash-transit-shared');
+            const selectors = {
+              date: 'input[type="date"]',
+              side: 'input[type="radio"][value="per"]',
+              owner: 'select[id$="-owner"]',
+              category: '.cat-current',
+            };
+            const fields = {};
+            for (const [name, selector] of Object.entries(selectors)) {
+              const node = root?.querySelector(selector);
+              node?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+              await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+              const box = node?.getBoundingClientRect();
+              const style = node ? getComputedStyle(node) : null;
+              const x = box ? Math.min(innerWidth - 1, Math.max(0, box.left + box.width / 2)) : -1;
+              const y = box ? Math.min(innerHeight - 1, Math.max(0, box.top + box.height / 2)) : -1;
+              const hit = box ? document.elementFromPoint(x, y) : null;
+              fields[name] = {
+                display: style?.display ?? 'missing',
+                visibility: style?.visibility ?? 'missing',
+                disabled: Boolean(node?.disabled),
+                inViewport: Boolean(
+                  box && box.width > 0 && box.height > 0 && box.left >= -1 && box.right <= innerWidth + 1 &&
+                    box.top >= -1 && box.bottom <= innerHeight + 1
+                ),
+                hitWithin: Boolean(node && hit && (hit === node || node.contains(hit))),
+              };
+            }
+            return JSON.stringify({
+              rootDisplay: root ? getComputedStyle(root).display : 'missing',
+              fields,
+            });
+          })()`),
+        );
+        const unavailable = Object.entries(shared.fields)
+          .filter(
+            ([, field]) =>
+              field.display === 'none' ||
+              field.visibility === 'hidden' ||
+              field.disabled ||
+              !field.inViewport ||
+              !field.hitWithin,
+          )
+          .map(([name]) => name);
+        if (shared.rootDisplay === 'none' || unavailable.length)
+          failures.push(
+            `${tag} Cash 交通費の共有欄が表示・操作できない: root=${shared.rootDisplay}, fields=${unavailable.join(',')}`,
+          );
+        await mouseClick(
+          '[data-cash-card="transit"] .cash-transit-shared .cat-current',
+          `${tag} Cash 個人カテゴリ選択`,
+        );
+        await waitFor(
+          "document.querySelector('[data-cash-card=\"transit\"] .cash-transit-shared .cat-current')?.getAttribute('aria-expanded') === 'true'",
+          `${tag} Cash 個人カテゴリ選択の展開`,
+        );
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key: 'Escape',
+          code: 'Escape',
+          windowsVirtualKeyCode: 27,
+        });
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyUp',
+          key: 'Escape',
+          code: 'Escape',
+          windowsVirtualKeyCode: 27,
+        });
+      }
+
+      // 行内の削除確認は、開くと「キャンセル」にフォーカスが移り、画面幅に収まる
+      await mouseClick(
+        '.cash-table tbody tr:first-child .cash-row-actions button:last-child',
+        `${tag} Cash 削除`,
+      );
+      await waitFor("Boolean(document.querySelector('.cash-confirm'))", `${tag} Cash 削除確認`);
+      const confirm = JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          const value = document.querySelector('.cash-confirm')?.getBoundingClientRect();
+          return {
+            left: value?.left ?? -1,
+            right: value?.right ?? 0,
+            viewportWidth: document.documentElement.clientWidth,
+            focused: document.activeElement?.textContent?.trim() ?? '',
+          };
+        })())`),
+      );
+      if (confirm.left < -1 || confirm.right > confirm.viewportWidth + 1)
+        failures.push(
+          `${tag} Cash の削除確認が画面幅に収まらない(${Math.round(confirm.left)}-${Math.round(confirm.right)}px)`,
+        );
+      if (confirm.focused !== 'キャンセル')
+        failures.push(`${tag} Cash の削除確認を開いてもフォーカスが「キャンセル」に無い: ${confirm.focused}`);
+      const screenshot = await send('Page.captureScreenshot', {
+        format: 'png',
+        fromSurface: true,
+        captureBeyondViewport: true,
+      });
+      writeFileSync(join(OUTPUT_DIR, `cash-${tag}.png`), Buffer.from(screenshot.data, 'base64'));
+      await send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        key: 'Escape',
+        code: 'Escape',
+        windowsVirtualKeyCode: 27,
+      });
+      await send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key: 'Escape',
+        code: 'Escape',
+        windowsVirtualKeyCode: 27,
+      });
+      // 閉じないときも先に記録したフォーカスの不合格まで報告するため、ここでは止めない
+      try {
+        await waitFor("!document.querySelector('.cash-confirm')", `${tag} Cash 削除確認を Escape で閉じる`);
+      } catch {
+        failures.push(`${tag} Cash の削除確認が Escape で閉じない`);
+      }
+      await evaluate("localStorage.removeItem('kanjo:cash-draft:v1:visual-user')");
+      if (runtimeProblems.length)
+        failures.push(`${tag} Cash で実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`);
+      console.log(
+        `${tag} Cash 行=${metrics.rows} 本体=${metrics.pageWidth}/${metrics.viewportWidth}px タブ高=${metrics.tabHeights.join(',')}px`,
+      );
+    }
+  }
+  if (VISUAL_SCOPE === 'guide') {
+    // 使い方は図を持たないので、19-guide.png の構成要素・横のはみ出し・幅ごとの段組み・下部固定バーを実ブラウザで測る。
+    // 1024px 以上は本文と右カラムの 2 列・目次は左の縦並び、それ未満は 1 列・目次は横スクロールのタブ (guide.css)
+    const guideViewports = VIEWPORTS.filter(
+      ({ label, width, zoom }) =>
+        (zoom === 1 && [360, 390, 768, 1023, 1024, 1280, 1600].includes(width)) || label === 'zoom200',
+    );
+    for (const { label: viewportLabel, width, zoom } of guideViewports) {
+      const tag = zoom === 1 ? `${width}px` : viewportLabel;
+      await send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: width < 640,
+      });
+      await send('Emulation.setPageScaleFactor', { pageScaleFactor: zoom });
+      runtimeProblems.length = 0;
+      await send('Page.navigate', { url: `${BASE_URL}/guide` });
+      await waitFor(
+        "document.querySelector('.guide-stepper')?.getAttribute('aria-busy') === 'false' && [...document.querySelectorAll('.guide-stepper-state')].length === 4 && [...document.querySelectorAll('.guide-stepper-state')].every((node) => ['完了', '未完了'].includes(node.textContent.trim())) && [...document.querySelectorAll('.guide-total-value')].length === 3 && [...document.querySelectorAll('.guide-total-value')].every((node) => node.textContent.trim().includes('¥')) && Boolean(document.querySelector('.guide-bottom-bar'))",
+        `${tag} Guide`,
+      );
+      const metrics = JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          const box = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value && value.width > 0 && value.height > 0 ? value : null;
+          };
+          const viewportWidth = document.documentElement.clientWidth;
+          const main = box(document.querySelector('.guide-main'));
+          const aside = box(document.querySelector('.guide-aside'));
+          const toc = box(document.querySelector('.guide-toc'));
+          const panel = box(document.querySelector('.guide-panel'));
+          const steps = [...document.querySelectorAll('.guide-steps-list > li')].map(box).filter(Boolean);
+          const bar = box(document.querySelector('.guide-bottom-bar'));
+          return {
+            viewportWidth,
+            viewportHeight: window.innerHeight,
+            narrow: window.matchMedia('(max-width: 1023.98px)').matches,
+            phone: window.matchMedia('(max-width: 640px)').matches,
+            pageWidth: document.documentElement.scrollWidth,
+            title: document.querySelector('main h1')?.textContent?.trim() ?? '',
+            question: document.querySelector('main h2.page-question')?.textContent?.trim() ?? '',
+            stepTitles: [...document.querySelectorAll('.guide-step-title strong')].map((node) => node.textContent.trim()),
+            stepColumns: new Set(steps.map((value) => Math.round(value.left))).size,
+            tabs: [...document.querySelectorAll('.guide-toc [role="tab"]')].map((node) => node.textContent.trim()),
+            selected: document.querySelector('.guide-toc [aria-selected="true"]')?.textContent?.trim() ?? '',
+            stepper: [...document.querySelectorAll('.guide-stepper-state')].map((node) => node.textContent.trim()),
+            totals: [...document.querySelectorAll('.guide-total-value')].map((node) => node.textContent.trim()),
+            totalsWrapped: [...document.querySelectorAll('.guide-total-value')].filter((node) => {
+              const range = document.createRange();
+              range.selectNodeContents(node);
+              return new Set([...range.getClientRects()].map((rect) => Math.round(rect.top))).size > 1 || node.scrollWidth > node.clientWidth + 1;
+            }).length,
+            facts: document.querySelectorAll('.guide-facts dd').length,
+            related: document.querySelectorAll('.guide-related a').length,
+            search: Boolean(box(document.querySelector('.guide-search input'))),
+            faqRows: document.querySelectorAll('.guide-faq-table tbody tr').length,
+            asideBesideMain: Boolean(main && aside && aside.left >= main.right - 1),
+            tocBesidePanel: Boolean(toc && panel && panel.left >= toc.right - 1),
+            bar: bar ? { left: bar.left, right: bar.right, bottom: bar.bottom, height: bar.height } : null,
+            barText: document.querySelector('.guide-bottom-bar')?.textContent?.replace(/\\s+/g, ' ').trim() ?? '',
+            overflowing: [...document.querySelectorAll('main *')]
+              .filter((node) => !node.closest('.scroll-x') && !node.closest('.guide-toc'))
+              .filter((node) => {
+                const value = box(node);
+                return value && (value.left < -1 || value.right > viewportWidth + 1);
+              })
+              .slice(0, 3)
+              .map((node) => node.className || node.tagName),
+          };
+        })())`),
+      );
+      if (metrics.pageWidth > metrics.viewportWidth + 1)
+        failures.push(`${tag} Guide の本体が横にはみ出す(${metrics.pageWidth}/${metrics.viewportWidth}px)`);
+      if (metrics.overflowing.length)
+        failures.push(`${tag} Guide の要素が画面の外へ出る: ${metrics.overflowing.join(', ')}`);
+      if (metrics.title !== '使い方')
+        failures.push(`${tag} Guide のタイトルが「使い方」ではない: ${metrics.title}`);
+      if (metrics.question !== 'この数字を、どう読み・どこへ戻ればよいですか？')
+        failures.push(`${tag} Guide の問いの見出しが一致しない: ${metrics.question}`);
+      if (JSON.stringify(metrics.stepTitles) !== JSON.stringify(['取込む', '整える', '確認', '計画']))
+        failures.push(`${tag} Guide の 4 ステップが一致しない: ${metrics.stepTitles.join(' / ')}`);
+      // 段組みは guide.css の media query と同じ条件 (ページ倍率ではなく CSS の幅) で期待値を決める
+      const expectedStepColumns = metrics.phone ? 1 : metrics.narrow ? 2 : 4;
+      if (metrics.stepColumns !== expectedStepColumns)
+        failures.push(
+          `${tag} Guide の 4 ステップが ${expectedStepColumns} 列ではない(${metrics.stepColumns} 列)`,
+        );
+      if (
+        JSON.stringify(metrics.tabs) !==
+        JSON.stringify(['月次の流れ', '総収支', '照合', '仕分け', '予算', 'データ出典', '用語と目安'])
+      )
+        failures.push(`${tag} Guide の目次 7 項目が一致しない: ${metrics.tabs.join(' / ')}`);
+      if (metrics.selected !== '月次の流れ') failures.push(`${tag} Guide の既定の目次が月次の流れではない`);
+      if (JSON.stringify(metrics.stepper) !== JSON.stringify(['完了', '完了', '未完了', '未完了']))
+        failures.push(`${tag} Guide のステッパーが実進捗と一致しない: ${metrics.stepper.join(' / ')}`);
+      if (JSON.stringify(metrics.totals) !== JSON.stringify(['¥4,860,000', '¥3,912,000', '+¥948,000']))
+        failures.push(`${tag} Guide の総収支 3 枚が一致しない: ${metrics.totals.join(' / ')}`);
+      if (metrics.totalsWrapped)
+        failures.push(`${tag} Guide の総収支の金額が折り返す・はみ出す(${metrics.totalsWrapped} 枚)`);
+      if (metrics.facts !== 4 || metrics.related !== 5 || !metrics.search)
+        failures.push(
+          `${tag} Guide の右カラム (数値 ${metrics.facts}/4・関連 ${metrics.related}/5・検索 ${metrics.search}) が揃わない`,
+        );
+      if (metrics.faqRows !== 5)
+        failures.push(`${tag} Guide のよくある疑問が 5 行ではない(${metrics.faqRows} 行)`);
+      if (!metrics.narrow && (!metrics.asideBesideMain || !metrics.tocBesidePanel))
+        failures.push(`${tag} Guide の 2 列 (右カラム・左の目次) が並ばない`);
+      if (metrics.narrow && (metrics.asideBesideMain || metrics.tocBesidePanel))
+        failures.push(`${tag} Guide が 1024px 未満でも横に並んだまま`);
+      if (
+        !metrics.bar ||
+        metrics.bar.bottom > metrics.viewportHeight + 1 ||
+        metrics.bar.left < -1 ||
+        metrics.bar.right > metrics.viewportWidth + 1
+      )
+        failures.push(`${tag} Guide の下部固定バーが画面内に収まらない: ${JSON.stringify(metrics.bar)}`);
+      if (!metrics.barText.includes('現在のトピック') || !metrics.barText.includes('総収支を開く'))
+        failures.push(`${tag} Guide の下部固定バーの文言が一致しない: ${metrics.barText}`);
+      const screenshot = await send('Page.captureScreenshot', {
+        format: 'png',
+        fromSurface: true,
+        captureBeyondViewport: true,
+      });
+      writeFileSync(join(OUTPUT_DIR, `guide-${tag}.png`), Buffer.from(screenshot.data, 'base64'));
+      if (runtimeProblems.length)
+        failures.push(`${tag} Guide で実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`);
+      console.log(
+        `${tag} Guide 本体=${metrics.pageWidth}/${metrics.viewportWidth}px ステップ列=${metrics.stepColumns} 2列=${metrics.asideBesideMain}`,
+      );
+    }
+  }
+  if (VISUAL_SCOPE === 'improvement') {
+    // 改善リクエストは図を持たないので、画面の構成要素・横のはみ出し・一覧と詳細の並び・範囲選択の覆いを実ブラウザで測る。
+    // 範囲選択はポインタの有無に依らず、キーボードで開いて閉じる (CI の headless Chrome は pointer:none)
+    const improvementViewports = VIEWPORTS.filter(
+      ({ label, width, zoom }) =>
+        (zoom === 1 && [360, 390, 641, 768, 900, 1023, 1024, 1280, 1600].includes(width)) ||
+        label === 'zoom200',
+    );
+    for (const { label: viewportLabel, width, zoom } of improvementViewports) {
+      const tag = zoom === 1 ? `${width}px` : viewportLabel;
+      await send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: width < 640,
+      });
+      await send('Emulation.setPageScaleFactor', { pageScaleFactor: zoom });
+      runtimeProblems.length = 0;
+      await send('Page.navigate', { url: `${BASE_URL}/improvement?id=${improvementDetail.request.id}` });
+      await waitFor(
+        "document.querySelectorAll('.improvement-table tbody tr').length > 0 && Boolean(document.querySelector('#improvement-detail-title'))",
+        `${tag} Improvement`,
+      );
+      const metrics = JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          const box = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value && value.width > 0 && value.height > 0 ? value : null;
+          };
+          const viewportWidth = document.documentElement.clientWidth;
+          const list = box(document.querySelector('.improvement-list'));
+          const detail = box(document.querySelector('.improvement-detail'));
+          const tabs = [...document.querySelectorAll('.improvement-list [role="tab"]')];
+          return {
+            viewportWidth,
+            pageWidth: document.documentElement.scrollWidth,
+            title: document.querySelector('main h1')?.textContent?.trim() ?? '',
+            question: document.querySelector('main h2.page-question')?.textContent?.trim() ?? '',
+            form: Boolean(box(document.querySelector('.improvement-create'))),
+            privacy: document.querySelectorAll('.improvement-privacy input[type="checkbox"]').length,
+            count: document.querySelector('.improvement-count')?.textContent?.trim() ?? '',
+            mask: Boolean(box(document.querySelector('.improvement-mask'))),
+            search: Boolean(box(document.querySelector('.improvement-search input'))),
+            tabs: tabs.map((tab) => tab.textContent?.trim() ?? ''),
+            tabHeights: tabs.map((tab) => Math.round(box(tab)?.height ?? 0)),
+            rows: document.querySelectorAll('.improvement-table tbody tr').length,
+            selected: document.querySelectorAll('.improvement-table tbody tr.is-selected').length,
+            pager: Boolean(box(document.querySelector('.improvement-pager'))),
+            number: document.querySelector('.improvement-detail .improvement-number')?.textContent?.trim() ?? '',
+            sections: document.querySelectorAll('.improvement-detail .improvement-detail-section').length,
+            ops: document.querySelectorAll('.improvement-ops button').length,
+            sideBySide: Boolean(list && detail && detail.left >= list.right - 1),
+            overflowing: [...document.querySelectorAll('main *')]
+              // 表の枠と件数タブ (.segment) は狭い幅では自分の中で横スクロールする共通の作り
+              .filter((node) => !node.closest('.scroll-x, .improvement-table-wrap, .segment'))
+              .filter((node) => {
+                const value = box(node);
+                return value && (value.left < -1 || value.right > viewportWidth + 1);
+              })
+              .slice(0, 3)
+              .map((node) => \`\${node.className || node.tagName}「\${(node.getAttribute('aria-label') ?? node.textContent ?? '').trim().slice(0, 20)}」\${Math.round(box(node).left)}-\${Math.round(box(node).right)}\`),
+          };
+        })())`),
+      );
+      if (metrics.pageWidth > metrics.viewportWidth + 1)
+        failures.push(
+          `${tag} Improvement の本体が横にはみ出す(${metrics.pageWidth}/${metrics.viewportWidth}px)`,
+        );
+      if (metrics.overflowing.length)
+        failures.push(`${tag} Improvement の要素が画面の外へ出る: ${metrics.overflowing.join(', ')}`);
+      if (metrics.title !== '改善リクエスト')
+        failures.push(`${tag} Improvement のタイトルが「改善リクエスト」ではない: ${metrics.title}`);
+      if (metrics.question !== '画面の文脈を保ったまま、改善を共有しますか？')
+        failures.push(`${tag} Improvement の問いの見出しが一致しない: ${metrics.question}`);
+      if (!metrics.form || metrics.privacy !== 2 || !metrics.mask || !/1000/.test(metrics.count))
+        failures.push(
+          `${tag} Improvement の作成フォーム・確認 2 つ・マスクの説明・文字数のどれかが無い(確認=${metrics.privacy} 文字数=${metrics.count})`,
+        );
+      if (!metrics.search) failures.push(`${tag} Improvement の検索欄が描画されない`);
+      if (
+        JSON.stringify(metrics.tabs) !==
+        JSON.stringify(['すべて 12', '受付 3', '対応中 3', '完了 3', '再確認 3'])
+      )
+        failures.push(`${tag} Improvement の件数タブが一致しない: ${metrics.tabs.join(' / ')}`);
+      if (metrics.tabHeights.some((height) => height < 43))
+        failures.push(`${tag} Improvement のタブの高さが 44px に届かない: ${metrics.tabHeights.join(', ')}`);
+      if (metrics.rows !== 10 || !metrics.pager)
+        failures.push(
+          `${tag} Improvement の一覧が 1 ページ 10 件とページ送りで描画されない(${metrics.rows} 行)`,
+        );
+      if (metrics.selected !== 1)
+        failures.push(`${tag} Improvement の選択中の行が 1 行ではない(${metrics.selected})`);
+      if (metrics.number !== improvementDetail.number || metrics.sections !== 6 || metrics.ops !== 5)
+        failures.push(
+          `${tag} Improvement の詳細が欠ける(番号=${metrics.number} 区画=${metrics.sections} 操作=${metrics.ops})`,
+        );
+      // 801px 以上は一覧と詳細が横に並び、800px 以下は縦に積む
+      if (zoom === 1 && width > 800 && !metrics.sideBySide)
+        failures.push(`${tag} Improvement の一覧と詳細が横に並ばない`);
+      if (zoom === 1 && width <= 800 && metrics.sideBySide)
+        failures.push(`${tag} Improvement の一覧と詳細が狭い幅でも横に並ぶ`);
+
+      // 右下の「改善を送る」から浮動パネルを開き、範囲選択の覆いをキーボードで開閉する
+      const triggerVisible = await evaluate(
+        "(() => { const node = document.querySelector('.improve-trigger'); if (!node) return false; const style = getComputedStyle(node); const box = node.getBoundingClientRect(); const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2); return style.display !== 'none' && style.visibility === 'visible' && Number(style.opacity) > 0 && box.width >= 44 && box.height >= 44 && box.left >= 0 && box.right <= document.documentElement.clientWidth && box.top >= 0 && box.bottom <= window.innerHeight && Boolean(hit && node.contains(hit)); })()",
+      );
+      if (!triggerVisible) {
+        failures.push(`${tag} Improvement の『改善を送る』入口が見えないか、押せない`);
+      } else {
+        await evaluate("document.querySelector('.improve-trigger').click()");
+        await waitFor(
+          "Boolean(document.querySelector('section.capture-panel'))",
+          `${tag} Improvement 撮影パネル`,
+        );
+        const panel = JSON.parse(
+          await evaluate(`JSON.stringify((() => {
+            const value = document.querySelector('section.capture-panel')?.getBoundingClientRect();
+            return {
+              left: value?.left ?? -1,
+              right: value?.right ?? 0,
+              bottom: value?.bottom ?? 0,
+              viewportWidth: document.documentElement.clientWidth,
+              viewportHeight: window.innerHeight,
+              hidden: document.querySelector('section.capture-panel')?.hasAttribute('data-capture-hide') ?? false,
+            };
+          })())`),
+        );
+        if (
+          panel.left < -1 ||
+          panel.right > panel.viewportWidth + 1 ||
+          panel.bottom > panel.viewportHeight + 1 ||
+          !panel.hidden
+        )
+          failures.push(`${tag} Improvement の撮影パネルが画面に収まらないか、撮影から除外されない`);
+        await evaluate(
+          "[...document.querySelectorAll('section.capture-panel button')].find((b) => b.textContent.trim() === '範囲を選択する')?.click()",
+        );
+        await waitFor(
+          'Boolean(document.querySelector(\'.capture-region [role="application"]\'))',
+          `${tag} Improvement 範囲選択`,
+        );
+        await evaluate('document.querySelector(\'.capture-region [role="application"]\').focus()');
+        const beforeText = await evaluate(
+          "[...document.querySelectorAll('.capture-region *')].find((n) => /^選択範囲:/.test(n.textContent ?? '') && n.children.length === 0)?.textContent ?? ''",
+        );
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key: 'ArrowRight',
+          code: 'ArrowRight',
+          windowsVirtualKeyCode: 39,
+        });
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyUp',
+          key: 'ArrowRight',
+          code: 'ArrowRight',
+          windowsVirtualKeyCode: 39,
+        });
+        const afterText = await evaluate(
+          "[...document.querySelectorAll('.capture-region *')].find((n) => /^選択範囲:/.test(n.textContent ?? '') && n.children.length === 0)?.textContent ?? ''",
+        );
+        if (!beforeText || beforeText === afterText)
+          failures.push(`${tag} Improvement の範囲選択が矢印キーで動かないか、範囲が文字で示されない`);
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key: 'Escape',
+          code: 'Escape',
+          windowsVirtualKeyCode: 27,
+        });
+        await send('Input.dispatchKeyEvent', {
+          type: 'keyUp',
+          key: 'Escape',
+          code: 'Escape',
+          windowsVirtualKeyCode: 27,
+        });
+        try {
+          await waitFor(
+            "!document.querySelector('.capture-region')",
+            `${tag} Improvement 範囲選択を Escape で閉じる`,
+          );
+        } catch {
+          failures.push(`${tag} Improvement の範囲選択が Escape で閉じない`);
+        }
+      }
+      const screenshot = await send('Page.captureScreenshot', {
+        format: 'png',
+        fromSurface: true,
+        captureBeyondViewport: true,
+      });
+      writeFileSync(join(OUTPUT_DIR, `improvement-${tag}.png`), Buffer.from(screenshot.data, 'base64'));
+      if (runtimeProblems.length)
+        failures.push(`${tag} Improvement で実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`);
+      console.log(
+        `${tag} Improvement 行=${metrics.rows} 本体=${metrics.pageWidth}/${metrics.viewportWidth}px 横並び=${metrics.sideBySide} 撮影パネル=${triggerVisible}`,
+      );
+    }
+  }
   if (VISUAL_SCOPE === 'all' || VISUAL_SCOPE === 'core') {
     for (const { label: viewportLabel, width, zoom } of VIEWPORTS) {
       await send('Emulation.setDeviceMetricsOverride', {
@@ -1746,12 +2491,10 @@ try {
       await send('Page.navigate', { url: `${BASE_URL}/analysis/matrix` });
       // Matrix は図ではなく表で読む画面になった。要約(偏りが大きい3点)と月次表が
       // 両方出そろってから測る
-      await waitFor(
-        "document.querySelectorAll('.matrix-summary table tbody tr').length > 0 && document.querySelectorAll('.matrix-table-card table.heatmap tbody tr').length > 0",
-        'Matrix',
-      );
+      await waitFor(MATRIX_READY, 'Matrix');
       await evaluate('window.scrollTo(0, 0)');
       await sleep(300);
+      await waitFor(MATRIX_READY, 'Matrix layout');
       const metrics = await evaluate(`(async () => {
       const wait = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       await wait();
@@ -2141,8 +2884,14 @@ try {
             `document.querySelector('.recon-row-open[aria-current="true"]')?.textContent?.trim() === ${JSON.stringify(detailTarget)}`,
             `${tag} Reconciliation 行詳細同期`,
           );
-          // 狭幅ではdetailへsmooth scrollするため、次の実クリック座標を採る前に移動完了を待つ。
-          await sleep(width < 1024 ? 600 : 100);
+          // 狭幅ではdetailへsmooth scrollする。ここからは一覧の選択操作を検証するため、
+          // detailへの移動を止めてから次の実クリック座標を採る。
+          await sleep(100);
+          if (width < 1024) {
+            await evaluate(
+              "window.scrollTo({ left: window.scrollX, top: window.scrollY, behavior: 'instant' })",
+            );
+          }
           const afterClick = JSON.parse(
             await evaluate(`JSON.stringify((() => ({
               active: document.querySelector('.recon-row-open[aria-current="true"]')?.textContent?.trim() ?? '',
@@ -2152,7 +2901,7 @@ try {
 
           // 1行選択 → indeterminate → 表示中を全選択 → 全解除を、すべて実マウスで通す。
           await mouseClick(
-            '.recon-table tbody tr:first-child .recon-selection-hit',
+            '.recon-table tbody tr:first-child .selection-checkbox',
             `${tag} Reconciliation 行選択`,
           );
           await waitFor(
@@ -2168,7 +2917,7 @@ try {
               selectionCount: document.querySelector('.recon-selection-count')?.textContent?.trim() ?? '',
             }))())`),
           );
-          await mouseClick('.recon-table thead .recon-selection-hit', `${tag} Reconciliation 表示中を全選択`);
+          await mouseClick('.recon-table thead .selection-checkbox', `${tag} Reconciliation 表示中を全選択`);
           await waitFor(
             'document.querySelector(\'.recon-table thead input[type="checkbox"]\')?.checked === true',
             `${tag} Reconciliation 全選択`,
@@ -2182,7 +2931,7 @@ try {
               selectionCount: document.querySelector('.recon-selection-count')?.textContent?.trim() ?? '',
             }))())`),
           );
-          await mouseClick('.recon-table thead .recon-selection-hit', `${tag} Reconciliation 表示中を全解除`);
+          await mouseClick('.recon-table thead .selection-checkbox', `${tag} Reconciliation 表示中を全解除`);
           await waitFor(
             "document.querySelectorAll('.recon-table tbody input[type=\"checkbox\"]:checked').length === 0 && !document.querySelector('.recon-selection')",
             `${tag} Reconciliation 全解除`,
@@ -2247,7 +2996,7 @@ try {
                 selectionCellsConsistent: rows.every((row) => {
                   const cell = row.cells[0];
                   const pending = row.querySelector('.recon-badge--review, .recon-badge--unprocessed') !== null;
-                  const selectable = cell?.querySelectorAll('.recon-selection-hit:not(.recon-selection-hit--unavailable) input[type="checkbox"]').length === 1;
+                  const selectable = cell?.querySelectorAll('.selection-checkbox input[type="checkbox"]').length === 1;
                   const unavailable = cell?.querySelectorAll('.recon-selection-hit--unavailable .recon-selection-placeholder').length === 1;
                   return Boolean(cell) && (pending ? selectable && !unavailable : unavailable && !selectable);
                 }),
@@ -2371,6 +3120,24 @@ try {
           await evaluate(`JSON.stringify((() => ({
         pageWidth: document.documentElement.scrollWidth,
         viewportWidth: document.documentElement.clientWidth,
+        reconciliationDensity: (() => {
+          const input = document.querySelector('.recon-table tbody input[type="checkbox"]');
+          if (!input) return null;
+          const box = (node) => {
+            const rect = node?.getBoundingClientRect();
+            return rect ? { width: rect.width, height: rect.height } : null;
+          };
+          const label = input.closest('label');
+          const row = input.closest('tr');
+          const text = row?.querySelector('.recon-row-open') ?? row?.querySelector('td');
+          return {
+            native: box(input),
+            visual: box(input.nextElementSibling),
+            hitArea: box(label),
+            row: box(row),
+            textFontPx: text ? Number.parseFloat(getComputedStyle(text).fontSize) : null,
+          };
+        })(),
         shell: (() => {
           const box = (node) => {
             const value = node?.getBoundingClientRect();
@@ -2412,7 +3179,7 @@ try {
           const brandCopy = document.querySelector('.sidebar .brand-copy');
           const firstNavIcon = document.querySelector('.sidebar .nav .route-icon');
           const improvement = document.querySelector('.improve-trigger');
-          const improvementNav = document.querySelector('.sidebar a[href="/improvement"]');
+          const improvementBox = box(improvement);
           const close = document.querySelector('.monthly-close-card');
           const closeButton = close?.querySelector('.btn');
           const closeLongCopy = close
@@ -2493,11 +3260,38 @@ try {
                     box(closeButton)?.width <= 45 &&
                     box(closeButton)?.height >= 43 &&
                     box(closeButton)?.height <= 45))),
-            improvementDelegated:
+            improvementReachable:
               !rail ||
-              (getComputedStyle(improvement).display === 'none' &&
-                Boolean(improvementNav) &&
-                box(improvementNav)?.height >= 43),
+              (Boolean(improvementBox) &&
+                getComputedStyle(improvement).display !== 'none' &&
+                getComputedStyle(improvement).visibility === 'visible' &&
+                improvementBox.width >= 44 &&
+                improvementBox.height >= 44 &&
+                improvementBox.left >= 0 &&
+                improvementBox.right <= viewportWidth + 1 &&
+                improvementBox.bottom <= window.innerHeight + 1 &&
+                improvement.contains(
+                  document.elementFromPoint(
+                    improvementBox.left + improvementBox.width / 2,
+                    improvementBox.top + improvementBox.height / 2,
+                  ),
+                )),
+            improvementProbe: !rail
+              ? null
+              : {
+                  box: improvementBox,
+                  display: improvement ? getComputedStyle(improvement).display : null,
+                  visibility: improvement ? getComputedStyle(improvement).visibility : null,
+                  hit: improvementBox
+                    ? (() => {
+                        const node = document.elementFromPoint(
+                          improvementBox.left + improvementBox.width / 2,
+                          improvementBox.top + improvementBox.height / 2,
+                        );
+                        return node ? node.tagName + '.' + String(node.className) : null;
+                      })()
+                    : null,
+                },
             noVerticalRailCopy:
               !rail ||
               (lineCount(close?.querySelector('.monthly-close-count')) <= 1 &&
@@ -2976,7 +3770,9 @@ try {
             ...document.querySelectorAll('.recon input[type="checkbox"], .recon input[type="radio"]'),
           ].filter(visible);
           const controlContract = choiceControls.map((control) => {
-            const indicator = control.nextElementSibling?.matches('.recon-control-indicator')
+            const indicator = control.nextElementSibling?.matches(
+              '.recon-control-indicator, .selection-checkbox__indicator',
+            )
               ? control.nextElementSibling
               : null;
             const box = indicator?.getBoundingClientRect();
@@ -3037,7 +3833,7 @@ try {
               selectionCells.every(
                 (cell) => {
                   const available = cell.querySelectorAll(
-                    '.recon-selection-hit:not(.recon-selection-hit--unavailable) input[type="checkbox"]',
+                    '.selection-checkbox input[type="checkbox"]',
                   ).length;
                   const unavailable = cell.querySelectorAll(
                     '.recon-selection-hit--unavailable .recon-selection-placeholder',
@@ -3121,8 +3917,27 @@ try {
           failures.push(`${tag} ${route.name} のrail badgeがiconまたはscrollbarと重なる`);
         if (!routeMetrics.shell.closeCompact)
           failures.push(`${tag} ${route.name} のrail月次進捗が縮約されていない`);
-        if (!routeMetrics.shell.improvementDelegated)
-          failures.push(`${tag} ${route.name} のrail改善操作が既存navへ安全に委譲されていない`);
+        let improvementReachable = routeMetrics.shell.improvementReachable;
+        for (
+          let attempt = 0;
+          !improvementReachable && routeMetrics.shell.rail && attempt < 20;
+          attempt += 1
+        ) {
+          await sleep(150);
+          improvementReachable = Boolean(
+            await evaluate(`(() => {
+            const node = document.querySelector('.improve-trigger');
+            if (!node || getComputedStyle(node).display === 'none' || getComputedStyle(node).visibility !== 'visible') return false;
+            const box = node.getBoundingClientRect();
+            const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+            return box.width >= 44 && box.height >= 44 && box.left >= 0 && box.right <= innerWidth + 1 && box.top >= 0 && box.bottom <= innerHeight + 1 && Boolean(hit && node.contains(hit));
+          })()`),
+          );
+        }
+        if (!improvementReachable)
+          failures.push(
+            `${tag} ${route.name} のrail改善操作が画面内で押せない: ${JSON.stringify(routeMetrics.shell.improvementProbe)}`,
+          );
         if (!routeMetrics.shell.noVerticalRailCopy)
           failures.push(`${tag} ${route.name} のrail文言が縦1文字に分断される`);
         if (
@@ -3489,7 +4304,13 @@ try {
             join(OUTPUT_DIR, `reconciliation-${width}.png`),
             Buffer.from(routeShot.data, 'base64'),
           );
+          writeFileSync(
+            join(OUTPUT_DIR, `reconciliation-checkbox-density-${width}.json`),
+            `${JSON.stringify(routeMetrics.reconciliationDensity, null, 2)}\n`,
+          );
         }
+        if (route.name === 'Reconciliation')
+          console.log(`${tag} Reconciliation checkbox=${JSON.stringify(routeMetrics.reconciliationDensity)}`);
         console.log(
           `${tag} ${route.name} 図=${routeMetrics.figures.length} 本体=${routeMetrics.pageWidth}/${routeMetrics.viewportWidth}px${route.name === 'Subscriptions' ? ` Chart.js系列=${routeMetrics.subscriptionDatasetCount}` : ''}`,
         );

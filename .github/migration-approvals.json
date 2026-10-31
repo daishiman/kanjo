@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "baseline": "0056_settings_change_log.sql",
+  "approvals": [
+    {
+      "filename": "0057_improvement_request_screen.sql",
+      "sha256": "1bd0f9a838113d5b87aba191295fecf9d1c25dd74a07de0a96c5589d2b91a8e6",
+      "reason": "improvement_requests の作り直し (新表を作る → INSERT…SELECT で全行を写す → 旧表を DROP → 新表を RENAME)。状態の CHECK 張り替えのためで、行・画像キー・トークンのハッシュは保たれることを improvement-migration-0057.test.ts が確かめている。適用直前に Deploy が Time Travel の復元地点を記録する",
+      "approved_by": "daishiman"
+    }
+  ]
+}

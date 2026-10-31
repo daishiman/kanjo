@@ -4,7 +4,8 @@
  * テーブルを db/schema.ts ではなくここへ置くのは、この機能の write scope が
  * 「改善要望に関わるファイルだけ」に閉じているため。getDb() は schema を束縛しない
  * drizzle instance を返す(store.ts の `drizzle(d1)`)ので、table 定義の置き場所は
- * クエリの型付けにしか影響しない。migrations/0029_improvement_requests.sql が正本で、
+ * クエリの型付けにしか影響しない。migrations/0029_improvement_requests.sql と
+ * 0057_improvement_request_screen.sql (状態の張り替え・連番・論理削除・履歴) が正本で、
  * ここはその型の写し。
  */
 import {
@@ -14,11 +15,12 @@ import {
   DIAGNOSTIC_MAX_MESSAGE,
   type DiagnosticEntry,
   type DiagnosticPayload,
-  IMPROVEMENT_BODY_MAX,
+  IMPROVEMENT_ACTIVITY_KINDS,
+  IMPROVEMENT_NEW_BODY_MAX,
   IMPROVEMENT_RETENTION_DAYS,
   IMPROVEMENT_STATUS_VALUES,
-  IMPROVEMENT_TITLE_MAX,
   IMPROVEMENT_TOKEN_MAX_FETCH,
+  type ImprovementActivityKind,
   type ImprovementStatus,
   highlightDiagnostics,
   improvementPurgeDueAt,
@@ -33,11 +35,14 @@ export const improvementRequests = sqliteTable(
   {
     id: text('id').primaryKey(),
     userId: text('user_id').notNull(),
-    title: text('title').notNull(),
+    /** 利用者ごとの連番。IMP-024 の形で表示する。削除しても再利用しない */
+    seq: integer('seq').notNull(),
+    /** 旧来の件名。新規は NULL で、表示は本文の先頭から作る概要を使う */
+    title: text('title'),
     body: text('body').notNull(),
     /** 発生していた画面のパス。再現に効くので残す */
     route: text('route').notNull().default(''),
-    status: text('status', { enum: ['open', 'in_progress', 'done', 'wontfix'] })
+    status: text('status', { enum: ['open', 'in_progress', 'done', 'reconfirm'] })
       .notNull()
       .default('open'),
     /** R2 key。削除済みは NULL */
@@ -55,6 +60,8 @@ export const improvementRequests = sqliteTable(
     /** 30日削除の起点 */
     doneAt: text('done_at'),
     purgedAt: text('purged_at'),
+    /** 論理削除の時刻。30 日を過ぎると夜間 job が画像・履歴ごと消す */
+    deletedAt: text('deleted_at'),
     createdAt: text('created_at').notNull().$defaultFn(nowIso),
     updatedAt: text('updated_at').notNull().$defaultFn(nowIso),
   },
@@ -65,6 +72,31 @@ export const improvementRequests = sqliteTable(
 );
 
 export type ImprovementRow = typeof improvementRequests.$inferSelect;
+
+/** 利用者ごとの最後の seq。作成時に依頼の行と同じ batch でだけ進める */
+export const improvementRequestCounters = sqliteTable('improvement_request_counters', {
+  userId: text('user_id').primaryKey(),
+  lastSeq: integer('last_seq').notNull(),
+});
+
+/** 1 行 1 事実の追記専用の履歴。本文・トークン・診断は入れない */
+export const improvementRequestActivities = sqliteTable(
+  'improvement_request_activities',
+  {
+    id: text('id').primaryKey(),
+    requestId: text('request_id').notNull(),
+    userId: text('user_id').notNull(),
+    kind: text('kind', {
+      enum: IMPROVEMENT_ACTIVITY_KINDS as unknown as [ImprovementActivityKind, ...ImprovementActivityKind[]],
+    }).notNull(),
+    fromStatus: text('from_status', { enum: ['open', 'in_progress', 'done', 'reconfirm'] }),
+    toStatus: text('to_status', { enum: ['open', 'in_progress', 'done', 'reconfirm'] }),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('idx_improvement_request_activities_request').on(t.requestId, t.createdAt)],
+);
+
+export type ImprovementActivityRow = typeof improvementRequestActivities.$inferSelect;
 
 /* -------- 入力スキーマ -------- */
 
@@ -82,6 +114,8 @@ export const diagnosticPayloadSchema = z.object({
     viewport: z.string().max(100).default(''),
     route: z.string().max(1000).default(''),
     capturedAt: z.string().max(40).default(''),
+    sessionId: z.string().max(200).optional(),
+    origin: z.string().max(500).optional(),
   }),
   // 上限より多く送られても弾かずに受け、サーバ側で切り詰める(投稿を失敗させない)
   entries: z
@@ -91,10 +125,17 @@ export const diagnosticPayloadSchema = z.object({
   omittedCount: z.number().int().min(0).max(1_000_000).default(0),
 });
 
+/**
+ * 作成フォームの入力。件名は受け取らない (送られても無視する)。
+ * 確認 2 件は multipart の文字列 "true" だけを真とする。
+ */
+const checkedField = z.union([z.literal('true'), z.literal(true)]).transform(() => true as const);
+
 export const improvementCreateSchema = z.object({
-  title: z.string().trim().min(1).max(IMPROVEMENT_TITLE_MAX),
-  body: z.string().trim().min(1).max(IMPROVEMENT_BODY_MAX),
+  body: z.string().trim().min(1).max(IMPROVEMENT_NEW_BODY_MAX),
   route: z.string().max(500).default(''),
+  privacyConfirmed: checkedField,
+  privacyConsented: checkedField,
 });
 
 export const improvementStatusSchema = z.object({
@@ -109,7 +150,9 @@ export type ImprovementTokenStatus = 'none' | 'active' | 'expired' | 'exhausted'
 
 export interface ImprovementRequestView {
   id: string;
-  title: string;
+  seq: number;
+  /** 旧来の件名。新規は null */
+  title: string | null;
   body: string;
   route: string;
   status: ImprovementStatus;
@@ -120,6 +163,7 @@ export interface ImprovementRequestView {
   copiedTarget: 'claude_code' | 'codex' | null;
   doneAt: string | null;
   purgedAt: string | null;
+  deletedAt: string | null;
   /** 添付が消える予定時刻。未完了なら null(調査中に証跡を消さない) */
   attachmentExpiresAt: string | null;
   createdAt: string;
@@ -136,6 +180,7 @@ export function improvementView(row: ImprovementRow, now = new Date().toISOStrin
   const diagnostics = parseStoredDiagnostics(row.diagnosticsJson);
   return {
     id: row.id,
+    seq: row.seq,
     title: row.title,
     body: row.body,
     route: row.route,
@@ -155,6 +200,7 @@ export function improvementView(row: ImprovementRow, now = new Date().toISOStrin
     copiedTarget: row.copiedTarget,
     doneAt: row.doneAt,
     purgedAt: row.purgedAt,
+    deletedAt: row.deletedAt,
     attachmentExpiresAt: improvementPurgeDueAt(row.doneAt),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -187,7 +233,8 @@ export function buildImprovementPrompt(p: {
   requestId: string;
   token: string;
   expiresAt: string;
-  title: string;
+  /** 件名の位置に載せる概要 (本文の先頭から core の improvementSummary で作る) */
+  summary: string;
   route: string;
   hasScreenshot: boolean;
   diagnosticsCount: number;
@@ -206,7 +253,7 @@ export function buildImprovementPrompt(p: {
   const lines = [
     'このリポジトリで、利用者から出た改善要望に対応してください。',
     '',
-    `- 要望: ${p.title}`,
+    `- 要望: ${p.summary}`,
     `- 発生画面: ${p.route || '(記録なし)'}`,
   ];
   // 再現条件の当たりを付けるための最小限。識別子はここに足さない

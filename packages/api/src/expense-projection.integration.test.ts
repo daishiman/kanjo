@@ -156,3 +156,35 @@ describe('支出照合API', () => {
     expect(JSON.stringify(body)).not.toContain('999999');
   });
 });
+
+describe('照合の順序 (FR-009)', () => {
+  it('科目違いのベンダーが先に名前で当たっても、対象科目に合う別のベンダーへ照合する', async () => {
+    // 架空ストア (事業経費/通信費 だけが対象) の別名が先に当たる並びにする。
+    // 後から科目で弾くと、全科目が対象の架空ストア音楽を取りこぼして未登録になる。
+    await database.batch([
+      database.prepare(
+        `INSERT INTO sub_vendors (user_id,name,aliases,accounts,sort_order) VALUES
+          ('default','架空ストア','["架空ストア"]','["事業経費/通信費"]',400),
+          ('default','架空ストア音楽','["架空ストア音楽"]','[]',500)`,
+      ),
+      database.prepare(
+        `INSERT INTO mf_transactions
+          (user_id,tx_id,month,date,description,amount,category_major,category_mid,is_target,is_transfer,identity_stable)
+         VALUES ('default','mf-store-music','2026-08','2026-08-10','架空ストア音楽 月額',-770,'趣味','音楽',1,0,1)`,
+      ),
+    ]);
+    const response = await request('/subscriptions?from=2026-08&to=2026-08');
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as {
+      rows: Array<{ normalizedName: string; latestAmount: number; status: string }>;
+    };
+    expect(body.rows.find((row) => row.normalizedName === '架空ストア音楽')).toMatchObject({
+      status: 'registered',
+      latestAmount: 770,
+    });
+    expect(body.rows.find((row) => row.normalizedName === '架空ストア')?.latestAmount ?? 0).toBe(0);
+    expect(
+      body.rows.filter((row) => row.status === 'unregistered').map((row) => row.normalizedName),
+    ).not.toContain('架空ストア音楽 月額');
+  });
+});

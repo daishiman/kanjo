@@ -1,0 +1,52 @@
+{
+  "feature_package_id": "feature-package/feat-budget-screen",
+  "parent_feature": "feat-budget-screen",
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "schema_version": "1.0.0",
+  "source_feature_digest": "sha256:44192d5e369fcafbaf0427a9f91d5abdf0ebcc4f76f85072844c159e09053a71",
+  "task_count": 13,
+  "task_node_ids": [
+    "SYS-BUDGET-P01",
+    "SYS-BUDGET-P02",
+    "SYS-BUDGET-P03",
+    "SYS-BUDGET-P04",
+    "SYS-BUDGET-P05",
+    "SYS-BUDGET-P06",
+    "SYS-BUDGET-P07",
+    "SYS-BUDGET-P08",
+    "SYS-BUDGET-P09",
+    "SYS-BUDGET-P10",
+    "SYS-BUDGET-P11",
+    "SYS-BUDGET-P12",
+    "SYS-BUDGET-P13"
+  ],
+  "task_spec_paths": [
+    "task-specs/phase-01-requirements.md",
+    "task-specs/phase-02-architecture.md",
+    "task-specs/phase-03-design-review.md",
+    "task-specs/phase-04-test-design.md",
+    "task-specs/phase-05-implementation.md",
+    "task-specs/phase-06-test-run.md",
+    "task-specs/phase-07-acceptance.md",
+    "task-specs/phase-08-refactoring-migration.md",
+    "task-specs/phase-09-quality-assurance.md",
+    "task-specs/phase-10-final-review.md",
+    "task-specs/phase-11-evidence.md",
+    "task-specs/phase-12-documentation-operations.md",
+    "task-specs/phase-13-release-deploy.md"
+  ]
+}

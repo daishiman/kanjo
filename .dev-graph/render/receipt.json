@@ -1,23 +1,51 @@
 {
- "edges": 21,
- "feature_progress": {
-  "aggregate": {
-   "done": 0,
-   "total": 13
+  "edges": 42,
+  "feature_progress": {
+    "aggregate": {
+      "done": 0,
+      "total": 26
+    },
+    "by_feature": {
+      "feat-login-v2": {
+        "done": 0,
+        "total": 13
+      },
+      "feat-subscriptions-merge": {
+        "done": 0,
+        "total": 13
+      }
+    }
   },
-  "by_feature": {
-   "feat-login-v2": {
-    "done": 0,
-    "total": 13
-   }
-  }
- },
- "input_sha256": "47c0b9cc4e8ff6345ce9e19826958818fa54aeb808f32b0111de433e85e217ce",
- "nodes": 23,
- "ok": true,
- "out": ".dev-graph/render/index.html",
- "output_sha256": "604dcc38086b03c02788dc9c2f26827fe1ecc710e74947395e3168bbcfa438b5",
- "graph_sha256_file": "47c0b9cc4e8ff6345ce9e19826958818fa54aeb808f32b0111de433e85e217ce",
- "graph_revision": 3,
- "receipt_source": "render-graph-html.py stdout (renderer は receipt を書かない)"
+  "input_sha256": "2676f873fde5697ad779d9cca3a7a15dc7ca08f67298b7daf2731fa28d49d42e",
+  "nodes": 46,
+  "ok": true,
+  "out": ".dev-graph/render/index.html",
+  "output_sha256": "be009b2d4e46a5ebbcd967689d5f3bb4392a82a8313b83969c29f5145738280a",
+  "receipt_checks": [
+    {
+      "actual_count": 13,
+      "digest_mismatch_ids": [],
+      "expected_count": 13,
+      "extra_ids": [],
+      "feature": "feat-login-v2",
+      "missing_ids": [],
+      "problems": [],
+      "receipt": ".dev-graph/plans/feature-package-feat-login-v2/dev-graph-registration-receipt.json",
+      "source_digest": "sha256:604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+    },
+    {
+      "actual_count": 13,
+      "digest_mismatch_ids": [],
+      "expected_count": 13,
+      "extra_ids": [],
+      "feature": "feat-subscriptions-merge",
+      "missing_ids": [],
+      "problems": [],
+      "receipt": ".dev-graph/plans/feature-package-feat-subscriptions-merge/dev-graph-registration-receipt.json",
+      "source_digest": "sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+    }
+  ],
+  "graph_revision": 5,
+  "input": ".dev-graph/state/graph.json",
+  "receipt_source": "render-graph-html.py stdout"
 }

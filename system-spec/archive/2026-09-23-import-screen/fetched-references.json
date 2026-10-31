@@ -1,0 +1,124 @@
+{
+  "references": [
+    {
+      "target_id": "wcag22-use-of-color",
+      "retrieved_at": "2026-09-21T15:22:57Z",
+      "source_url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html",
+      "official_publisher": "W3C Web Accessibility Initiative (WAI)",
+      "official_host": "w3.org",
+      "last_updated": "2025-09-16",
+      "latest_checked_at": "2026-09-21T15:22:57Z",
+      "summary": "達成基準 1.4.1 は、色を情報・操作・応答の促し・要素の区別の唯一の視覚手段にしないことを求める。取込ファイルのステータスと結果カードは色に文字とアイコンを併記する根拠。"
+    },
+    {
+      "target_id": "tanstack-query-invalidation",
+      "retrieved_at": "2026-09-21T22:28:30Z",
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation",
+      "official_publisher": "TanStack",
+      "official_host": "tanstack.com",
+      "version": "@tanstack/react-query 5.103.2",
+      "latest_checked_at": "2026-09-21T22:28:30Z",
+      "summary": "公式ガイド Query Invalidation。queryClient.invalidateQueries はクエリを stale にし、useQuery などで表示中のものは背景で再取得する。queryKey は前方一致で、['imports'] は ['imports', {page: 1}] なども対象になる。exact: true や predicate で絞れる。確定・取り消し・削除の mutation 後に履歴と review-queue のキーを無効化する方針の根拠。版は packages/react-query/package.json の 5.103.2 (v5 系)。"
+    },
+    {
+      "target_id": "react-router-searchparams",
+      "retrieved_at": "2026-09-21T15:22:57Z",
+      "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
+      "official_publisher": "React Router (Shopify / Remix team)",
+      "official_host": "reactrouter.com",
+      "version": "8.4.0",
+      "latest_checked_at": "2026-09-21T15:22:57Z",
+      "summary": "useSearchParams は現在の URL の URLSearchParams と更新関数を返し、更新はナビゲーションになる。選択中の取込履歴を URL の検索パラメータに持つ根拠。"
+    },
+    {
+      "target_id": "mdn-xhr-upload-progress",
+      "retrieved_at": "2026-09-21T15:22:57Z",
+      "source_url": "https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload",
+      "official_publisher": "Mozilla (MDN Web Docs)",
+      "official_host": "developer.mozilla.org",
+      "last_updated": "2025-08-26",
+      "latest_checked_at": "2026-09-21T15:22:57Z",
+      "summary": "XMLHttpRequest.upload は loadstart / progress / abort / load / loadend 等のイベントでアップロードの進捗を知らせ、リスナーは send() より前に付ける。取込ファイル一覧の『アップロード中 n%』とキャンセル (abort) の根拠。"
+    },
+    {
+      "target_id": "hono-body-limit",
+      "retrieved_at": "2026-09-21T15:38:36Z",
+      "source_url": "https://hono.dev/docs/middleware/builtin/body-limit",
+      "official_publisher": "Hono (honojs)",
+      "official_host": "hono.dev",
+      "version": "4.13.8",
+      "latest_checked_at": "2026-09-21T15:38:36Z",
+      "summary": "公式ドキュメントの Body Limit (hono/body-limit) は Content-Length があればその値で判定し、無ければ本文をストリームで読みながら数えて、上限を超えた時点でエラーハンドラを実行する (例は 413)。版は最新リリース 4.13.8 (2026-09-15) に対する確認。取込の検査要求の合計 30MB を Content-Length の有無に依らず本文を読み切る前に止める根拠。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-21T22:28:30Z",
+      "source_url": "https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x14-V5-File-Handling.md",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "github.com",
+      "version": "5.0.0",
+      "latest_checked_at": "2026-09-21T22:28:30Z",
+      "summary": "OWASP ASVS 5.0.0 (v5.0.0 タグに固定) V5 File Handling。5.2.1: 性能低下やサービス拒否を起こさずに処理できる大きさのファイルだけを受け付ける。5.2.3: 圧縮ファイル (zip・docx など) は展開する前に、展開後の最大サイズと最大ファイル数の両方を検査する。取込の合計 30MB・1 ファイル 25MB・xlsx / ZIP のエントリ数 1,000 件と展開後 60MB の上限の根拠。"
+    },
+    {
+      "target_id": "hono-zod-validator",
+      "retrieved_at": "2026-09-21T15:22:57Z",
+      "source_url": "https://github.com/honojs/middleware/blob/main/packages/zod-validator/CHANGELOG.md",
+      "official_publisher": "Hono (honojs)",
+      "official_host": "github.com",
+      "version": "0.9.1",
+      "latest_checked_at": "2026-09-21T15:22:57Z",
+      "summary": "@hono/zod-validator の最新 0.9.1。検査 ID・取り込むファイル項目・前回データを残す・強制再取込を受ける確定要求の契約を zod で検証する根拠。"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "retrieved_at": "2026-09-21T15:22:57Z",
+      "source_url": "https://developers.cloudflare.com/d1/reference/migrations/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-08",
+      "latest_checked_at": "2026-09-21T15:22:57Z",
+      "summary": "D1 の migration は migrations フォルダの番号付き .sql を順に適用し、適用済みを d1_migrations 表に記録する。import_inspections 等を 0050 以降の新番号で追加する根拠。"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "retrieved_at": "2026-09-21T15:37:45Z",
+      "source_url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-05",
+      "latest_checked_at": "2026-09-21T15:37:45Z",
+      "summary": "Workers の request body 上限は Free/Pro 100MB。1 isolate のメモリは JavaScript heap と WebAssembly の割当を含めて 128MB まで。Paid の HTTP の CPU 時間は既定 30 秒。1 要求の合計 30MB・展開後 1 ファイル 60MB の上限と、1 ファイルずつ順に検査して R2 へ置く処理 (ピーク約 90MB) をこの範囲に収める根拠。"
+    },
+    {
+      "target_id": "cloudflare-cron-triggers",
+      "retrieved_at": "2026-09-21T15:22:57Z",
+      "source_url": "https://developers.cloudflare.com/workers/configuration/cron-triggers/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-09-04",
+      "latest_checked_at": "2026-09-21T15:22:57Z",
+      "summary": "Cron Triggers は wrangler 設定の triggers.crons に書き UTC で動く。期限切れの仮置きを既存の夜間保守 (0 18 * * *) で片づける根拠。"
+    },
+    {
+      "target_id": "cloudflare-r2-object-lifecycles",
+      "retrieved_at": "2026-09-21T15:22:57Z",
+      "source_url": "https://developers.cloudflare.com/r2/buckets/object-lifecycles/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-09-21T15:22:57Z",
+      "summary": "R2 のライフサイクルは接頭辞と経過日数で削除でき、削除は通常 24 時間以内に完了する。仮置き接頭辞の後始末は夜間保守を正とし、ライフサイクルは 1 日単位の補助にとどまる判断の根拠。"
+    },
+    {
+      "target_id": "vitest-expect",
+      "retrieved_at": "2026-09-21T15:22:57Z",
+      "source_url": "https://vitest.dev/api/expect.html",
+      "official_publisher": "Vitest (VoidZero)",
+      "official_host": "vitest.dev",
+      "version": "5.0.1",
+      "latest_checked_at": "2026-09-21T15:22:57Z",
+      "summary": "Vitest 5.0.1 の expect は Chai と Jest 互換の構文でアサーションを作る。取込の境界テスト (上限ちょうどと 1 超過、他人の検査 ID 等) を固定する根拠。"
+    }
+  ]
+}

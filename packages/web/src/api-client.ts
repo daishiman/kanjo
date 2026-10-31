@@ -4,6 +4,8 @@ export class ApiError extends Error {
   code: string;
   /** 409 partial-safe responseなど、UIが失敗内訳を正直に表示するための検証済み候補body。 */
   body: unknown;
+  /** 429 などの Retry-After (秒)。無いか読めなければ null */
+  retryAfter: number | null = null;
 
   constructor(status: number, code: string, message: string, body?: unknown) {
     super(message);
@@ -22,7 +24,10 @@ async function apiErrorFromResponse(res: Response): Promise<ApiError> {
   } catch {
     // JSONでないエラーは状態コードだけを使う。
   }
-  return apiErrorFromBody(res.status, body);
+  const error = apiErrorFromBody(res.status, body);
+  const retryAfter = Number(res.headers.get('Retry-After'));
+  if (Number.isFinite(retryAfter) && retryAfter > 0) error.retryAfter = retryAfter;
+  return error;
 }
 
 function apiErrorFromBody(status: number, body: unknown): ApiError {

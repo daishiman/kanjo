@@ -207,7 +207,7 @@ pnpm --filter @kanjo/api exec wrangler d1 execute kanjo-db --local \
 | 外部原本 | 取込原本、夜間バックアップ、改善要望の画像 | 取込・復旧・改善要望それぞれの経路で管理 | 取込原本以外は対象外 | R2で用途別prefixと保持期間を管理 |
 | disposable UI | filter、開閉、未保存draft | 対象外 | 対象外 | 画面/セッション内のみ |
 
-## Login v2 認証schema（0050）
+## Login v2 認証schema（0059）
 
 現行の認証主体はBetter Authの`user`で、資格情報は`account`、sessionは`session`、TOTPは`twoFactor`に分離する。
 管理一覧APIは`user`の公開要約だけ、本人APIはMFA状態と認証手段を加えた詳細だけを返し、password・token・secret・
@@ -226,7 +226,7 @@ backup codeはDTOへ含めない。
 | `auth_rate_limits` | invite/reset/MFAのIP・account別失敗数。raw IP・メールは保存しない |
 | `auth_audit_log` | Login v2固有action。秘密やメール本文を持たず、actor/target・結果・無害な件数だけを400日保持 |
 
-0050の旧`users`複写は非破壊で、`must_change_password=0`だけを`user`とcredential `account`へ写す。
+0059の旧`users`複写は非破壊で、`must_change_password=0`だけを`user`とcredential `account`へ写す。
 `must_change_password=1`は両方から除外し、同じメールへ通常招待できる状態を保つ。旧`users`自体は履歴・rollback境界の
 ため書き換えずに残す。認証モードと復旧手順は[`アカウント認証運用`](runbooks/account-login-operations.md)を参照する。
 
@@ -273,7 +273,7 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 `receipt_source_profiles`、`receipt_source_overrides`、`tax_account_settings`）は物理D1に互換データとして
 残り得るが、runtime/API/Drizzleの現行定義からは退役済みであり、このactive schema一覧には載せない。
 
-現行のrepository headは認証基盤の`0050_login_v2_better_auth.sql`である。証懑退役の物理削除は将来の別変更である
+現行のrepository headは認証基盤の`0059_login_v2_better_auth.sql`である。証懑退役の物理削除は将来の別変更である
 Release Bの`0040_drop_tax_and_receipt_tables.sql`が担う。Release Bはcleanupの`pending` / `retry` / `dead`と
 旧`attachments` / `attachment_cleanup_jobs`の残件がすべて0であることを機械ゲートで確認した後にだけ別pending集合で適用する。
 `0010`〜`0028`は適用履歴なので書き換えない。`cash_entries.receipt_waived`は交通費入力の
@@ -283,11 +283,12 @@ Release A/Bの適用順序・復旧契約は
 
 password login throttleの既定は15分window / 5回目から15分lock / 7日後stale cleanupで、
 1 requestは成功・失敗とも最大2 D1 queries。nightly scheduledは`updated_at`のindexから
-最大100件を掃除する。夜間7 jobの同一invocation予算は中央SSOTで48 queries
-（backup 1 + R2 cleanup 20 + rate-limit/auth artifact 3 + improvement 3 + undo 12 + audit header 3 + audit detail 6）
-に固定し、backupを先に確定して残る6 jobを並列実行する。全jobを記録後、1件でもjob-level rejectなら
+最大100件を1 queryで消去する。夜間8 jobの同一invocation予算は中央SSOT
+（`packages/api/src/scheduled-maintenance-budget.ts`）で49 queries
+（backup 1 + R2 cleanup 20 + auth cleanup 2 + improvement 4 + undo 12 + audit header 2 + audit detail 6 + cash soft delete 2）
+に固定し、backupを先に確定して残る7 jobを並列実行する。全jobを記録後、1件でもjob-level rejectなら
 内容を含まないgeneric errorをCronへ返す。
-validation、安全なfallback、非secret override名は`packages/api/src/login-rate-limit.ts`を正本とする。
+validation、安全なfallback、非secret override名は`packages/api/src/auth-rate-limit.ts`を正本とする。認証の夜間掃除はrate-limitを毎日、監査/期限artifactを日替わりで処理し、合計2 queriesに収める。
 
 ### 名義schema v2
 
@@ -617,3 +618,255 @@ validation、安全なfallback、非secret override名は`packages/api/src/login
 - 索引: `uq_ai_tasks_user_seq`(`user_id`, `seq`)の一意索引。SQLite は NULL どうしを重複とみなさないので、`seq` の無い既存行は何行あっても衝突しない。
 - **段階名(待機中 / 実行中 / 完了 / 失敗 / キャンセル)と進捗 % は保存しない**。core の `aiTaskStage` が `canceled_at` → `used_at` → `expires_at` → `rejected_at` → `data_fetched_at` の順に時刻から毎回導く。列に持つと、期限切れのような「時間が経っただけで変わる段階」を更新し忘れて表示と食い違う。
 - **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE UNIQUE INDEX` のみ)。`ai_reports` は変えない。`packages/api/src/ai-migration-0048.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+
+## 予算対象の期間別の年額(0050 / feat-budget-screen)
+
+`migrations/0050_budget_plans.sql` が `budget_plans` を足す。画面仕様の正本は `specs/spec-budget-screen.md`、判断の経緯は [`budget-screen/design-decisions.md`](budget-screen/design-decisions.md)。仕様とタスク仕様の予定番号は 0048 だったが、main で 0048・0049 が AI 分析に使われたため 0050 に繰り上げた。
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `period_start` | TEXT | 予算対象の開始月 `YYYY-MM`(CHECK は `GLOB`)。予算対象はここから 12 か月 |
+| `account` | TEXT | 科目名。1〜60 字(CHECK) |
+| `kind` | TEXT | `income`(売上高・その他収入)/ `expense`(CHECK) |
+| `annual_amount` | INTEGER | 来期予算の年額(円) |
+| `plan_adjustment` | INTEGER NOT NULL DEFAULT 0 | 計画による調整(円)。自動提案に足す |
+| `plan_reason` | TEXT | 調整の理由。NULL か 1〜100 字(CHECK) |
+| `updated_at` | TEXT | 保存時刻 |
+
+- 主キーは `(user_id, period_start, account)`。版は持たず、同じ期間を保存すると置き換える。期間の読取りは主キーの前方一致で引くので、索引は足さない。
+- 金額の範囲(±10,000,000,000)は API の zod だけで検査し、DB の CHECK には置かない。JSON の復元で古い値を入れられるようにするため。
+- **既存の `budgets`(科目ごとの月額)は 1 行も書き換えない**。0050 は表を足すだけ。`packages/api/src/budget-migration-0050.test.ts` が、当てても既存の `budgets` が変わらないことと、本文に既存の行を書き換える文が無いことを固定する。
+- 保存(`PUT /api/budget-plans`)は、期間の行の DELETE、`json_each` による INSERT、JSON snapshot の無効化を 1 回の batch で送る(3〜4 文)。
+
+### 読み出しの規則(BR-22・BR-23)
+
+- `monthlyBudgetsAt(data, month)` は、`period_start ≦ month` かつ `month` が予算対象の 12 か月に入る期間を探す。複数あれば `period_start` が最も新しい期間を採り、各行の 年額 ÷ 12(円未満四捨五入)を科目 → 月額で返す。該当が無ければ既存の `data.budgets` をそのまま返す。収入の行も含む(既存の読み手は支出の科目しか引かないので影響しない)。
+- `budgetsInEffect(data)` は、既存の読み手(`analysis.ts` の予算表と着地見込み、診断の予算の検出と予算カバー率)が読む月額。基準月は `data.budgetAsOf`(api が要求時刻の日本時間の年月を入れる)で、無ければ最終実績月の翌月。core は現在時刻を読まない。
+- 期間の切り出し(`applyPeriod` / `sliceDataset`)は `budgetPlans` と `budgetAsOf` を落とさずに引き継ぐ(BR-25。設定類は期間で切らない)。
+
+### 書き出し・復元と snapshot(BR-24)
+
+- Dataset の JSON に `budgetPlans`(行の配列)を足した。指紋(`fingerprint.ts`)にも含める。
+- 復元は `budget_plans` の利用者の行を消してから JSON の行を入れる。`budgetPlans` の無い古いバックアップを復元すると、既存 `budgets` と同じく `budget_plans` を消す。消した後は、既存 budgets の月額 × 12 が初期値に戻る。
+- `budget_plans` は、変更系フェンスの consumer(`canonical-mutation-fence.ts`)と取込中の表の一覧(`import-active.ts`)に入れた。保存の batch では JSON snapshot を無効化する。snapshot の無効化と復元の write-set の片方だけに入れると、snapshot が古い予算を返すため、両方に入れた。
+
+## 設定画面の 3 表(0054〜0056 / feat-settings-screen)
+
+`migrations/0054_settings_norm_rules.sql`・`0055_settings_cash_overrides.sql`・`0056_settings_change_log.sql` が 3 表を足す。Drizzle の定義は `packages/api/src/db/schema.ts` の `settingsNormRules`・`settingsCashOverrides`・`settingsChangeLog` にある。画面仕様の正本は `specs/spec-settings-screen.md`、判断の経緯は [`settings-screen/design-decisions.md`](settings-screen/design-decisions.md) にまとめた。`schema-guard.ts` の `EXPECTED_D1_MIGRATION` は `0056_settings_change_log.sql` を指す。
+
+### `settings_norm_rules`(集計ルール。0054)
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `rule_id` | TEXT | 行の id。画面で発行する id は英数・`_`・`-` の 1〜64 字、移行した行は `m-` + 元の表記の UTF-8 hex |
+| `kind` | TEXT | `account`(勘定科目)/ `vendor`(取引先)(CHECK) |
+| `raw` | TEXT | 元の表記(入力値) |
+| `norm` | TEXT | 正規化後のカテゴリ |
+| `sort_order` | INTEGER | 並び順。小さいほど上で、同じ照合キーの行は上の行が効く |
+| `enabled` | INTEGER NOT NULL DEFAULT 1 | 0 / 1(CHECK)。0 の行は効かない |
+| `updated_at` | TEXT | 保存時刻 |
+| `updated_by` | TEXT | 更新者(メールのローカル部。移行の行は `system`) |
+
+- 主キーは `(user_id, rule_id)`。索引は `settings_norm_rules_order (user_id, sort_order)`。
+- 文字数の上限は DB に置かず、core の検証(`validateSettingsInput`)と api の zod だけで検査する。JSON の復元で古い値を入れられるようにするため。
+- 取込時の科目正規化は、この表の `kind='account' AND enabled=1` の行を読む。旧 `account_norm_map` は正本ではなくなった。旧 `GET /api/settings` の `normMap` は、互換のために旧表のまま読む。
+
+### `settings_cash_overrides`(現金上書き。0055)
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `override_id` | TEXT | 行の id。移行した行は `m-p-YYYY-MM`(支払い)/ `m-r-YYYY-MM`(受け取り) |
+| `kind` | TEXT | `payment`(現金の支払い)/ `receipt`(現金の受け取り)(CHECK) |
+| `amount` | INTEGER | 上書きする月額(円)。NULL は上書きしない(空欄)、0 は 0 円(CHECK: NULL か 0 以上) |
+| `scope` | TEXT | `all`(全期間)/ `month`(月指定)(CHECK) |
+| `month` | TEXT | `YYYY-MM`。`scope='all'` なら NULL、`scope='month'` なら必須(CHECK) |
+| `memo` | TEXT NOT NULL DEFAULT '' | メモ(100 字以内は api で検査) |
+| `updated_at` | TEXT | 保存時刻 |
+| `updated_by` | TEXT | 更新者 |
+
+- 主キーは `(user_id, override_id)`。一意索引 `(user_id, kind, scope, ifnull(month,''))` があるので、同じ種別・範囲・月の行は 1 つしか置けない。
+- 月指定は全期間より優先する。月指定の値は、その月の現金の明細を 1 件に置き換えて集計する(BR-12〜BR-14)。
+
+### `settings_change_log`(変更履歴。0056)
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT | 業務テナントの利用者 |
+| `seq` | INTEGER | 利用者ごとの連番 |
+| `target` | TEXT | `norm_rule` / `owner_label` / `stat_min_months` / `cash_override`(CHECK) |
+| `target_key` | TEXT | 対象の鍵(行の id、名義の鍵、`statMinMonths`) |
+| `before` | TEXT | 変更前の値の JSON。作成なら NULL |
+| `after` | TEXT | 変更後の値の JSON。削除なら NULL |
+| `changed_by` | TEXT | 更新者 |
+| `changed_at` | TEXT | 変更時刻。最新の値が設定の revision になり、`baseSavedAt` の照合に使う |
+| `origin` | TEXT | `screen`(画面・旧 API)/ `restore`(設定の復元)/ `migration`(移行・全データ復元)(CHECK) |
+
+- 主キーは `(user_id, seq)`。索引は `settings_change_log_target (user_id, target, target_key, seq)`。`/api/settings/history` は、この索引を使って直前の保存値を引く。
+- **追記だけで、UPDATE・DELETE をしない**。保持期間は無期限。
+- 0056 は、0054 で移した集計ルールの行を origin `migration`・更新者 `system` として記録する。現金・名義・統計の既存の値の履歴は作らない。
+
+### 旧表からの写し規則(BR-22 系)
+
+0054・0055 の初回の写し、旧 API の書込み(`legacySettingsTarget`)、古いバックアップ本文の読み(`settingsJsonFromBackup`)は、どれも同じ意味で写す。
+
+- **集計ルール**: `account_norm_map` の各行を、`kind='account'`・`enabled=1` の行にする。`rule_id` は `'m-'||lower(hex(raw))`(元の表記の UTF-8 hex)で、core の `migratedNormRuleId` と同じ値になる。`sort_order` は元の表記の昇順の `ROW_NUMBER`、`updated_by` は `system`。NULL の行は写さない。
+- **現金上書き**: `cash_overrides` の月ごとの値を月指定の行にする。`expense` は `m-p-${month}`(`payment`)へ、`revenue` は `m-r-${month}`(`receipt`)へ写す。**0 と NULL は写さない**(R-1)。旧画面では空欄が 0 として保存されてきたので、0 を写すと『0 円の上書き』になってしまうため。
+- **旧 `PUT /api/settings`**: 旧表に書いたうえで、同じ batch で新表と変更履歴(origin `screen`)にも書き、revision を進める。`normMap` は勘定科目の行の全件として扱う。同じ元の表記の行は id と並び順を保ち、送られなかった行は消し、新しい行は末尾に足す。取引先の行は変えない。`cashOverrides` は、送った月の月指定の行だけを置き換える。**全期間(`scope='all'`)の行と、送っていない月の行は残す**。値が変わらなければ新表にも変更履歴にも書かず、revision も進めない。
+- **旧 `PUT /api/settings/owner-labels`**: `owner_labels` に書いたうえで、変更履歴(origin `screen`)にも追記する。
+- **旧 `GET /api/settings`**: 旧表のまま読む。新表で足した取引先の行・全期間の上書き・無効の行は、旧 GET の応答には出ない。
+- **旧表は書き換えない**: 0054〜0056 には、`account_norm_map`・`cash_overrides` への DROP・ALTER・UPDATE・DELETE が無い。
+
+### 書き出し・復元と snapshot
+
+- 3 表は、変更系フェンスの consumer(`canonical-mutation-fence.ts`)と、取込中の表の一覧(`import-active.ts`)に入れた。旧 `PUT /api/settings` の consumers にも `settings_cash_overrides` を加えた。
+- 設定だけの復元(`POST /api/settings/restore`・`POST /api/backups/:date/restore`)は、設定 4 種を置き換え、変更履歴を origin `restore` で残す。取引は変えない。
+- 全データ復元(`POST /api/restore`)は、`settings_cash_overrides` を変わったときだけ置き換え、変更履歴を origin `migration` で残す。名義と集計ルールは書かない。これは仕様と食い違っている([`settings-screen/design-decisions.md`](settings-screen/design-decisions.md) の §2)。
+- 夜間バックアップは JST 2:00 に動き、`backups/YYYY-MM-DD.json`(日付は JST)に集計ルールと現金上書きの新表を含めて書く。R2 の customMetadata には、状態・メモ・要約・形式の版を持たせる。失敗したときは `backups/YYYY-MM-DD.failed.json` を置く。30 日を過ぎた回は、失敗マーカーと `backups/pre-restore/` の退避も含めて消す。
+
+## トレードオフ画面の開始月・メモと必要度の上書き(0051 / feat-tradeoff-screen)
+
+`migrations/0051_tradeoff_notes.sql` が `tradeoff_plans` に 2 列を足し、`tradeoff_candidate_notes` を作る。画面仕様の正本は `specs/spec-tradeoff-screen.md`、規則の一覧は `docs/spec-v1.1.md` の FR-09。仕様とタスク仕様の予定番号は 0050 だったが、先に main へ入った予算画面(#67)が `0050_budget_plans.sql` を使ったため 0051 へ繰り上げた。
+
+`tradeoff_plans` の追加列:
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `start_month` | TEXT | 新しい支出の開始月(`YYYY-MM`)。記録と復元のためだけに持ち、試算の年額には効かない |
+| `memo` | TEXT | 新しい支出のメモ(500 字まで)。空は NULL で保存する |
+
+- 0051 以降の POST は `selected` に `[{key, label, value}]`(候補キー、「科目 / 取引先」の表示名、保存時のサーバの月額)を、`covered` に選んだ候補の月額合計を入れる。covered と verdict は本文を信用せず、サーバーが現在の候補から再計算する。現在の候補に無いキーが 1 つでもあれば 422 で 1 行も増やさない。
+- 画面が読むのは最新の 1 行だけ。旧形式の `selected`(`{label, value}`)の行は `key` が無いので、復元される候補は 0 件になる。
+
+`tradeoff_candidate_notes`:
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `user_id` | TEXT NOT NULL | 利用者 |
+| `candidate_key` | TEXT NOT NULL | 候補キー `v1:` + JSON 配列 `[科目, 取引先]`(科目は正規化後、300 字まで)。区切り文字を使わないので、科目名や取引先名に `\|` を含んでも別の組と同じキーにならない |
+| `need` | TEXT | 利用者が上書きした必要度 `low` / `mid` / `high`。NULL なら core の推定を使う |
+| `memo` | TEXT | 候補のメモ(500 字まで)。あれば理由の欄にメモを出す |
+| `updated_at` | TEXT NOT NULL | 最後に上書きした時刻 |
+
+- 索引: `tradeoff_candidate_notes_user_key`(`user_id`, `candidate_key`)の一意索引。PUT は UPSERT なので、同じ本文を繰り返しても行は増えない。`need` と `memo` の両方が NULL の PUT はその行を消し、自動の推定へ戻す。
+- `need` の値域は既存表の流儀に合わせて CHECK 制約ではなく API の zod で守る。
+- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE TABLE` / `CREATE UNIQUE INDEX` のみ)。`packages/api/src/tradeoff-migration-0051.test.ts` が、当てても既存行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+
+## 現金明細の担当者・業務の目的・論理削除(0052)
+
+`migrations/0052_cash_entry_owner_soft_delete.sql` が `cash_entries` に 3 列と 1 索引を足す。画面仕様の正本は `specs/spec-cash-screen.md`、規則の一覧は [`cash-screen/rules.md`](cash-screen/rules.md)、判断の経緯は [`cash-screen/design-decisions.md`](cash-screen/design-decisions.md)。
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `owner` | TEXT(CHECK: NULL か `business` / `spouse` / `family`) | 担当者。NULL は 0052 より前に記帳した行で、画面は「未設定」と出し、編集では保存の前に選ばせる。新しい記帳では API が必須にする |
+| `transit_purpose` | TEXT | 交通費の業務の目的。固定 4 つの表示語か `その他:<記述>`(記述は 40 字まで)。区間の無い行は NULL |
+| `deleted_at` | TEXT | 論理削除の時刻(ISO 8601)。NULL が有効な行 |
+
+- 索引: `idx_cash_user_deleted`(`user_id`, `deleted_at`)。有効な行の読取(`deleted_at IS NULL`)と夜間の完全消去(`deleted_at < ?`)の両方で使う。
+- **既存の行は 1 行も書き換えない**(`ALTER TABLE ... ADD COLUMN` と `CREATE INDEX IF NOT EXISTS` のみ)。`packages/api/src/cash-migration-0052.test.ts` が、既存列の値が変わらないこと・足した 3 列が NULL であること・`owner` の CHECK・索引の列を固定する。
+- **削除中の行を読まない経路**: 一覧と `loadDataset`(取引・集計の作り直し)、バックアップ(`BACKUP_SNAPSHOT_SQL` の現金明細と、それを指す `tx_edits` の `cash:<id>`)、取込時の設定スナップショット、科目使用状況、PUT の既存行取得。JSON 復元の件数判定(`destination_counts`)だけが削除中の行を数え、残っている間は現金明細を復元しない。
+- **`tx_edits` は論理削除では消さない**。戻したときに同じ仕分けで戻すため。完全消去と同じ batch で消す。
+- **夜間の完全消去**(`cash_soft_delete_purge`): `deleted_at < now − 30日` の行を `deleted_at, id` の古い順に 1 晩 500 行まで消す(ちょうど 30 日は残す)。上限に達した晩は `level: "warn"` と `limitReached: true` のログを出し、残りは翌晩に回す。夜間の D1 query 計画上限はこの 2 本の分で 47 → 49。
+
+### 0052 の適用と巻き戻し
+
+- 適用は他の migration と同じく Deploy の自動適用に任せる。追加だけの migration なので、行を書き換える migration の手順(manifest → Migrate APPLY)は要らない。
+- **巻き戻すときも列は残す**。索引の掛かった列は SQLite では単独で外せず、表を作り直すと行の書き換えになる。コードだけを 0052 より前に戻すと `runtimeSchemaGuard` の `EXPECTED_D1_MIGRATION`(0052)と食い違うので、その値も同じ変更で戻す。列が残っていても旧コードは読まないので害はない。
+- **巻き戻したコードは削除中の行を有効な行として読む**(旧コードには `deleted_at IS NULL` が無い)。巻き戻す前に、削除中の行を restore で戻すか、30 日を待たずに消すかを決める。消すときは、その行を指す `tx_edits` の `cash:<id>` と明細の行を同じ batch で消す。
+
+## 取込画面の検査と取込1回(0053)
+
+`migrations/0053_import_inspections.sql` が 3 表を足し、`import_runs` に 9 列を足す。画面仕様の正本は `specs/spec-import-screen.md`、規則の一覧は [`import-screen/rules.md`](import-screen/rules.md)。
+
+`import_inspections`(検査 1 要求 = 1 行):
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `id` | TEXT PK | 検査 ID。確定はこの ID だけを受ける |
+| `user_id` | TEXT NOT NULL | 業務データの共有テナントキー |
+| `actor_id` | TEXT NOT NULL | 検査を作った本人。他人の検査 ID は 404 |
+| `status` | TEXT NOT NULL | `open` / `committing` |
+| `run_id` | TEXT | 最初の確定で作った取込 1 回の run。2 本目以降の確定はこの run の子にする |
+| `expires_at` | TEXT NOT NULL | 期限。追加・削除では延ばさない |
+| `created_at` | TEXT NOT NULL | 作成時刻 |
+
+`import_inspection_files`(ファイルごとの検査結果):
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `inspection_id` | TEXT NOT NULL | 親の検査。`ON DELETE CASCADE` |
+| `position` | INTEGER NOT NULL | 選んだ順(= 送信と検査の順) |
+| `filename` / `source` / `period_from` / `period_to` / `size` / `content_hash` | — | 画面の一覧の値。検査 ID ごとの累計(件数・大きさ)はこの表から合計する |
+| `summary_json` | TEXT NOT NULL | 検証・重複・行数の結果 |
+| `error_kind` | TEXT | 取込不可の理由の種別 |
+| `r2_key` | TEXT | R2 の仮置きのキー |
+
+`import_rate_limits`(利用者 × 種別 × 1 分枠の回数): 主キー (`user_id`, `kind`, `window_start`)。`kind` は CHECK で `inspection` / `commit` だけ。ログイン用の `password_login_rate_limits` とは分ける。
+
+`import_runs` に足した列(すべて NULL を許す):
+
+| 列 | 型 | 意味 |
+|---|---|---|
+| `file_count` / `row_count` / `added_count` / `skipped_count` / `subs_candidate_count` | INTEGER | 取込 1 回の影響の値。確定時に記録し、詳細ペインはこの値を出す(数え直さない) |
+| `result` | TEXT | `success` / `partial` / `failed`(CHECK) |
+| `keep_previous` | INTEGER | 「前回データを残す」の値(0 / 1) |
+| `hidden_at` | TEXT | 一括削除(記録の非表示)の時刻。明細は変えない |
+| `parent_run_id` | TEXT | 同じ検査 ID の 2 本目以降の確定。親の run が履歴の 1 行で、子は単独では出さない |
+
+- 索引: `import_inspections` (`user_id`, `expires_at`)、`import_inspection_files` (`inspection_id`)。
+- **既存の行は 1 行も書き換えない**(`CREATE TABLE` と `ALTER TABLE ... ADD COLUMN` のみ)。0053 より前の `import_runs` の行は新しい列が NULL のまま読まれ、履歴にはファイル単位の記録として出る。`packages/api/src/import-migration-0053.test.ts` が、当てても行の更新が 0 件であることと既存列の値が変わらないことを固定する。
+- 検査の行は確定時に消す。期限切れの検査と古いレート制限の枠は、検査を新しく作る要求のついでに `purgeExpiredImportRows` が消す。24 時間を過ぎた R2 の仮置きは、夜間保守の `runImportStagingCleanup` が 1 回 500 件まで消す (この job は D1 を 1 本も使わない)。D1 の片づけをリクエスト側へ寄せたのは、夜間保守の D1 クエリ枠 (Free の 1 回 50 本、安全枠 49 本) が既に他の job で埋まっていたためで、判断は `docs/import-screen/design-decisions.md` の OI-08 に残す。
+- 配信は Migrate → Deploy の順にする。0053 の前の Worker は新しい表を読めない。
+
+## 改善リクエスト画面の番号・論理削除・アクティビティ(0057 / feat-improvement-screen)
+
+`migrations/0057_improvement_request_screen.sql` が `improvement_requests` を作り直し、2 表を足す。画面仕様の正本は `specs/spec-improvement-screen.md`、規則の一覧は [`improvement-screen/rules.md`](improvement-screen/rules.md)。仕様は番号を 0053 と書くが、0053 は取込画面、0054〜0056 は設定画面が先に使ったため 0057 に繰り下げた(内容は仕様のとおり。判断は `docs/improvement-screen/design-decisions.md`)。
+
+`improvement_requests` の変更点(SQLite は CHECK を後から替えられないので、0026 と同じ手順で作り直す):
+
+| 列 | 変更 | 意味 |
+|---|---|---|
+| `seq` | 追加・NOT NULL・`UNIQUE (user_id, seq)` | 利用者ごとの連番。`IMP-007` の形で表示する。削除しても再利用しない。既存行は作成順 (`created_at`, `id`) で 1 から振る |
+| `title` | NULL を許す | 件名の入力は廃止。既存行の値は残し、新規行は NULL |
+| `status` | CHECK を `open` / `in_progress` / `done` / `reconfirm` に | 旧 `wontfix` は `done` へ移し、`done_at` が NULL なら移行時刻を入れる(夜間の添付削除の起点を失わないため) |
+| `deleted_at` | 追加 | 論理削除の時刻。NULL は削除中でない。30 日を過ぎた行を夜間 job が画像・履歴ごと消す |
+| `body` | 変更なし | DB の CHECK は 4000 字のまま据え置き、API が 1000 字で止める |
+
+`improvement_request_counters`: 主キー `user_id`、`last_seq`。作成時に依頼の行と同じ batch でだけ進める。削除しても戻さない。
+
+`improvement_request_activities`(1 行 1 事実の追記専用): `request_id` は `ON DELETE CASCADE`。`kind` は `created` / `status_changed` / `reissued` / `deleted` / `restored` / `migrated_wontfix`。本文・トークン・診断は入れない。移行時に既存行ぶんの `created` と、旧 `wontfix` の行ぶんの `migrated_wontfix` を書く。
+
+- 索引: `idx_improvement_requests_user` (`user_id`, `created_at`)、`idx_improvement_requests_purge` (`status`, `done_at`) WHERE `purged_at IS NULL`、`idx_improvement_requests_deleted` (`deleted_at`) WHERE `deleted_at IS NOT NULL`、`idx_improvement_request_activities_request` (`request_id`, `created_at`)。
+- 3 表とも `BACKUP_SNAPSHOT_SQL` の列挙対象に入れない(0029 からの禁止事項を引き継ぐ)。
+- 既存の行・画像のキー・トークンのハッシュは 1 件も落とさない。`packages/api/src/improvement-migration-0057.test.ts` が件数・`seq`・`wontfix` の移行・履歴を固定する。
+- 配信は Migrate → Deploy の順にする。0057 の前の Worker を戻すと、作成(`seq` NOT NULL)・削除中の行の扱い・`reconfirm` の表示が壊れる。巻き戻しの手順は [`improvement-request.md`](improvement-request.md) の 2.4。
+
+## サブスクの統合・操作の記録・版番号(0058 / feat-subscriptions-merge)
+
+列・制約・API・復元の現行契約は [spec-subscriptions-merge のデータモデル](../specs/spec-subscriptions-merge.md#データモデル)。DDLは `migrations/0058_subscription_merge_operations.sql`、Drizzle定義は `packages/api/src/db/schema.ts`、検証結果は [subscriptions-screen.md](subscriptions-screen.md#verification-records) を参照する。本節はデータの読み方と互換性への入口で、列定義を複製しない。
+
+### `sub_vendors.merged_into_id`
+
+統合元の保存行を残して同じテナントの統合先を参照する。名寄せの純関数と照合規則はspec FR-005・008・009。統合元の正規名は派生exactNamesで完全一致の優先度を保持する。
+
+backupの `subVendorMetadata` は `mergedIntoName` に加え、保存行の `aliases`・`accounts`・`sortOrder` をoptional fieldsとして運ぶ。旧JSONの欠落時の扱いはspecデータモデルを参照する。Datasetの実効aliasesは表示・集計用として維持し、統合展開で50件を超えても保存aliasesの上限で切り捨てない。Datasetの派生exactNamesはloader・backup再構成で作り、clone/periodで保つが、exportJSON・DB・永続backupには追加しない。
+
+### `subscription_operations`(サブスクの書込み 1 回 = 1 行)
+
+操作・操作者・変更前・再送照合用payloadを持つ。公開履歴の正本型はcoreの `subscription-operation.ts`。replayはkindとmethod/path commandを含む本文を照合する (BR-007)。公開応答に保存payload・before_json・keyを出さない (AC-020)。
+
+サブスク定義・判断等を運ぶJSON復元は `restoreTouchesSubscriptions` が真のときだけ同じcommit batchで未取り消しmergeのbefore_jsonへ `restoreBarrier=1` を付け、古いundoを409 blockedにする (BR-009)。一般settings restore (statMinMonths等) は対象外。
+
+### `subscription_revisions`(利用者ごとの版番号)
+
+共有テナントの版番号。サブスク書込みと、サブスクの行を運ぶJSON復元で進める。GETはrevision・writer claim・settings log・import runsの前後stampが整合するときだけ返す。leaseは取らず、GET同士は並列可。同一要求内での再読取りはしない。衝突の409はspecの共通読取契約を参照する。
+
+### 保持と掃除(BR-013)
+
+保持期限・掃除の件数はspec FR-023・BR-013を参照する。操作履歴とrevisionは永続backupへ運ばず、JSON復元でもbackup値で上書きしない。書込みのない期間は掃除が次の書込みまで遅れる。
+
+### 0058 の適用と巻き戻し
+
+migrationと巻き戻しの判断はspec「互換性・移行・リリース」。今回のmetadata追加はoptionalな後方互換fieldsで、列・表の追加はない。古い厳密なschemaを持つ実装へ戻す場合のJSON互換性は同節を参照する。

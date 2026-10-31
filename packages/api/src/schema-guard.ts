@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from 'hono';
 
 /** Workerが前提とするD1 schema head。migration追加時はテストが更新漏れを検知する。 */
-export const EXPECTED_D1_MIGRATION = '0050_login_v2_better_auth.sql';
+export const EXPECTED_D1_MIGRATION = '0059_login_v2_better_auth.sql';
 
 export const SCHEMA_UNAVAILABLE_ERROR = {
   code: 'schema_unavailable',

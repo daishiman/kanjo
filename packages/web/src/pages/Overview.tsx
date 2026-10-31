@@ -10,7 +10,14 @@
  * 画面は OverviewResponse と ReviewQueueResponse を描くだけで再集計しない。
  * KPI と図の合計が別々の計算になると、同じ期間の数字が画面の中で食い違うため。
  */
-import { OVERVIEW_SCOPES, type OverviewScope, movingAvg } from '@kanjo/core';
+import {
+  type ConfidenceTier,
+  OVERVIEW_SCOPES,
+  type OverviewScope,
+  confidenceTier,
+  confidenceTierText,
+  movingAvg,
+} from '@kanjo/core';
 import { useQuery } from '@tanstack/react-query';
 import { Chart as ChartJS } from 'chart.js';
 import { useState } from 'react';
@@ -206,8 +213,12 @@ const REVIEW_KIND_HELP: Record<ReviewQueueItem['kind'], string> = {
   import: '失敗した取込の理由を確認します',
 };
 
-const confidenceClass = (confidence: number | null): string =>
-  confidence == null ? 'neutral' : confidence >= 80 ? 'good' : confidence >= 60 ? 'warning' : 'danger';
+/** 色は段階に従う (高 good・中 warning・低 danger)。境界の比較は core の confidenceTier だけが持つ */
+const CONFIDENCE_TONE: Record<ConfidenceTier, string> = { high: 'good', medium: 'warning', low: 'danger' };
+const confidenceClass = (confidence: number | null): string => {
+  const tier = confidenceTier(confidence);
+  return tier == null ? 'neutral' : CONFIDENCE_TONE[tier];
+};
 
 function ReviewStatusBadge({ kind }: { kind: ReviewQueueItem['kind'] }) {
   return (
@@ -368,7 +379,7 @@ function PriorityTable({
               </td>
               <td className="review-col-confidence">
                 <span className={`review-confidence ${confidenceClass(item.confidence)}`}>
-                  {item.confidence == null ? '—' : `${item.confidence}%`}
+                  {confidenceTierText(item.confidence)}
                 </span>
               </td>
             </tr>

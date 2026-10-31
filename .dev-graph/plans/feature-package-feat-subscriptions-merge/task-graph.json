@@ -1,0 +1,210 @@
+{
+  "edges": [
+    {
+      "from": "SYS-SUBSMERGE-P02",
+      "to": "SYS-SUBSMERGE-P01",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P03",
+      "to": "SYS-SUBSMERGE-P02",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P04",
+      "to": "SYS-SUBSMERGE-P03",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P05",
+      "to": "SYS-SUBSMERGE-P04",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P06",
+      "to": "SYS-SUBSMERGE-P05",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P07",
+      "to": "SYS-SUBSMERGE-P06",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P08",
+      "to": "SYS-SUBSMERGE-P07",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P09",
+      "to": "SYS-SUBSMERGE-P08",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P10",
+      "to": "SYS-SUBSMERGE-P09",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P11",
+      "to": "SYS-SUBSMERGE-P10",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P12",
+      "to": "SYS-SUBSMERGE-P11",
+      "type": "depends_on"
+    },
+    {
+      "from": "SYS-SUBSMERGE-P13",
+      "to": "SYS-SUBSMERGE-P12",
+      "type": "depends_on"
+    }
+  ],
+  "feature_package_id": "feature-package/feat-subscriptions-merge",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P01",
+      "title": "要件の基準線と着手時の確認事項 (0058 の空き・TanStack の型・問い合わせ数・overloaded の判定・照合順の数値変化) の確定"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P01"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P02",
+      "title": "resolveVendorMerges・統合と取り消しの db.batch・fence の登録・migration 0058・backup の mergedIntoName・画面の待ち行列の設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P02"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P03",
+      "title": "名寄せの 1 か所導出・書込みの原子性・テナント分離と操作者の記録の独立設計レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P03"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P04",
+      "title": "名寄せ・統合と取り消し・並行制御・選択と待ち行列の失敗テストの先行作成"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P04"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P05",
+      "title": "migration 0058・resolveVendorMerges・統合と取り消しと操作履歴の API・既存書込みの revision・backup・選択バーと操作状態の画面の実装"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P05"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P06",
+      "title": "全テストと型検査と lint の実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P06"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P07",
+      "title": "受入基準 O1 から O4 と U5 の検証"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P07"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P08",
+      "lifecycle_role": "audit",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P08",
+      "title": "旧い統合経路・名寄せを通らない照合・色の直書き・describeError を通る操作状態の文言の残存の読取専用監査"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P08"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・ログの秘匿・D1 の問い合わせ数・JS バンドル予算の保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P09"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P10"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P11"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P12",
+      "title": "統合と取り消し・操作履歴の API・migration 0058・保持と掃除の docs 最終同期"
+    },
+    {
+      "depends_on": [
+        "SYS-SUBSMERGE-P12"
+      ],
+      "feature_package_id": "feature-package/feat-subscriptions-merge",
+      "id": "SYS-SUBSMERGE-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-subscriptions-merge",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信 (Migrate 0058 の後に Deploy) とクローズアウト"
+    }
+  ],
+  "parent_feature": "feat-subscriptions-merge",
+  "schema_version": "1.0.0"
+}

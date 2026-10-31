@@ -1,0 +1,115 @@
+{
+  "receipt_kind": "spec-reflection",
+  "feature_id": "feat-settings-screen",
+  "beads_epic": "kanjo-0l4",
+  "tasks": [
+    "SYS-SETTINGS-P01",
+    "SYS-SETTINGS-P02",
+    "SYS-SETTINGS-P03",
+    "SYS-SETTINGS-P04",
+    "SYS-SETTINGS-P05",
+    "SYS-SETTINGS-P06",
+    "SYS-SETTINGS-P07",
+    "SYS-SETTINGS-P08",
+    "SYS-SETTINGS-P09",
+    "SYS-SETTINGS-P10",
+    "SYS-SETTINGS-P11",
+    "SYS-SETTINGS-P12",
+    "SYS-SETTINGS-P13"
+  ],
+  "recorded_at": "2026-09-23T14:19:20Z",
+  "base": "origin/main ebc9d25 (merge 済み。作成時の base は 683226b)",
+  "impact": "yes",
+  "changes": [
+    {
+      "topic": "migration 番号",
+      "decision": "起案 0051〜0053 → トレードオフ画面 (#68) が 0051 を使ったため 0052〜0054 へ、さらに PR 作成後に現金入力画面 (#70) が 0052 を、データ取込画面 (#69) が 0053 を使ったため main 取り込みの merge で 0054_settings_norm_rules.sql / 0055_settings_cash_overrides.sql / 0056_settings_change_log.sql へ再度繰り上げ。EXPECTED_D1_MIGRATION も 0056 へ",
+      "reflected_in": [
+        "migrations/0052_settings_norm_rules.sql",
+        "migrations/0053_settings_cash_overrides.sql",
+        "migrations/0054_settings_change_log.sql",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/deletion-schema.test.ts",
+        "packages/api/test/settings-screen.integration.test.ts",
+        "specs/spec-settings-screen.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md",
+        "docs/settings-screen/design-decisions.md"
+      ]
+    },
+    {
+      "topic": "集計ルール id の長さ",
+      "decision": "移行 id ('m-' || lower(hex(raw))) を許すため NORM_RULE_ID_PATTERN を ^(?:[A-Za-z0-9_-]{1,64}|m-(?:[0-9a-f]{2}){1,180})$ (最大 362 字) とし、画面発行 id は従来どおり 64 字以内に保つ",
+      "reflected_in": [
+        "specs/spec-settings-screen.md",
+        "architecture/settings-database.md",
+        "docs/settings-screen/design-decisions.md"
+      ]
+    },
+    {
+      "topic": "データ取込画面サイクルの章の退避",
+      "decision": "system-spec は現行 1 世代運用。main (ebc9d25) の取込サイクルの章を system-spec/archive/2026-09-23-import-screen/ へ丸ごと退避し、graph の arch-import-screen-* 8 件の source_lineage.source_path を退避先へ付け替えた (内容同一のため digest は据え置き)。トレードオフ画面の章は main 側の現金入力サイクルが 2026-09-22-tradeoff-screen へ既に退避済みだったため、本ブランチが作った重複退避 2026-09-23-tradeoff-screen を落とし、main の退避先へ lineage を寄せた",
+      "reflected_in": [
+        "system-spec/archive/2026-09-23-import-screen/README.md",
+        "architecture/graph.json"
+      ]
+    },
+    {
+      "topic": "設定サイクルの章の確定",
+      "decision": "system-spec 直下の章 (00-requirements-definition.md と 9 カテゴリ章・spec-state.json・fetched-references.json・completeness-findings.json) は設定サイクルの世代を現行とする",
+      "reflected_in": [
+        "system-spec/index.md",
+        "system-spec/00-requirements-definition.md",
+        "system-spec/database.md",
+        "system-spec/backend.md",
+        "system-spec/frontend.md",
+        "system-spec/ui-ux.md",
+        "system-spec/auth.md",
+        "system-spec/security.md",
+        "system-spec/infrastructure.md",
+        "system-spec/maintenance-ops.md"
+      ]
+    },
+    {
+      "topic": "main 取り込み時の実装の合流",
+      "decision": "loadImportRestoreSettingsSnapshot は main 側の「? の数を SQL から数えて bind する」形を採り、勘定科目の読み元は設定サイクルの settings_norm_rules (enabled=1) を残した。ImportRestoreSettingsSnapshot は両サイクルの列 (settings* と cashEntries) を併せ持つ。Layout のログアウトは現金と設定の下書きを両方消す",
+      "reflected_in": [
+        "packages/api/src/store.ts",
+        "packages/api/src/routes/imports.ts",
+        "packages/web/src/components/Layout.tsx",
+        "packages/core/src/index.ts",
+        "packages/web/package.json"
+      ]
+    }
+  ],
+  "not_changed": [
+    {
+      "path": "features/feat-settings-screen.md",
+      "reason": "本文自身が「migration 番号 (0051 から) は予定番号」と断っており、digest で凍結された計画成果物。lineage に従い据え置く"
+    },
+    {
+      "path": "tasks/feat-settings-screen/*.md と .dev-graph/plans/**",
+      "reason": "promotion 済みで digest 凍結。予定番号のまま残し、追跡下の docs/specs 側だけを実績番号へ揃える"
+    },
+    {
+      "path": "docs/spec-v1.1.md",
+      "reason": "設定画面は既存 FR の画面化で、v1.1 の規則自体に変更が無い。触ると税境界 node の digest が動くため据え置く"
+    }
+  ],
+  "gates": {
+    "lint": "EXIT 0 (biome 716 files / graph-lineage 174 node / security:content OK)",
+    "typecheck": "EXIT 0",
+    "tests": "EXIT 0 — core 1207 passed + 6 skipped (66 files) / api 1033 passed (72 files) / web 1054 passed (91 files)"
+  },
+  "digests": {
+    "specs/spec-settings-screen.md": "024156cfe895b6c3ee5bb0032253d093fd8e43d693469d627a55b7cc3bc695ca",
+    "architecture/settings-backend.md": "3263d786e3defa673a7ebaa798a11adc359315960dea3065e7cdc90c1c0c5b56",
+    "architecture/settings-database.md": "9b4d222df618c50fecd916be5975642d225c36aee91f037cdd92f531a2ed7e53",
+    "architecture/settings-infrastructure.md": "586cabaa3b27a2a2822d1396b35cbccf39a6319bce35986320a0e5bf5a1c4309",
+    "architecture/settings-maintenance-ops.md": "42e8ef552d951fd73b475314379b88f86b0b8d628c6e76cc1ea1621cab1db7f9",
+    "architecture/graph.json": "bf97b6ff104a8e23a21d137a4cc8837885a8f33565be505398456b1fcecd6b41",
+    "docs/data-schema.md": "3cabc270e1743c3eb1b15b31f54baf0a33faa46351169a8dfa21f7b5324b0f1e",
+    "docs/ui-decisions.md": "4924108fa93de04b141a95e3b499b16e1c47f67a53efdfdef5de8cbd568dc1f5",
+    "docs/settings-screen/design-decisions.md": "6eece173a09ff384428909175fafc76a6ef99acd85c1530b8ace4cc4db26ad82"
+  }
+}

@@ -10,6 +10,7 @@ import type {
   Benchmark,
   BudgetOutlook,
   BudgetRow,
+  BudgetScreen,
   Candidates,
   CashFlow,
   ClassificationProgress,
@@ -21,9 +22,11 @@ import type {
   DiagnosisData,
   DiagnosticPayload,
   FreeeCoverage,
+  GuideScreen,
   HouseholdCategoryDetail,
   HouseholdSummary,
   MatrixData,
+  NormRuleKind,
   OverviewData,
   ReconcileExcluded,
   ReconcileFreee,
@@ -31,6 +34,9 @@ import type {
   ReconcileReview,
   ReviewReason,
   SegmentSummary,
+  SettingsDiff,
+  SettingsScreenView,
+  SettingsSummary,
   SplitTemplate,
   StatementSource,
   StatementsScreen,
@@ -40,8 +46,7 @@ import type {
   SuggestionBasis,
   TotalCashflowMonth,
   TotalCashflowSeriesRow,
-  TradeoffCandidate,
-  TradeoffReviewRow,
+  TradeoffScreenResponse,
   TrendsScreen,
   UnsettledDeal,
   UnsettledReport,
@@ -50,7 +55,11 @@ import type {
 import {
   type Owner as CoreOwner,
   DIAGNOSIS_ACTION_STATUSES,
+  type ImprovementActivityView,
+  type ImprovementDiagnosticsSummary,
+  type ImprovementListItem,
   type ImprovementStatus,
+  type ImprovementTab,
   OWNER_VALUES,
   type OwnerLabels,
   PAYMENT_METHOD_LABEL,
@@ -77,7 +86,7 @@ import type {
   ReviewItemKind,
   ReviewQueueItem,
 } from '@kanjo/core';
-import { api, apiUpload } from './api-client.js';
+import { AUTH_EVENT, ApiError, api, apiUpload } from './api-client.js';
 export { AUTH_EVENT, ApiError, type ApiRequestPolicy, api, apiUpload } from './api-client.js';
 
 /**
@@ -212,6 +221,15 @@ export const unmarkMonthlyCloseReviewed = (month: string) =>
 
 // API が返す値の型は core が正本。ここで同じ union を書き直すと、片方だけ増えても型検査に映らない
 import type { AiTaskStage, ExpenseScope } from '@kanjo/core';
+import type {
+  ImportDuplicate,
+  ImportFileState,
+  ImportHistoryResult,
+  ImportInspectionSummary,
+  ImportRunResult,
+  ImportSource,
+  ImportValidation,
+} from '@kanjo/core';
 export type { ExpenseScope };
 export type TrendDirection = '増加' | '減少' | '横ばい' | '判定不可';
 export type PriorityAction = '削減を検討' | '継続監視' | '記録を整える' | '対応不要';
@@ -872,53 +890,164 @@ export interface UndoResult {
   months: string[];
 }
 
-/* -------- 取込の差分プレビュー -------- */
+/* -------- データ取込画面 (spec-import-screen: 検査 → 確定 → 履歴) -------- */
 
-/** 3点比較で食い違った属性1つぶんの値。空文字は「指定なし」 */
-export interface ImportDiffAttrConflict {
-  base: string | null;
-  current: string | null;
-  incoming: string | null;
+/** POST /imports/inspections・/:id/files・DELETE /:id/files/:fileId が返す検査の 1 ファイル */
+export interface ImportInspectionFile {
+  id: string;
+  filename: string;
+  source: ImportSource | null;
+  periodFrom: string | null;
+  periodTo: string | null;
+  size: number;
+  rowCount: number;
+  duplicate: ImportDuplicate;
+  validation: ImportValidation;
+  /** 強制再取込オフで計算した状態。オンのときは画面が core `importFileState` で計算し直す */
+  state: ImportFileState;
+  reason: string | null;
 }
 
-/** 行として出す明細。属性ごとに、どこが食い違ったかだけを持つ */
-export interface ImportDiffConflict {
-  txId: string;
-  attrs: Partial<Record<'cls' | 'big' | 'mid' | 'owner', ImportDiffAttrConflict>>;
+export interface ImportInspectionView {
+  id: string;
+  expiresAt: string;
+  files: ImportInspectionFile[];
+  summary: ImportInspectionSummary;
 }
 
-/** 今回preview内で低確信だった明細と候補。全memory一覧ではない。 */
-export interface ImportVendorCandidate {
-  txId: string;
-  vendorKey: string;
-  vendorLabel: string;
-  cls: Cls | null;
-  big: string | null;
-  mid: string | null;
-  owner: Owner | null;
-  reason: string;
+export interface ImportInspectionResponse {
+  inspection: ImportInspectionView;
 }
 
-export interface ImportDiffResult {
-  supported: true;
-  /** previewと確定の対象・入力が同一であることをサーバが再検証する鍵 */
-  fingerprint: string;
+export interface ImportRunFileResult {
+  id: string;
+  filename: string;
+  state: 'imported' | 'failed';
+  rowCount: number;
+  reason: string | null;
+}
+
+export interface ImportRunImpact {
+  added: number;
+  skipped: number;
+  subsCandidates: number;
+}
+
+/** POST /imports/runs・/imports/runs/:id/reimport。1 要求 1 ファイルで、残りは `remaining` */
+export interface ImportRunCommitResponse {
+  run: {
+    id: string;
+    result: ImportRunResult;
+    files: ImportRunFileResult[];
+    /** 親の取込 1 回の累計 */
+    impact: ImportRunImpact;
+    /** この要求の分だけ。画面で合計する */
+    duplicateCandidates: number;
+  };
+  remaining: string[];
+}
+
+/** GET /imports/runs の 1 行 (取込 1 回) */
+export interface ImportRunRowView {
+  id: string;
+  createdAt: string;
+  sources: ImportSource[];
+  fileCount: number;
+  rowCount: number;
+  result: ImportHistoryResult;
+  detail: { succeeded: number; failed: number; failureSummary: string | null };
+  undoable: boolean;
+  replaceable: boolean;
+  undoDeadline: string;
+  canHide: boolean;
+  hasOriginal: boolean;
+}
+
+export interface ImportRunDetailFile {
+  importId: number;
+  filename: string | null;
+  source: ImportSource | null;
+  state: ImportFileState;
+  status: string | null;
+  rowCount: number;
   months: string[];
-  counts: { added: number; changed: number; deleted: number; unchanged: number };
-  conflicts: ImportDiffConflict[];
-  backfilled: number;
-  automation: { autoApplied: number; candidates: number; learned: number };
-  candidates: ImportVendorCandidate[];
-  queries: { planned: number; limit: number };
+  reason: string | null;
+  hasOriginal: boolean;
+  generationState: ImportHistoryRow['generationState'];
+  cancelable: boolean;
+  discardable: boolean;
 }
 
-/** freee・資産推移・JSONなど、3点比較をしない正常な取込形式。 */
-export interface ImportDiffUnavailable {
-  supported: false;
-  message: string;
+/** GET /imports/runs/:id */
+export interface ImportRunDetail extends ImportRunRowView {
+  periodFrom: string | null;
+  periodTo: string | null;
+  keepPrevious: boolean | null;
+  /** 確定時の記録。0050 より前の取込は null */
+  impact: ImportRunImpact | null;
+  files: ImportRunDetailFile[];
 }
 
-export type ImportDiffResponse = ImportDiffResult | ImportDiffUnavailable;
+export interface ImportRunUndoPreflight {
+  imports: Array<{ importId: number; fingerprint: string; counts: DeletionCounts; months: string[] }>;
+  counts: DeletionCounts;
+  months: string[];
+  undoRetentionDays: number;
+}
+
+/**
+ * 進捗つきの multipart 送信。fetch は送信の進み具合を返さないので XMLHttpRequest を使う。
+ * 失敗は api と同じ ApiError に揃え、401 は認証失効として通知する。`signal` で中断すると AbortError。
+ */
+export function uploadWithProgress<T>(
+  path: string,
+  form: FormData,
+  onProgress: (percent: number) => void,
+  signal?: AbortSignal,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const abort = () => xhr.abort();
+    xhr.open('POST', `/api${path}`);
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && event.total > 0)
+        onProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+    };
+    xhr.onload = () => {
+      signal?.removeEventListener('abort', abort);
+      let body: unknown = null;
+      try {
+        body = xhr.responseText ? JSON.parse(xhr.responseText) : null;
+      } catch {
+        body = null;
+      }
+      if (xhr.status >= 200 && xhr.status < 300) {
+        onProgress(100);
+        resolve(body as T);
+        return;
+      }
+      if (xhr.status === 401) window.dispatchEvent(new Event(AUTH_EVENT));
+      const error = (body as { error?: { code?: string; message?: string } } | null)?.error;
+      reject(
+        new ApiError(xhr.status, error?.code ?? 'error', error?.message ?? `エラー(${xhr.status})`, body),
+      );
+    };
+    xhr.onerror = () => {
+      signal?.removeEventListener('abort', abort);
+      reject(new TypeError('通信できませんでした'));
+    };
+    xhr.onabort = () => {
+      signal?.removeEventListener('abort', abort);
+      reject(new DOMException('送信を中断しました', 'AbortError'));
+    };
+    if (signal?.aborted) {
+      xhr.abort();
+      return;
+    }
+    signal?.addEventListener('abort', abort);
+    xhr.send(form);
+  });
+}
 
 /* -------- 取引先ごとの決め事 -------- */
 
@@ -985,6 +1114,10 @@ export interface CashEntry {
   transitRound: boolean;
   /** 領収書が構造上出ない支出(電車代など) */
   receiptWaived: boolean;
+  /** 担当者(名義)。0052 より前の行は null(画面は「未設定」) */
+  owner: Owner | null;
+  /** 業務の目的(保存形)。交通費以外は null */
+  transitPurpose: string | null;
 }
 
 export interface CashEntryBody {
@@ -1000,6 +1133,24 @@ export interface CashEntryBody {
   transitTo: string | null;
   transitRound: boolean;
   receiptWaived: boolean;
+  owner: Owner;
+  /** 業務の目的。区間があるときだけ必須 */
+  transitPurpose: string | null;
+  /** 目的が「その他」のときの記述 */
+  transitPurposeNote: string | null;
+}
+
+/** 削除の応答。deletedAt から30日は restore で戻せる */
+export interface CashDeleteResponse {
+  ok: true;
+  id: number;
+  deletedAt: string;
+}
+
+export interface CashBulkDeleteResponse {
+  ok: true;
+  ids: number[];
+  deletedAt: string;
 }
 
 /** 現金の記帳と freee 仕訳が同じ支払いを指している疑い(候補のみ。消し込みはしない) */
@@ -1028,29 +1179,66 @@ export interface SettingsResponse {
   statMinMonthsRange: { min: number; max: number; default: number };
 }
 
-/** 夜間バックアップ(R2 に30日保持)の一覧行 */
+/** 夜間バックアップ(R2 に30日保持)の一覧行 (spec-settings-screen §API: GET /api/backups) */
 export interface BackupItem {
   date: string;
-  size: number;
+  /** バイト。失敗の回は null */
+  size: number | null;
   uploaded: string | null;
+  status: 'success' | 'failed';
+  memo: string;
+  summary: SettingsSummary | null;
+  formatVersion: number | null;
+  /** 成功の回のうち最新か */
+  latest: boolean;
+  /** 失敗の回の理由コード */
+  reason: string | null;
 }
 
-export interface TradeoffResponse {
-  candidates: TradeoffCandidate[];
-  budgets: BudgetRow[];
-  plans: {
-    id: number;
-    title: string | null;
-    amount: number;
-    recurring: boolean;
-    selected: { label: string; value: number }[];
-    covered: number | null;
-    verdict: string | null;
-    createdAt: string | null;
-  }[];
-  /** 立てた計画が翌月に効いたかの突合(plans と同じ id で対応する) */
-  review: TradeoffReviewRow[];
+/** GET /api/settings/screen。値は core の settingsScreen が組む */
+export type SettingsScreenResponse = SettingsScreenView;
+
+/** PUT /api/settings/screen */
+export interface SettingsSaveResponse {
+  ok: true;
+  savedAt: string | null;
+  changes: number;
+  recomputed: boolean;
 }
+
+/** GET /api/settings/history?ruleId= */
+export interface SettingsHistoryResponse {
+  ruleId: string;
+  previous: { kind: NormRuleKind; raw: string; norm: string; enabled: boolean; order: number } | null;
+  lastChangedAt: string | null;
+  lastChangedBy: string | null;
+}
+
+/** POST /api/settings/restore/preview・POST /api/backups/:date/restore/preview */
+export interface SettingsPreviewResponse {
+  valid: true;
+  diff: SettingsDiff;
+  revision: string | null;
+}
+
+/** POST /api/settings/restore・POST /api/backups/:date/restore */
+export interface SettingsRestoreResponse {
+  ok: true;
+  savedAt: string;
+  changes: number;
+  preRestoreKey: string;
+  recomputed: boolean;
+}
+
+/** GET /api/backups/:date/compare */
+export interface BackupCompareResponse {
+  date: string;
+  diff: SettingsDiff;
+  revision: string | null;
+}
+
+/** トレードオフ画面の応答。候補・防衛ラインの月の余裕・最新の試算条件の形は core が持つ */
+export type TradeoffResponse = TradeoffScreenResponse;
 
 /* -------- 決算書(PL・キャッシュフロー・BSの取込元) -------- */
 
@@ -1059,10 +1247,29 @@ export interface StatementsResponse {
   screen: StatementsScreen;
 }
 
+/* -------- 使い方 (spec-guide-screen) -------- */
+
+export interface GuideResponse {
+  /** 使い方画面の数値 (期間・総収支・最終更新・進捗)。本文は core の定数を web が直接読む */
+  screen: GuideScreen;
+}
+
 /** PUT /balances/liabilities の応答。保存後の基準月の BS */
 export interface LiabilitiesSaveResponse {
   ok: true;
   bs: StatementsScreen['bs'];
+}
+
+/** GET /api/budget-screen の応答 (spec-budget-screen §API契約)。数値は core の budgetScreen がそのまま出す */
+export type BudgetScreenResponse = BudgetScreen & { period: PeriodMeta };
+
+/** PUT /api/budget-plans の応答。dirty row patch を反映した新しいrevision */
+export interface BudgetPlansSaveResponse {
+  ok: true;
+  start: string;
+  count: number;
+  savedAt: string | null;
+  revision: string | null;
 }
 
 export type {
@@ -1091,12 +1298,12 @@ export type {
   SubVendor,
   SubsCandidate,
   SubsReviewRow,
-  TradeoffCandidate,
-  TradeoffReviewRow,
 };
 
 export interface SubVendorRow extends SubVendor {
   id: number;
+  /** 統合先の id。null なら統合されていない (統合先の候補に出してよい) */
+  mergedIntoId: number | null;
 }
 
 /** 「これはサブスクではない」と記録した支払先(候補一覧から外れる) */
@@ -1331,11 +1538,14 @@ export interface AiInventoryResponse {
   counterparties: number;
 }
 
-/* -------- 改善要望(system-spec D5〜D9) -------- */
+/* -------- 改善リクエスト(system-spec D5〜D9 / specs/spec-improvement-screen.md) -------- */
 
 export interface ImprovementRequestView {
   id: string;
-  title: string;
+  /** 利用者ごとの連番。表示は formatImprovementNumber で IMP-024 にする */
+  seq: number;
+  /** 旧い依頼だけが持つ件名。新規は null(本文から要約を導く) */
+  title: string | null;
   body: string;
   route: string;
   status: ImprovementStatus;
@@ -1352,63 +1562,102 @@ export interface ImprovementRequestView {
   purgedAt: string | null;
   /** 添付が消える予定時刻。未完了は null(調査中に証跡を消さない) */
   attachmentExpiresAt: string | null;
+  deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface ImprovementCreateResponse {
   request: ImprovementRequestView;
+  number: string;
   /** トークン原文を含む指示文。作成時のこの1回だけ返る */
   prompt: string;
-  /** 画像を受け付けなかった理由。null は問題なし */
-  screenshotRejected: 'too_large' | 'unsupported_type' | null;
   diagnosticsRejected: boolean;
+}
+
+export interface ImprovementListResponse {
+  items: ImprovementListItem[];
+  counts: Record<ImprovementTab, number>;
+  page: number;
+  pageSize: number;
+  total: number;
 }
 
 export interface ImprovementDetailResponse {
   request: ImprovementRequestView;
+  number: string;
+  summary: string;
+  routeLabel: string;
+  diagnosticsSummary: ImprovementDiagnosticsSummary | null;
+  activities: ImprovementActivityView[];
+  related: ImprovementListItem[];
+  allowedTransitions: ImprovementStatus[];
   diagnostics: DiagnosticPayload | null;
 }
 
-export const listImprovements = () => api<{ requests: ImprovementRequestView[] }>('/improvements');
+export function listImprovements(query: { q?: string; tab?: ImprovementTab; page?: number } = {}) {
+  const params = new URLSearchParams();
+  if (query.q) params.set('q', query.q);
+  if (query.tab && query.tab !== 'all') params.set('tab', query.tab);
+  if (query.page && query.page > 1) params.set('page', String(query.page));
+  const qs = params.toString();
+  return api<ImprovementListResponse>(`/improvements${qs ? `?${qs}` : ''}`);
+}
 
-export const getImprovement = (id: string) => api<ImprovementDetailResponse>(`/improvements/${id}`);
+export const getImprovement = (id: string) =>
+  api<ImprovementDetailResponse>(`/improvements/${encodeURIComponent(id)}`);
 
 /**
- * 改善要望の投稿。スクリーンショットは multipart で送るため apiUpload を使う。
- * 画像が無くても投稿は成立する(撮影の失敗は投稿の失敗ではない)。
+ * 改善リクエストの送信。スクリーンショットは multipart で送るため apiUpload を使う。
+ * 画像が無くても送信は成立する(撮影の失敗は送信の失敗ではない)。
+ * 確認 2 つは画面の検査を通ったときだけ 'true' で送る。サーバも同じ検査をやり直す。
  */
 export function createImprovement(input: {
-  title: string;
   body: string;
   route: string;
   diagnostics: DiagnosticPayload;
   screenshot: File | null;
+  privacyConfirmed: boolean;
+  privacyConsented: boolean;
 }): Promise<ImprovementCreateResponse> {
   const form = new FormData();
-  form.set('title', input.title);
   form.set('body', input.body);
   form.set('route', input.route);
   form.set('diagnostics', JSON.stringify(input.diagnostics));
+  form.set('privacyConfirmed', String(input.privacyConfirmed));
+  form.set('privacyConsented', String(input.privacyConsented));
   if (input.screenshot) form.set('screenshot', input.screenshot);
   return apiUpload<ImprovementCreateResponse>('/improvements', form);
 }
 
 /** 指示文の作り直し。前に配った指示文はこの時点で失効する */
 export const reissueImprovementPrompt = (id: string) =>
-  api<{ prompt: string; expiresAt: string }>(`/improvements/${id}/prompt`, { method: 'POST' });
+  api<{ prompt: string; expiresAt: string }>(`/improvements/${encodeURIComponent(id)}/prompt`, {
+    method: 'POST',
+  });
 
 export const markImprovementCopied = (id: string, target: 'claude_code' | 'codex') =>
-  api<{ ok: true; copiedAt: string }>(`/improvements/${id}/copied`, {
+  api<{ ok: true; copiedAt: string }>(`/improvements/${encodeURIComponent(id)}/copied`, {
     method: 'POST',
     body: JSON.stringify({ target }),
   });
 
+/** 許されない遷移は 409。画面は allowedTransitions だけを選ばせるので、409 は他の端末との競合 */
 export const setImprovementStatus = (id: string, status: ImprovementStatus) =>
-  api<{ request: ImprovementRequestView }>(`/improvements/${id}/status`, {
-    method: 'POST',
-    body: JSON.stringify({ status }),
-  });
+  api<{ request: ImprovementRequestView; activity: ImprovementActivityView | null }>(
+    `/improvements/${encodeURIComponent(id)}/status`,
+    { method: 'POST', body: JSON.stringify({ status }) },
+  );
+
+/** 論理削除。30 日以内なら restoreImprovement で同じ番号のまま戻せる */
+export const deleteImprovement = (id: string) =>
+  api<{ id: string; deletedAt: string }>(`/improvements/${encodeURIComponent(id)}`, { method: 'DELETE' });
+
+export const restoreImprovement = (id: string) =>
+  api<{ request: ImprovementRequestView; number: string }>(
+    `/improvements/${encodeURIComponent(id)}/restore`,
+    { method: 'POST' },
+  );
 
 /** スクリーンショットの取得先。R2 の公開URLではなく必ず Worker を通す */
 export const improvementScreenshotUrl = (id: string) => `/api/improvements/${id}/screenshot`;

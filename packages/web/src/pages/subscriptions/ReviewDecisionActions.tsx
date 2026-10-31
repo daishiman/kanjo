@@ -1,22 +1,16 @@
 import type { SubscriptionRow } from '@kanjo/core';
 import { Button } from '../../components/Button.js';
 import { usePeriod } from '../../period.js';
-import { deleteReviewDecision, postExclusion, postReviewDecision, postSubVendor } from './api.js';
-import type { RunAction } from './types.js';
+import type { RunWrite } from './types.js';
+
+const DECISIONS_PATH = '/subscriptions/review-decisions';
 
 /**
  * 見直し候補の判断操作の唯一の配置先。
  * ReasonCard は理由の説明に専念し、判断は対象の詳細を確かめた後にここで行う。
+ * 処理中でも押せ、押した順に「操作」へ積む (AC-011)。
  */
-export function ReviewDecisionActions({
-  row,
-  run,
-  busy,
-}: {
-  row: SubscriptionRow;
-  run: RunAction;
-  busy: boolean;
-}) {
+export function ReviewDecisionActions({ row, run }: { row: SubscriptionRow; run: RunWrite }) {
   const { withPeriod } = usePeriod();
   if (!row.review) return null;
 
@@ -25,16 +19,14 @@ export function ReviewDecisionActions({
       <section className="subs-review-decisions" aria-label="候補の判断">
         <Button
           variant="primary"
-          disabled={busy}
           aria-label={`${row.normalizedName}を候補として採用`}
-          onClick={() => run(() => postSubVendor(row.normalizedName), 'vendorDefinition')}
+          onClick={() => run({ kind: 'vendor_create', name: row.normalizedName })}
         >
           候補として採用
         </Button>
         <Button
-          disabled={busy}
           aria-label={`${row.normalizedName}を候補から除外`}
-          onClick={() => run(() => postExclusion(row.normalizedName), 'exclusion')}
+          onClick={() => run({ kind: 'exclusion', partner: row.normalizedName })}
         >
           候補から除外
         </Button>
@@ -45,28 +37,25 @@ export function ReviewDecisionActions({
   if (row.review.state === 'confirmed') {
     return (
       <section className="subs-review-decisions" aria-label="候補の判断">
-        <Button disabled={busy} onClick={() => run(() => deleteReviewDecision(row.vendorKey), 'decision')}>
+        <Button
+          onClick={() =>
+            run({ kind: 'review_decision', vendorKey: row.vendorKey, decision: null, path: DECISIONS_PATH })
+          }
+        >
           確認を取り消す
         </Button>
       </section>
     );
   }
 
+  const decide = (decision: 'confirmed' | 'dismissed') =>
+    run({ kind: 'review_decision', vendorKey: row.vendorKey, decision, path: withPeriod(DECISIONS_PATH) });
   return (
     <section className="subs-review-decisions" aria-label="候補の判断">
-      <Button
-        variant="primary"
-        disabled={busy}
-        onClick={() => run(() => postReviewDecision(row.vendorKey, 'confirmed', withPeriod), 'decision')}
-      >
+      <Button variant="primary" onClick={() => decide('confirmed')}>
         候補として確認
       </Button>
-      <Button
-        disabled={busy}
-        onClick={() => run(() => postReviewDecision(row.vendorKey, 'dismissed', withPeriod), 'decision')}
-      >
-        候補から除外
-      </Button>
+      <Button onClick={() => decide('dismissed')}>候補から除外</Button>
     </section>
   );
 }

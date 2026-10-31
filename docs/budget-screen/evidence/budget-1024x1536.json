@@ -1,0 +1,86 @@
+{
+  "target": "design/FINAL-UI/images/14-budget.png",
+  "metrics": {
+    "viewport": {
+      "width": 1024,
+      "height": 1536
+    },
+    "page": {
+      "clientWidth": 1009,
+      "scrollWidth": 1009
+    },
+    "title": "予算",
+    "question": "実績に合う予算へ、どこを調整しますか？",
+    "kpiIconCount": 4,
+    "tableRowCount": 10,
+    "selectedPanel": "人件費",
+    "mainTable": {
+      "x": 252,
+      "y": 840.109375,
+      "width": 469,
+      "height": 699.1875,
+      "bottom": 1539.296875
+    },
+    "mainPanel": {
+      "x": 737,
+      "y": 840.109375,
+      "width": 240,
+      "height": 1255.625,
+      "bottom": 2095.734375
+    },
+    "mainWidthRatio": 1.9541666666666666,
+    "selectionControl": {
+      "visual": {
+        "x": 269,
+        "y": 1050.109375,
+        "width": 20,
+        "height": 20,
+        "bottom": 1070.109375
+      },
+      "native": {
+        "x": 269,
+        "y": 1038.109375,
+        "width": 44,
+        "height": 44,
+        "bottom": 1082.109375
+      },
+      "hitArea": {
+        "x": 269,
+        "y": 1038.109375,
+        "width": 44,
+        "height": 44,
+        "bottom": 1082.109375
+      },
+      "firstRow": {
+        "x": 269,
+        "y": 1037.609375,
+        "width": 1054.796875,
+        "height": 45,
+        "bottom": 1082.609375
+      }
+    },
+    "chart": {
+      "x": 269,
+      "y": 530.359375,
+      "width": 438.65625,
+      "height": 158.390625,
+      "bottom": 688.75
+    },
+    "chartNotes": {
+      "x": 269,
+      "y": 696.75,
+      "width": 438.65625,
+      "height": 22.1875,
+      "bottom": 718.9375
+    },
+    "firstMonthBarX": {
+      "income-actual": 58.013333333333335,
+      "income-budget": 69.20633333333333,
+      "expense-actual": 80.39933333333333,
+      "expense-budget": 91.59233333333333
+    },
+    "minVisibleBudgetFontPx": 12
+  },
+  "runtimeProblems": [],
+  "failures": []
+}

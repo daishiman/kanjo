@@ -1,19 +1,19 @@
 /**
  * いま見えている画面を、外部ライブラリなしで画像にする。
  *
- * なぜ「モーダルを除外する」方式を採らないか:
- *   除外リストは網羅性に依存する。いま存在するモーダルを除いても、後からトーストや
- *   ポータルで別の要素が描かれれば、また写り込む。だから撮影そのものを
- *   「モーダルを開く前」に済ませ、順序で保証する。呼び出し側はこの Promise を
- *   await してから open にする(ImprovementRequestButton.tsx)。
+ * 写り込みの除外は印で行う (spec-improvement-screen FR-23):
+ *   撮影の入口は浮動パネル「画面をキャプチャ」で、撮る前から画面に出ている。
+ *   以前のモーダル方式のように「開く前に撮る」順序では防げないため、パネル・範囲選択の
+ *   覆い・起動ボタンの外枠に data-capture-hide を付け、複製から落とす。
+ *   金額・取引先・名義を出す共通部品は data-capture-mask を付け、複製の上で伏字にする。
+ *   その他の文字も core の辞書なし規則で伏せる。画像の中身は検査できないので複製へ持ち込まない。
  *
  * 実装は SVG の <foreignObject> に DOM の複製を入れ、それを <img> 経由で canvas へ描く。
  * 依存パッケージを増やさずに済む代わりに、次の制約がある:
  *   - <foreignObject> の中から外部リソース(画像・フォント)は取りに行けない。
  *     フォントは代替に落ち、画像は空欄になる。文字と配置は残るので、要望の
  *     「どこの何がおかしいか」を伝える用途には足りる。
- *   - <canvas> で描かれたグラフは複製すると空になるため、描画済みの内容を
- *     data URL にして差し替える。
+ *   - <canvas> と <img> のピクセルは文字のようにマスクできないため、撮影では伏字にする。
  *   - この画像は読み込み時点(t=0)で静止画に焼き付く。CSS アニメーションは進まない。
  *     そのため `animation-fill-mode: both` と `from { opacity: 0 }` を持つ要素は
  *     透明のまま写る。実際 .main の page-in がこれに当たり、サイドバーとヘッダー
@@ -21,13 +21,13 @@
  * 失敗したら null を返す。撮影の失敗は投稿の失敗ではない。
  */
 
-import { COLOR } from '@kanjo/core';
+import { COLOR, IMPROVEMENT_MASK, redactPersonalInfo } from '@kanjo/core';
 
 /** 長辺の上限(px)。画面の判読に必要な下限として 1600 を採る */
 const MAX_EDGE = 1600;
 const QUALITY = 0.8;
 
-/** 撮影に掛ける時間の上限。ここを超えたら諦めてモーダルを開く(利用者を待たせない) */
+/** 撮影に掛ける時間の上限。ここを超えたら諦めて画像なしで作成フォームへ進む(利用者を待たせない) */
 const TIMEOUT_MS = 4000;
 
 /**
@@ -49,6 +49,37 @@ function isFontFaceRule(rule: CSSRule): boolean {
   return rule.cssText.trimStart().startsWith('@font-face');
 }
 
+/** URL の先にある画像・フォント等は画素を検査できない。CSS の URL 参照も撮影へ入れない。 */
+function safeCssText(css: string): string {
+  let withoutUrls = '';
+  for (let i = 0; i < css.length; ) {
+    const imageFunction = /^(?:url|(?:-webkit-)?image-set)\(/i.exec(css.slice(i));
+    if (imageFunction) {
+      let depth = 1;
+      let quote = '';
+      i += imageFunction[0].length;
+      while (i < css.length && depth > 0) {
+        const char = css[i++];
+        if (char === '\\') {
+          i += 1;
+        } else if (quote) {
+          if (char === quote) quote = '';
+        } else if (char === '"' || char === "'") {
+          quote = char;
+        } else if (char === '(') {
+          depth += 1;
+        } else if (char === ')') {
+          depth -= 1;
+        }
+      }
+      withoutUrls += 'none';
+    } else {
+      withoutUrls += css[i++];
+    }
+  }
+  return redactPersonalInfo(withoutUrls);
+}
+
 /** 同一オリジンの CSS をまとめる。cross-origin の stylesheet は cssRules が読めないので飛ばす */
 function collectCss(doc: Document): string {
   const chunks: string[] = [];
@@ -65,8 +96,8 @@ function collectCss(doc: Document): string {
       // 無スタイルのまま焼き付く (サイドバーしか写らない不具合と同じ結果になる)
       try {
         // @font-face は foreignObject 内で解決できず、解決待ちで文字が消える環境がある
-        if (isFontFaceRule(rule)) continue;
-        chunks.push(rule.cssText);
+        if (isFontFaceRule(rule) || rule.cssText.trimStart().startsWith('@import')) continue;
+        chunks.push(safeCssText(rule.cssText));
       } catch {
         // 読めない規則だけを飛ばす
       }
@@ -75,43 +106,98 @@ function collectCss(doc: Document): string {
   return chunks.join('\n');
 }
 
+/**
+ * 撮影用 DOM の文字と属性を伏せる (spec FR-24)。
+ *
+ * 金額・取引先名・名義・口座を出す共通部品が印を付ける。消すのではなく伏字にするのは、
+ * 「そこに値があった」という配置の情報は改善の手掛かりとして残したいから。
+ * 辞書がないブラウザでは未知の固有名詞を判定できない。共通部品の印で覆い、
+ * 印がない文字には core の規則を掛ける。入力値・画像・URL は内容を検査せず外す。
+ */
+export function maskSensitiveText(root: Element): void {
+  const doc = root.ownerDocument;
+  const targets = [
+    ...(root.matches('[data-capture-mask]') ? [root] : []),
+    ...Array.from(root.querySelectorAll('[data-capture-mask]')),
+  ];
+  for (const target of targets) {
+    const walker = doc.createTreeWalker(target, NodeFilter.SHOW_TEXT);
+    const texts: Text[] = [];
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) texts.push(node as Text);
+    for (const text of texts) {
+      if (text.data.trim()) text.data = IMPROVEMENT_MASK;
+    }
+  }
+
+  const walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    const text = node as Text;
+    text.data = redactPersonalInfo(text.data);
+  }
+
+  for (const element of [root, ...Array.from(root.querySelectorAll('*'))]) {
+    const tag = element.tagName.toLowerCase();
+    // パス・data URL・srcset に生値や未検査の画素を埋め込ませない。
+    for (const attribute of Array.from(element.attributes)) {
+      const name = attribute.name.toLowerCase();
+      if (
+        name === 'src' ||
+        name === 'srcset' ||
+        name === 'href' ||
+        name === 'xlink:href' ||
+        name === 'poster' ||
+        name === 'formaction' ||
+        name.startsWith('on') ||
+        name.startsWith('data-')
+      ) {
+        element.removeAttribute(attribute.name);
+      } else if (name === 'style') {
+        element.setAttribute(attribute.name, safeCssText(attribute.value));
+      } else if (name === 'value') {
+        element.setAttribute(attribute.name, attribute.value ? IMPROVEMENT_MASK : '');
+      } else {
+        element.setAttribute(attribute.name, redactPersonalInfo(attribute.value));
+      }
+    }
+    // cloneNode が複製する現在値は属性と異なる場合がある。入力は一律伏せる。
+    if (tag === 'input') {
+      const input = element as HTMLInputElement;
+      if (input.value) input.setAttribute('value', IMPROVEMENT_MASK);
+    } else if (tag === 'textarea') {
+      const textarea = element as HTMLTextAreaElement;
+      if (textarea.value || textarea.textContent) textarea.textContent = IMPROVEMENT_MASK;
+    }
+  }
+}
+
 /** 複製した DOM から、画像化できない/してはいけない要素を落とす */
-function sanitizeClone(source: Element, clone: Element): void {
+function sanitizeClone(clone: Element): void {
   for (const node of Array.from(clone.querySelectorAll('script, noscript, iframe, object, embed'))) {
     node.remove();
   }
   /*
    * data-capture-hide が付いた要素を落とす。
    *
-   * モーダルを除外リストで消す方式は依然として採らない(順序で保証する)。ここで消すのは
-   * 「常に画面に浮いていて、必ず内容を覆う」自分自身の起動ボタンだけ。右下に固定した
-   * 結果、撮影のたびにボタンが右下の内容を隠すようになった。除外の対象が増えたら、
-   * それは順序で解けない別種の問題なので、この判断からやり直す。
+   * 対象は撮影の道具そのもの (右下の起動ボタン・浮動パネル・範囲選択の覆い)。
+   * どれも撮る瞬間に画面へ出ているので、順序ではなく印で落とす。
+   * 画面の中身 (トースト・ダイアログ) には付けない。それも改善の手掛かりだから。
    */
   for (const node of Array.from(clone.querySelectorAll('[data-capture-hide]'))) {
     node.remove();
   }
-  // 取りに行けない画像は空欄にする。src を残すと読み込み待ちで撮影ごと失敗する
-  for (const img of Array.from(clone.querySelectorAll('img'))) {
-    if (!img.src.startsWith('data:')) img.removeAttribute('src');
+  maskSensitiveText(clone);
+  for (const style of Array.from(clone.querySelectorAll('style'))) {
+    style.textContent = safeCssText(style.textContent ?? '');
   }
-  // canvas は複製すると中身が消える。描画済みの内容を静止画に置き換える
-  const sourceCanvases = source.querySelectorAll('canvas');
-  const cloneCanvases = clone.querySelectorAll('canvas');
-  for (let i = 0; i < cloneCanvases.length; i += 1) {
-    const original = sourceCanvases[i];
-    const target = cloneCanvases[i];
-    let dataUrl = '';
-    try {
-      dataUrl = original?.toDataURL('image/png') ?? '';
-    } catch {
-      // 汚染された canvas。空欄のままにする
-    }
-    const replacement = clone.ownerDocument.createElement('img');
-    replacement.setAttribute('style', target.getAttribute('style') ?? '');
-    replacement.width = target.width;
-    replacement.height = target.height;
-    if (dataUrl) replacement.src = dataUrl;
+  // canvas の描画済みピクセルは安全に読めても文字と機微値を識別できない。
+  for (const target of Array.from(clone.querySelectorAll('canvas'))) {
+    const replacement = clone.ownerDocument.createElement('div');
+    replacement.setAttribute('class', target.getAttribute('class') ?? '');
+    replacement.setAttribute(
+      'style',
+      `width:${target.getAttribute('width') ?? '300'}px;height:${target.getAttribute('height') ?? '150'}px;${target.getAttribute('style') ?? ''}`,
+    );
+    replacement.textContent = `図: ${IMPROVEMENT_MASK}`;
     target.replaceWith(replacement);
   }
 }
@@ -143,13 +229,13 @@ function loadImage(svg: string, timeoutMs: number): Promise<HTMLImageElement> {
 export function buildCaptureSvg(doc: Document, width: number, height: number): string {
   const body = doc.body;
   const clone = body.cloneNode(true) as HTMLElement;
-  sanitizeClone(body, clone);
+  sanitizeClone(clone);
   // 見えている範囲だけを撮る。スクロール位置ぶん上へずらす
   const scrollX = typeof window === 'undefined' ? 0 : window.scrollX;
   const scrollY = typeof window === 'undefined' ? 0 : window.scrollY;
   clone.setAttribute(
     'style',
-    `${body.getAttribute('style') ?? ''};margin:0;transform:translate(${-scrollX}px,${-scrollY}px);`,
+    `${safeCssText(body.getAttribute('style') ?? '')};margin:0;transform:translate(${-scrollX}px,${-scrollY}px);`,
   );
 
   const serialized = new XMLSerializer().serializeToString(clone);
@@ -165,25 +251,27 @@ export function buildCaptureSvg(doc: Document, width: number, height: number): s
  * @param doc 撮影対象の document(テストで差し替える)
  * @returns JPEG の File、または撮れなかったときは null
  */
-export async function captureScreen(doc: Document = document): Promise<File | null> {
+export async function captureScreen(doc: Document = document, region?: CaptureRegion): Promise<File | null> {
   try {
     if (typeof window === 'undefined' || typeof HTMLCanvasElement === 'undefined') return null;
     if (!doc.body) return null;
 
     const width = Math.max(1, Math.min(doc.documentElement.clientWidth, 2400));
     const height = Math.max(1, Math.min(doc.documentElement.clientHeight, 2400));
+    // 範囲選択 (spec FR-23) は見えている範囲を撮ってから切り抜く。範囲外は画面の内側へ寄せる
+    const crop = clampRegion(region ?? { x: 0, y: 0, width, height }, width, height);
 
     const image = await loadImage(buildCaptureSvg(doc, width, height), TIMEOUT_MS);
-    const scale = Math.min(1, MAX_EDGE / Math.max(width, height));
+    const scale = Math.min(1, MAX_EDGE / Math.max(crop.width, crop.height));
     const canvas = doc.createElement('canvas');
-    canvas.width = Math.max(1, Math.round(width * scale));
-    canvas.height = Math.max(1, Math.round(height * scale));
+    canvas.width = Math.max(1, Math.round(crop.width * scale));
+    canvas.height = Math.max(1, Math.round(crop.height * scale));
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
     // 背景を白で塗る。JPEG は透過を持てず、塗らないと透明部分が黒くなる
     ctx.fillStyle = COLOR.surface;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, canvas.width, canvas.height);
 
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', QUALITY));
     if (!blob) return null;
@@ -191,6 +279,26 @@ export async function captureScreen(doc: Document = document): Promise<File | nu
   } catch {
     return null;
   }
+}
+
+/** 画面 (CSS px、見えている範囲の左上が原点) の中の切り抜き範囲 */
+export interface CaptureRegion {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/** 範囲を画面の内側へ収め、最小 1px にする。キーボードで端まで動かしても撮影が壊れない */
+export function clampRegion(region: CaptureRegion, width: number, height: number): CaptureRegion {
+  const x = Math.min(Math.max(0, Math.round(region.x)), width - 1);
+  const y = Math.min(Math.max(0, Math.round(region.y)), height - 1);
+  return {
+    x,
+    y,
+    width: Math.max(1, Math.min(Math.round(region.width), width - x)),
+    height: Math.max(1, Math.min(Math.round(region.height), height - y)),
+  };
 }
 
 /** CSS 中の </style> でタグが閉じてしまうのを防ぐ */

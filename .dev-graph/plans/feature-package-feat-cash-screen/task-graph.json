@@ -1,0 +1,148 @@
+{
+  "feature_package_id": "feature-package/feat-cash-screen",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と持ち越し事項の解決担当の割り当て"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P01"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P02",
+      "title": "cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間消去・画面分割のワークストリーム設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P02"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P03",
+      "title": "削除と復元の契約・読取経路・入力検証・URL 契約の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P03"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P04",
+      "title": "core 境界値・API 契約・migration 0050・夜間予算・DOM の失敗テスト先行作成"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P04"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P05",
+      "title": "cash-screen 純関数・論理削除と復元の 4 経路・migration 0050・夜間の完全消去・現金入力画面の分割と旧操作の移設の最終実装"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P05"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P06",
+      "title": "全テストと型検査と lint と skill テストの実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P06"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P07",
+      "title": "受入基準 S1 から S5 の検証"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P07"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P08",
+      "lifecycle_role": "audit",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P08",
+      "title": "合計と経路の計算の重複・削除中の行の読取漏れ・旧参照の読取専用監査"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P08"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P09",
+      "title": "アクセシビリティ・入力検証・他人の行の拒否・下書きの扱い・JS バンドル予算の保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P09"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P10"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P11"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P12",
+      "title": "合計・絞り込み・入力経路・入力検証・削除と復元・夜間消去の規則表の docs 最終同期"
+    },
+    {
+      "depends_on": [
+        "SYS-CASH-P12"
+      ],
+      "feature_package_id": "feature-package/feat-cash-screen",
+      "id": "SYS-CASH-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-cash-screen",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信と migration 0050 の適用とクローズアウト"
+    }
+  ],
+  "parent_feature": "feat-cash-screen",
+  "schema_version": "1.0.0"
+}

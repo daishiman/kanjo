@@ -1,0 +1,49 @@
+{
+  "graph_node_id": "feat-budget-screen",
+  "artifact_kind": "feature",
+  "purpose": "利用者が過去の実績を根拠に来期 12 か月の予算を科目ごと (収入を含む) に決められ、自動提案がどの数値から組み上がったかを確かめ、事業の計画を調整額と理由として足し、その結果が年間の純収支と防衛ラインの余裕にどう効くかをその場で見られ、入力の途中で画面を離れても作業を失わない状態にする。予算の数値は core の純関数 1 か所 (budget-screen.ts) から導き、ヘッダの防衛ライン・診断の予算カバー率・予算の着地見込みと同じ関数を共有させて画面どうしで値をずらさない。",
+  "goal": "/budget が 14-budget.png の全構成要素 (パンくず・期間タブと期間送り・見出しと問い・予算対象の開始月・KPI 4 枚 (年間収入予算・年間支出予算・予算純収支・防衛ライン余裕)・月次グラフ (凡例 5 種と実績/見通しの境目)・今後の見通しの累計とコメント・予算一覧 (検索・実績から提案・すべてリセット・収入行が先頭)・科目パネル (自動提案と計算の詳細・計画による調整・月別推移)・過不足カテゴリ・調整によるインパクト・保存バー (未保存 N 項目・下書き自動保存)・読込 / 空 / 失敗) をトークンと共通部品で描画し、数値が core の budgetScreen / applyBudgetInputs 1 か所から出て KPI・一覧の和・グラフの年合計・見通しの累計が一致し、予算が migration 0050 の期間別の年額表 budget_plans に追加のみで残り、既存 budgets の読み手が monthlyBudgetsAt 経由で同じ値を読み、GET /api/budget-screen・GET/PUT /api/budget-plans が認証と変更系フェンスの内側で動き、外部送信 0 件で既存の数値テストが緑のままの状態。",
+  "scope_in": [
+    "/budget の作り直し (14-budget.png の全構成要素と読込・空 (実績 0 か月)・失敗の各状態)。Budget.tsx (317 行) を packages/web/src/pages/budget/ 配下の container と画面専用部品へ分け、pages/Budget.tsx は互換の re-export 1 行だけ残す",
+    "core の budgetScreen (前期実績・自動提案と根拠の内訳 (前期実績・増減率・季節性補正・計画による調整)・見通し・月次の実績と予算・見通しの累計・KPI 4 つ・過不足・インパクト) と applyBudgetInputs・monthlyBudgetsAt の新設 (packages/core/src/budget-screen.ts)",
+    "収入の行 (売上高・その他収入) を予算の対象に加える (利用者決定 opt-include-income)",
+    "自動提案は決定論 + 利用者が入力する計画による調整 (利用者決定 opt-deterministic-with-plan)",
+    "防衛ライン余裕 = 年間収入予算 − 防衛ラインの月額 × 12 (利用者決定 opt-income-minus-line)",
+    "GET /api/budget-screen・GET /api/budget-plans・PUT /api/budget-plans の新設 (変更系フェンス登録)",
+    "migration 0050_budget_plans.sql (追加のみ。予算対象の期間別の年額表。利用者決定 opt-period-annual-table。番号は予定) と runtimeSchemaGuard への反映",
+    "budget_plans を JSON の書き出しと復元 (Dataset・import-lifecycle) と JSON snapshot の無効化の対象に加える",
+    "既存 budgets の読み手 (診断の予算カバー率・予算の着地見込み・analytics の予算表) を monthlyBudgetsAt 経由に寄せる",
+    "下書きの端末保存と復元・未保存 N 項目・この行を元に戻す・リセット (確認つき)・未保存のまま離れるときの確認",
+    "診断からの ?account= の受け口と routeMetadata の予算の task / taskDetail の文言更新",
+    "設計判断の docs (docs/budget-screen/design-decisions.md) と core 単体・API 統合・migration 検査・DOM テスト"
+  ],
+  "scope_out": [
+    "予算の版管理・担当者・承認フロー (利用者決定で版つき案 opt-versioned-plans を退けた。同じ期間は上書き)",
+    "外部 LLM による提案と外部データ (従業員数の推移・類似企業の業界中央値)。取込データを外部へ送らない (C4)。画像の該当文言は計画による調整の理由としてだけ出す",
+    "個人 (家計) の予算 (家計の支出は防衛ラインの算出にだけ効く)",
+    "共通シェル (サイドバー・ヘッダー・フッター・月次クローズの進捗・『改善を送る』) の作り直し。ヘッダの『取引ライン：正常』は誤記として既存の『防衛ライン』を保つ",
+    "トレードオフ画面",
+    "web 以外の専用アプリ",
+    "旧 API (GET/PUT /api/budgets・POST /api/budgets/suggest) の削除 (互換のため残す)",
+    "既存 budgets 表の削除・書き換え (1 行も書き換えない)"
+  ],
+  "acceptance": [
+    "S1 (G1): /budget に 14-budget.png の構成要素 (§7.1 の全領域) がすべて描画され、色・余白・部品はトークンと共通部品を通し、直書き色の lint が 0 件。実績 0 か月で空状態になり、画面に『AI』の文字列が 0 件である。",
+    "S2 (G2): 同じ入力で KPI・一覧の来期予算の和・グラフの月次予算の年合計・今後の見通しの累計が一致し、自動提案の各項が科目パネルの『計算の詳細』と一致する。外部送信 0 件。",
+    "S3 (G3): 予算が予算対象の期間ごとに D1 に残り、migration は追加のみで既存行の書き換えが 0 件。保存行の無い期間は既存 budgets の月額 × 12 が初期値になる。",
+    "S4 (G4): 下書きが再読込後に復元でき、保存成功で消え、未保存のまま離れると確認が出る。",
+    "S5 (G5): 防衛ライン・予算カバー率が他画面と同じ関数から出て、既存の診断・概要・家計収支・総収支・決算書・明細仕分けの数値テストが緑のまま。lint・typecheck・初期 JS 予算を CI で通す。"
+  ],
+  "architecture_refs": [
+    "architecture/budget-ui-ux.md",
+    "architecture/budget-frontend.md",
+    "architecture/budget-backend.md",
+    "architecture/budget-database.md",
+    "architecture/budget-auth.md",
+    "architecture/budget-security.md",
+    "architecture/budget-infrastructure.md",
+    "architecture/budget-maintenance-ops.md",
+    "specs/spec-budget-screen.md"
+  ],
+  "updated_at": "2026-09-21T14:21:48Z"
+}

@@ -1,22 +1,22 @@
+import { settingsJsonFromBackup, summarizeSettings, validateSettingsJson } from '@kanjo/core';
 import { getSessionCookie } from 'better-auth/cookies';
 /**
  * kanjo-console Worker エントリ。
  * - /api/auth/*: ログイン(アプリ内セッション)。Access併用時は不要だが常設(冪等)
  * - /api/*: 認証必須のREST(spec §9)
  * - それ以外: Workers Assets がSPAを配信(データを含まないため公開)
- * - scheduled: 夜間バックアップ(統合JSON→R2 backups/、30日保持)
+ * - scheduled: 夜間バックアップ(統合JSON→R2 backups/、JST 2:00、30日保持)
  */
 import { Hono, type MiddlewareHandler } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { type RequestIdVariables, requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { runAuditDetailRetention, runAuditHeaderRetention } from './audit-log.js';
-import { runAuthAuditRetention, writeLegacyAuthAudit } from './auth-audit.js';
-import { cleanupExpiredAuthArtifacts } from './auth-cleanup.js';
+import { writeLegacyAuthAudit } from './auth-audit.js';
+import { runScheduledAuthCleanup } from './auth-cleanup.js';
 import {
   AUTH_RATE_LIMIT_ERROR,
   authRetryAfterSeconds,
-  cleanupStaleAuthRateLimits,
   clearAuthRateLimit,
   inspectAuthRateLimit,
   recordAuthRateLimitFailure,
@@ -32,14 +32,19 @@ import {
 } from './auth.js';
 import { compensateFailedGoogleProvisioning } from './better-auth.js';
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
+import { cashPurgeLogLine, runCashSoftDeletePurge } from './cash-purge.js';
 import { runDeletionRetention } from './deletion-retention.js';
+import { importOriginGuard, runImportStagingCleanup } from './import-rate-limit.js';
+import { PRIVATE_NO_STORE } from './public-validation.js';
 import { runR2Cleanup } from './r2-cleanup.js';
 import { accountRoute } from './routes/account.js';
 import { adminUsersRoute } from './routes/admin-users.js';
 import { aiAgentRoute, aiRoute } from './routes/ai.js';
 import { analysisHubRoute } from './routes/analysis-hub.js';
 import { analyticsRoute } from './routes/analytics.js';
+import { backupsRoute, listAllBackups } from './routes/backups.js';
 import { balancesRoute } from './routes/balances.js';
+import { budgetPlansRoute } from './routes/budget-plans.js';
 import { cashRoute } from './routes/cash.js';
 import { classifyBulkRoute } from './routes/classify-bulk.js';
 import { classifyRoute } from './routes/classify.js';
@@ -49,10 +54,12 @@ import { importsRoute } from './routes/imports.js';
 import { improvementAgentRoute, improvementRoute, runImprovementRetention } from './routes/improvement.js';
 import { reconciliationRoute } from './routes/reconciliation.js';
 import { savedFiltersRoute } from './routes/saved-filters.js';
+import { settingsScreenRoute } from './routes/settings-screen.js';
 import { settingsRoute } from './routes/settings.js';
 import { statusRoute } from './routes/status.js';
 import { subsRoute } from './routes/subs.js';
 import { totalCashflowRoute } from './routes/total-cashflow.js';
+import { tradeoffRoute } from './routes/tradeoff.js';
 import { vendorMemoryRoute } from './routes/vendor-memory.js';
 import {
   SCHEDULED_MAINTENANCE_D1_PLAN,
@@ -134,7 +141,7 @@ app.use(
   }),
 );
 
-// auth tableへ触る前に0050を確認する。CookieもBearerも無い保護routeだけは、
+// auth tableへ触る前に0059を確認する。CookieもBearerも無い保護routeだけは、
 // D1へ触れず従来どおりauthGuardの401へ落とす。
 app.use('/api/*', async (c, next) => {
   const needsSchema =
@@ -308,6 +315,9 @@ app.route('/api', improvementAgentRoute);
 
 app.use('/api/*', authGuard());
 app.use('/api/*', canonicalMutationFence());
+// 取込の変更要求は Origin を自サイトに限る (security 章)。GET は対象外
+app.use('/api/imports', importOriginGuard());
+app.use('/api/imports/*', importOriginGuard());
 app.route('/api', adminUsersRoute);
 app.route('/api', accountRoute);
 app.route('/api', aiRoute);
@@ -317,11 +327,15 @@ app.route('/api', importsRoute);
 app.route('/api', deletionsRoute);
 app.route('/api', cashRoute);
 app.route('/api', analyticsRoute);
+app.route('/api', tradeoffRoute);
 app.route('/api', classifyRoute);
 app.route('/api', classifyBulkRoute);
 app.route('/api', savedFiltersRoute);
 app.route('/api', vendorMemoryRoute);
+app.route('/api', settingsScreenRoute);
 app.route('/api', settingsRoute);
+app.route('/api', backupsRoute);
+app.route('/api', budgetPlansRoute);
 app.route('/api', subsRoute);
 app.route('/api', balancesRoute);
 app.route('/api', totalCashflowRoute);
@@ -337,7 +351,41 @@ app.notFound((c) => {
   return c.env.ASSETS.fetch(c.req.raw);
 });
 
+/**
+ * D1 は 1 つの DB への要求が溜まりすぎると、SQL を実行する前に
+ * `D1_ERROR: D1 DB is overloaded. Too many requests queued.` で拒否する。
+ * 実行前の拒否なので未適用であり、同じ Idempotency-Key で送り直してよい。
+ * 「適用されたか分からない」500 と分けるため、503 d1_overloaded (retryable) に言い換える。
+ *
+ * ただし「未適用」と保証できるのは、書込みを 1 回の D1 batch で行う route だけ
+ * (サブスクの操作は commitOperation の 1 batch)。複数の batch や個別の文に分けて書く route では、
+ * 前の batch が適用済みのまま後の要求で拒否されうる。自動再送の対象を広げるときは、
+ * その route が 1 batch で書くかを確かめる。
+ */
+const isD1Overloaded = (err: Error): boolean => err.message.includes('D1 DB is overloaded');
+
 app.onError((err, c) => {
+  if (isD1Overloaded(err)) {
+    console.error(
+      JSON.stringify({
+        level: 'warn',
+        event: 'd1_overloaded',
+        requestId: c.get('requestId'),
+        path: c.req.path,
+      }),
+    );
+    return c.json(
+      {
+        error: {
+          code: 'd1_overloaded',
+          message: 'データベースが混み合っています。少し待ってから再試行してください',
+          retryable: true,
+        },
+      },
+      503,
+      PRIVATE_NO_STORE,
+    );
+  }
   // 金融明細のため、エラーログにも明細内容・金額は出さない。
   // ただし種別だけでは本番の障害を追えない(どの行で落ちたか分からず、再現に何時間もかかる)。
   // スタックはコードの位置しか含まないので、先頭数フレームだけ残す。message は
@@ -376,22 +424,64 @@ interface NightlyBackupSummary {
   deleted: number;
 }
 
-async function nightlyBackup(env: Pick<AuthEnv, 'DB' | 'FILES'>): Promise<NightlyBackupSummary> {
+/** 夜間バックアップの日付。cron は UTC 17:00 (= JST 2:00) に動くので、日付は JST で切る */
+export const jstDate = (ms: number): string => new Date(ms + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+const BACKUP_RETENTION_DAYS = 30;
+
+/**
+ * 一覧に出す設定の要約。D1 を読み直さず、置く本文そのものから作る
+ * (D1 の読込は本文の 1 回だけ、かつ要約とその回の中身が必ず一致する)。読めなければ要約なしで置く。
+ */
+function backupSettingsSummary(payload: Record<string, unknown>, exportedAt: string): string | undefined {
+  const checked = validateSettingsJson(settingsJsonFromBackup(payload, exportedAt));
+  if (!checked.ok) return undefined;
+  const labels = payload.ownerLabels;
+  const ownerLabelsSaved = typeof labels === 'object' && labels !== null && Object.keys(labels).length > 0;
+  return JSON.stringify(summarizeSettings(checked.value, ownerLabelsSaved));
+}
+
+/**
+ * 1 回ぶんの夜間バックアップ。設定画面の一覧が読む customMetadata (状態・メモ・設定の要約・形式の版) を付ける。
+ * 置けなかった回は `YYYY-MM-DD.failed.json` を残し、一覧に『失敗』として出す (黙って欠けさせない)。
+ * 30 日より古い回は、失敗の印と復元前の退避 (pre-restore/) も含めて消す。
+ */
+export async function nightlyBackup(
+  env: Pick<AuthEnv, 'DB' | 'FILES'>,
+  nowMs: number = Date.now(),
+): Promise<NightlyBackupSummary> {
   const db = getDb(env.DB);
-  const payload = await loadBackupPayload(db, 'default');
-  const today = new Date().toISOString().slice(0, 10);
-  await env.FILES.put(`backups/${today}.json`, JSON.stringify(payload));
-  // 30日より古いバックアップを削除
-  const list = await env.FILES.list({ prefix: 'backups/' });
-  const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const today = jstDate(nowMs);
+  let failed = false;
+  try {
+    const payload = await loadBackupPayload(db, 'default');
+    const summary = backupSettingsSummary(payload, new Date(nowMs).toISOString());
+    await env.FILES.put(`backups/${today}.json`, JSON.stringify(payload), {
+      customMetadata: {
+        status: 'success',
+        memo: '自動バックアップ',
+        ...(summary ? { summary } : {}),
+        formatVersion: '1',
+      },
+    });
+  } catch {
+    failed = true;
+    await env.FILES.put(`backups/${today}.failed.json`, JSON.stringify({ reason: 'put_failed' }), {
+      customMetadata: { status: 'failed', memo: '自動バックアップ', reason: 'put_failed' },
+    });
+  }
+
+  const cutoff = jstDate(nowMs - BACKUP_RETENTION_DAYS * 24 * 60 * 60 * 1000);
   let deleted = 0;
-  for (const obj of list.objects) {
-    const day = obj.key.slice('backups/'.length, 'backups/'.length + 10);
-    if (day && day < cutoff) {
+  for (const obj of await listAllBackups(env.FILES)) {
+    const rest = obj.key.slice('backups/'.length);
+    const day = (rest.startsWith('pre-restore/') ? rest.slice('pre-restore/'.length) : rest).slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(day) && day < cutoff) {
       await env.FILES.delete(obj.key);
       deleted += 1;
     }
   }
+  if (failed) throw new Error('nightly backup put failed');
   return { stored: 1, deleted };
 }
 
@@ -405,16 +495,15 @@ export async function scheduledMaintenance(
   // Recordで予算表と実行jobを型結合する。jobの追加・宣言漏れはtypecheckで止まる。
   const concurrentJobs = {
     r2_cleanup: runR2Cleanup(env),
-    password_login_rate_limit_cleanup: Promise.all([
-      cleanupStaleAuthRateLimits(env.DB),
-      runAuthAuditRetention(env.DB),
-      cleanupExpiredAuthArtifacts(env.DB),
-    ]),
+    password_login_rate_limit_cleanup: runScheduledAuthCleanup(env.DB),
     improvement_retention: runImprovementRetention(env),
     deletion_undo_retention: runDeletionRetention(env),
     audit_header_retention: runAuditHeaderRetention(env),
     audit_detail_retention: runAuditDetailRetention(env),
+    cash_soft_delete_purge: runCashSoftDeletePurge(env),
   } satisfies Record<ConcurrentJobName, Promise<unknown>>;
+  // D1 を 1 本も使わない job は query 予算の表に載せない (載せると使わない枠を他から奪う)。
+  const importStagingCleanup = runImportStagingCleanup(env);
   const [
     r2Cleanup,
     loginRateLimit,
@@ -422,6 +511,8 @@ export async function scheduledMaintenance(
     deletionRetention,
     auditHeaderRetention,
     auditDetailRetention,
+    cashPurge,
+    importStaging,
   ] = await Promise.allSettled([
     concurrentJobs.r2_cleanup,
     concurrentJobs.password_login_rate_limit_cleanup,
@@ -429,6 +520,8 @@ export async function scheduledMaintenance(
     concurrentJobs.deletion_undo_retention,
     concurrentJobs.audit_header_retention,
     concurrentJobs.audit_detail_retention,
+    concurrentJobs.cash_soft_delete_purge,
+    importStagingCleanup,
   ]);
   console.log(
     JSON.stringify({
@@ -470,10 +563,9 @@ export async function scheduledMaintenance(
       JSON.stringify({
         level: 'info',
         job: 'password_login_rate_limit_cleanup',
-        deleted: loginRateLimit.value[0],
-        expiredAuditRows: loginRateLimit.value[1],
-        artifactKind: loginRateLimit.value[2].kind,
-        expiredArtifacts: loginRateLimit.value[2].deleted,
+        deleted: loginRateLimit.value.rateLimitsDeleted,
+        retentionKind: loginRateLimit.value.kind,
+        retentionDeleted: loginRateLimit.value.deleted,
       }),
     );
   } else {
@@ -492,6 +584,7 @@ export async function scheduledMaintenance(
         job: 'improvement_retention',
         selected: improvement.value.selected,
         purged: improvement.value.purged,
+        erased: improvement.value.erased,
         failed: improvement.value.failed,
         orphans: improvement.value.orphans,
         orphanScanned: improvement.value.orphanScanned,
@@ -572,6 +665,32 @@ export async function scheduledMaintenance(
       }),
     );
   }
+  if (importStaging.status === 'fulfilled') {
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        job: 'import_staging_cleanup',
+        staged: importStaging.value.staged,
+      }),
+    );
+  } else {
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        job: 'import_staging_cleanup',
+        name: errorName(importStaging.reason),
+      }),
+    );
+  }
+  if (cashPurge.status === 'fulfilled') {
+    const line = cashPurgeLogLine(cashPurge.value);
+    if (cashPurge.value.limitReached) console.warn(JSON.stringify(line));
+    else console.log(JSON.stringify(line));
+  } else {
+    console.error(
+      JSON.stringify({ level: 'error', job: 'cash_soft_delete_purge', name: errorName(cashPurge.reason) }),
+    );
+  }
   // 全jobを完走・個別記録してからCronへ失敗を返す。飲み込むとPast Eventsが成功になり、
   // 後始末が止まった事実を運用から観測できない。元errorのmessageは外へ出さない。
   if (
@@ -583,6 +702,8 @@ export async function scheduledMaintenance(
       deletionRetention,
       auditHeaderRetention,
       auditDetailRetention,
+      importStaging,
+      cashPurge,
     ].some((result) => result.status === 'rejected')
   ) {
     throw new Error('scheduled_maintenance_failed');

@@ -20,6 +20,7 @@ import {
 } from '../api.js';
 import { Button } from './Button.js';
 import { describeError } from './Page.js';
+import { SelectionCheckbox } from './SelectionCheckbox.js';
 
 /** 消す対象の指定。サーバへそのまま送る形 */
 type DeletionRequest =
@@ -968,21 +969,19 @@ export function DeletionPanel() {
           <fieldset className="deletion-kind-options">
             <legend>種別で絞る（未選択ならすべて）</legend>
             {KIND_CHOICES.map((kind) => (
-              <label key={kind.value}>
-                <input
-                  type="checkbox"
-                  checked={kinds.includes(kind.value)}
-                  disabled={flow.check.isPending || flow.run.isPending}
-                  onChange={(event) => {
-                    const checked = event.target.checked;
-                    flow.cancel();
-                    setKinds((previous) =>
-                      checked ? [...previous, kind.value] : previous.filter((value) => value !== kind.value),
-                    );
-                  }}
-                />
-                {kind.label}
-              </label>
+              <SelectionCheckbox
+                key={kind.value}
+                label={kind.label}
+                checked={kinds.includes(kind.value)}
+                disabled={flow.check.isPending || flow.run.isPending}
+                onChange={(event) => {
+                  const checked = event.target.checked;
+                  flow.cancel();
+                  setKinds((previous) =>
+                    checked ? [...previous, kind.value] : previous.filter((value) => value !== kind.value),
+                  );
+                }}
+              />
             ))}
           </fieldset>
 
