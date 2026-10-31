@@ -22,14 +22,14 @@ import {
 import { importMonthsText } from './import/view-model.js';
 
 beforeEach(() => {
-  // runRow の履歴を操作できる30日間の内側に置き、実行日による期限切れを防ぐ。
-  vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-09-21T00:00:00.000Z'));
+  // 取り消し可能な履歴を検証する時計を取込2日後に固定する。
+  vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-09-22T00:00:00.000Z'));
 });
 
 afterEach(() => {
   cleanup();
-  vi.unstubAllGlobals();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 function mount(server: ReturnType<typeof createImportServer>, initialEntries = ['/']) {

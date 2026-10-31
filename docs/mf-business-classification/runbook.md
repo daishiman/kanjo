@@ -16,13 +16,26 @@
 キーワードにも当たらない語にしてある。ルールが先に当たると根拠が `ルール` になり、
 中項目由来で判定されたのかが画面から読めなくなるため。
 
-```
-pnpm db:migrate:local && node scripts/seed-local.mjs
-pnpm --filter @kanjo/api exec wrangler dev --local
+```sh
+pnpm run preview
 ```
 
-ログインは `scripts/seed-admin.mjs` が作るローカルfixtureの
-`admin@kanjo.local` とパスワードを使う。実資格情報を文書やissueへ書かない。
+別のterminalでローカル専用の招待を作り、表示されたlocalhost URLで本人登録を完了する。
+初期パスワードの直接投入は行わない。管理者はTOTPを通すまでセッションが出ないため、
+投入には member の identity を使う。
+
+```sh
+node scripts/seed-admin.mjs
+node scripts/seed-admin.mjs --email member@kanjo.local --role member
+export KANJO_SEED_EMAIL=member@kanjo.local
+read -rs 'KANJO_SEED_PASSWORD?Local password: '
+export KANJO_SEED_PASSWORD
+node scripts/seed-local.mjs
+unset KANJO_SEED_EMAIL KANJO_SEED_PASSWORD
+```
+
+パスワードは招待承諾画面で本人が決め、command、文書、issueへ書かない。
+詳細は[`mobile-financial-visualization-test.md`](../runbooks/mobile-financial-visualization-test.md#4-ローカル招待を承諾し匿名テストデータを投入)に従う。
 
 公私仕分け画面の根拠内訳に `中項目` が3件現れ、トータル収支画面で当月の事業収入に
 その入金が含まれ、家計収入には含まれないことを確認する。

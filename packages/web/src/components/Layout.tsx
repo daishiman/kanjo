@@ -148,8 +148,8 @@ function UserMenu() {
   const logout = async () => {
     setError('');
     try {
-      await api('/auth/logout', { method: 'POST' });
-      // 同じブラウザを次に使う人へ負債・現金の下書きを残さない (spec-statements-screen §4 / spec-cash-screen FR-8)
+      await api('/auth/sign-out', { method: 'POST', body: '{}' });
+      // 同じブラウザを次に使う人へ負債の下書きを残さない (spec-statements-screen §4)
       clearAllLiabilityDrafts();
       clearAllBudgetDrafts();
       clearAllCashDrafts();

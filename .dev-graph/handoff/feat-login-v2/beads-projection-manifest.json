@@ -1,0 +1,151 @@
+{
+ "feature": {
+  "graph_node_id": "feat-login-v2",
+  "title": "ログイン画面 v2 (01-login-v2) の作り直しと Better Auth への移行 (Google・招待・再設定・連携・TOTP)",
+  "description": "dev-graph feature projection (features/feat-login-v2.md)",
+  "bd_issue_id": "kanjo-vr7"
+ },
+ "children": [
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P01",
+   "phase_ref": "P01",
+   "parent_feature": "feat-login-v2",
+   "title": "P01 要件ベースライン確定と前提条件・未決事項の着手時整理（K-1・K-5・reset-token 発行者衝突・frontend-002 と -006 の優先）",
+   "description": "dev-graph P01 projection (tasks/feat-login-v2/sys-login-v2-p01.md)",
+   "depends_on": [],
+   "bd_issue_id": "kanjo-vr7.1"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P02",
+   "phase_ref": "P02",
+   "parent_feature": "feat-login-v2",
+   "title": "P02 Better Auth 設定・関門・招待/MFA設定/再設定経路・D1 batch順序のワークストリーム設計決定記録",
+   "description": "dev-graph P02 projection (tasks/feat-login-v2/sys-login-v2-p02.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P01"
+   ],
+   "bd_issue_id": "kanjo-vr7.2"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P03",
+   "phase_ref": "P03",
+   "parent_feature": "feat-login-v2",
+   "title": "P03 認証契約・API 契約・migration 契約・画面契約の独立レビュー",
+   "description": "dev-graph P03 projection (tasks/feat-login-v2/sys-login-v2-p03.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P02"
+   ],
+   "bd_issue_id": "kanjo-vr7.3"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P04",
+   "phase_ref": "P04",
+   "parent_feature": "feat-login-v2",
+   "title": "P04 core/API/migration/DOM の失敗テスト先行作成（未解決前提条件に該当する分岐を除く）",
+   "description": "dev-graph P04 projection (tasks/feat-login-v2/sys-login-v2-p04.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P03"
+   ],
+   "bd_issue_id": "kanjo-vr7.4"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P05",
+   "phase_ref": "P05",
+   "parent_feature": "feat-login-v2",
+   "title": "P05 Better Auth 導入・招待/MFA設定/再設定/連携 API・migration 0048・ログイン画面群の最終実装",
+   "description": "dev-graph P05 projection (tasks/feat-login-v2/sys-login-v2-p05.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P04"
+   ],
+   "bd_issue_id": "kanjo-vr7.5"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P06",
+   "phase_ref": "P06",
+   "parent_feature": "feat-login-v2",
+   "title": "P06 全テスト・型検査・lint の実行記録",
+   "description": "dev-graph P06 projection (tasks/feat-login-v2/sys-login-v2-p06.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P05"
+   ],
+   "bd_issue_id": "kanjo-vr7.6"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P07",
+   "phase_ref": "P07",
+   "parent_feature": "feat-login-v2",
+   "title": "P07 受入基準 S1〜S7（AT-01〜AT-15）の検証",
+   "description": "dev-graph P07 projection (tasks/feat-login-v2/sys-login-v2-p07.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P06"
+   ],
+   "bd_issue_id": "kanjo-vr7.7"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P08",
+   "phase_ref": "P08",
+   "parent_feature": "feat-login-v2",
+   "title": "P08 旧 kanjo_session 署名・mustChangePasswordFence・一時パスワード発行参照の読取専用監査",
+   "description": "dev-graph P08 projection (tasks/feat-login-v2/sys-login-v2-p08.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P07"
+   ],
+   "bd_issue_id": "kanjo-vr7.8"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P09",
+   "phase_ref": "P09",
+   "parent_feature": "feat-login-v2",
+   "title": "P09 レート制限・列挙防止・CSP・secret 非出力・JS バンドル予算の保証確認",
+   "description": "dev-graph P09 projection (tasks/feat-login-v2/sys-login-v2-p09.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P08"
+   ],
+   "bd_issue_id": "kanjo-vr7.9"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P10",
+   "phase_ref": "P10",
+   "parent_feature": "feat-login-v2",
+   "title": "P10 独立最終レビュー",
+   "description": "dev-graph P10 projection (tasks/feat-login-v2/sys-login-v2-p10.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P09"
+   ],
+   "bd_issue_id": "kanjo-vr7.10"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P11",
+   "phase_ref": "P11",
+   "parent_feature": "feat-login-v2",
+   "title": "P11 再現可能な証跡索引の作成",
+   "description": "dev-graph P11 projection (tasks/feat-login-v2/sys-login-v2-p11.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P10"
+   ],
+   "bd_issue_id": "kanjo-vr7.11"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P12",
+   "phase_ref": "P12",
+   "parent_feature": "feat-login-v2",
+   "title": "P12 移行と戻し・secret・Google/Resend設定・締め出し復旧・プライバシーの docs 最終同期",
+   "description": "dev-graph P12 projection (tasks/feat-login-v2/sys-login-v2-p12.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P11"
+   ],
+   "bd_issue_id": "kanjo-vr7.12"
+  },
+  {
+   "graph_node_id": "SYS-LOGIN-V2-P13",
+   "phase_ref": "P13",
+   "parent_feature": "feat-login-v2",
+   "title": "P13 単一 PR での配信、secret 投入、migration 0048 適用、Deploy、クローズアウト",
+   "description": "dev-graph P13 projection (tasks/feat-login-v2/sys-login-v2-p13.md)",
+   "depends_on": [
+    "SYS-LOGIN-V2-P12"
+   ],
+   "bd_issue_id": "kanjo-vr7.13"
+  }
+ ]
+}

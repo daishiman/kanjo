@@ -1,0 +1,134 @@
+{
+  "references": [
+    {
+      "target_id": "wai-aria-live-regions",
+      "retrieved_at": "2026-09-30T07:58:03Z",
+      "source_url": "https://www.w3.org/TR/wai-aria-1.2/",
+      "official_publisher": "W3C",
+      "official_host": "www.w3.org",
+      "version": "1.2 (W3C Recommendation 06 June 2023)",
+      "latest_checked_at": "2026-09-30T07:58:03Z",
+      "summary": "WAI-ARIA 1.2 は live region role (5.3.5) に alert と status を並べる。alert は『A type of live region with important, and usually time-sensitive, information.』で aria-live の暗黙値は assertive。本サイクルでは一括操作バーと保存結果の通知を status、エラーを alert に分ける根拠とする。status の定義本文はページが長く取得内容に含まれず未確認 (live region role の一覧に載ることのみ確認)。"
+    },
+    {
+      "target_id": "react-router-searchparams",
+      "retrieved_at": "2026-09-30T07:58:03Z",
+      "source_url": "https://reactrouter.com/api/hooks/useSearchParams",
+      "official_publisher": "Remix Software (React Router)",
+      "official_host": "reactrouter.com",
+      "version": "8.4.0",
+      "latest_checked_at": "2026-09-30T07:58:03Z",
+      "summary": "useSearchParams(defaultInit?) は [URLSearchParams, SetURLSearchParams] を返し、setSearchParams は文字列・オブジェクト・タプル配列・URLSearchParams・関数を受ける。『Setting the search params causes a navigation.』同ページは 7.18.4 / 6.30.6 の版も併記する (kanjo は 7 系)。本サイクルでは選択 (sel) と表示件数を URL の検索パラメータで保持する根拠とする。"
+    },
+    {
+      "target_id": "hono-validation",
+      "retrieved_at": "2026-09-30T12:07:03Z",
+      "source_url": "https://hono.dev/docs/guides/validation",
+      "official_publisher": "Hono (honojs)",
+      "official_host": "hono.dev",
+      "last_updated": "2026-07-21",
+      "latest_checked_at": "2026-09-30T12:07:03Z",
+      "summary": "Hono 公式サイトの Validation ガイド。『Validation targets include json, query, header, param and cookie in addition to form.』『Within the handler, you can get the validated value with c.req.valid('form').』validator(target, callback) か @hono/zod-validator の zValidator(target, schema) を route に挟む。ガイドの例では失敗時の応答 (c.text('Invalid!', 400) など) を開発者が指定しており、既定の応答コードの記載は無い。ページに更新日の記載が無いので、last_updated には公式の原稿リポジトリ honojs/website の docs/guides/validation.md の最新コミット日 (2026-07-21、7f45b4b95b。2026-09-30T12:07:03Z に確認) を記す。本サイクルでは一括保存の json と選択の読み出しの query を zod で検証し、件数の範囲外・txId の重複・一括指定の値の範囲外を要求全体の 400 で返す根拠とする。"
+    },
+    {
+      "target_id": "zod-arrays",
+      "retrieved_at": "2026-10-01T00:38:24Z",
+      "source_url": "https://github.com/colinhacks/zod/blob/v3/README.md",
+      "official_publisher": "Colin McDonnell (colinhacks/zod 公式リポジトリ)",
+      "official_host": "github.com",
+      "version": "3 (v3 ブランチの README。kanjo の lockfile が解決する版は zod@3.25.76)",
+      "latest_checked_at": "2026-10-01T00:38:24Z",
+      "summary": "Zod 3 の公式 README (先頭に『Zod 4 is now available!』の告知があり、本文は 3 系の API)。配列は『If you want to ensure that an array contains at least one element, use `.nonempty()`.』、『z.string().array().min(5); // must contain 5 or more items』『z.string().array().max(5); // must contain 5 or fewer items』『z.string().array().length(5); // must contain 5 items exactly』で、『Unlike `.nonempty()` these methods do not change the inferred type.』。safeParse は『{ success: true; data: T; } | { success: false; error: ZodError; }』を返し、『If you don't want Zod to throw errors when validation fails, use `.safeParse`.』。kanjo の packages/api は zod ^3.24.1 (lockfile で 3.25.76) なので、Zod 4 のページ (zod.dev/api) からこの 3 系の記録に差し替えた。本サイクルでは選択の読み出し 1〜50 件・一括保存 1〜100 件の上限を z.array(...).min(1).max(n) で検証し、明細ごとの検査を safeParse で行う (失敗を例外にせず invalid_item に変える) 根拠とする。"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "retrieved_at": "2026-09-30T07:58:03Z",
+      "source_url": "https://owasp.org/www-project-application-security-verification-standard/",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "owasp.org",
+      "version": "5.0.0",
+      "latest_checked_at": "2026-09-30T07:58:03Z",
+      "summary": "ASVS の最新安定版は 5.0.0 (ページの記載)。ASVS は『a basis for testing web application technical security controls』であり、開発者へ『a list of requirements for secure development』を与える。本サイクルでは入力検証 (件数・重複・値の制約)・認可・変更履歴の要件の拠り所とする。"
+    },
+    {
+      "target_id": "owasp-api-bola",
+      "retrieved_at": "2026-09-30T07:58:03Z",
+      "source_url": "https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization",
+      "official_publisher": "OWASP Foundation",
+      "official_host": "api-security.owasp.org",
+      "version": "API Security Top 10 2023 (API1:2023)",
+      "latest_checked_at": "2026-09-30T07:58:03Z",
+      "summary": "API1:2023 Broken Object Level Authorization。サーバがクライアントの状態を追わず object ID に頼るため、ID の差し替えで他人の資源に届く。予防策は『Use the authorization mechanism to check if the logged-in user has access to perform the requested action on the record in every function that uses an input from the client to access a record in the database.』と、認可の仕組みを試すテストを書くこと。本サイクルでは選択の読み出しと一括保存で txId ごとに本人の明細かを確かめ、他人のものは not_found にする根拠とする。(owasp.org の旧 URL から 308 で移転済み)"
+    },
+    {
+      "target_id": "cloudflare-d1-batch",
+      "retrieved_at": "2026-09-30T11:31:00Z",
+      "source_url": "https://developers.cloudflare.com/d1/worker-api/d1-database/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-06-22",
+      "latest_checked_at": "2026-09-30T11:31:00Z",
+      "summary": "D1Database.batch() は『Batched statements are SQL transactions. If a statement in the sequence fails, then an error is returned for that specific statement, and it aborts or rolls back the entire sequence.』『Our implementation guarantees that each statement in the list will execute and commit, sequentially, non-concurrently.』batch がクエリの上限に何本として数えられるかは、このページに記載が無い。本サイクルでは、一括保存の編集と履歴を json_each で束ねた 1 回の batch で書き、1 文でも失敗すれば全体が巻き戻るので、保存対象の全件を write_failed として返す根拠とする。"
+    },
+    {
+      "target_id": "cloudflare-d1-limits",
+      "retrieved_at": "2026-09-30T11:31:00Z",
+      "source_url": "https://developers.cloudflare.com/d1/platform/limits/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-10-01T00:25:20Z",
+      "summary": "D1 の制限: 『Queries per Worker invocation (read subrequest limits) | 1000 (Workers Paid) / 50 (Free)』。上限は batch ごとではなく 1 回の Worker 起動で出すクエリの合計である。『Limits for individual queries (listed above) apply to each individual statement contained within a batch statement.』は 1 クエリあたりの制限 (bound parameter 最大 100・SQL 文の長さ最大 100,000 bytes・文字列/BLOB/行の最大 2,000,000 bytes) を batch 内の各文に当てるという意味で、batch 内の文を起動あたりの本数に 1 本ずつ数えるかは明記されていない。本サイクルでは、batch 内の文も 1 本ずつ数えるリポジトリの安全側の規則 (scheduled-maintenance-budget.ts) に従い、一括保存の 1 要求は読み込みと書き込みの合計を 49 本以内にする。選択の読み出しで txId を 1 文に 50 件まで束ねる (bound parameter 100 未満) 根拠にもする。 2026-10-01 に再照合し、上限の表 (50 / 1000) と batch 内の各文への適用の文言が変わっていないこと、ページの更新日が 2026-04-21 であることを確かめた。"
+    },
+    {
+      "target_id": "chrome-headless-mode",
+      "retrieved_at": "2026-09-30T07:58:03Z",
+      "source_url": "https://developer.chrome.com/docs/chromium/headless",
+      "official_publisher": "Google (Chrome for Developers)",
+      "official_host": "developer.chrome.com",
+      "last_updated": "2024-10-21",
+      "latest_checked_at": "2026-09-30T07:58:03Z",
+      "summary": "Chrome の headless mode は Chrome の実行ファイルに --headless を渡して起動する (Linux: google-chrome --headless など)。本サイクルでは既存の画面検査 (check-financial-visuals.mjs) に明細仕分けの範囲を足し、1264px と 1280px の描画を headless Chrome で確かめる根拠とする。--window-size・--screenshot の記述は取得内容に含まれず未確認。"
+    },
+    {
+      "target_id": "cloudflare-d1-json",
+      "retrieved_at": "2026-09-30T12:07:03Z",
+      "source_url": "https://developers.cloudflare.com/d1/sql-api/query-json/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-04-21",
+      "latest_checked_at": "2026-09-30T12:07:03Z",
+      "summary": "D1 の JSON 関数。json_each は『Returns each element within the object as an individual row. It will only traverse the top-level object.』例として『UPDATE users SET last_audited = ? WHERE id IN (SELECT value FROM json_each(?1))』に JSON.stringify した配列を1 つの bound parameter で渡し、複数行を 1 文で更新している。json_each は key・value・type・fullkey・path などの列を返す。本サイクルでは、一括保存の編集 (tx_edits) と履歴 (tx_history) を明細の配列を JSON で渡す json_each の文に束ね、書き込みの文の数を明細数で増やさずに 1 要求を 49 本以内に収める根拠とする。"
+    },
+    {
+      "target_id": "rfc9110-http-semantics",
+      "retrieved_at": "2026-10-01T00:19:06Z",
+      "source_url": "https://www.rfc-editor.org/rfc/rfc9110.html",
+      "official_publisher": "IETF (RFC Editor)",
+      "official_host": "www.rfc-editor.org",
+      "version": "RFC 9110 (June 2022, Standards Track)",
+      "latest_checked_at": "2026-10-01T00:19:06Z",
+      "summary": "HTTP の意味論の標準。§9.2.2 は、同じ要求を何度送っても意図した効果が 1 回と同じになる要求を冪等とし、この仕様が定めるうち PUT・DELETE と安全なメソッドを冪等とする (POST は含まない)。『A client MUST NOT automatically retry a request with a non-idempotent method unless it has some means to know that the request semantics are actually idempotent, regardless of the response status code received.』§15.5.1 は 400 を、クライアントの誤りと見なされる理由で処理できない・しない応答、§15.5.14 は 413 (Content Too Large) を、要求の内容がサーバが処理する気がない・できない大きさのときの拒否、§15.6.1 は 500 を、予期しない状態で要求を果たせなかった応答とする。時刻は取得直後に測った値。本サイクルでは、一括保存 (POST) が同じ本文の再送で値・月次集計・履歴を変えない (効果として冪等である) ことを受入テストで固定したうえで、通信の失敗と 5xx に利用者が押す『同じ内容で再試行』を出し、自動の再試行はしない根拠とする。400 は送り直しても結果が変わらないので再試行を出さない根拠とする。"
+    },
+    {
+      "target_id": "hono-body-limit",
+      "retrieved_at": "2026-10-01T00:19:06Z",
+      "source_url": "https://hono.dev/docs/middleware/builtin/body-limit",
+      "official_publisher": "Hono (honojs)",
+      "official_host": "hono.dev",
+      "last_updated": "2024-07-22",
+      "latest_checked_at": "2026-10-01T00:19:06Z",
+      "summary": "Hono の Body Limit Middleware。『The Body Limit Middleware can limit the file size of the request body.』まず Content-Length を見て、無ければ本文をストリームで読み、指定の大きさを超えたら onError を呼ぶ。maxSize が必須で、onError を省くと 413 を返す。ページに更新日の記載が無いので、last_updated には公式の原稿リポジトリ honojs/website の docs/middleware/builtin/body-limit.md の最新コミット日 (2024-07-22、d404177) を記す。時刻は取得直後に測った値。本サイクルでは、一括保存に bodyLimit (256KB) を掛け、超えたら既存の経路と同じ 413 payload_too_large『リクエストが大きすぎます』を返す根拠とする。"
+    },
+    {
+      "target_id": "cloudflare-workers-pricing",
+      "retrieved_at": "2026-10-01T00:25:20Z",
+      "source_url": "https://developers.cloudflare.com/workers/platform/pricing/",
+      "official_publisher": "Cloudflare",
+      "official_host": "developers.cloudflare.com",
+      "last_updated": "2026-08-28",
+      "latest_checked_at": "2026-10-01T00:25:20Z",
+      "summary": "Cloudflare Workers の料金。Workers Paid は『minimum charge of $5 USD per month for an account』。このページには D1 の起動あたりのクエリ上限の記載が無く、上限 (Free 50・Paid 1000) は cloudflare-d1-limits による。時刻は取得直後に測った値。本サイクルでは、一括保存の 1 要求が無料プランの上限を超える問題の解き方を比べた意思決定 (書き込みを束ねる / 画面から小分けに順送り / Workers Paid) で、Workers Paid 案の固定費 (月 5 USD から) の根拠とする。"
+    }
+  ]
+}

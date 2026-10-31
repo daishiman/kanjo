@@ -20,7 +20,7 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  SESSION_SECRET: 'synthetic-test-secret',
+  BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
 };
 const MEMBER = {
   id: 'usr_member',
@@ -1408,7 +1408,7 @@ describe('操作の一覧 (GET /api/subscription-operations)', () => {
     }
   });
 
-  it('新しい順に返し、本文・変更前・key を含めず、users に居ない操作者は null・停止中の操作者は email', async () => {
+  it('新しい順に返し、本文・変更前・key を含めず、user に居ない操作者は null・停止中の操作者は email', async () => {
     const targetId = await vendorIdOf(TARGET);
     const mergeKey = newKey();
     const merged = await applied(
@@ -1427,7 +1427,7 @@ describe('操作の一覧 (GET /api/subscription-operations)', () => {
       )
       .bind(await vendorIdOf(NOTE), new Date(Date.now() + 60_000).toISOString(), new Date().toISOString())
       .run();
-    await d1.prepare("UPDATE users SET status = 'suspended' WHERE id = ?").bind(MEMBER.id).run();
+    await d1.prepare(`UPDATE "user" SET status = 'suspended' WHERE id = ?`).bind(MEMBER.id).run();
     try {
       const response = await send('GET', '/subscription-operations');
       expect(response.headers.get('cache-control')).toBe('private, no-store');
@@ -1442,7 +1442,7 @@ describe('操作の一覧 (GET /api/subscription-operations)', () => {
         expect(text).not.toContain(hidden);
       }
     } finally {
-      await d1.prepare("UPDATE users SET status = 'active' WHERE id = ?").bind(MEMBER.id).run();
+      await d1.prepare(`UPDATE "user" SET status = 'active' WHERE id = ?`).bind(MEMBER.id).run();
     }
   });
 });

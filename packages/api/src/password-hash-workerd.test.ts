@@ -4,20 +4,15 @@
  * 本番の Workers は PBKDF2 の反復が 100,000 を超えると deriveBits で NotSupportedError を投げる。
  * 210,000 で出荷した版は全テスト緑のまま、本番のログインが全件 500 になった
  * (Node の WebCrypto にも、ローカルの Miniflare の workerd にもこの上限が無く、再現しない)。
- * そのため上限そのものは定数で固定し、導出の互換は workerd 内と Node (seed-admin.mjs) で突き合わせる。
+ * そのため上限そのものは定数で固定し、導出の互換は workerd 内と Node の PBKDF2 で突き合わせる。
  */
 import { pbkdf2Sync } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { PBKDF2_ITERATIONS } from './users.js';
 
 /** 本番 Workers の WebCrypto が受け付ける PBKDF2 反復の上限。ローカル実行環境では検出できない。 */
 const WORKERS_PRODUCTION_PBKDF2_MAX_ITERATIONS = 100_000;
-
-const seedAdminPath = resolve(dirname(fileURLToPath(import.meta.url)), '../../../scripts/seed-admin.mjs');
 
 const WORKER = `export default {
   async fetch(request) {
@@ -67,11 +62,5 @@ describe('PBKDF2 の反復回数 (workerd)', () => {
     expect(result.ok).toBe(true);
     const expected = pbkdf2Sync(password, Buffer.from(salt), PBKDF2_ITERATIONS, 32, 'sha256');
     expect(result.derived).toEqual(Array.from(expected));
-  });
-
-  it('seed-admin.mjs の反復回数が users.ts と一致する', () => {
-    const match = readFileSync(seedAdminPath, 'utf8').match(/const PBKDF2_ITERATIONS = ([\d_]+);/);
-    expect(match).not.toBeNull();
-    expect(Number(match?.[1].replaceAll('_', ''))).toBe(PBKDF2_ITERATIONS);
   });
 });

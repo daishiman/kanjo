@@ -23,7 +23,7 @@ import {
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { TENANT_ID } from '../src/auth.js';
-import { TEST_ADMIN, loginForTest } from '../src/auth.test-support.js';
+import { TEST_ADMIN, loginForTest, seedTestUser } from '../src/auth.test-support.js';
 import { app } from '../src/index.js';
 import { splitMigrationStatements } from '../src/migration-test-support.js';
 import { recordTestMigrationHead } from '../src/schema-guard.test-support.js';
@@ -33,7 +33,7 @@ const migrationsDir = resolve(here, '../../../migrations');
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  SESSION_SECRET: 'synthetic-test-secret',
+  BETTER_AUTH_SECRET: 'synthetic-better-auth-secret-32-characters-minimum',
 };
 const PATH = '/api/settings/tax-account-map';
 const OTHER = 'synthetic-other';
@@ -380,11 +380,12 @@ describe('初期の行と利用者 (AC-16)', () => {
     expect((await remove('通信費')).status).toBe(200);
     const allBefore = await rows(`SELECT ${MAP_COLUMNS} FROM tax_account_map ORDER BY user_id, category_big`);
 
-    const created = await send('POST', '/api/admin/users', {
+    // 利用者作成後の業務表の不変条件。招待承諾の経路自体はLogin v2の結合テストで検証する。
+    await seedTestUser(database, {
+      id: 'synthetic-member',
       email: 'synthetic-member@example.test',
       role: 'member',
     });
-    expect(created.status).toBe(201);
 
     expect(await rows(`SELECT ${MAP_COLUMNS} FROM tax_account_map ORDER BY user_id, category_big`)).toEqual(
       allBefore,

@@ -21,7 +21,7 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  SESSION_SECRET: 'synthetic-test-secret',
+  BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
 };
 
 let miniflare: Miniflare;
@@ -141,7 +141,7 @@ describe('GET /api/analysis/hub', () => {
     expect(response.status).toBe(401);
   });
 
-  it('一時パスワードの変更前は 403 password_change_required', async () => {
+  it('廃止済みの一時パスワードflagで現行sessionを遮断しない', async () => {
     const pending = await loginForTest(app, env(), {
       id: 'temp-user',
       email: 'temp-user@example.test',
@@ -149,8 +149,6 @@ describe('GET /api/analysis/hub', () => {
       mustChangePassword: true,
     });
     const response = await request('/analysis/hub', { cookie: pending });
-    expect(response.status).toBe(403);
-    const body = (await response.json()) as { error?: { code?: string } };
-    expect(body.error?.code).toBe('password_change_required');
+    expect(response.status).toBe(200);
   });
 });

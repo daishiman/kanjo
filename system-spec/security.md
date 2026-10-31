@@ -3,7 +3,7 @@ status: confirmed
 category: security
 aggregate: 確定
 spec_cells: [security.web, security.mobile, security.tablet, security.desktop-windows, security.desktop-linux, security.desktop-macos]
-serves_goals: [G5]
+serves_goals: [G4, G5, G6]
 ---
 
 # セキュリティ (security)
@@ -15,12 +15,12 @@ serves_goals: [G5]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-classify-bulk-decision-072。裏付け質疑 (`qa_refs`): `qa-classify-bulk-decision-017`, `qa-classify-bulk-security-web-004`, `qa-classify-bulk-security-web-evidence-001`, `qa-classify-bulk-security-web-001`, `qa-classify-bulk-security-web-003`, `qa-classify-bulk-decision-007`, `qa-classify-bulk-backend-web-007`, `qa-classify-bulk-backend-web-008`, `qa-classify-bulk-backend-web-009`, `qa-classify-bulk-decision-010`, `qa-classify-bulk-decision-013`, `qa-classify-bulk-decision-014`, `qa-classify-bulk-decision-015`, `qa-classify-bulk-decision-018`, `qa-classify-bulk-backend-web-010`, `qa-classify-bulk-decision-029`, `qa-classify-bulk-decision-030`, `qa-classify-bulk-decision-031`, `qa-classify-bulk-decision-034`, `qa-classify-bulk-delegated-002`, `qa-classify-bulk-decision-035`, `qa-classify-bulk-delegated-003`, `qa-classify-bulk-decision-036`, `qa-classify-bulk-delegated-004`, `qa-classify-bulk-decision-037`, `qa-classify-bulk-decision-045`, `qa-classify-bulk-decision-048`, `qa-classify-bulk-decision-054`, `qa-classify-bulk-decision-055`, `qa-classify-bulk-decision-056`, `qa-classify-bulk-decision-057`, `qa-classify-bulk-decision-058`, `qa-classify-bulk-decision-068` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G5 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、security では端末内に残る明細 (取引先・金額) と未保存の下書きの保護と、端末紛失時の消去を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、security では端末内に残る明細 (取引先・金額) と未保存の下書きの保護と、端末紛失時の消去を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、security では端末内に残る明細 (取引先・金額) と未保存の下書きの保護と、端末紛失時の消去を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、security では端末内に残る明細 (取引先・金額) と未保存の下書きの保護と、端末紛失時の消去を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、security では端末内に残る明細 (取引先・金額) と未保存の下書きの保護と、端末紛失時の消去を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
+| Web (web) | 確定 | 確定質疑: qa-login-v2-security-web-003。裏付け質疑 (`qa_refs`): `qa-login-v2-security-web-evidence-001`, `qa-login-v2-security-web-002`, `qa-login-v2-decision-001`, `qa-login-v2-decision-002`, `qa-login-v2-decision-003`, `qa-login-v2-security-web-004`, `qa-login-v2-auth-web-evidence-002`, `qa-login-v2-decision-005`, `qa-login-v2-decision-006` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G4, G5, G6 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、セキュリティでは端末紛失時に遠隔でセッションを失効させる手段と、画面キャプチャの抑止を決める必要があった。本サイクルは web のみを対象とするため該当しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、セキュリティでは共有端末に残る MFA の復旧コード表示をどう隠すかを決める必要があった。本サイクルは web のみを対象とするため該当しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、セキュリティではデスクトップ版の自動更新の署名検証と、改ざんされた版からのログインの遮断を決める必要があった。本サイクルは web のみを対象とするため該当しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、セキュリティでは配布リポジトリの署名鍵と改ざん検知を決める必要があった。本サイクルは web のみを対象とするため該当しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、セキュリティでは公証とハードンドランタイムの下でのキーチェーンへのアクセス権を決める必要があった。本サイクルは web のみを対象とするため該当しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -28,7 +28,7 @@ serves_goals: [G5]
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | 変更の跡を後から辿れる形へ反映した。一括保存では、保存した明細の値が変わった項目ごとに tx_history へ source=bulk の履歴を 1 行ずつ、同じ要求の行に同じ op_id を付けて残し、誰がいつどの明細のどの項目を一括で変えたかを辿れるようにした。値が変わらない明細は履歴を書かない。勘定科目の対応表の追加と削除は設定の変更履歴に残し、事業の明細の提案を変えた設定の変更を辿れるようにした (qa-classify-bulk-decision-049)。入力の検証は zod の 1 か所にまとめ、CSP (default-src 'self'・connect-src 'self') は変えない。 |
+| security | OWASP ASVS + Secrets Management Cheat Sheet | 脅威モデル・入力検証・暗号化・監査ログの上流指針 | https://owasp.org/www-project-application-security-verification-standard/ | 2026-07-12 | ログイン v2 のセキュリティでは、新しい 4 つの入口 (MFA・再送・再設定・連携確認) を既存のレート制限の表に scope として足し、同じロックの規則を当てる形へ反映した (OWASP ASVS V2)。CSP は connect-src 'self' を保ち、Google への遷移はページ遷移だけで行ってスクリプトからの外部接続を増やさない。 |
 
 ## 確定内容 (質疑録)
 
@@ -36,527 +36,127 @@ serves_goals: [G5]
 
 ### Web (web)
 
-- 資するゴール: G5
+- 資するゴール: G4, G5, G6
 
-#### 主たる接地根拠: `qa-classify-bulk-decision-072`
-
-**問**
-
-要件の土台のうち、選択の単位と選べる行・保存の経路の認可と入力検証を書いた 12 項目 (G3・G5・O4・O6・S3・S5・I3・I5・範囲に含む 4・5・9・範囲に含まない 5) を、『承認する』の preview の今の文面で承認しますか。要件の土台 (U1〜U9) の文面は、以前の承認の後に続いた決定で書き換わっていて、今の全文を逐語で示して承認を得た記録がありません。以前の問 (decision-060) の (b)『要件の土台 U1〜U9 の全文を逐語で示し、承認し直す』に当たります。土台を 6 つに分け、前の回で 3 つを承認いただいたので、この回で残りの 3 つを伺います。今の全文は『承認する』の preview に、改める項目と変えない項目に分けて置きます。文中の括弧内の id は、その文面のもとになった決定です。12 項目のうち 6 項目 (G3・G5・O6・S5・範囲に含む 4・5) は、以前の承認 (decision-017・030) の後の決定で文面が変わりました。ほかの 6 項目は変えません。主な変化: 分割の設定が不正な明細の行も選べず、理由『分割の設定を直してから保存してください』を示す (decision-038)。勘定科目の対応表の読み書きも利用者自身の行だけを扱い、他の利用者の行は存在を明かさず『見つからない』とし、同じ大項目の 2 行目と一覧に無い対応先を 400 にし、変更を設定の変更履歴に残す (decision-049)。『カテゴリなし』の予約の値は一括指定と編集の値としては 400 にし、同じ名前のカテゴリの候補は作れない (decision-045・048)。一括保存の本文は 256KB までで、超えたら 413 を返す (decision-030)。以前の問 (decision-017) は、『承認しない』にだけ結果を書いていて利点と不利な点の対が無かったので、各選択肢に利点と不利な点を書いて問い直します。承認すると、この問の記録を、仕様の security と auth の章の主な根拠にします。今の auth の章の主な根拠は、勘定科目の対応表を足す前の回答で、対応表の行の扱いを含んでいません。
-
-**答**
-
-承認する。preview の項目を、今の文面のまま要件の土台として承認する。利点: 土台と仕様の各章が同じ文面に揃い、承認の記録から今の文面を辿れる。不利な点: preview は約 3100 字あり、読み落とした細部も、この文面のまま計画と実装へ渡る。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「土台・選択と認可」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-025)。利用者はこの問で「承認する」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T09:28:56.562Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-017 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T09:28:57Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-017` — 旧版（置き換え先: `qa-classify-bulk-decision-072`）
-
-> **旧版** — この問答は `qa-classify-bulk-decision-072` で置き換えられた (`2026-10-01T09:29:15Z`)。
-> 下の問・答は凍結された記録の逐語で、現行の接地根拠ではない。現行の問答は置き換え先を参照すること。
-> - 置き換えの理由: 旧い問は、『承認しない』にだけ結果を書き、利点と不利な点の対が無く、選択肢の書き方が片寄っていた (N2 の違反)。また、承認の後の決定で土台の文面が変わり、今の全文を逐語で示した承認が無かった (軸 5)。今の全文を preview に置き、各選択肢に利点と不利な点を書き、保留の道を残して問い直した。提示の逐語は qa-classify-bulk-presented-options-025。利用者は『承認する』を選んだ。
+#### 主たる接地根拠: `qa-login-v2-security-web-003`
 
 **問**
 
-```text
-テーマ C（選択の単位と選べる行）: G3・G5・O4.measure・O6.measure・S3・I3・I5・範囲 in[4]・in[5]・out[5] を、preview の「新」の文面に改めることを承認しますか？
-```
+ログイン v2 の セキュリティ に何を求めるか。
 
 **答**
 
-```text
-承認する。10 項目を preview の「新」の文面に改めます。改めた後の文面は requirements_foundation の該当項目にある。承認した文面の要点: 選択は sel に行の key で持ち、内訳行と分割の設定が不正な行は選べず、見出しの全選択は 50 件で止める。他の利用者の行の key と txId は存在を明かさず『見つからない』とし、選択の key と一括の txId の重複は 400 にする。
-```
+ログイン・MFA コード・招待の再送・パスワード再設定の各入口に IP とアカウントの 2 軸のレート制限を掛け、応答の本文・ステータス・所要時間から利用者や招待の有無が分からないようにする。認証に要る秘密 (署名鍵、Google の OAuth クライアント、メール送信の API キー) は Workers の secret で持ち、リポジトリ・ログ・応答に出さない。Google の認可は state・PKCE・nonce を検証する。サインインのついでの自動連携はさせない。外部へ出るのは Google (認可と ID トークンの検証) と Resend (宛先メールアドレスと本文) だけで、業務データは送らない。稼働状態 API はエラー文や構成を返さない。プライバシーページに外部送信先と利用目的・保存期間を載せる。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問を 1 回で提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-007)。利用者はこの問で「承認する」を選択。answered_at は回答受領時刻 (2026-09-30T15:07:35.741Z) を秒へ切り上げた値で、選択時刻の上界である。backend と security の web セルの reopen (2026-09-30T15:04:11Z) より後の回答である。 / 回答時刻: 2026-09-30T15:07:36Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が正本として指示した画像 design/FINAL-UI/images/01-login-v2.png と、利用者承認 (appr-foundation-login-v2-001) の U1-U9、決定 qa-login-v2-decision-001〜004 から、利用者が決めた到達点だけを書き起こした要件。同じ章の -001 はライブラリ API 名・secret 名・経路名など利用者が決めていない実装手段をuser-decision の中に含めていたため (完成度評価 medium 5)、それらを除いて本 qa に置き直し、実装手段は -004 (agent-inference) へ移した。 / 回答時刻: 2026-09-21T13:42:56Z)
 
-#### 裏付け質疑: `qa-classify-bulk-security-web-004`
+#### 裏付け質疑: `qa-login-v2-security-web-evidence-001`
 
 **問**
 
-完成度評価 loop 3 の指摘 (400 と明細単位の失敗の境界が書かれていない・履歴の粒度が実装と食い違う) を受けて、選択の読み出しと一括保存で、何を要求全体の 400 にし、何を明細単位の失敗にし、履歴を何の単位で残すか。
+セキュリティ 章の裏付けとして、01-login-v2.png と現行実装の差分として何を観測したか。
 
 **答**
 
-入力は zod で検証する。要求全体を 400 にするのは、件数の範囲外 (選択の読み出し 1〜50 件、一括保存 1〜100 件)、txId の重複、一括指定の値の範囲外 (選択した全件に当たる値のため) の 3 つだけとする。各明細の下書きの値の範囲外と、解決後の科目が区分の系統と合わない明細は、その明細だけを invalid_item で返し、他の明細は保存する。変更はフェンスを通し、履歴は保存した明細の値が変わった項目ごとに 1 行 (source=bulk) を残す。他の利用者の明細は存在を明かさず not_found で返す。
+packages/api/src/index.ts の secureHeaders により CSP (default-src 'self'、connect-src 'self'、form-action 'self'、frame-ancestors 'none') と X-Frame-Options DENY を掛ける。認証入口は`auth-rate-limit.ts`でIP/確定accountの軸を使い分け、ログイン失敗の応答はアカウントの有無で変えない。wrangler.jsoncの必須secretは`BETTER_AUTH_SECRET`・Google Client ID/Secret・`RESEND_API_KEY`であり、旧`SESSION_SECRET`は使わない。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-30T12:33:49Z` — provenance の『U1〜U9 の全文』は、保存値の逐語ではなく全項目を言い換えた提示を指す (提示と回答の逐語は qa-classify-bulk-presented-options-003)。『提示 (2026-09-30T11:52:04.835Z)』は表示の前に測った下限で、本文の表示は 2026-09-30T11:52:47.000Z、問の提示は 2026-09-30T11:52:50.231Z。『受領 2026-09-30T12:01:11.715Z』は受領の後に測った値で、回答の受領は 2026-09-30T12:01:05.458Z (いずれもセッション記録)。answered_at 12:01:12Z は承認時刻の上界として引き続き成り立つ。
-> - `2026-09-30T21:16:05Z` — 選択の読み出しは、qa-classify-bulk-decision-007・qa-classify-bulk-decision-017 で行の key を受ける形になった。要求全体を 400 にする『txId の重複』は、qa-classify-bulk-decision-017 で『選択の key と一括の txId の重複』になり、『他の利用者の明細は存在を明かさず not_found で返す』は、行の key と txId の両方に当てる。question が受ける土台の承認 appr-foundation-classify-bulk-003 (提示の逐語は qa-classify-bulk-presented-options-003) は、appr-foundation-classify-bulk-004 (提示の逐語は qa-classify-bulk-presented-options-007) で改められた。security×web の主の qa_ref は、2026-09-30T15:04:11Z の reopen の後、qa-classify-bulk-decision-017 に移った。入力の zod による検証、件数の範囲、履歴の粒度は変わらない。
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現行実装 (main 8f72ff0) の読取りによる観測。 / 回答時刻: 2026-09-21T13:27:06Z)
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion で U1〜U9 の全文と『3 章の確定内容』を 1 回で提示し (2026-09-30T11:52:04.835Z)、その security 行 (要求全体を 400 にするのは件数の範囲外・txId の重複・一括指定の値の範囲外の 3 つだけ・各明細の下書きの値の範囲外と解決後の科目が区分の系統と合わない明細はその明細だけを invalid_item で返し他の明細は保存する・変更はフェンスを通す・履歴は値が変わった項目ごとに 1 行・他の利用者の明細は not_found) を、利用者が『この内容で承認』で承認した (受領 2026-09-30T12:01:11.715Z)。answered_at は受領時刻を秒へ切り上げた値で、承認時刻の上界である。qa-classify-bulk-security-web-001 の『成功した明細ごとに履歴を 1 件ずつ』を置き換える。 / 回答時刻: 2026-09-30T12:01:12Z)
-
-#### 裏付け質疑: `qa-classify-bulk-security-web-evidence-001`
+#### 裏付け質疑: `qa-login-v2-security-web-002`
 
 **問**
 
-security 章の裏付けとして、現行実装について何を観測したか。
+web のログイン v2 で、セキュリティ について利用者が決めていない具体値を何にするか。
 
 **答**
 
-全応答に secureHeaders の CSP (default-src 'self'、frame-ancestors 'none'、script-src 'self') が掛かる (packages/api/src/index.ts:63-75)。一括保存の入力は zod で、items は 1〜100 件 (packages/api/src/routes/classify-bulk.ts:46, 57)、txId の重複は 400 (classify-bulk.ts:91)。各 item は itemSchema (cls・big/mid 60 字・owner・paymentMethod・note 200 字、classify-bulk.ts:48-56) で検査し、不正は invalid_item、本人の Dataset に無い txId は not_found を返す (classify-bulk.ts:108-125)。
+再送依頼・再設定依頼・MFA コード入力のレート制限は、既存と同じ 15 分に 5 回・15 分ロックの値を使い、scope_kind に 'invite_resend'・'password_reset'・'mfa' を加えて分ける。稼働状態 API は IP 単位で 1 分に 60 回までとする。 これは agent の推定で、利用者は未確認である。画像・U1-U9・決定 001〜004 のどれにも値が無いため、実装で決定論を保つために置いた。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-30T07:53:11Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent の推定 (利用者未確認) / 回答時刻: 2026-09-21T13:27:06Z)
 
-#### 裏付け質疑: `qa-classify-bulk-security-web-001`
+#### 裏付け質疑: `qa-login-v2-decision-001`
 
 **問**
 
-選択の読み出しと一括保存の入力と変更を、どう守るか。
+Google ログインをどう実装するか (現行はメールとパスワードの自前認証)。
 
 **答**
 
-入力は zod で検証する。選択の読み出しは 50 件まで、一括保存は 100 件まで、txId の重複は 400、一括指定の値は既存の 1 件の編集と同じ制約に通す。変更はフェンスを通し、成功した明細ごとに履歴 (source=bulk) を 1 件ずつ残す。他の利用者の明細の存在を明かさない。
+Better Auth へ全面移行する (提示した推奨は自前認証への Google OIDC 追加)。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-30T12:33:49Z` — 置き換え済み (superseded_by: qa-classify-bulk-security-web-004)。主の qa_ref は -004 で、本記録は裏付けとして残す。この回答の『成功した明細ごとに履歴 (source=bulk) を 1 件ずつ』は、appr-foundation-classify-bulk-003 で『保存した明細の値が変わった項目ごとに 1 行 (同じ要求の行は同じ op_id)。値が変わらない明細は履歴を書かない』に訂正された。
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案・説明提示あり / 回答時刻: 2026-09-21T13:14:00Z)
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-classify-bulk-001) と決定 qa-classify-bulk-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-30T07:53:11Z)
-
-#### 裏付け質疑: `qa-classify-bulk-security-web-003`
+#### 裏付け質疑: `qa-login-v2-decision-002`
 
 **問**
 
-選択の読み出し API の入力で、利用者が決めていない上限を何にするか。
+招待・パスワード再設定・連携確認のメールを送る基盤をどうするか。
 
 **答**
 
-選択の読み出しは GET で副作用を持たず、keys は 1 件 200 字まで・重複は 400 にする。応答の防御ヘッダ (secureHeaders の CSP) は変えない。一括指定の値の zod は既存の itemSchema の各欄を再利用し、別の制約を作らない。 これは agent の推定で、利用者は未確認である。
+Resend など外部 API で送る (提示した推奨は Cloudflare Email Service)。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-10-01T10:08:23Z` — 本記録の各部の今の根拠は次のとおり。(1) 選択の key の重複を 400 にすることと、一括指定の値に既存の編集と同じ制約を使うことは、要件の土台の G5・O6 にある (qa-classify-bulk-decision-072 で文面を承認)。(2)『keys は 1 件 200 字まで』は、超えたら 400 にする意味ではない。200 字を超える key は、形の違う key と同じく missing に入れる (qa-classify-bulk-backend-web-009 (2))。(3) 選択の読み出しを副作用の無い GET にすること、key 1 件の上限を 200 字とすること、応答の防御ヘッダ (secureHeaders の CSP) を変えないことは、要件の土台に書かれていないサーバの細部である。qa-classify-bulk-decision-058 の preview (qa-classify-bulk-presented-options-020) は、選択の読み出しを GET として扱っている (『選択の読み出し (GET) は本文が無いので、本文の上限を付けない』)。agent は、(3) を qa-classify-bulk-decision-058 で承認された種類の細部として agent の案で決めたと読む。これは agent の読みで、利用者は未確認である。(3) はどれも画面の振る舞いを変えない。
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案・説明提示あり / 回答時刻: 2026-09-21T13:14:00Z)
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。 / 回答時刻: 2026-09-30T07:53:11Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-007` — 旧版（置き換え先: `qa-classify-bulk-decision-034`）
-
-> **旧版** — この問答は `qa-classify-bulk-decision-034` で置き換えられた (`2026-10-01T01:43:48Z`)。
-> 下の問・答は凍結された記録の逐語で、現行の接地根拠ではない。現行の問答は置き換え先を参照すること。
-> - 置き換えの理由: 旧い問は選択肢に推奨の印があった (N1 の違反)。同じ論点を、印を外し、各選択肢の利点と不利な点を対称に書き、保留の道を残して問い直した。提示の逐語は qa-classify-bulk-presented-options-014。利用者は選択肢を選ばず、無料枠の範囲で最善の慣行を選ぶよう agent に委ねた。agent の選定は qa-classify-bulk-delegated-002 に記録した。
+#### 裏付け質疑: `qa-login-v2-decision-003`
 
 **問**
 
-```text
-一覧で選んだ明細を、選択の読み出しと一括保存では、どの単位で扱いますか？
-```
+画像の『MFA と不正ログイン対策で保護』を事実にするため、MFA の範囲をどうするか。
 
 **答**
 
-```text
-行の key で読み、内訳行は選べない。API は sel の値（mf:/cash: で始まる行の key）をそのまま受け、一覧と同じ形の行を返す。保存するときは、行から txId を引く。分割の内訳行にはチェックを出さず、理由を表示する。
-```
+TOTP を使い、管理者は必須、一般利用者は任意とする (推奨案)。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-30T21:16:05Z` — provenance の後半『requirements_foundation の scope.in[3] の…と読む。』以降は、提示した選択肢 (qa-classify-bulk-presented-options-004) に無い agent の読みで、利用者が選んだのは answer の範囲だけである。この読みは、appr-foundation-classify-bulk-004 で改めた土台 (テーマ C、qa-classify-bulk-decision-017) に置き換わった。scope.in[3] は 0 から数えた添字で、提示で使った 1 から数える番号では範囲 in[4] に当たる。
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢と推奨案・説明提示あり / 回答時刻: 2026-09-21T13:14:00Z)
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問を 1 回で提示し、各問の先頭に推奨案を置いた (提示の逐語は qa-classify-bulk-presented-options-004)。利用者はこの問で「行の key で読み、内訳行は選べない (推奨)」を選択。answered_at は回答受領時刻 (2026-09-30T13:33:09.494Z) を秒へ切り上げた値で、選択時刻の上界である。requirements_foundation の scope.in[3] の『選択中の txId から』と、I3・I5 の選択の単位は、この決定により『URL の sel にある行の key から』と読む。保存の単位は、その行が指す明細の txId のまま変わらない。 / 回答時刻: 2026-09-30T13:33:10Z)
-
-#### 裏付け質疑: `qa-classify-bulk-backend-web-007`
+#### 裏付け質疑: `qa-login-v2-security-web-004`
 
 **問**
 
-qa-classify-bulk-decision-007〜009 を受けて、選択の読み出し・一覧・一括保存の API と core が、利用者の決めていない細部で何を約束するか。
+ログイン v2 の security を実装するときの具体的な手段と設定値は何か。
 
 **答**
 
-(1) 選択の読み出し GET /api/transactions/selected?keys= は、keys を zod で検査する。1〜50 件、1 件 200 字まで、重複と形の違う key は 400 (qa-classify-bulk-security-web-003)。受ける key は一覧の行の key で、sel の値 (mf:・cash: で始まる) はそのまま受ける (qa-classify-bulk-decision-007)。分割の内訳行は一覧でクリックして開けるので、開いた明細 (URL の tx) を表示するために、split: で始まる key も受ける。split: の key は選択には使わない。応答は一覧と同じ形の rows と、見つからなかった key の missing。(2) 一覧 GET /api/transactions は、limit を zod で 25・50・100 のどれかに限り、それ以外は 400 にする。画面は URL の limit を 25・50・100 に直してから送る。応答から、ページを掛けない全件の transactions を外し、rows・total・page・limit を返す。これは、前サイクルの仕様 (specs/spec-classify-screen.md) の C5 (50 件固定、:229・:344・:607) と、:1545 の『GET /api/transactions は既存の項目の意味を変えない』を置き換える。transactions を読む API テスト 8 本 (split-lifecycle・import-diff・cash-lifecycle・vendor-memory・row-transfer-lifecycle・classify-transactions-shape・classify-list-paging・total-cashflow-verdict) は、rows か選択の読み出しを読む形へ移す。(3) 一括保存は二段で扱う。検証の段は明細ごとで、not_found・invalid_item・split_line_not_supported・no_value はその明細だけの失敗になる。書き込みの段は、検証を通った明細の全件を書くか、1 件も書かないかで、失敗したら通った明細の全件を write_failed にする (qa-classify-bulk-decision-005)。これは、前サイクルの S3 (:79)・UC-3 (:158)・FR-09 (:212) の『部分失敗でも成功分を確定する』を、書き込みの段について置き換える。(4) 値が決まらない明細は、画面が要求から外し、保存前の内訳に外す理由を出す (O1)。サーバの no_value (qa-classify-bulk-backend-web-005) は、画面を通らずに届いた要求への二重の防御である。(5) 『MF の分類』の提案は、記憶・ルール・MF 中項目の対応表のどれも候補を出さないときだけ候補に入れる。ほかの候補と並べると、先頭と違う候補があるときに信頼度を下げる衝突の判定 (classifySuggestion) が働き、O3 の『既存の由来の順位と信頼度が変わらない』に反する。区分の解決値が事業の明細には付けない (qa-classify-bulk-decision-009)。O3 の core の単体テストに『事業の明細には付かない』を足す。/review-queue の根拠文 (legacyBasisLabel) に、この由来の分岐 (『MFの分類をそのまま提案』) を足す。今は最後の分岐が『MF の中項目が「事業」』を返すので、足さないと誤った根拠文が出る。(6) 選択の上限 50 件・一覧の表示件数・D1 の 1 起動あたりのクエリの上限は、core の 1 か所に定数として置き、api と web はそこから読む。画面にある値の解決 (一括指定→下書き→提案) も core の純関数へ移し、画面とサーバで同じ関数を使う。 これは agent の推定で、利用者は未確認である。
+secret 名は BETTER_AUTH_SECRET・GOOGLE_CLIENT_ID・GOOGLE_CLIENT_SECRET・RESEND_API_KEY。自動連携を止める (disableImplicitLinking=true) のは、確認済みメールの Google アカウントを持つだけの者が既存アカウントへ入れてしまう経路を閉じ、連携を ASVS の再認証の要件に合わせるため。trustDevice を使わないのは、管理者の MFA 必須を信頼端末の 30 日で素通りさせないため。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-30T14:11:48Z` — (5) の『legacyBasisLabel にこの由来の分岐を足す』と、(6) の『D1 の 1 起動あたりのクエリの上限を core の 1 か所に置く』は、qa-classify-bulk-backend-web-008 (6)(7) で訂正した。根拠文は候補が持つ値を使って legacyBasisLabel を消し、D1 の上限は api の 1 か所に置く。
-> - `2026-10-01T00:36:07Z` — (1) の『形の違う key は 400』は、qa-classify-bulk-backend-web-009 (2) で訂正した。形の違う key は missing に入れ、要求全体を 400 にするのは件数の範囲外と key の重複だけである。
-> - `2026-10-01T09:47:30Z` — (5) の『区分の解決値が事業の明細には付けない (qa-classify-bulk-decision-009)』と『O3 の core の単体テストに「事業の明細には付かない」を足す』は、qa-classify-bulk-decision-040・qa-classify-bulk-decision-050・qa-classify-bulk-decision-051・qa-classify-bulk-decision-052 で改まった。事業の明細には、勘定科目の対応表で引いた勘定科目を由来『MF の分類 (対応表)』・信頼度 60 で付ける。テストは、事業の明細には対応表で引いた勘定科目が中項目を空のまま付き、対応表に行の無い大項目の事業の明細と、MF の大項目が空か『未分類』の明細には付かないことを固定する (requirements_foundation の O3.measure)。記憶・ルール・MF 中項目の対応表のどれも候補を出さないときだけ候補に入れ、衝突の判定 (classifySuggestion) を働かせないことは、個人と事業の 2 つの由来のどちらにも当てはめ、変わらない。根拠文は、候補を作る 1 か所 (qa-classify-bulk-backend-web-009 (5)) で由来ごとに作る。(3) の『書き込みの段が失敗したら、通った明細の全件を write_failed にする』は、qa-classify-bulk-decision-057 で利用者が決めた。要求は 2xx で返し、画面は『失敗した N 件のみ再試行』を出して、押すと失敗した明細だけを送り直す。(1)(2)(4)(6) は、これまでの訂正のとおりで、037 以降の決定で変わる箇所は無い。
-> - `2026-10-01T10:08:23Z` — (3) の qa-classify-bulk-decision-005 は、qa-classify-bulk-decision-033 で問い直して置き換わった (superseded_by)。利用者は qa-classify-bulk-decision-033 で選定を agent に委ね、agent は qa-classify-bulk-delegated-001 で旧と同じ案を選んだ。書き込みの段の失敗の扱いは 2026-10-01T09:47:30Z の訂正のとおり (qa-classify-bulk-decision-057)。(1) の qa-classify-bulk-decision-007 は、qa-classify-bulk-decision-034 で問い直して置き換わった。利用者は qa-classify-bulk-decision-034 で選定を agent に委ね、agent は qa-classify-bulk-delegated-002 で旧と同じ案 (sel の値を行の key としてそのまま受け、分割の内訳行は選べない) を選んだ。
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: アシスタントの推定。-001 から外した実装手段と、完成度評価 (medium 1-3・low 2) が指摘した Better Auth の既定の動きと承認済みゴールの食い違いを埋める設定値。公式 docs で確かめた事実は qa-login-v2-auth-web-evidence-002 に分けた。docs に記述の無い組み合わせを含むため、本文末尾のテストで実装時に確かめる。 / 回答時刻: 2026-09-21T13:42:56Z)
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。範囲外の limit を 400 にすることと、再試行の出し方は、4 問を提示する前の本文 (2026-09-30T13:29:51.114Z) で、判断が分かれないので既定で進めると利用者に示した。利用者は異議を述べなかったが、選んだ値ではない。 / 回答時刻: 2026-09-30T13:43:42Z)
-
-#### 裏付け質疑: `qa-classify-bulk-backend-web-008`
+#### 裏付け質疑: `qa-login-v2-auth-web-evidence-002`
 
 **問**
 
-qa-classify-bulk-decision-010〜012 と反復 2 回目の検証を受けて、選択の読み出し・一括保存・core が、利用者の決めていない細部で何を約束するか (qa-classify-bulk-backend-web-007 の補足と訂正)。
+Better Auth の既定の動きは、承認済みゴール (G3 招待だけの登録・G4 再認証とメール確認を経た連携・G5 管理者の MFA 必須・O2 非保持 12 時間) とどこで食い違うか。
 
 **答**
 
-(1) 選択の読み出しの母集団は、利用者自身の全明細である。期間・絞り込み・ページ・並べ替えを掛けない。一括保存がサーバで明細を引き直す母集団 (packages/api/src/routes/classify-bulk.ts) と同じにし、選択 (G3) が表示に左右されないようにする。(2) 他の利用者の明細の key と、削除・分割・取込の取り消しで消えた明細の key は、応答の missing に入れ、rows に出さない。missing は、選択の読み出しにおける『見つからない』(not_found) の形であり、qa-classify-bulk-auth-web-001 と qa-classify-bulk-security-web-004 の『他の利用者の明細は存在を明かさず not_found で返す』を満たす。存在しない key と他の利用者の key は、同じ形で返す。(3) qa-classify-bulk-security-web-004 の『要求全体を 400 にするのは 3 つだけ』は、選択の読み出しについては、件数の範囲外 (1〜50 件)・key の重複・key の形の範囲外 (mf:・cash:・split: のどれかで始まり、1 件 200 字まで。qa-classify-bulk-backend-web-007 (1)) と読む。key の形の範囲外は、一括保存の『一括指定の値の範囲外』と同じく、要求全体に当たる入力の範囲外である。(4) 一括保存の値の解決は、qa-classify-bulk-decision-010 のとおり区分とカテゴリを 1 組で決める。一括指定のカテゴリ (中) は、カテゴリ (大) を伴うときだけ受け、(中) だけの一括指定は一括指定の値の範囲外として 400 にする (packages/core/src/categories.ts の categoryAllowed は、大項目が空なら中項目も空であることを求める)。(5) 書き込みの前に決まる失敗 (1 回の batch のクエリが D1 の上限を超える、束ねた JSON が 2MB を超える) は、送り直しても結果が変わらない。今は、この例外も write_failed に丸められ、画面が再試行を出す (packages/api/src/routes/classify-bulk.ts の classify_bulk_query_budget と、aggregateReplacementQueries の事前検査)。これを明細ごとの write_failed ではなく、明細ごとの結果を持たない要求全体の失敗として返す。write_failed は、D1 への書き込みそのものが失敗したときだけに使う。(6) qa-classify-bulk-backend-web-007 (6) の『D1 の 1 起動あたりのクエリの上限を core の 1 か所に置く』を訂正する。D1 の上限は Workers と D1 の実行環境の制約で、環境に依存しない純関数を置く core の関心ではない。api の 1 か所に置き、今 api に別の名前で 4 か所ある同じ値 50 の定数 (import-lifecycle.ts の D1_FREE_QUERY_LIMIT、scheduled-maintenance-budget.ts の SCHEDULED_D1_QUERY_LIMIT、routes/classify.ts の CLASSIFY_BATCH_STATEMENTS、routes/classify-bulk.ts の MAX_BATCH_STATEMENTS) をそこへまとめる。core の 1 か所に置くのは、選択の上限 50 件、表示件数 25・50・100 と既定値 50、行の key の作成と解析、選べる行の判定 (qa-classify-bulk-decision-012)、値の解決関数 (qa-classify-bulk-decision-010) である。key の解析は、最初の ':' の後ろを txId とする (現金の明細の id は cash: で始まるので、key は cash:cash: の形になり、':' で分けると壊れる)。値の解決関数は、画面の resolveBulkItem と inputFromRow の提案の分岐 (packages/web/src/pages/classify/view-model.ts) を 1 つにまとめたもので、画面とサーバで同じ関数を使う。(7) qa-classify-bulk-backend-web-007 (5) の『legacyBasisLabel にこの由来の分岐を足す』を訂正する。分岐を足すと、提案の根拠文を決める場所が、core の候補の算出と /review-queue の 2 か所に残る。/review-queue は候補が持つ根拠文をそのまま使い、legacyBasisLabel は消す。由来の型は、同じ値の集合で core に 2 つある (classify-status.ts の SuggestionBasis と overview.ts の RecommendationBasis) ので、RecommendationBasis を SuggestionBasis の別名にして 1 つにする。(8) 『MF の分類』の提案は、分割の内訳行には付けない。内訳行のカテゴリは分割で決めた値で、取込 CSV の値は元の明細のものだからである。集計ルールが当たる個人の明細には、ルールを当てた後の値を提案する (qa-classify-bulk-decision-011)。 これは agent の推定で、利用者は未確認である。
+(1) アカウント連携は既定で有効で、provider がメールの確認済みを示すか trustedProviders に入っていれば、サインイン時に自動で連携する。accountLinking.disableImplicitLinking を true にすると、同じメールの OAuth サインインは account_not_linked で拒否され、連携はログイン済みセッションからの linkSocial() だけになる。allowDifferentEmails は別メールの連携を許す設定。(2) provider の disableSignUp はその provider での新規利用者作成を全て止める。disableImplicitSignUp は、signIn.social を requestSignUp: true で呼んだときだけ新規作成を許す。(3) session.expiresIn は既定 7 日のインスタンス全体の設定で、updateAge (既定 1 日) に達するたびに延長される。session-management の docs にはログインごとに期限を変える設定の記述が無い。(4) 2FA plugin の docs には役割ごとに 2FA を強制する設定の記述が無い。資格情報でのサインインで 2FA が有効な利用者には twoFactorRedirect: true が返る。trustDevice を渡すとその端末は 30 日間 2FA を求められない。復旧コードは DB に保存されるとあるが、保存形式 (平文かハッシュか) の記述は無い。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-30T14:31:12Z` — (3) の key の形の範囲外を 400 にする読み、(5) の要求全体の失敗の形、(6) の key の解析と D1 の上限の名前、(7) の『legacyBasisLabel を消し、候補が持つ根拠文をそのまま使う』は、qa-classify-bulk-backend-web-009 (2)〜(5) で訂正・補足した。/review-queue の短い根拠文 basisLabel は残す。
-> - `2026-10-01T00:36:07Z` — (5) の要求全体の失敗は、qa-classify-bulk-backend-web-010 (3) で 2 種類の 413 にした。本文の大きさは payload_too_large、書き込みの予算は too_many_classify_changes で、どちらも明細ごとの結果を持たない。
-> - `2026-10-01T10:08:23Z` — (4)(6) の qa-classify-bulk-decision-010 は、qa-classify-bulk-decision-035 で問い直して置き換わった (superseded_by)。利用者は qa-classify-bulk-decision-035 で選定を agent に委ね、agent は qa-classify-bulk-delegated-003 で区分とカテゴリを 1 組で決める案を選んだ。区分だけを指定し、区分に合う組が下書き・提案・今の値のどこにも無い明細は『カテゴリなし』で保存する (qa-classify-bulk-decision-048)。(6) の qa-classify-bulk-decision-012 は、qa-classify-bulk-decision-038 で問い直して置き換わり、利用者は旧と同じ案 (分割の設定が不正な明細の行は選べない) を選んだ。(8) の qa-classify-bulk-decision-011 は、qa-classify-bulk-decision-028 で問い直して置き換わり、利用者は旧と同じ案 (ルールを当てた後の値を提案する) を選んだ。qa-classify-bulk-decision-028 は、不利な点『確定した明細は、後から集計ルールを変えても追従しない』を示したうえで選ばれた。(6) の表示件数 25・50・100 は要件の土台の G4 にある (qa-classify-bulk-decision-074 で文面を承認)。既定値 50 は土台にも決定にも無い agent の案で、利用者は未確認である (qa-classify-bulk-ui-ux-web-003 の訂正と同じ)。
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: WebFetch で公式 docs を取得して確かめた観測事実 (取得は本 qa の answered_at より前): https://www.better-auth.com/docs/concepts/users-accounts 、https://www.better-auth.com/docs/concepts/oauth 、https://www.better-auth.com/docs/concepts/session-management 、https://www.better-auth.com/docs/plugins/2fa (fetched-references の better-auth v1.7.5 と同じ公式 host)。 / 回答時刻: 2026-09-21T13:42:56Z)
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。(1) と、(6) の D1 の上限の置き場所は、3 問を提示する前の本文 (2026-09-30T14:02:16.917Z) で『自分で決められる不足 (既定で記録します)』として示した。(2) は、同じ本文で画面の側 (保存前の内訳に出し、sel から外す) を示し、サーバの側をここで補った。(5) は、4 問を提示する前の本文 (2026-09-30T13:29:51.114Z) で示した『再試行は write_failed と通信の失敗にだけ出す』を、サーバの側から成り立たせるものである。(3)(4)、(6) の core に置くもの、(7)(8) は、どちらの本文にも示していない agent の推定である。利用者は異議を述べなかったが、選んだ値ではない。 / 回答時刻: 2026-09-30T14:11:48Z)
-
-#### 裏付け質疑: `qa-classify-bulk-backend-web-009`
+#### 裏付け質疑: `qa-login-v2-decision-005`
 
 **問**
 
-qa-classify-bulk-decision-013・qa-classify-bulk-decision-014 と反復 3 回目の検証を受けて、一括保存の値の解決・選択の読み出し・core が、利用者の決めていない細部で何を約束するか (qa-classify-bulk-backend-web-008 の補足と訂正)。
+訂正後の比較を踏まえて認証基盤をどうするか。MFA 未設定の管理者のログイン、Google でログインした管理者の TOTP、保持しないログインの実現方法をどうするか。
 
 **答**
 
-(1) 値の解決の順。未整理 (status が unsorted) の明細は、区分・カテゴリの組・所有者を項目ごとに、一括指定→下書き→提案の順で埋める。確定済みの明細は、一括指定→下書き→今の値の順で埋め、提案を使わない。支払い方法は状態によらず、一括指定→下書き→今の値の順で埋める。支払い方法の今の値は保存済みの手動の値 (row.edit.paymentMethod) で、無ければ送らない (導出した値を送ると、変わっていないのに履歴が増える)。カテゴリの組は、区分が決まったら、上の順のうち区分の系統に合う最初の組を取る。合う組がどこにも無い明細は、保存前に理由『区分に合うカテゴリがありません』を付けて外し、失敗に数えない (qa-classify-bulk-decision-014)。サーバは qa-classify-bulk-security-web-004 のとおり、その明細を invalid_item で返して二重に防ぐ。カテゴリ (大) を指定し区分を指定しないときも、各明細の区分と合わない明細は同じ理由で外す。区分とカテゴリ (大) を両方指定して系統が合わないときは、選択した全件に当たる値なので、一括指定の値の範囲外として要求全体を 400 にする。確定済みの明細で一括指定も下書きも無いものは、変わる値が無いので、理由『変わる値がありません』を付けて外す。未整理の明細で指定も下書きも提案も無いものは、今までどおり O1 で外す。値の解決関数は、画面の inputFromRow の分岐 (未整理で提案があるときだけ提案を使う) に揃え、resolveBulkItem の『状態を見ずに提案を使う』はやめる (packages/web/src/pages/classify/view-model.ts)。qa-classify-bulk-decision-010 の answer の『無ければカテゴリを空にする』は、データに空の状態が無い (packages/api/src/tx-edit-codec.ts の patch.big || null と、packages/core/src/classify.ts の editedCat) ので、qa-classify-bulk-decision-014 に置き換わる。(2) qa-classify-bulk-backend-web-008 (3) を訂正する。選択の読み出しで要求全体を 400 にするのは、qa-classify-bulk-security-web-004 のうち当てはまる件数の範囲外 (1〜50 件) と key の重複だけとする。key の形の範囲外 (mf:・cash:・split: のどれでも始まらない、または 200 字を超える) は、存在しない key と同じく missing に入れる。(3) qa-classify-bulk-backend-web-008 (5) の要求全体の失敗は、HTTP 413 と code bulk_too_large で返し、明細ごとの結果を持たない。サーバの 5xx と、応答が得られない通信の失敗は、書き込まれたかどうかが分からない失敗として画面が扱う (qa-classify-bulk-frontend-web-004 (1))。(4) qa-classify-bulk-backend-web-008 (6) を補う。D1 の上限は api の 1 か所に置くが、1 回の起動のクエリの合計 (50 未満) と、1 回の batch の文の数 (50 以下) は意味と境界が違うので、2 つの名前で持つ。key の解析は、最初の ':' の前を行の種類、後ろを id とする。id は、mf と cash では txId、split では内訳の lineId である。(5) qa-classify-bulk-backend-web-008 (7) を訂正する。/review-queue の短い根拠文 basisLabel (『過去 10 件中 9 件』の形) は残す。specs/spec-overview-screen.md の FR-005、specs/spec-classify-screen.md の『既存の basisLabel は /review-queue との互換のために残す』、packages/core/test/overview-recommendation-contract.test.ts がこれを求める。候補に短い根拠文も持たせ、長い根拠文 basisText と同じく候補を作る 1 か所で作る。legacyBasisLabel は、その 1 か所へ移して消す。RecommendationBasis を SuggestionBasis の別名にすることは変えない。(6) qa-classify-bulk-decision-011 を成り立たせるため、提案 (classifySuggestion) と行の解決 (resolveTx) に集計ルール (normRules) を渡す。今は渡しておらず、提案の呼び出しは 6 か所 (api の classify-row.ts に 2 か所、routes/classify.ts、routes/classify-bulk.ts、core の overview.ts に 2 か所) ある。1 か所でも漏れると、一覧・一括保存・/review-queue で提案が食い違うので、提案の入力 (ルール・取引先の記憶・集計ルール) を 1 つの値にまとめて渡す。(7) qa-classify-bulk-decision-011 の不利な点を記録する。集計ルールの値の提案で保存した明細は、カテゴリの出所が手動になり、後から集計ルールを変えても追従しない。 これは agent の推定で、利用者は未確認である。
+Better Auth を継続する。MFA 未設定の管理者には、O6 のとおり TOTP の設定を終えるまでセッションを発行しない。Google でログインした管理者には TOTP を求めず、Google 側の 2 段階認証に委ねる。ログイン状態を保持しないときは、ブラウザを閉じるまで、かつ最長 12 時間とする。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-10-01T00:36:07Z` — (3) の『HTTP 413 と code bulk_too_large』は、qa-classify-bulk-backend-web-010 (3) で訂正した。bulk_too_large は導入せず、既存の payload_too_large と too_many_classify_changes を使う。通信の失敗と 5xx の画面の扱いは qa-classify-bulk-frontend-web-005 (1) で訂正した。
-> - `2026-10-01T09:47:30Z` — (1) の『合う組がどこにも無い明細は、保存前に理由「区分に合うカテゴリがありません」を付けて外し、失敗に数えない』と『サーバはその明細を invalid_item で返して二重に防ぐ』は、qa-classify-bulk-decision-037・qa-classify-bulk-decision-045・qa-classify-bulk-decision-048 で改まった。区分だけを指定し、区分に合うカテゴリの組が埋める値 (下書き・提案・今の値) のどこにも無い明細は、カテゴリの組を『カテゴリなし』の予約の値にして保存の対象に入れ、保存前の内訳に『カテゴリなし』で保存する件数を出す。サーバも同じ core の解決関数で同じ値にするので、invalid_item で外さない。『カテゴリなし』の予約の値を一括指定の値として送る要求は、一括指定の値の範囲外として要求全体を 400 にする (requirements_foundation の G5)。『qa-classify-bulk-decision-010 の「無ければカテゴリを空にする」は、データに空の状態が無いので qa-classify-bulk-decision-014 に置き換わる』は、予約の値で空の状態をデータに持てるようになったので、qa-classify-bulk-decision-037・qa-classify-bulk-decision-048 に置き換わる。カテゴリ (大) だけを指定し区分を指定しないときに、明細の区分と系統が合わない明細を外す扱いは、qa-classify-bulk-decision-048 の場面 (区分だけを指定) に当たらないので変えない。外す理由の文言は『指定したカテゴリ (大) が明細の区分に合いません』とする。区分とカテゴリ (大) を両方指定して系統が合わないときの 400 も変えない。(6) の『提案の入力 (ルール・取引先の記憶・集計ルール) を 1 つの値にまとめて渡す』には、qa-classify-bulk-decision-049 の勘定科目の対応表も入れる。入れないと、事業の明細の提案が一覧・一括保存・/review-queue で食い違う。カテゴリ (大) だけを指定したときの扱いとその文言、提案の入力に勘定科目の対応表を入れることは agent の読みで、利用者は未確認である。(3) は 2026-10-01T00:36:07Z の訂正のとおりで、要求全体の失敗の扱いは qa-classify-bulk-decision-054・qa-classify-bulk-decision-055・qa-classify-bulk-decision-056・qa-classify-bulk-decision-057 で利用者が決めた。(2)(4)(5)(7) は変わらない。
-> - `2026-10-01T10:08:23Z` — (1) の qa-classify-bulk-decision-010 は、qa-classify-bulk-decision-035 で問い直して置き換わった (superseded_by)。利用者は qa-classify-bulk-decision-035 で選定を agent に委ね、agent は qa-classify-bulk-delegated-003 で区分とカテゴリを 1 組で決める案を選んだ。組が無いときの扱いは 2026-10-01T09:47:30Z の訂正のとおり (qa-classify-bulk-decision-048)。(6)(7) の qa-classify-bulk-decision-011 は、qa-classify-bulk-decision-028 で問い直して置き換わり、利用者は旧と同じ案 (ルールを当てた後の値を提案する) を選んだ。(7) の不利な点 (確定した明細は、後から集計ルールを変えても追従しない) は、qa-classify-bulk-decision-028 の選択肢に示したうえで選ばれた。
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion で 4 問に回答 (2026-09-21T13:58:57.447Z、transcript の回答行の実測)。1 問目では 13:14Z の比較根拠の誤りと訂正後の 3 つの事実を提示した。 / 回答時刻: 2026-09-21T13:58:57Z)
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: agent が仕様を決定論にするため補った値。利用者の確認は受けていない。(1) は qa-classify-bulk-decision-013・qa-classify-bulk-decision-014 から導いた読みで、qa-classify-bulk-decision-010 の provenance に混ざっていた読み (提示した選択肢に無いもの) を置き換える。(2)(3)(5)(6)(7) は、問を提示する前の本文 (2026-09-30T14:27:03.589Z) で『私の判断で直せるもの』として示した。利用者は異議を述べなかったが、選んだ値ではない。(4) は、どの本文にも示していない agent の推定である。 / 回答時刻: 2026-09-30T14:31:12Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-010` — 旧版（置き換え先: `qa-classify-bulk-decision-035`）
-
-> **旧版** — この問答は `qa-classify-bulk-decision-035` で置き換えられた (`2026-10-01T01:43:48Z`)。
-> 下の問・答は凍結された記録の逐語で、現行の接地根拠ではない。現行の問答は置き換え先を参照すること。
-> - 置き換えの理由: 旧い問は選択肢に推奨の印があった (N1 の違反)。同じ論点を、印を外し、各選択肢の利点と不利な点を対称に書き、保留の道を残して問い直した。提示の逐語は qa-classify-bulk-presented-options-014。利用者は選択肢を選ばず、無料枠の範囲で最善の慣行を選ぶよう agent に委ねた。agent の選定は qa-classify-bulk-delegated-003 に記録した。
+#### 裏付け質疑: `qa-login-v2-decision-006`
 
 **問**
 
-```text
-一括指定で区分かカテゴリ (大) を指定し、残りの項目を指定しなかったとき、残りの項目をどう決めますか？（事業の明細は、大項目が freee の勘定科目で、中項目は空と決まっています）
-```
+招待リンクからメールとパスワードで登録した管理者に、登録直後の時点で TOTP の設定を求めるか。
 
 **答**
 
-```text
-区分とカテゴリを1組で決める。カテゴリ (大) を指定したら、カテゴリ (中) も一括指定の値にする (指定が無ければ空)。区分だけを指定したときは、下書きか提案のうち区分が同じものからカテゴリを取り、無ければカテゴリを空にする。不利な点: 区分が違う下書きのカテゴリは使われない。
-```
+求める。招待からのパスワード登録では自動でログインさせず、管理者は TOTP の設定を終えてから初めてセッションを得る。TOTP を設定する前に管理者のセッションが存在する経路は 0 件にする。
 
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-09-30T14:31:12Z` — provenance の後半『requirements_foundation の G1・G3・scope.in[1] の … は、この決定により次のように読む。』以降は、提示した選択肢 (qa-classify-bulk-presented-options-005) に無い agent の読みで、利用者が選んだのは answer の範囲だけである。この読みは qa-classify-bulk-decision-013・qa-classify-bulk-decision-014 の決定と、qa-classify-bulk-backend-web-009 (1) の agent の推定で置き換えた。answer の『無ければカテゴリを空にする』は、データに空の状態が無いため、qa-classify-bulk-decision-014 (理由を付けて外す) に置き換わる。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 3 問を 1 回で提示し、各問の先頭に推奨案を置いた (提示の逐語は qa-classify-bulk-presented-options-005)。利用者はこの問で「区分とカテゴリを1組で決める (推奨)」を選択。answered_at は回答受領時刻 (2026-09-30T14:03:48.119Z) を秒へ切り上げた値で、選択時刻の上界である。requirements_foundation の G1・G3・scope.in[1] の『指定しない項目は各行の下書き→提案の順で埋める』は、この決定により次のように読む。区分・所有者・支払い方法は項目ごとに、一括指定→下書き→提案の順で埋める (支払い方法は提案を持たないので、一括指定→下書き→現在の値)。カテゴリ (大) と (中) は常に 1 組で決め、別々の出所から取らない。何も指定しないときは、区分とカテゴリを下書き→提案の順に 1 組で取る (今の画面の resolveBulkItem と同じ)。区分だけを指定したときは、下書き→提案の順に、区分が一括指定と同じものからカテゴリの組を取る。カテゴリ (大) を指定し区分を指定しないときは、区分を各行の下書き→提案の順で埋め、区分とカテゴリが合わない明細は、サーバがその明細だけを invalid_item で返す (qa-classify-bulk-security-web-004)。 / 回答時刻: 2026-09-30T14:03:49Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-013` — 旧版（置き換え先: `qa-classify-bulk-decision-036`）
-
-> **旧版** — この問答は `qa-classify-bulk-decision-036` で置き換えられた (`2026-10-01T01:43:48Z`)。
-> 下の問・答は凍結された記録の逐語で、現行の接地根拠ではない。現行の問答は置き換え先を参照すること。
-> - 置き換えの理由: 旧い問は選択肢に推奨の印があった (N1 の違反)。同じ論点を、印を外し、各選択肢の利点と不利な点を対称に書き、保留の道を残して問い直した。提示の逐語は qa-classify-bulk-presented-options-014。利用者は選択肢を選ばず、無料枠の範囲で最善の慣行を選ぶよう agent に委ねた。agent の選定は qa-classify-bulk-delegated-004 に記録した。
-
-**問**
-
-```text
-一括保存で確定済みの明細を選んだとき、一括指定で指定しなかった項目（区分・カテゴリ・所有者）は、どの値で保存しますか？
-```
-
-**答**
-
-```text
-今の値を保つ。下書きがあれば下書き、無ければ今の値のまま保存する。提案は未整理の明細にだけ使う。手で決めた値は提案に置き換わらない。
-```
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 2 問を 1 回で提示し、各問の先頭に推奨案を置いた (提示の逐語は qa-classify-bulk-presented-options-006)。利用者はこの問で「今の値を保つ (推奨)」を選択。answered_at は回答受領時刻 (2026-09-30T14:28:31.486Z) を秒へ切り上げた値で、選択時刻の上界である。この決定から導く値の解決の順は、agent の推定として qa-classify-bulk-backend-web-009 (1) に分けて記録した。 / 回答時刻: 2026-09-30T14:28:32Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-014` — 旧版（置き換え先: `qa-classify-bulk-decision-037`）
-
-> **旧版** — この問答は `qa-classify-bulk-decision-037` で置き換えられた (`2026-10-01T03:15:08Z`)。
-> 下の問・答は凍結された記録の逐語で、現行の接地根拠ではない。現行の問答は置き換え先を参照すること。
-> - 置き換えの理由: 旧い問は選択肢に推奨の印があった (N1 の違反)。同じ論点を、印を外し、各選択肢の利点と不利な点を対称に書き、保留の道を残して問い直した。提示の逐語は qa-classify-bulk-presented-options-015。利用者は『カテゴリなしを新設する』を選んだ。
-
-**問**
-
-```text
-一括指定で区分を指定し、その区分に合うカテゴリの組が、保存に使える値（下書き・提案・今の値）のどこにも無い明細は、どう扱いますか？
-```
-
-**答**
-
-```text
-理由を付けて外す。保存前の内訳に『区分に合うカテゴリがありません』と出して保存しない。失敗には数えない。一括指定の欄でカテゴリを指定すれば保存できる。
-```
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 2 問を 1 回で提示し、各問の先頭に推奨案を置いた (提示の逐語は qa-classify-bulk-presented-options-006)。利用者はこの問で「理由を付けて外す (推奨)」を選択。answered_at は回答受領時刻 (2026-09-30T14:28:31.486Z) を秒へ切り上げた値で、選択時刻の上界である。この決定から導く値の解決の順は、agent の推定として qa-classify-bulk-backend-web-009 (1) に分けて記録した。 / 回答時刻: 2026-09-30T14:28:32Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-015` — 旧版（置き換え先: `qa-classify-bulk-decision-068`）
-
-> **旧版** — この問答は `qa-classify-bulk-decision-068` で置き換えられた (`2026-10-01T09:14:01Z`)。
-> 下の問・答は凍結された記録の逐語で、現行の接地根拠ではない。現行の問答は置き換え先を参照すること。
-> - 置き換えの理由: 旧い問は、『承認しない』にだけ結果を書き、利点と不利な点の対が無く、選択肢の書き方が片寄っていた (N2 の違反)。また、承認の後の決定で土台の文面が変わり、今の全文を逐語で示した承認が無かった (軸 5)。今の全文を preview に置き、各選択肢に利点と不利な点を書き、保留の道を残して問い直した。提示の逐語は qa-classify-bulk-presented-options-024。利用者は『承認する』を選んだ。
-
-**問**
-
-```text
-テーマ A（値の決め方）: G1・O1.measure・I2・範囲 in[2] を、preview の「新」の文面に改めることを承認しますか？
-```
-
-**答**
-
-```text
-承認する。4 項目を preview の「新」の文面に改めます。改めた後の文面は requirements_foundation の該当項目にある。承認した文面の要点: 指定しない項目は、未整理の明細では下書き→提案、確定済みの明細では下書き→今の値の順で埋め、区分とカテゴリは 1 組で決め、外す行には理由 (埋める値が無い・区分に合うカテゴリの組が無い・確定済みで変わる値が無い) を付ける。
-```
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問を 1 回で提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-007)。利用者はこの問で「承認する」を選択。answered_at は回答受領時刻 (2026-09-30T15:07:35.741Z) を秒へ切り上げた値で、選択時刻の上界である。backend と security の web セルの reopen (2026-09-30T15:04:11Z) より後の回答である。 / 回答時刻: 2026-09-30T15:07:36Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-018`
-
-**問**
-
-再試行のボタンは、どの失敗を返した明細に出しますか？
-
-**答**
-
-書き込みの失敗だけ。write_failed を返した明細にだけ出し、見つからない・値が不正・分割がある明細には理由を出します。利点: 押しても結果が変わらない失敗に、押す意味の無いボタンを出さずに済みます。不利な点: 失敗の種類ごとに扱いが分かれるので、画面とテストの分岐が増えます。G1 の末尾・O2・S1・I7・範囲 in[7] を preview の「新」に改めます。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問を 1 回で提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-007)。利用者はこの問で「書き込みの失敗だけ」を選択。answered_at は回答受領時刻 (2026-09-30T15:07:35.741Z) を秒へ切り上げた値で、選択時刻の上界である。backend と security の web セルの reopen (2026-09-30T15:04:11Z) より後の回答である。 / 回答時刻: 2026-09-30T15:07:36Z)
-
-#### 裏付け質疑: `qa-classify-bulk-backend-web-010`
-
-**問**
-
-qa-classify-bulk-decision-026・qa-classify-bulk-decision-027 で委ねられた、一括保存 (POST /api/transactions/bulk) の要求全体の失敗を、サーバはどの状態コードと code で返し、同じ要求の送り直しをどう安全にするか。
-
-**答**
-
-(1) 冪等性。一括保存は、同じ本文をもう一度送っても、最終の状態が 1 回目と同じになるようにする。明細ごとの値は画面が解決して本文で送り、サーバはその値を今の編集に重ねる (applyManualEditWithBase)。同じ値を重ね直しても結果は変わらないので、1 回目が書けていれば、2 回目は更新時刻 (updatedAt) を除いて同じ値になる。提案との一致 (done か manual か) も、提案の入力である取引先の記憶を一括保存では更新しないので変わらない。履歴 (classify-history.ts) は表示値の差分だけを書くので、2 回目は 0 行になる。POST はメソッドとしては冪等でないので (RFC 9110 §9.2.2)、画面は自動で送り直さず、利用者の操作でだけ送り直す。受入テスト: 同じ要求を 2 回送り、2 回とも全件が ok で saved と各明細の status が同じ、明細の値 (更新時刻を除く) と月次集計が同じ、履歴の行数が増えないことを確かめる。(2) 400 invalid_body は、qa-classify-bulk-security-web-004 のとおり、件数の範囲外 (1〜100 件)・txId の重複・一括指定の値の範囲外の 3 つだけにする。形の違う key は、qa-classify-bulk-backend-web-009 (2) のとおり、要求全体ではなく missing にする。(3) 413 は 2 種類にする。(a) 本文の大きさ: POST /api/transactions/bulk に Hono の bodyLimit 256KB を付け、超えたら payload_too_large『リクエストが大きすぎます』を返す (tradeoff.ts・balances.ts と同じ code と文言)。256KB は、100 件 × (カテゴリ大・中の 60 字ずつとメモ 200 字を UTF-8 の 3 バイトで数えた約 1KB ＋ txId ＋ JSON の記号) に余裕を持たせた値である。(b) 書き込みの予算: 書き込む前に、1 回の batch の文の数 (50 まで) と、月次集計を束ねた JSON (2MB まで) を検査し、超えたら too_many_classify_changes『変更量が多すぎるため、対象を絞ってください』を返す。単体編集 (routes/classify.ts の planClassifyMutation) と同じ検査で、同じ関数を使う。どちらも明細ごとの結果を持たない。txId には個別の長さの上限を付けない (bodyLimit と件数の上限で抑える)。選択の読み出し (GET) は本文が無いので bodyLimit を付けない。JSON の 2MB は月次集計の全行で決まるので、選択を減らしても下がらない場合がある。これは単体編集にもある既存の制約で、本サイクルでは変えない。(4) write_failed は、D1 の batch そのものが失敗したときだけに使う。qa-classify-bulk-decision-005 により batch は全件か無しなので、そのときは全件を write_failed にする。書き込みの前に決まる失敗を write_failed に丸めることはやめる (今の classify_bulk_query_budget)。(5) そのほかの応答はすべて既存の柵と同じにする。401 は authGuard、403 password_change_required は一時パスワードの柵、409 canonical_write_busy は取込みや別の更新が進行中のとき、503 schema_unavailable は復旧作業中のときで、いずれも書き込みの前に返る。想定外の例外は onError の 500 internal で、batch の後に起きると書き込まれたかどうかが分からない。 これは agent の推定で、利用者は未確認である。
-
-> **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
-> 本文中の記述と食い違う場合は、訂正側が正である。
->
-> - `2026-10-01T00:45:40Z` — (1) の『明細ごとの値は画面が解決して本文で送り、サーバはその値を今の編集に重ねる』は今の実装の説明で、要件の土台の I2 と食い違う。I2 では、本文は一括指定と各明細の下書きで、サーバが明細を引き直し、core の解決関数で値を決めてから今の編集に重ねる (applyManualEditWithBase)。冪等性はこの形でも成り立つ。1 回目で書けた明細は 2 回目には確定済みになり、一括指定→下書き→今の値の順で解決される。一括指定と下書きは同じ本文なので同じ値になり、1 回目に提案から埋めた項目は今の値として同じ値になる。確定済みで変わる値が無い明細も、サーバは今の値で解決して ok を返し、履歴を書かない。一括保存は取引先の記憶を書かない (packages/api/src/routes/classify-bulk.ts は saveEditQueries に disagreeOriginKey を渡さない) ので、2 回目の提案と提案との一致 (done か manual か) も 1 回目と同じである。
-> - `2026-10-01T00:55:20Z` — 利用者は qa-classify-bulk-decision-031 で、この記録 (2026-10-01T00:45:40Z の訂正を含む) のとおりに一括保存の失敗の扱いの細部を決めることを承認した (選択肢『承認する』、自由記述なし)。本記録の内容は利用者が承認した決定として扱う。answer の末尾の『これは agent の推定で、利用者は未確認である。』と basis の agent-inference は、承認の前の時点の記述である。
-> - `2026-10-01T09:47:30Z` — 承認の qa-classify-bulk-decision-031 は、論点ごとに問い直して qa-classify-bulk-decision-054 に置き換わった (superseded_by)。各項の今の根拠は次のとおりで、内容はどの項も変わらない。(1) 同じ要求の送り直しで最終の状態が変わらないことは、2026-10-01T00:45:40Z の訂正の形 (I2) で要件の土台の文面にあり (qa-classify-bulk-decision-070 で全文を承認)、画面の『同じ内容で送り直しても二重には保存されません』(qa-classify-bulk-decision-054) の前提になる。(2) の 400 invalid_body を 3 つに限ることと形の違う key を missing にすること、(3) の 413 の 2 種類の code と文言、書き込みの予算の検査に単体編集と同じ関数を使うこと、txId に個別の長さの上限を付けないこと、選択の読み出し (GET) に本文の上限を付けないこと、月次集計を束ねた JSON の 2MB の既存の制約、(5) の既存の柵は、qa-classify-bulk-decision-058 で agent の案で決めることを利用者が承認した (提示の逐語は qa-classify-bulk-presented-options-020)。(3) の本文の上限 256KB は qa-classify-bulk-decision-030 で利用者が承認した。(4) の D1 の batch が失敗したときの扱い (要求は 2xx で、保存対象の全件を write_failed) は qa-classify-bulk-decision-057 で利用者が決めた。(2) の『一括指定の値の範囲外』には、『カテゴリなし』の予約の値を一括指定の値として送る要求が入る (qa-classify-bulk-decision-048、requirements_foundation の G5)。
-> - `2026-10-01T10:08:23Z` — (4) の qa-classify-bulk-decision-005 は、qa-classify-bulk-decision-033 で問い直して置き換わった (superseded_by)。利用者は qa-classify-bulk-decision-033 で選定を agent に委ね、agent は qa-classify-bulk-delegated-001 で旧と同じ案 (書き込みを 1 回の batch に束ねる) を選んだ。batch が全件か無しであることは変わらず、そのときの扱いは qa-classify-bulk-decision-057 で利用者が決めた。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: qa-classify-bulk-decision-026・qa-classify-bulk-decision-027 で利用者が『ベストプラクティスな方法を選んだ上で選択して進めてください』と委ねたのを受け、agent が packages/api/src (routes/classify-bulk.ts・routes/classify.ts・index.ts・canonical-mutation-fence.ts・schema-guard.ts・routes/tradeoff.ts・routes/balances.ts) と、RFC 9110・Hono bodyLimit・Cloudflare D1 の上限の公式文書を読んで選んだ推定。要件の土台 U1〜U9 を改めて提示する問で利用者に確かめる。 / 回答時刻: 2026-10-01T00:36:07Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-029`
-
-**問**
-
-一括保存の要求全体が失敗したときの扱いを、要件の土台 U1〜U9 に入れる改訂案 (テーマ E) を承認しますか。改める項目は U2 背景・G1・O2.text・O2.measure・O8.measure・O9 (新設)・S1・I2・I7・範囲 in[3]・範囲 in[7] の 11 か所で、旧と新の逐語は『承認する』の preview にあります。中身: 要求全体が失敗しても選択を残す。通信の失敗と 5xx は書き込まれたかどうかが分からないので一覧を読み直す。通信の失敗・5xx・409 の後に『同じ内容で再試行』を出し、押すと直前の本文をそのまま送る (自動では送らない)。400・403・413 は送り直しても結果が変わらないので、再試行を出さずにサーバの理由を出す。サーバは同じ要求を送り直しても値・月次集計・履歴が変わらないようにし、書き込む前に予算 (batch の文 50 本・束ねた JSON 2MB) を超えると分かった要求は write_failed にせず 413 で返す。今の画面はどの失敗も『通信できませんでした。同じ内容で再試行できます。』にまとめて再試行を出し、今のサーバは予算の超過を write_failed に丸めています。この中身は、5xx と 400・413 の扱いを問うた以前の 2 問で、利用者が選択肢を選ばずに agent へ委ねた回答を受けて、agent が選んだものです。
-
-**答**
-
-承認する。preview の 11 か所を新の文面に改め、要件の土台の承認を更新する。利点: 通信の失敗や 5xx の後も同じ内容で送り直せ、送り直しても結果が変わらない失敗には再試行が出なくなる。不利な点: サーバに冪等の受入テストと 413 の分岐が、画面に失敗の種類ごとの分岐が増え、実装とテストの量が増える。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「要求の失敗」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-013)。利用者はこの問で「承認する」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T00:52:37.098Z) を秒へ切り上げた値で、選択時刻の上界である。qa-classify-bulk-decision-026 と qa-classify-bulk-decision-027 で利用者が agent に委ねた中身を確かめる問である。改めた後の文面は requirements_foundation の該当項目にある。 / 回答時刻: 2026-10-01T00:52:38Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-030`
-
-**問**
-
-一括保存 (POST /api/transactions/bulk) の本文の大きさに上限 256KB を設け、超えたら 413 payload_too_large『リクエストが大きすぎます』を返す改訂案 (テーマ F) を承認しますか。改める項目は G5・O6.measure・S5 の 3 か所で、旧と新の逐語は『承認する』の preview にあります。256KB は、100 件 × 約 1KB (カテゴリ大・中の 60 字ずつとメモ 200 字を UTF-8 の 3 バイトで数え、txId と JSON の記号を足した値) に余裕を持たせた値です。同じ code と文言の 413 は、既に認証・残高・トレードオフの API にあります。今の一括保存には本文の大きさの上限が無く、件数 (100 件) の上限だけがあります。
-
-**答**
-
-承認する。preview の 3 か所を新の文面に改める。利点: 大きすぎる本文を、全体の読み込みと zod の検証の前に断れる。不利な点: 正当な要求が 256KB を超える場合が出たら、上限の値を見直す必要がある。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「本文の上限」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-013)。利用者はこの問で「承認する」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T00:52:37.098Z) を秒へ切り上げた値で、選択時刻の上界である。qa-classify-bulk-decision-026 と qa-classify-bulk-decision-027 で利用者が agent に委ねた中身を確かめる問である。改めた後の文面は requirements_foundation の該当項目にある。 / 回答時刻: 2026-10-01T00:52:38Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-031` — 旧版（置き換え先: `qa-classify-bulk-decision-054`）
-
-> **旧版** — この問答は `qa-classify-bulk-decision-054` で置き換えられた (`2026-10-01T07:22:35Z`)。
-> 下の問・答は凍結された記録の逐語で、現行の接地根拠ではない。現行の問答は置き換え先を参照すること。
-> - 置き換えの理由: 旧い問は、サーバと画面の失敗の扱いの細部をまとめて 1 問で承認を求めていた (N4 の違反)。論点ごとに分け、各選択肢の利点と不利な点を対称に書き、保留の道を残して問い直した。提示の逐語は qa-classify-bulk-presented-options-019。分けた問の対応: 「通信の失敗」は qa-classify-bulk-decision-054 (『読み直して再試行を出す』を選択)。「400・403・413」は qa-classify-bulk-decision-055 (『文言を出し再試行は出さない』を選択)。「409の扱い」は qa-classify-bulk-decision-056 (『文言を出し再試行を出す』を選択)。置き換え先はこのうち qa-classify-bulk-decision-054 の 1 本とし、ほかの問は qa-classify-bulk-decision-031 の参照先セルへ参照を足した。この回で問わない残りの論点 (D1 の batch そのものが失敗したときの扱いと、サーバの細部 (状態コードの分け方・256KB・書き込みの予算の検査) と画面の実装の形 (失敗の分け方を 1 つの関数にまとめる・DOM テスト 3 種) を agent に委ねてよいか) は、続く回で同じ論点として問う。
-
-**問**
-
-```text
-一括保存の失敗の扱いの細部を、agent の推定として記録した 2 件 (サーバ側と画面側) のとおりに決めることを承認しますか。2 件の逐語は『承認する』の preview にあります。細部の例: 400 は件数の範囲外・txId の重複・一括指定の値の範囲外の 3 つだけ。413 は本文の大きさ (payload_too_large) と書き込みの予算 (too_many_classify_changes、単体編集と同じ検査の関数を使う) の 2 種類。write_failed は D1 の batch そのものの失敗だけ。401・403・409・503 は既存の柵のまま。通信の失敗と 5xx の文言は『保存できたか確かめられませんでした。一覧を読み直しました。同じ内容で送り直しても二重には保存されません』。失敗の分け方は画面の 1 つの関数にまとめる。DOM テストを 3 種類足す。サーバ側の記録には、本文の形を今の実装のまま書いた誤りがあり、訂正 (本文は一括指定と下書きで、サーバが値を解決する。この形でも同じ要求の送り直しで結果は変わらない) を付けてあります。
-```
-
-**答**
-
-```text
-承認する。2 件の記録 (サーバ側は訂正を含む) の内容で細部を決め、利用者の決定として扱う。利点: 細部が決まり、次の工程へ進める。不利な点: 文言・関数のまとめ方・テストの数などを、1 件ずつ確かめずに決めることになる。 回答に自由記述は付いていない。
-```
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「細部の委任」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-013)。利用者はこの問で「承認する」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T00:52:37.098Z) を秒へ切り上げた値で、選択時刻の上界である。問の対象は qa-classify-bulk-backend-web-010 (訂正を含む) と qa-classify-bulk-frontend-web-005 である。qa-classify-bulk-decision-026 と qa-classify-bulk-decision-027 で利用者が agent に委ねた中身を確かめる問である。 / 回答時刻: 2026-10-01T00:52:38Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-034`
-
-**問**
-
-一覧で選んだ明細を、選択の読み出しと一括保存では、どの単位で扱いますか。以前の問では選択肢に推奨の印が付いていたので、印を外して問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。URL の sel には一覧の行の key が入ります (明細の行は mf: か cash:、分割の内訳行は split: で始まります)。今の一括保存のサーバは、分割の内訳行を split_line_not_supported で拒否します。
-
-**答**
-
-自由記述で回答 (4 つの選択肢のどれも選んでいない):『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「選択の単位」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-014)。利用者はこの問で選択肢を選ばず、自由記述を回答した。answered_at は回答受領時刻 (2026-10-01T01:36:46.980Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-007 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T01:36:47Z)
-
-#### 裏付け質疑: `qa-classify-bulk-delegated-002`
-
-**問**
-
-qa-classify-bulk-decision-034 で利用者が選定を委ねた問「選択の単位」について、agent はどの案を選んだか。
-
-**答**
-
-選んだ案: (1) key で読み内訳行は選べない — API は sel の値 (行の key) をそのまま受け、一覧と同じ形の行を返す。保存するときは、行から txId を引く。分割の内訳行にはチェックを出さず、理由を表示する。利点: URL の sel と一覧の行が 1 対 1 で対応し、一括保存の経路 (txId 単位) は今のまま使える。不利な点: 分割の内訳行は一括では保存できず、1 件ずつ直す。 無料枠の条件から外れた案: 無い (どの案も無料枠で動く)。 選んだ理由: URL の sel と一覧の行が 1 対 1 で対応し、今の txId 単位の一括保存の経路をそのまま使える。(2) は内訳行を保存する経路とその検査を新しく作ることになり、範囲外にした分割の仕様の変更に当たる。(3) は選んだ行と保存される範囲が一致せず、選んでいない内訳まで変わりうる。 これは利用者の委任 (qa-classify-bulk-decision-034) を受けた agent の選定で、利用者が選択肢から選んだ案ではない。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 利用者は qa-classify-bulk-decision-034 で、選択肢を選ばずに『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』と回答した。agent はこの委任を受けて、qa-classify-bulk-presented-options-014 の問2 の選択肢から選んだ。前回の選択と同じ案である (qa-classify-bulk-decision-007)。 / 回答時刻: 2026-10-01T01:43:48Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-035`
-
-**問**
-
-一括指定で区分かカテゴリ (大) を指定し、残りの項目を指定しなかったとき、残りの項目をどう決めますか。以前の問では選択肢に推奨の印が付いていたので、印を外して問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。事業の明細は、大項目が freee の勘定科目で、中項目は空と決まっています。データに『カテゴリが空』の状態は無く、空で保存すると取込値か集計ルールの値が残ります。区分に合うカテゴリの組がどこにも無い明細の扱いと、確定済みの明細で提案を使うかどうかは、別の問で伺います。
-
-**答**
-
-自由記述で回答 (4 つの選択肢のどれも選んでいない):『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「残りの項目」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-014)。利用者はこの問で選択肢を選ばず、自由記述を回答した。answered_at は回答受領時刻 (2026-10-01T01:36:46.980Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-010 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T01:36:47Z)
-
-#### 裏付け質疑: `qa-classify-bulk-delegated-003`
-
-**問**
-
-qa-classify-bulk-decision-035 で利用者が選定を委ねた問「残りの項目」について、agent はどの案を選んだか。
-
-**答**
-
-選んだ案: (1) 区分とカテゴリを1組で決める — カテゴリ (大) を指定したら、カテゴリ (中) も一括指定の値にする (指定が無ければ空)。区分だけを指定したときは、下書きか提案のうち区分が同じものからカテゴリの組を取る。利点: 区分とカテゴリが別々の出所から来ないので、系統の合わない組ができない。不利な点: 区分が違う下書きのカテゴリは使われない。 無料枠の条件から外れた案: 無い (どの案も無料枠で動く)。 選んだ理由: カテゴリの妥当性は区分で決まる (事業は freee の勘定科目で中項目が空、個人は MF の分類)。区分とカテゴリを同じ出所から 1 組で取れば、合わない組が構造上できず、合わない組を見つけて外す判定も表示も要らない。(2) は保存を押すまで失敗が分からない。(3) は保存の前に分かるが、合わない組を作ってから外す分だけ判定と表示が増える。 これは利用者の委任 (qa-classify-bulk-decision-035) を受けた agent の選定で、利用者が選択肢から選んだ案ではない。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 利用者は qa-classify-bulk-decision-035 で、選択肢を選ばずに『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』と回答した。agent はこの委任を受けて、qa-classify-bulk-presented-options-014 の問3 の選択肢から選んだ。前回の選択と同じ案である (qa-classify-bulk-decision-010)。 / 回答時刻: 2026-10-01T01:43:48Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-036`
-
-**問**
-
-一括保存で確定済みの明細を選んだとき、一括指定で指定しなかった項目 (区分・カテゴリ・所有者) は、どの値で保存しますか。以前の問では選択肢に推奨の印が付いていたので、印を外して問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。一覧では、確定済みの明細にも提案が付きます。
-
-**答**
-
-自由記述で回答 (3 つの選択肢のどれも選んでいない):『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「確定済みの値」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-014)。利用者はこの問で選択肢を選ばず、自由記述を回答した。answered_at は回答受領時刻 (2026-10-01T01:36:46.980Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-013 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T01:36:47Z)
-
-#### 裏付け質疑: `qa-classify-bulk-delegated-004`
-
-**問**
-
-qa-classify-bulk-decision-036 で利用者が選定を委ねた問「確定済みの値」について、agent はどの案を選んだか。
-
-**答**
-
-選んだ案: (1) 今の値を保つ — 下書きがあれば下書き、無ければ今の値のまま保存する。提案は未整理の明細にだけ使う。利点: 手で決めた値が提案に置き換わらない。不利な点: 確定済みの明細を提案に揃えたいときは、一括指定か下書きで値を入れる。 無料枠の条件から外れた案: 無い (どの案も無料枠で動く)。 選んだ理由: 利用者が手で決めた値を、自動の提案で黙って上書きしない。確定済みの明細を提案に揃えたいときは、一括指定で明示できる。(2) は手で決めた値が提案で置き換わり、気づかないまま確定済みの分類が変わりうる。 これは利用者の委任 (qa-classify-bulk-decision-036) を受けた agent の選定で、利用者が選択肢から選んだ案ではない。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 利用者は qa-classify-bulk-decision-036 で、選択肢を選ばずに『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』と回答した。agent はこの委任を受けて、qa-classify-bulk-presented-options-014 の問4 の選択肢から選んだ。前回の選択と同じ案である (qa-classify-bulk-decision-013)。 / 回答時刻: 2026-10-01T01:43:48Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-037`
-
-**問**
-
-一括指定で区分を指定し、その区分に合うカテゴリの組が、保存に使える値 (下書き・提案・今の値) のどこにも無い明細は、どう扱いますか。以前の問では選択肢に推奨の印が付いていたので、印を外して問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。データに『カテゴリが空』の状態は無く、空で保存すると取込値か集計ルールの値が残ります。
-
-**答**
-
-カテゴリなしを新設する。『カテゴリなし』を値として保存できるようにデータを変える。利点: 区分だけを決めて先に保存し、カテゴリは後で決められる。不利な点: 集計・分類の状態・履歴に影響する大きな構造変更になる。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「合う組が無い」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-015)。利用者はこの問で「カテゴリなしを新設する」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T03:13:11.498Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-014 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T03:13:12Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-045`
-
-**問**
-
-問い直しの第 2 回で『カテゴリなしを新設する』を選んだので、その細部を決めます。今、カテゴリが空の編集は『指定なし』として扱われ、保存すると取込値か集計ルールの値に戻るので、『カテゴリなし』を値として残す手段がありません。土台の C2 は『DB の表と列は足さない (migration なし)』と定めています。『カテゴリなし』をどう持ちますか。
-
-**答**
-
-予約の値で持つ。明細の編集の大項目の欄に、『カテゴリなし』を表す予約の値を保存する。表と列は足さない。利点: migration が要らず、C2 をそのまま保てる。バックアップの形式も変わらない。不利な点: カテゴリを名前として扱う箇所 (候補の検査・集計・履歴・バックアップ・総収支) のすべてで、予約の値を別に扱う処理が要る。予約の値と同じ名前のカテゴリは作れない。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「なしの持ち方」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-017)。利用者はこの問で「予約の値で持つ」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T03:58:11.560Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-037 の回答を受けて続けて問うた新しい論点。 / 回答時刻: 2026-10-01T03:58:12Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-048`
-
-**問**
-
-問い直しの第 2 回で『カテゴリなしを新設する』を選んだので、その細部を決めます。『カテゴリなし』を、どこで選べるようにしますか。問い直しの第 2 回の問は、一括指定で区分を指定し、その区分に合うカテゴリの組が保存に使える値 (下書き・提案・今の値) のどこにも無い明細の扱いでした。
-
-**答**
-
-一括保存の補いだけ。一括保存で、指定した区分に合う組がどこにも無い明細だけを『カテゴリなし』で保存し、保存前の内訳にその件数を出す。利点: 選ぶ欄が増えず、使われる場面が問の場面に限られる。不利な点: 一括指定の欄と編集パネルでは選べず、一度カテゴリを付けた明細を『カテゴリなし』に戻せない。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「なしの選び方」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-017)。利用者はこの問で「一括保存の補いだけ」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T03:58:11.560Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-037 の回答を受けて続けて問うた新しい論点。 / 回答時刻: 2026-10-01T03:58:12Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-054`
-
-**問**
-
-一括保存の要求に応答が返らない (通信の失敗) か、サーバが 5xx を返したとき、画面は何を出し、選択と再試行をどう扱いますか。以前の問では、サーバと画面の細部をまとめて 1 問で承認を求めていたので、論点ごとに分けて問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。この 2 つでは明細ごとの結果が無く、書き込まれたかどうかが分かりません。一括保存は、同じ本文をもう一度送っても、最終の状態が 1 回目と同じになる作りです。
-
-**答**
-
-読み直して再試行を出す。一覧と選択の読み出しを読み直し、選択を残し、role=alert で『保存できたか確かめられませんでした。一覧を読み直しました。同じ内容で送り直しても二重には保存されません』と出す。直前の要求の本文をそのまま送る『同じ内容で再試行』のボタンを出し、自動では送り直さない。利点: 書けたかどうかを一覧で確かめてから、1 回の操作で同じ本文を送り直せる。不利な点: 直前の本文を画面に保持する処理と、そのボタンの試験が要る。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「通信の失敗」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-019)。利用者はこの問で「読み直して再試行を出す」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T07:21:54.695Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-031 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T07:21:55Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-055`
-
-**問**
-
-一括保存の要求全体が 400・403・413 で返ったとき、画面は何を出し、選択と再試行をどう扱いますか。以前の問では、サーバと画面の細部をまとめて 1 問で承認を求めていたので、論点ごとに分けて問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。これらは書き込みの前に返り、同じ本文を送り直しても結果は変わりません。400 は件数の範囲外 (1〜100 件)・txId の重複・一括指定の値の範囲外、413 は本文の大きさ (256KB を超える) と書き込みの予算 (1 回の batch の文が 50 本を超える、または月次集計を束ねた JSON が 2MB を超える)、403 は一時パスワードのままの利用者 (password_change_required) です。400 と 413 の分け方は agent の案で、その細部を agent に委ねてよいかは別の問で伺います。
-
-**答**
-
-文言を出し再試行は出さない。サーバの文言を role=alert で出し、選択を残す。再試行のボタンは出さない。利点: 結果の変わらない送り直しを誘わない。選択が残るので、件数を減らすなどして保存し直せる。不利な点: 直し方は文言から読み取る必要がある。413 の書き込みの予算は、選択を減らしても下がらない場合がある。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「400・403・413」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-019)。利用者はこの問で「文言を出し再試行は出さない」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T07:21:54.695Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-031 の論点の一部を分けて問い直したもの。 / 回答時刻: 2026-10-01T07:21:55Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-056`
-
-**問**
-
-一括保存の要求が 409 canonical_write_busy (取込みや別の更新が進行中) で返ったとき、画面は何を出し、選択と再試行をどう扱いますか。以前の問では、サーバと画面の細部をまとめて 1 問で承認を求めていたので、論点ごとに分けて問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。409 は書き込みの前に返り、進行中の処理が終わった後なら、同じ本文で保存できることがあります。
-
-**答**
-
-文言を出し再試行を出す。サーバの文言を role=alert で出し、選択を残し、直前の本文をそのまま送る『同じ内容で再試行』のボタンを出す。利点: 進行中の処理が終わった後に、1 回の操作で同じ本文を送り直せる。不利な点: 処理が終わる前に押すと、同じ 409 が返る。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「409の扱い」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-019)。利用者はこの問で「文言を出し再試行を出す」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T07:21:54.695Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-031 の論点の一部を分けて問い直したもの。 / 回答時刻: 2026-10-01T07:21:55Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-057`
-
-**問**
-
-一括保存で、D1 への書き込み (1 回の batch) そのものが失敗したとき、サーバは何を返しますか。以前の問では、サーバと画面の細部をまとめて 1 問で承認を求めていたので、論点ごとに分けて問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。一括保存の書き込みは 1 回の batch に束ねてあり、D1 の batch は 1 つのトランザクションとして実行され、どれかの文が失敗すると全体が取り消されます (D1 の公式文書)。この失敗は、書き込みの前に返る 400・403・409・413 と違い、書き込みを試みた後に分かります。画面は、2xx の応答では write_failed を返した明細について『失敗した N 件のみ再試行』を出し、5xx の応答では一覧を読み直して『同じ内容で再試行』を出すと決まっています。要件の土台は今、この失敗で保存対象の全件を write_failed として返すと書いていて、別の案を選ぶと土台のその箇所を改めます。
-
-**答**
-
-全件を write_failed で返す。要求は 2xx で返し、保存対象の全件を明細ごとの結果 write_failed にする。画面は『失敗した N 件のみ再試行』を出し、押すと失敗した明細だけを送り直す。利点: 書き込まれていないことを明細ごとの結果で伝えられ、画面は一覧を読み直さずに済む。不利な点: 要求全体の失敗が 2xx で返るので、状態コードだけを見る監視やログでは失敗として数えられない。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「batchの失敗」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-020)。利用者はこの問で「全件を write_failed で返す」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T07:37:18.085Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-031 の論点の一部を分けて問い直したもの。qa-classify-bulk-decision-031 の置き換え先は qa-classify-bulk-decision-054 である。 / 回答時刻: 2026-10-01T07:37:19Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-058`
-
-**問**
-
-以前の 2 問 (通信の失敗と 5xx の扱い・400 と 413 の扱い) で、選択肢を選ばずに『失敗したまま進めないように、問題を本質的に解決して進めるようにしてください。ベストプラクティスな方法を選んだ上で選択して進めてください。』と回答されたのを、agent は、要件の土台に書かれていないサーバの細部を agent が選んでよいという意味に読みました。この読みを承認しますか。以前の問では、この読みを含む 6 つの読みをまとめて 1 問で承認を求めていたので、論点ごとに分けて問い直します。以前と違う案を選ぶと、記録の該当箇所を改めます。画面の振る舞いは前回の問で決まり、D1 の batch の失敗はこの回の別の問で伺います。本文の上限 256KB・書き込みの予算の 413・同じ要求の送り直しで結果が変わらないこと・失敗の分け方を 1 つの関数にまとめること・DOM テストの観点は、要件の土台の文面にあるので、この問の対象に含めません。対象の細部の逐語は『承認する』の preview にあります。
-
-**答**
-
-承認する。この読みのとおり、preview の細部を agent の案で決める。利点: 細部を 1 件ずつ問わずに、次の工程へ進める。不利な点: 文言・既存の柵の扱い・変えない制約を、1 件ずつ確かめずに決めることになる。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「細部の委任」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-020)。利用者はこの問で「承認する」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T07:37:18.085Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-032 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T07:37:19Z)
-
-#### 裏付け質疑: `qa-classify-bulk-decision-068`
-
-**問**
-
-要件の土台のうち、一括保存の値の決め方を書いた 4 項目 (G1・O1・I2・範囲に含む 2) を、『承認する』の preview の今の文面で承認しますか。要件の土台 (U1〜U9) の文面は、以前の承認の後に続いた決定で書き換わっていて、今の全文を逐語で示して承認を得た記録がありません。以前の問 (decision-060) の (b)『要件の土台 U1〜U9 の全文を逐語で示し、承認し直す』に当たります。土台を 6 つに分け、この回と次の回で 3 つずつ伺います。今の全文は『承認する』の preview に、改める項目と変えない項目に分けて置きます。文中の括弧内の id は、その文面のもとになった決定です。4 項目とも、以前の承認 (decision-015) の後の決定で文面が変わりました。主な変化: 区分に合うカテゴリの組が、埋める値のどこにも無い明細は、外さずに『カテゴリなし』で保存し、保存前の内訳にその件数を出す (decision-037・048)。『カテゴリなし』は予約の値で持ち、集計では未分類と同じに数え、分類の状態は手動とし、一括指定の欄と編集パネルでは選べない (decision-045〜048)。書き込みは json_each で束ねた 1 回の batch で行い、batch が失敗したら要求を 2xx で返して保存対象の全件を write_failed にする (delegated-001・decision-057)。以前の問 (decision-015) は、『承認しない』にだけ結果を書いていて選択肢の書き方が片寄っていたので、各選択肢に利点と不利な点を書いて問い直します。承認すると、この問の記録を、仕様の backend の章 (一括保存の API) の主な根拠にします。
-
-**答**
-
-承認する。preview の項目を、今の文面のまま要件の土台として承認する。利点: 土台と仕様の各章が同じ文面に揃い、承認の記録から今の文面を辿れる。不利な点: preview は約 3000 字あり、読み落とした細部も、この文面のまま計画と実装へ渡る。 回答に自由記述は付いていない。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「土台・値の決め方」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-024)。利用者はこの問で「承認する」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T09:12:13.849Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-015 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T09:12:14Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion で回答 (2026-09-21T14:10:28.965Z、transcript の回答行の実測)。完成度再々評価の medium 1 を受けた 1 問。 / 回答時刻: 2026-09-21T14:10:28Z)
 
 ## To-Be / Delta
 
@@ -564,27 +164,35 @@ qa-classify-bulk-decision-036 で利用者が選定を委ねた問「確定済�
 
 ### 到達すべき状態 (To-Be)
 
-- **G5**: 保存の経路を安全に保つ。選択の読み出し・一括保存・勘定科目の対応表の読み書きは、認証済みの利用者自身の行だけを扱い、他の利用者の行の key・txId・勘定科目の対応表の行は、存在を明かさず『見つからない』として扱う。入力は zod で検証する。選択は 50 件・一括は 100 件までとし、選択の key と一括の txId の重複は 400 にする。一括指定の値は既存の編集と同じ制約とし、『カテゴリなし』の予約の値は一括指定と編集の値としては 400 にする (qa-classify-bulk-decision-048)。予約の値と同じ名前のカテゴリの候補は作れない (qa-classify-bulk-decision-045)。勘定科目の対応表は、同じ大項目の 2 行目と、勘定科目の一覧に無い対応先を 400 にする。一括保存の本文は 256KB までとして超えたら 413 を返し、変更はフェンスを通し、保存した明細の値が変わった項目ごとに履歴 (一括保存) を 1 行ずつ残す (値が変わらない明細は履歴を書かない)。勘定科目の対応表の変更は、設定の変更履歴に残す (qa-classify-bulk-decision-049)。
+- **G4**: 本人が自力で復旧・連携できるようにする。『パスワードをお忘れの方』からメールアドレスを入れると、期限付き・1 回限りの再設定リンクがメールで届き、新しいパスワードを設定すると、その利用者の既存セッションを全て失効させる。応答からは登録の有無が分からない。同じメールアドレスで Google とパスワードの両方を使う本人は、ログイン済みの状態で既存の認証手段による再認証と、確認メールのリンクによるメール確認を経て、1 つのアカウントに連携できる。確認済みでない Google メールアドレスや、別のメールアドレスの Google アカウントは連携しない。連携の追加・解除は監査に残す。
+- **G5**: 不正ログイン対策を画面の説明どおりにする。パスワードでのログインに TOTP の多要素認証を重ね、管理者は必須 (未設定の管理者は次回ログインで設定を求める)、一般利用者は設定画面で任意に有効化できる。復旧コードを発行し、TOTP を失った本人が復旧できる。Google でのログインは Google 側の 2 段階認証に委ねる。既存の IP・アカウント単位のレート制限と列挙防止を、ログイン・MFA コード・招待再送・パスワード再設定の各入口に広げる。認証情報 (利用者・セッション・認証手段・招待・MFA) は業務データの表と分けて保持し、ログイン情報は認証と保護の用途に限って使う。
+- **G6**: ログイン前に確かめられる公開情報を用意する。フッターの『サービス状況』は認証不要の稼働状態 API から『正常』などを表示し、内部の詳細 (エラー文・構成) は返さない。『ヘルプ』と『プライバシー』は認証不要の静的ページとして、ログインの手順・招待・再設定・連携・MFA の説明と、ログイン情報の利用目的・保存期間・外部送信先 (Google・メール送信事業者) を示す。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O6 | 保存の経路が認可と入力検証を通る。 | API テストで、未認証 401、フェンス拒否 403、選択 51 件・選択の key の重複・一括 101 件・一括の txId の重複が 400、『カテゴリなし』の予約の値を一括指定か編集の値として送ると 400、予約の値と同じ名前のカテゴリの候補の作成が 400、一括保存の本文が 256KB を超えると 413 payload_too_large、他の利用者の行の key と txId が見つからない扱い (存在を明かさない)、保存した明細の値が変わった項目ごとに履歴 source=bulk が 1 行ずつ残り、値が変わらない明細には履歴が残らないことを確かめる。勘定科目の対応表の API で、未認証 401、同じ大項目の 2 行目と一覧に無い対応先が 400、他の利用者の行が見つからない扱いになることを確かめ、いずれも通る。 |
-| O7 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
+| O5 | パスワード再設定とアカウント連携が本人確認を経て完結する。 | 再設定リンクで新パスワードを設定すると既存セッションが全て 401 になり、登録の有無で応答が変わらないテストが緑。連携は再認証とメール確認の両方を経ないと成立せず、別メールや未確認の Google アカウントは連携されないテストが緑。連携の追加・解除が audit_log に残る。 |
+| O6 | TOTP の多要素認証と不正ログイン対策が効く。 | 管理者はパスワードでのログイン後に TOTP の設定または入力を経ないとセッションが発行されず、一般利用者は有効化した場合だけ求められるテストが緑。復旧コードは 1 回限りでハッシュ保存。ログイン・MFA・再送・再設定の各入口で連続失敗がロックされ、他の利用者を阻害しないテストが緑。 |
+| O7 | 公開の稼働状態・ヘルプ・プライバシーが認証なしで見られ、内部情報を出さない。 | 未認証で稼働状態 API が 200 と状態値 (normal / degraded など) だけを返し、エラー文や構成を含まないテストが緑。ヘルプとプライバシーの画面が未認証で描画され、プライバシーに外部送信先 (Google・メール送信事業者) と利用目的・保存期間が載る。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I2**: POST /api/transactions/bulk を拡張し、一括指定と各明細の下書きを受け取る。サーバは明細を引き直し、core の解決関数で、未整理の明細は 一括指定→下書き→提案、確定済みの明細は 一括指定→下書き→今の値 の順に値を決める。区分に合うカテゴリの組がどこにも無い明細は、明細の編集の大項目の欄に『カテゴリなし』の予約の値を入れて保存する (『カテゴリなし』のための表と列は足さない。qa-classify-bulk-decision-045)。予約の値は core の 1 か所で定め、一括指定と編集の値としては受け付けない (qa-classify-bulk-decision-048)。値を決められない明細と、区分とカテゴリの組が候補に合わない明細は、明細単位の失敗として返す (画面は保存前に外すので、通常は届かない)。書き込みは json_each で束ねた 1 回の batch で行い (qa-classify-bulk-delegated-001)、batch が失敗したら要求を 2xx で返して保存対象の全件を write_failed にする (qa-classify-bulk-decision-057)。同じ要求を送り直しても、明細の値 (更新時刻を除く)・提案との一致 (done か manual か)・月次集計・履歴は 1 回目の後と変わらない。書き込む前に予算 (1 回の batch の文 50 本・束ねた JSON 2MB) を超えると分かった要求は、明細ごとの結果を持たない 413 で返す。
-- **I3**: 選択中の行の key (最大 50 件、利用者ごとに分離) を受けて、表示外の明細も含めて一覧の行の形で返す読み出し API を追加し、一覧の応答から絞り込み後の全件を外す。
-- **I8**: 勘定科目の対応表の表を migration で足し、既存の利用者に初期の 5 行を入れ、新しい利用者の作成時にも入れる。読み出し・追加・削除の API と設定画面の編集を足し、変更を設定の変更履歴に残す (変更履歴の種類の制約は表の作り直しで改め、PR で承認する)。設定の JSON (kanjo-settings) とバックアップ・復元に勘定科目の対応表を加える。
+- **I5**: Resend の送信を 1 か所の関数に閉じ、招待・再設定・連携確認のメール本文を定義し、テストでは送信を差し替える。
+- **I6**: TOTP 二要素を有効にし、管理者の必須化、復旧コード、MFA 設定画面を加える。レート制限を新しい入口へ広げる。
+- **I7**: 認証不要の GET /api/status と、/help・/privacy の公開ページを加え、ログイン画面のフッターから辿れるようにする。
 
 ### 本章に効く確定意思決定
 
-- **decision-005-d1-query-budget**: 一括保存の 1 要求が、Cloudflare 無料プランの「1 起動あたり合計 50 クエリ」を超えます（50 件で 200 本超）。どう解きますか？
-  - 採択: 書き込みを束ねる (`bundle-writes`)
-  - 目的適合: 明細ごとの編集と履歴を json_each で 1 文ずつに束ね、1 要求は明細数によらず約 25 本になる。選択 50 件も一括 100 件も 1 回で保存でき (G1・G5)、上限と無料プランはそのまま (C4)。
-  - 採択の接地根拠: `qa-classify-bulk-decision-033`
+- **dec-login-v2-auth-foundation**: Google ログイン・連携・MFA をどの認証基盤で実装するか。
+  - 採択: Better Auth へ全面移行 (`opt-better-auth`)
+  - 目的適合: Google・パスワード・アカウント連携・TOTP 二要素と復旧コードを 1 つの基盤で賄え、G2/G4/G5 の機能を部品として得られる。
+- **dec-login-v2-mail-delivery**: 招待・パスワード再設定・連携確認のメールをどの基盤で送るか。
+  - 採択: Resend など外部 API (`opt-resend`)
+  - 目的適合: HTTP の fetch だけで Workers から送れ、招待・再設定・連携確認の量は無料枠に収まる。
+- **dec-login-v2-mfa-scope**: 画像の『MFA と不正ログイン対策で保護』を事実にするため、MFA の範囲をどうするか。
+  - 採択: TOTP・管理者は必須、一般は任意 (`opt-totp-admin-required`)
+  - 目的適合: 画像の説明を事実にしつつ、一般利用者の初回の手間を増やさない。
 
 ## 適用された設計知識
 
@@ -592,9 +200,9 @@ qa-classify-bulk-decision-036 で利用者が選定を委ねた問「確定済�
 
 ### 本章での適用
 
-Secure by Design card の『入力の境界を許可リストで閉じる』を、一括保存・選択の読み出し・勘定科目の対応表の入力に適用した。一括保存の要求全体を 400 にするのは、件数の範囲外 (選択の key は 1〜50 件、一括保存の txId は 1〜100 件)、重複 (選択の key と一括保存の txId)、一括指定の値の範囲外 (『カテゴリなし』の予約の値を含む) の 3 つだけにする。一括指定の値は選択した全件に当たるので、1 つでも範囲外なら要求全体を止める。各明細の下書きの値はその明細にだけ当たるので、既存の個別編集と同じ制約 (区分・所有者・支払い方法は列挙、カテゴリ大/中は 60 字、メモは 200 字) で zod が明細ごとに検証し、範囲外の明細と、解決後の科目が区分の系統と合わない明細だけを invalid_item で返して、他の明細は保存する。本文の大きさは 256KB で閉じ、超えたら 413 payload_too_large を返す (qa-classify-bulk-decision-030)。勘定科目の対応表は、同じ大項目の 2 行目と、勘定科目の一覧に無い対応先を 400 にする (qa-classify-bulk-decision-049)。下書きは値の解決にだけ使い、サーバに下書きとして保存しない。
+OWASP ASVS の認証・セッション管理の card をログイン v2 に適用した。列挙防止は応答の本文だけでなく所要時間まで揃え、送信は応答の後に回す。トークンの保存はハッシュに限り、漏えいしても D1 の中身から招待や再設定を再現できないようにする。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-10-01T10:34:37Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-21T13:27:06Z)
 
 ### Secure by Design — deep knowledge card
 
@@ -641,4 +249,4 @@ Secure by Design card の『入力の境界を許可リストで閉じる』を�
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| owasp-asvs | 5.0.0 | OWASP Foundation (owasp.org) | https://owasp.org/www-project-application-security-verification-standard/ | 2026-09-30T07:58:03Z | 2026-09-30T07:58:03Z |
+| owasp-asvs | 5.0.0 | OWASP Foundation (github.com) | https://github.com/OWASP/ASVS/releases/tag/v5.0.0_release | 2026-09-21T13:28:33Z | 2026-09-21T13:28:33Z |

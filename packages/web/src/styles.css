@@ -2377,6 +2377,7 @@ button:disabled {
 }
 
 input[type="text"],
+input[type="email"],
 input[type="password"],
 input[type="number"],
 input[type="url"],
@@ -2580,11 +2581,10 @@ kbd {
   background: var(--bg);
 }
 
-/* ログイン ------------------------------------------------------------------
- * 認証前の専用レイアウト。ヘッダー・サイドバー・フッターを一切持たない。
- * 既定は狭幅の1カラムで、DOM順もログインカードが先。広幅のときだけ2カラムにし、
- * order で情報パネルを左へ回す。「狭いときに畳んで並べ替える」のではなく
- * 「狭いときの並びが素の状態」にしておくと、優先度と実装が食い違わない。
+/* ログイン (spec-login-v2 §7.1・画像 01-login-v2.png) --------------------------------
+ * 認証前の画面はすべて同じ型: カードの外の上にロゴ、中央にカード1枚、カードの下端にフッター。
+ * ヘッダー・サイドバーを一切持たない。幅は1カラムだけで、広幅でも脇に列を足さない
+ * (脇の列はサイドバーに見える)。左右の余白は .login-page の1か所で最低16pxを担保する。
  */
 .login-wrap {
   min-height: 100dvh;
@@ -2597,77 +2597,145 @@ kbd {
   min-height: 100dvh;
   background: var(--bg);
   display: grid;
-  align-items: center;
-  /* 左右の余白は最低16px。どの幅でもこの1か所で担保する */
-  padding: 32px 16px;
+  align-content: center;
+  justify-items: center;
+  gap: 20px;
+  padding: 32px 24px;
 }
-.login-main {
-  width: 100%;
-  max-width: 1040px;
-  margin: 0 auto;
-  display: grid;
-  gap: 32px;
+.login-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: var(--fs-3xl);
+  font-weight: 900;
+  color: var(--primary);
+}
+.login-logo-mark {
+  width: 36px;
+  height: 36px;
+}
+.login-logo-mark rect {
+  fill: var(--accent);
+}
+.login-logo-mark .bar-1 {
+  opacity: 0.55;
+}
+.login-logo-mark .bar-2 {
+  opacity: 0.7;
+}
+.login-logo-mark .bar-3 {
+  opacity: 0.85;
 }
 .login-card {
+  width: 100%;
+  max-width: 590px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 28px;
-  max-width: 100%;
+  border-radius: var(--radius);
+  padding: 36px 34px 16px;
 }
-/* 認証前はカード1枚だけを中央に置く。脇に列を足すとサイドバーに見える */
-@media (min-width: 900px) {
-  .login-main-single {
-    grid-template-columns: minmax(0, 460px);
-    justify-content: center;
-  }
+.login-main {
+  display: grid;
+  gap: 22px;
 }
-.login-card h1 {
-  font-size: var(--fs-2xl);
+.login-heading-block h1 {
+  font-size: var(--fs-3xl);
   font-weight: 900;
-  margin: 0 0 4px;
+  color: var(--ink);
+  margin: 0 0 6px;
 }
-.login-card > p {
+.login-heading-block p {
+  color: var(--ink-soft);
+  margin: 0;
+}
+.login-note {
+  display: block;
   color: var(--ink-soft);
   font-size: var(--fs-sm);
   margin: 0;
 }
-.login-card form {
+.login-google-block {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+.login-google {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  font-weight: 700;
+}
+.login-google-mark {
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+/* 「または」の左右に罫線。文字の背景を塗らずに grid で線を引く (背景色に依存しない) */
+.login-or {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
+}
+.login-or::before,
+.login-or::after {
+  content: "";
+  border-top: 1px solid var(--line);
+}
+.login-form {
   display: grid;
   gap: 14px;
-  margin-top: 18px;
+}
+.login-form-heading {
+  font-size: var(--fs-xl);
+  font-weight: 900;
+  margin: 0;
 }
 .login-field {
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 .login-field label {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-md);
   font-weight: 700;
 }
-.login-field input {
+.login-field .input {
   width: 100%;
+  min-height: 48px;
 }
-.login-field small {
-  color: var(--ink-soft);
-  font-size: var(--fs-xs);
-}
-.login-password {
+.password-field {
+  position: relative;
   display: flex;
-  gap: 6px;
   align-items: stretch;
 }
-.login-password input {
+.password-field .input {
   flex: 1;
   min-width: 0;
+  padding-right: 88px;
 }
-/* アイコン単独では意味を運ばせない。目のアイコンには必ず「表示 / 隠す」を併記する */
-.login-reveal {
+/* 目のアイコン単独では意味を運ばせない。「表示 / 隠す」を必ず併記する */
+.password-reveal {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  bottom: 0;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  white-space: nowrap;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
   font-size: var(--fs-xs);
+  cursor: pointer;
 }
 .login-error {
   display: flex;
@@ -2683,76 +2751,279 @@ kbd {
   margin-top: 2px;
 }
 .login-remember {
-  align-items: flex-start;
-  gap: 8px;
-}
-.login-remember .selection-checkbox__indicator {
-  margin-top: 3px;
-}
-.login-remember .selection-checkbox__label {
-  font-size: var(--fs-sm);
   display: grid;
-  gap: 2px;
+  gap: 0;
+}
+.login-remember-control {
+  gap: 10px;
+  font-size: var(--fs-md);
 }
 /* 既定ONの帰結 (30日 / 12時間) を隠さないためのマイクロコピー */
-.login-remember small {
+.login-remember-note {
+  padding-left: calc(var(--selection-control-size) + 10px);
   color: var(--ink-soft);
-  font-size: var(--fs-xs);
-  font-weight: 400;
-}
-.login-submit {
-  width: 100%;
-  justify-content: center;
-}
-.login-shortcut {
-  color: var(--ink-soft);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-sm);
   margin: 0;
 }
-.login-divider {
+.login-submit {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  min-height: 54px;
+}
+.login-card .login-submit.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.login-forgot {
+  justify-self: center;
+}
+.login-invite {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 16px;
+  padding: 20px;
+  border: 1px solid var(--biz-soft-line);
+  border-radius: var(--radius);
+  background: var(--biz-soft);
+}
+.login-invite h2 {
+  display: contents;
+  font-size: var(--fs-base);
+  font-weight: 900;
+}
+.login-invite h2 svg {
+  grid-row: 1 / span 5;
+  color: var(--accent);
+  width: 28px;
+  height: 28px;
+}
+.login-invite > :not(h2) {
+  grid-column: 2;
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+.login-invite-resend {
+  display: inline-flex;
+  align-items: center;
+  justify-self: stretch;
+  justify-content: center;
+  margin-top: 8px;
+}
+.login-link {
+  padding: 20px;
+  border-radius: var(--radius);
+  background: var(--row-hover);
+  display: grid;
+  gap: 4px;
+}
+.login-link p {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--ink-soft);
+}
+.login-link-lead {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.login-link .login-link-lead {
+  font-size: var(--fs-md);
+  color: var(--ink);
+}
+.login-link-lead svg {
+  flex: none;
+  color: var(--accent);
+  width: 28px;
+  height: 28px;
+}
+.login-link > p:not(.login-link-lead) {
+  padding-left: 44px;
+}
+.login-rule {
   border: 0;
   border-top: 1px solid var(--line);
-  margin: 20px 0 14px;
+  margin: 0;
 }
-.login-help {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-  margin-top: 20px;
-  font-size: var(--fs-sm);
-}
-.login-assure-title {
-  font-size: var(--fs-sm);
+.login-trust h2 {
+  font-size: var(--fs-base);
   font-weight: 900;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
 }
-.login-assurances {
+.login-trust ul {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 10px;
+  gap: 14px;
 }
-/* アイコン | (ラベル / 説明) の2列。ラベルを nowrap にすると狭幅で
-   カードごと画面外へはみ出すため、折り返しを許して縦に積む */
-.login-assurances li {
+/* アイコン | (ラベル / 説明) の2列。狭幅では折り返しを許して縦に積む */
+.login-trust li {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: 2px 8px;
-  font-size: var(--fs-xs);
+  gap: 2px 16px;
 }
-.login-assurances svg {
+.login-trust li svg {
   grid-row: 1 / span 2;
-  margin-top: 2px;
+  color: var(--accent);
+  width: 28px;
+  height: 28px;
 }
-.login-assure-label {
+.login-trust-label {
+  font-size: var(--fs-md);
   font-weight: 700;
 }
-.login-assure-note {
+.login-trust-note {
   grid-column: 2;
+  font-size: var(--fs-sm);
   color: var(--ink-soft);
+}
+.login-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+.login-footer-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  text-decoration: none;
+}
+.login-footer-item + .login-footer-item {
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
+}
+a.login-footer-item {
+  text-decoration: none;
+}
+.login-service-state[data-service-state="normal"] {
+  color: var(--good);
+  font-weight: 700;
+}
+.login-service-state[data-service-state="degraded"] {
+  color: var(--warn);
+  font-weight: 700;
+}
+.login-accepted,
+.login-done {
+  display: block;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--good-soft);
+  color: var(--good);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.login-back {
+  margin: 0;
+  text-align: center;
+  font-size: var(--fs-sm);
+}
+.login-invitation {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 16px;
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--row-hover);
+  font-size: var(--fs-sm);
+}
+.login-invitation dt {
+  color: var(--ink-soft);
+}
+.login-invitation dd {
+  margin: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.login-doc {
+  display: grid;
+  gap: 8px;
+  font-size: var(--fs-sm);
+}
+.login-doc h2 {
+  font-size: var(--fs-base);
+  font-weight: 900;
+  margin: 12px 0 0;
+}
+.login-doc p,
+.login-doc ul {
+  margin: 0;
+}
+.login-enroll {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  font-size: var(--fs-sm);
+}
+.login-enroll p {
+  margin: 0;
+}
+.login-qr {
+  width: min(220px, 100%);
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+/* 読み取りやすさは明暗差で決まる。明るい地 (静寂域込み) と最も濃い文字色の2色だけで描く */
+.login-qr-quiet {
+  fill: var(--surface);
+}
+.login-qr-modules {
+  fill: var(--ink);
+}
+.login-secret {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+.login-secret span {
+  font-size: var(--fs-xs);
+  color: var(--ink-soft);
+}
+.login-secret code,
+.login-backup-codes code {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.login-backup {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid var(--warn-fill);
+  border-radius: var(--radius);
+  background: var(--warn-soft);
+}
+.login-backup h2 {
+  font-size: var(--fs-base);
+  font-weight: 900;
+  margin: 0;
+}
+.login-backup p {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+.login-backup-codes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 6px 12px;
 }
 .login-modal-backdrop {
   position: fixed;
@@ -2764,11 +3035,14 @@ kbd {
   z-index: 50;
 }
 .login-modal {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 24px;
+  position: static;
+  width: 100%;
   max-width: 440px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
   display: grid;
   gap: 12px;
 }
@@ -2782,17 +3056,46 @@ kbd {
   color: var(--ink-soft);
   margin: 0;
 }
+.login-modal-form {
+  display: grid;
+  gap: 12px;
+}
+.login-modal-close {
+  justify-self: end;
+}
+/* 480px 未満はカードの内側も詰め、左右の余白は外側 16px + 内側 16px にする */
+@media (max-width: 479px) {
+  .login-page {
+    padding: 20px 16px;
+  }
+  .login-card {
+    padding: 24px 16px 12px;
+  }
+  .login-form-heading {
+    font-size: var(--fs-lg);
+  }
+  .login-invite,
+  .login-link {
+    padding: 16px;
+  }
+  .login-footer {
+    justify-content: flex-start;
+  }
+  .login-footer-item + .login-footer-item {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
 /* 利用者管理 (設定画面・admin のみ) */
 .user-admin-invite {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 12px;
+  gap: 8px 12px;
   margin: 16px 0;
 }
 .user-admin-invite label {
-  display: grid;
-  gap: 4px;
   font-size: var(--fs-sm);
   font-weight: 700;
 }
@@ -2813,44 +3116,56 @@ kbd {
   flex-wrap: wrap;
   gap: 6px;
 }
-.user-admin-flag {
-  margin-left: 6px;
-  padding: 1px 6px;
-  border-radius: 999px;
-  background: var(--line);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-}
-/* 一時パスワードは1度きりの表示。控える前に見失わないよう、枠で強く区切る */
-.user-admin-issued {
-  border: 2px solid var(--danger);
-  border-radius: 10px;
-  padding: 16px;
-  margin: 16px 0;
+
+/* アカウント欄 (設定画面・全利用者) */
+.account-settings {
   display: grid;
-  gap: 10px;
-  justify-items: start;
+  gap: 12px;
 }
-.user-admin-issued h3 {
-  margin: 0;
+.account-settings h3 {
   font-size: var(--fs-base);
   font-weight: 900;
+  margin: 8px 0 0;
 }
-.user-admin-issued p {
+.account-settings > p {
   margin: 0;
-  font-size: var(--fs-sm);
 }
-.user-admin-temp {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: var(--fs-lg);
-  font-weight: 700;
-  letter-spacing: 0.06em;
+.account-methods {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+.account-methods li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 360px;
   padding: 8px 12px;
-  border-radius: 8px;
-  background: var(--bg);
   border: 1px solid var(--line);
-  user-select: all;
-  overflow-wrap: anywhere;
+  border-radius: 8px;
+}
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.account-actions:empty {
+  display: none;
+}
+.account-form {
+  display: grid;
+  gap: 12px;
+  max-width: 420px;
+}
+.account-form .btn {
+  justify-self: start;
+}
+.account-enroll {
+  display: grid;
+  gap: 16px;
+  max-width: 480px;
 }
 
 /* ---------------- モバイル(〜640px) ---------------- */

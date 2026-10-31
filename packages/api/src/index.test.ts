@@ -1,17 +1,52 @@
-import { readFileSync } from 'node:fs';
-import { URL } from 'node:url';
-import { describe, expect, it } from 'vitest';
-import { TEST_ADMIN_ROW, isUserLookupQuery, signedSessionCookieForTest } from './auth.test-support.js';
+import { readFileSync, readdirSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { URL, fileURLToPath } from 'node:url';
+import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { loginForTest } from './auth.test-support.js';
 import { app } from './index.js';
-import { EXPECTED_D1_MIGRATION } from './schema-guard.js';
+import { splitMigrationStatements } from './migration-test-support.js';
+import { recordTestMigrationHead } from './schema-guard.test-support.js';
 
-// authGuard は署名検証の後に users を1件引く。schema照合と同じダミーD1で両方に答える。
-const schemaReadyDatabase = {
-  prepare: (sql: string) =>
-    isUserLookupQuery(sql)
-      ? { bind: () => ({ first: async () => TEST_ADMIN_ROW }) }
-      : { first: async () => EXPECTED_D1_MIGRATION },
-};
+const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
+let mf: Miniflare | undefined;
+let database: D1Database;
+let files: R2Bucket;
+let authenticatedCookie = '';
+const authenticatedEnv = () => ({
+  ACCESS_AUD: '',
+  ACCESS_TEAM_DOMAIN: '',
+  BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
+  BETTER_AUTH_URL: 'http://localhost',
+  DB: database,
+  FILES: files,
+});
+
+beforeAll(async () => {
+  mf = new Miniflare(
+    convertV4MiniflareOptions({
+      name: 'index-boundary-test',
+      modules: true,
+      script: 'export default { fetch() { return new Response("test") } }',
+      d1Databases: ['DB'],
+      r2Buckets: ['FILES'],
+    }),
+  );
+  database = (await mf.getD1Database('DB')) as D1Database;
+  files = (await mf.getR2Bucket('FILES')) as unknown as R2Bucket;
+  const filenames = readdirSync(migrationsDir)
+    .filter((name) => name.endsWith('.sql'))
+    .sort();
+  for (const filename of filenames) {
+    for (const sql of splitMigrationStatements(readFileSync(resolve(migrationsDir, filename), 'utf8'))) {
+      await database.prepare(sql).run();
+    }
+  }
+  await recordTestMigrationHead(database, filenames);
+  authenticatedCookie = await loginForTest(app, authenticatedEnv(), { twoFactorEnabled: true });
+}, 30_000);
+
+afterAll(async () => mf?.dispose());
 
 const staticHeaders = new Map(
   readFileSync(new URL('../../web/public/_headers', import.meta.url), 'utf8')
@@ -97,7 +132,7 @@ describe('API公開境界', () => {
 
     expect(response.status).toBe(503);
     await expect(response.json()).resolves.toEqual({
-      error: { code: 'auth_not_configured', message: '認証が未設定です(SESSION_SECRET)' },
+      error: { code: 'auth_not_configured', message: '認証が未設定です' },
     });
   });
 
@@ -106,7 +141,7 @@ describe('API公開境界', () => {
     const response = await app.request('/api/summary', undefined, {
       ACCESS_AUD: '',
       ACCESS_TEAM_DOMAIN: '',
-      SESSION_SECRET: 'synthetic-test-secret',
+      BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
       DB: {
         prepare: () => {
           schemaQueries += 1;
@@ -120,15 +155,11 @@ describe('API公開境界', () => {
   });
 
   it('存在しないAPIもSPAではなくJSONエラーにする', async () => {
-    const env = {
-      ACCESS_AUD: '',
-      ACCESS_TEAM_DOMAIN: '',
-      SESSION_SECRET: 'synthetic-test-secret',
-      DB: schemaReadyDatabase,
-    };
-    const cookie = await signedSessionCookieForTest(env.SESSION_SECRET);
-
-    const response = await app.request('/api/not-found', { headers: { cookie } }, env);
+    const response = await app.request(
+      '/api/not-found',
+      { headers: { cookie: authenticatedCookie } },
+      authenticatedEnv(),
+    );
 
     expect(response.status).toBe(404);
     expect(response.headers.get('content-type')).toContain('application/json');
@@ -144,15 +175,11 @@ describe('API公開境界', () => {
     '/api/tax/receipt-gaps?year=2026',
     '/api/export/tax/statement.csv?year=2026',
   ])('廃止したAPI %s を認証済みでも404に固定する', async (path) => {
-    const env = {
-      ACCESS_AUD: '',
-      ACCESS_TEAM_DOMAIN: '',
-      SESSION_SECRET: 'synthetic-test-secret',
-      DB: schemaReadyDatabase,
-    };
-    const cookie = await signedSessionCookieForTest(env.SESSION_SECRET);
-
-    const response = await app.request(path, { headers: { cookie } }, env);
+    const response = await app.request(
+      path,
+      { headers: { cookie: authenticatedCookie } },
+      authenticatedEnv(),
+    );
 
     expect(response.status).toBe(404);
     expect(response.headers.get('content-type')).toContain('application/json');
@@ -163,7 +190,11 @@ describe('API公開境界', () => {
 });
 
 describe('AIエージェント用API', () => {
-  const env = { ACCESS_AUD: '', ACCESS_TEAM_DOMAIN: '', SESSION_SECRET: 'synthetic-test-secret' };
+  const env = {
+    ACCESS_AUD: '',
+    ACCESS_TEAM_DOMAIN: '',
+    BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
+  };
 
   it('トークン無しではデータも結果送信も受け付けない', async () => {
     const data = await app.request('/api/ai/tasks/x/data', undefined, env);

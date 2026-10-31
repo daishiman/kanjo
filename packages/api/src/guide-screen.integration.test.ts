@@ -21,7 +21,7 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  SESSION_SECRET: 'synthetic-test-secret',
+  BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
 };
 
 let mf: Miniflare | undefined;
@@ -187,7 +187,7 @@ describe('GET /api/guide', () => {
     expect(text).not.toContain('防衛ライン');
   });
 
-  it('未認証は 401、一時パスワードのままなら 403', async () => {
+  it('未認証と停止中の利用者は401', async () => {
     expect((await request('/guide', null)).status).toBe(401);
     const temp = await loginForTest(
       app,
@@ -196,9 +196,9 @@ describe('GET /api/guide', () => {
         id: 'temp-user',
         email: 'temp-user@example.test',
         password: 'Synthetic-Temp-Password-1',
-        mustChangePassword: true,
+        status: 'suspended',
       },
     );
-    expect((await request('/guide', temp)).status).toBe(403);
+    expect((await request('/guide', temp)).status).toBe(401);
   });
 });

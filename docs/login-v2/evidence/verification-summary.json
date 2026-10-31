@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-31T06:23:48.208Z",
+  "source_sha256": {
+    "packages/api/src/auth.ts": "34f836baa145cafceeaf102386c8b2fd519d7ce96fdf9aedd93870e85938a887",
+    "packages/api/src/better-auth.ts": "d470b666cee04094d0d1437bdd8fa6d7eb47b7667380ae632368a465d7e81c2a",
+    "packages/api/src/auth-endpoints.ts": "a7e3d0459b4d54f48a95c01673af077d4515d071d62703153045ff57cb3923ff",
+    "packages/api/src/auth-cleanup.ts": "aa8be0d94d46754ea5ebd2aee89dc3376b9f00ba9d259db47462f8b8336056c2",
+    "packages/api/src/routes/account.ts": "7c5281d5dae05c19c13f5ebdfaffdcf916bcaf3d195a3cb0dfff9f3ac4494aea",
+    "packages/api/src/routes/admin-users.ts": "5acc6d40755f3fd192c1f53945e6fc876a89368f21e58af9414e77c5f9adcbfc",
+    "packages/api/src/subscription-writes.ts": "65ddb2d5db5382a3e1c592155c0f98910a38e58a6d8a1114ecd0469ec93c4e63",
+    "packages/web/src/App.tsx": "0876598a661ff334830ca2e47627d1c4d029d65e82858eab1f52db340bb0b2d6",
+    "packages/web/src/features/auth/PasswordForm.tsx": "fc595df15abf34d08a3905974c5b72050c91efb16d679c14621452bd5902ead5",
+    "packages/web/src/components/AccountSettings.tsx": "b3183d42c13b70e4b703a0d33ecbb6704e33adcec1d2bc30d19d69bb422cd2ca",
+    "packages/web/src/pages/settings/AccountSection.tsx": "346b9efc4d9228cc72bc272c03af27a18823119dbee9e6859c0d445a28a7b88f",
+    "packages/web/src/styles.css": "8406c30bb382754a7ed6d86128b7af888b089a7fc40e8699fb1fc58aaacc1ec8",
+    "migrations/0061_login_v2_better_auth.sql": "d7051c2509ae6e20d1243a3a6e8cda545310cd2259b115b12e66ffd6339d5a6a"
+  },
+  "api_coverage": {
+    "status": "passed",
+    "tests": 89,
+    "statements": 92.44,
+    "branches": 82.9,
+    "functions": 97.39,
+    "lines": 94.09
+  },
+  "web_coverage": {
+    "status": "passed",
+    "tests": 107,
+    "statements": 91.96,
+    "branches": 84.81,
+    "functions": 96.01,
+    "lines": 95.45
+  },
+  "preview_smoke": {
+    "status": "passed",
+    "duration_seconds": 94.85,
+    "migration_head": "0061_login_v2_better_auth.sql"
+  },
+  "browser_acceptance": {
+    "status": "前回版8項目成功。最新main統合後の再測定ではない",
+    "receipt": "browser-acceptance.json"
+  },
+  "initial_js": {
+    "status": "passed",
+    "gzip_kib": 86.4,
+    "limit_kib": 110
+  },
+  "worker_dry_run": {
+    "status": "passed"
+  },
+  "graph": {
+    "architecture_nodes": 214,
+    "architecture_documents": 214,
+    "render_nodes": 69,
+    "render_edges": 63,
+    "lineage": "passed",
+    "external_dependencies": 0
+  },
+  "ci_checks_url": "https://github.com/daishiman/kanjo/pull/80/checks",
+  "ci_required_before_merge": true,
+  "release_status": "外部設定・実Google/メール・本番受入待ち",
+  "unverified": [
+    "実Googleの許可/拒否とcallback",
+    "実メール配送",
+    "本番secretとmigrationの状態",
+    "本番の2回確認とCore Web Vitals"
+  ],
+  "previous_measurement": {
+    "runtime_revision": "cbfc8f33564411a3d64e55b74a8c50fa15f9d85c",
+    "verification_revision": "d22b6fab219ba381b0519d4fd839c9ca4b479fc5",
+    "coverage_scope": "前回測定値。最新main統合後のcoverage再測定とは区別する",
+    "preview_smoke": {
+      "status": "passed",
+      "duration_seconds": 107.57,
+      "migration_head": "0059_login_v2_better_auth.sql"
+    },
+    "browser_acceptance": {
+      "status": "passed",
+      "checks": 8,
+      "receipt": "browser-acceptance.json"
+    },
+    "initial_js": {
+      "status": "passed",
+      "gzip_kib": 86.4,
+      "limit_kib": 110
+    },
+    "ci_observation": {
+      "revision": "d22b6fab219ba381b0519d4fd839c9ca4b479fc5",
+      "run_url": "https://github.com/daishiman/kanjo/actions/runs/41175336641",
+      "status": "実行中（全件成功未確認）",
+      "passed_jobs": ["static", "build", "package", "macOS"]
+    }
+  },
+  "integrated_sources": {
+    "branch_base": "5ca7aa903da2f6bbd7fa4742a8769bc8d5a3ffe1",
+    "main": "6ef4c9c",
+    "migration_head": "0061_login_v2_better_auth.sql"
+  },
+  "integration_validation": {
+    "typecheck": "passed",
+    "web": {
+      "files": 6,
+      "passed": 210
+    },
+    "api": {
+      "files": 8,
+      "passed": 108,
+      "duration_seconds": 139.97
+    },
+    "preview_smoke": {
+      "status": "passed",
+      "duration_seconds": 94.85,
+      "migration_head": "0061_login_v2_better_auth.sql"
+    },
+    "full_ci": "統合後の同一SHAで再実行が必要",
+    "lint": "passed",
+    "web_build": "passed",
+    "runner_regression": "既定1MiBでENOBUFSを再現後、有界8MiB捕捉と成功時要約で完走"
+  }
+}

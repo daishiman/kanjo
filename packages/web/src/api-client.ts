@@ -33,9 +33,16 @@ async function apiErrorFromResponse(res: Response): Promise<ApiError> {
 function apiErrorFromBody(status: number, body: unknown): ApiError {
   let code = 'error';
   let message = `エラー(${status})`;
-  const error = (body as { error?: { code?: string; message?: string } } | undefined)?.error;
+  // アプリ独自の経路は `{error:{code,message}}`、Better Auth 組込みの経路は `{code,message}` を返す。
+  // どちらの経路かを呼び出し側に意識させないよう、ここで1つの ApiError に揃える
+  const envelope = body as
+    | { error?: { code?: string; message?: string }; code?: unknown; message?: unknown }
+    | undefined;
+  const error = envelope?.error;
   if (error?.code) code = error.code;
+  else if (typeof envelope?.code === 'string') code = envelope.code;
   if (error?.message) message = error.message;
+  else if (typeof envelope?.message === 'string') message = envelope.message;
   return new ApiError(status, code, message, body);
 }
 

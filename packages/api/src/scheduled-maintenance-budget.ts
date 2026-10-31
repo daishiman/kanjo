@@ -89,7 +89,7 @@ export const SCHEDULED_MAINTENANCE_D1_PLAN = planScheduledMaintenanceD1Queries({
   // 旧表検出(1) + late write回収(2) + 期限原本enqueue(1) + due scan(1)
   // + 最大3件の共有key保護guard(3)・全参照とjobの同時更新(12)。
   r2_cleanup: 20,
-  // stale rate-limit削除(1) + 期限切れ一時資格情報の明示失効(1)。
+  // stale rate-limit削除(1) + auth audit/artifactの日替わり巡回(1)。
   password_login_rate_limit_cleanup: 2,
   // due scan(1) + 添付の集合更新(1) + 論理削除30日超の完全消去(1) + orphan照合(1)。
   improvement_retention: 4,

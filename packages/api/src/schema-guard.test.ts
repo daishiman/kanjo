@@ -66,7 +66,7 @@ describe('runtime schema guard', () => {
       .at(-1);
     expect(EXPECTED_D1_MIGRATION).toBe(latest);
     // 対応表の CHECK を足す作り直し (spec-classify-bulk-save AC-17)。番号を振り直したらこの行も直す
-    expect(EXPECTED_D1_MIGRATION).toBe('0060_settings_change_log_target.sql');
+    expect(EXPECTED_D1_MIGRATION).toBe('0061_login_v2_better_auth.sql');
     expect(readFileSync(resolve(migrationsDir, EXPECTED_D1_MIGRATION), 'utf8')).not.toHaveLength(0);
   });
 

@@ -22,7 +22,7 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  SESSION_SECRET: 'synthetic-test-secret',
+  BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
 };
 
 let mf: Miniflare;
@@ -197,7 +197,7 @@ describe('GET /api/subscriptions', () => {
     );
   });
 
-  it('パスワード変更前は fence で止まる', async () => {
+  it('廃止済みの一時パスワードflagで現行sessionを遮断しない', async () => {
     const pending = await loginForTest(
       app,
       { ...auth, DB: d1 },
@@ -209,7 +209,7 @@ describe('GET /api/subscriptions', () => {
       },
     );
     const res = await request('/subscriptions', 'GET', undefined, pending);
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(200);
   });
 });
 

@@ -16,7 +16,7 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  SESSION_SECRET: 'synthetic-empty-cashflow-secret',
+  BETTER_AUTH_SECRET: 'synthetic-empty-cashflow-secret',
 };
 
 let miniflare: Miniflare;

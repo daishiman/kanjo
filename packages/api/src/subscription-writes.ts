@@ -931,11 +931,11 @@ export async function listSubscriptionOperations(c: C, limit: number, revision: 
       .prepare(
         `SELECT o.id, o.kind, o.target_vendor_id, o.created_at, o.undone_at, o.before_json, o.base_revision,
             v.name AS target_name, ua.email AS actor_email,
-            (SELECT ub.email FROM subscription_operations x LEFT JOIN users ub ON ub.id = x.actor_user_id
+            (SELECT ub.email FROM subscription_operations x LEFT JOIN "user" ub ON ub.id = x.actor_user_id
               WHERE x.user_id = o.user_id AND x.undoes_id = o.id ORDER BY x.created_at LIMIT 1) AS undone_by_email
           FROM subscription_operations o
           LEFT JOIN sub_vendors v ON v.user_id = o.user_id AND v.id = o.target_vendor_id
-          LEFT JOIN users ua ON ua.id = o.actor_user_id
+          LEFT JOIN "user" ua ON ua.id = o.actor_user_id
           WHERE o.user_id = ?
           ORDER BY o.created_at DESC, o.base_revision DESC
           LIMIT ?`,

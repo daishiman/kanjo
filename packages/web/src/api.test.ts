@@ -42,7 +42,7 @@ describe('401 notification contract', () => {
       'fetch',
       vi.fn(async () =>
         Response.json(
-          { error: { code: 'invalid_credentials', message: '現在のパスワードが違います' } },
+          { error: { code: 'reauth_failed', message: '現在のパスワードが違います' } },
           { status: 401 },
         ),
       ),
@@ -50,11 +50,11 @@ describe('401 notification contract', () => {
     const onUnauthorized = vi.fn();
     window.addEventListener(AUTH_EVENT, onUnauthorized, { once: true });
 
-    const error = await api('/auth/password', undefined, {
-      recoverableUnauthorizedCodes: ['invalid_credentials'],
+    const error = await api('/account/link/start', undefined, {
+      recoverableUnauthorizedCodes: ['reauth_failed'],
     }).catch((reason: unknown) => reason);
 
-    expect(error).toMatchObject({ status: 401, code: 'invalid_credentials' });
+    expect(error).toMatchObject({ status: 401, code: 'reauth_failed' });
     expect(onUnauthorized).not.toHaveBeenCalled();
     window.removeEventListener(AUTH_EVENT, onUnauthorized);
   });
@@ -69,8 +69,8 @@ describe('401 notification contract', () => {
     const onUnauthorized = vi.fn();
     window.addEventListener(AUTH_EVENT, onUnauthorized, { once: true });
 
-    const error = await api('/auth/password', undefined, {
-      recoverableUnauthorizedCodes: ['invalid_credentials'],
+    const error = await api('/account/link/start', undefined, {
+      recoverableUnauthorizedCodes: ['reauth_failed'],
     }).catch((reason: unknown) => reason);
 
     expect(error).toMatchObject({ status: 401, code: 'unauthorized' });

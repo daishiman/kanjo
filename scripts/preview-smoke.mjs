@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn, spawnSync } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
@@ -26,25 +27,31 @@ const port = await new Promise((resolve, reject) => {
   });
 });
 const origin = `http://127.0.0.1:${port}`;
-// 共有パスワードは廃止。smoke も実際のアカウントで入る。
+// 一時D1に合成招待を作り、本人承諾と Better Auth ログインの実経路を通す。
 const previewEmail = 'preview-smoke@example.test';
-const previewPassword = 'preview-smoke-password';
-const seedSqlPath = join(workDir, 'seed-admin.sql');
+const previewPassword = 'Local-Smoke-Credential-2026!';
+const previewInviteToken = randomBytes(32).toString('base64url');
+const seedSqlPath = join(workDir, 'local-invitation.sql');
 
 mkdirSync(stateDir);
 writeFileSync(
   envFile,
-  ['SESSION_SECRET=preview-smoke-session-secret-32bytes', 'ACCESS_AUD=', 'ACCESS_TEAM_DOMAIN=', ''].join(
-    '\n',
-  ),
+  [
+    'BETTER_AUTH_SECRET=synthetic-preview-better-auth-secret-32-chars',
+    'ACCESS_AUD=',
+    'ACCESS_TEAM_DOMAIN=',
+    '',
+  ].join('\n'),
   { mode: 0o600 },
 );
 
-function run(command, args, timeout = 60_000) {
+function run(command, args, timeout = 60_000, successSummary = '') {
   const result = spawnSync(command, args, {
     cwd: projectRoot,
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
+    // 0061までのfresh migration一覧は1MiBを超える。無制限にはせず8MiBで捕捉する。
+    maxBuffer: 8 * 1024 * 1024,
     timeout,
   });
   if (result.status !== 0) {
@@ -52,7 +59,7 @@ function run(command, args, timeout = 60_000) {
     process.stderr.write(result.stderr);
     throw new Error(`${command} ${args.join(' ')} failed (${result.signal ?? result.status})`);
   }
-  process.stdout.write(result.stdout);
+  process.stdout.write(successSummary ? `${successSummary}\n` : result.stdout);
 }
 
 async function waitForServer() {
@@ -122,35 +129,42 @@ const jsonBody = (value) => ({
 
 let server;
 try {
-  run('pnpm', [
-    '--filter',
-    '@kanjo/api',
-    'exec',
-    'wrangler',
-    'd1',
-    'migrations',
-    'apply',
-    'kanjo-db',
-    '--local',
-    '--persist-to',
-    stateDir,
-  ]);
-  // 認証主体はアカウントなので、migration 直後に1件 seed しないとログイン経路を通せない。
-  // ハッシュ生成は seed-admin.mjs の一箇所に持たせ、ここは生成された SQL を流すだけにする。
+  // 0061まで増えたfresh migrationは低速なローカル実行で60秒を超えるため、ここだけ枠を広げる。
+  run(
+    'pnpm',
+    [
+      '--filter',
+      '@kanjo/api',
+      'exec',
+      'wrangler',
+      'd1',
+      'migrations',
+      'apply',
+      'kanjo-db',
+      '--local',
+      '--persist-to',
+      stateDir,
+    ],
+    120_000,
+    'local D1 migrations applied',
+  );
+  // migration直後の空DBに、ローカル専用の合成招待だけを作る。
+  // 平文tokenはstdinだけで渡し、SQLにはSHA-256のみが入る。
   const seedSql = spawnSync(
     'node',
     [
       join(projectRoot, 'scripts', 'seed-admin.mjs'),
       '--print-sql',
-      '--mode',
-      'bootstrap',
+      '--local-fixture',
       '--email',
       previewEmail,
-      '--password-stdin',
+      '--role',
+      'member',
+      '--token-stdin',
     ],
-    { cwd: projectRoot, encoding: 'utf8', input: `${previewPassword}\n` },
+    { cwd: projectRoot, encoding: 'utf8', input: `${previewInviteToken}\n` },
   );
-  if (seedSql.status !== 0) throw new Error(`seed-admin --print-sql failed (${seedSql.status})`);
+  if (seedSql.status !== 0) throw new Error(`local invitation SQL failed (${seedSql.status})`);
   writeFileSync(seedSqlPath, seedSql.stdout, { mode: 0o600 });
   run('pnpm', [
     '--filter',
@@ -200,27 +214,27 @@ try {
     throw new Error(`unauthenticated API smoke failed: ${unauthenticated.status}`);
   }
 
-  const login = await fetch(`${origin}/api/auth/login`, {
+  const invite = await fetch(`${origin}/api/auth/invite/accept`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email: previewEmail, password: previewPassword, remember: true }),
+    body: JSON.stringify({ token: previewInviteToken, password: previewPassword }),
     signal: AbortSignal.timeout(5_000),
   });
-  if (!login.ok) throw new Error(`login smoke failed: ${login.status}`);
-  let cookie = login.headers.get('set-cookie');
-  if (!cookie) throw new Error('login smoke did not issue a session cookie');
+  if (!invite.ok) throw new Error(`invitation acceptance smoke failed: ${invite.status}`);
 
-  // 本番bootstrapと同じ一時資格情報なので、最初に本人パスワードへ変更してから業務APIへ進む。
-  const changedPassword = 'fresh-smoke-credential-2026';
-  const changed = await fetch(`${origin}/api/auth/password`, {
+  const login = await fetch(`${origin}/api/auth/sign-in/email`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', cookie },
-    body: JSON.stringify({ currentPassword: previewPassword, newPassword: changedPassword }),
+    headers: { 'content-type': 'application/json', origin },
+    body: JSON.stringify({ email: previewEmail, password: previewPassword, rememberMe: true }),
     signal: AbortSignal.timeout(5_000),
   });
-  if (!changed.ok) throw new Error(`password change smoke failed: ${changed.status}`);
-  cookie = changed.headers.get('set-cookie');
-  if (!cookie) throw new Error('password change smoke did not refresh the session cookie');
+  if (!login.ok) {
+    const body = await login.json().catch(() => null);
+    const code = typeof body?.code === 'string' ? body.code : (body?.error?.code ?? 'unknown');
+    throw new Error(`login smoke failed: status=${login.status} code=${code}`);
+  }
+  const cookie = (login.headers.getSetCookie?.() ?? []).map((value) => value.split(';', 1)[0]).join('; ');
+  if (!cookie) throw new Error('login smoke did not issue a session cookie');
 
   const me = await fetch(`${origin}/api/auth/me`, {
     headers: { cookie },

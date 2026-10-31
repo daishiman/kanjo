@@ -65,7 +65,7 @@ SQLiteで列の型や制約を変える定型手順（新テーブル作成 → 
 - ランナー: `ubuntu-latest`
 - アプリのNode.js: 22
 - GitHub公式Actions: Node.js 24対応版
-- CIタイムアウト: ジョブごと（静的検査20分 / core・webテスト15分 / apiテスト20分 / ビルド10分 / `verify`5分）
+- CIタイムアウト: ジョブごと（静的検査20分 / core・webテスト15分 / apiテスト30分 / ビルド10分 / `verify`5分）
 - Deploy / Migrateタイムアウト: 20分
 - 権限: `contents: read`のみ
 - `concurrency`で重複実行を制御
@@ -80,6 +80,11 @@ CIの品質ゲートは4つのジョブ（`static-checks` / `test-core-web` / `t
 CIジョブを増やすときは`verify`の`needs`にも足してください。足し忘れると、そのジョブは走るのにmergeを止めません。
 
 ### 2.1 CIテストの測定記録
+
+2026-10-31の再確認では、mainの成功run（2026-10-01、commit `9b5bbf3`）のAPI jobが18分42秒かかり、
+従来20分枠の余白は78秒だった。Login v2の認証回帰を追加し、ローカルの認証coverage6ファイルだけでも
+140.80秒を実測したため、API jobの実行環境枠を30分へ補正した。assert・対象件数・並列度・必須verifyは維持する。
+アプリの初期JS予算110KiBとは別の枠であり、JSの閾値引上げや検査省略ではない。
 
 以下は2026-09-03時点のローカル10コア環境、API38ファイル・485件で行った**過去の比較記録**であり、現在の設定値の正本ではありません。
 
@@ -120,7 +125,7 @@ Miniflareがファイルごとにworkerdプロセスとproxy socketを開きま�
 - GitHub Actionsのrunner、Vitest、Miniflareまたはworkerdの版を変更した
 - ルートの`--workspace-concurrency=1`を変更した
 - `EADDRNOTAVAIL`などsocket・port関連の失敗が再発した
-- `test-api`が20分へ近づく、または打ち切られた
+- `test-api`が現行の実行枠へ近づく、または打ち切られた
 
 ### 2.2 CIジョブのタイムアウトの決め方
 
@@ -212,6 +217,7 @@ Cloudflare画面での取得、最小権限の選択、GitHubへの登録、接�
 gh secret set CLOUDFLARE_API_TOKEN --env production
 gh secret set CLOUDFLARE_ACCOUNT_ID --env production
 gh variable set APP_URL --body "https://本番URL"
+gh variable set MAIL_FROM --body "Focus Ledger <no-reply@検証済みドメイン>"
 ```
 
 Cloudflare APIトークンは対象アカウント1つに限定し、必要な権限だけを付与します。
@@ -222,18 +228,21 @@ Cloudflare APIトークンは対象アカウント1つに限定し、必要な�
 | D1: Edit | `Migrate`によるmigration適用 |
 | Workers R2 Storage: Edit | R2を使う処理 |
 
-`APP_URL`は公開URLなのでGitHub Variable、APIトークンとAccount IDは`production` Environment secretsとして扱います。
+`APP_URL`と`MAIL_FROM`は公開固定値なのでGitHub Variable、APIトークンとAccount IDは`production` Environment secretsとして扱います。Deployは`APP_URL`をWorkerの`BETTER_AUTH_URL`へ渡し、`MAIL_FROM`が未設定・予約ドメインなら配信前に停止します。
 
 ### 4.2 Workerが実行時に使う秘密値
 
 次の値はGitHub Actions用の認証情報とは別物です。Cloudflare Workerのsecretとして登録します。
-共有パスワード(旧`AUTH_PASSWORD`)は廃止したため、登録するsecretはセッション署名鍵の1本だけです。
+4つの値はすべて値を表示せず、対話入力またはstdinから登録します。
 
 ```bash
-pnpm --filter @kanjo/api exec wrangler secret put SESSION_SECRET
+openssl rand -hex 32 | pnpm --filter @kanjo/api exec wrangler secret put BETTER_AUTH_SECRET
+pnpm --filter @kanjo/api exec wrangler secret put GOOGLE_CLIENT_ID
+pnpm --filter @kanjo/api exec wrangler secret put GOOGLE_CLIENT_SECRET
+pnpm --filter @kanjo/api exec wrangler secret put RESEND_API_KEY
 ```
 
-アカウントの作成・停止・一時パスワード再発行と、`SESSION_SECRET`入れ替え時の影響は
+Google OAuthのredirect URI、利用者の招待・停止、パスワード再設定、`BETTER_AUTH_SECRET`ローテーションの影響は
 [`アカウントログイン運用`](runbooks/account-login-operations.md)が正本です。
 
 ローカル開発では`packages/api/.dev.vars`を使います。このファイルをgit操作に含めたり、`.gitignore`を強制追加で回避したりしてはいけません。
@@ -328,16 +337,16 @@ manifestはGit管理対象へ追加せず、incident evidenceとして非公開�
 #### Release A（現行）/ Release B（将来）の固定順序
 
 廃止した証憑機能のR2 object keyを失わずに専用テーブルを落とす変更は、二つの独立した変更へ分けます。
-現在のrepository、schema guard、local previewのmigration headはRelease Aの
-`0039_account_login.sql`です。Release Bのmigrationは現行配布物へ置きません。
+現在のrepository、schema guard、local previewのmigration headは
+`0050_login_v2_better_auth.sql`です。廃止した証憑用テーブルのdrop migrationは現行配布物へ置きません。
 
 1. **Release A**: `0038_prepare_r2_cleanup.sql`、共通`r2_cleanup` processor、旧添付write停止、廃止routeを同じ互換アプリ世代として反映する。
 2. 夜間processorを必要回数動かす。processorは旧Worker isolateによるlate writeを旧2表から共通台帳へ冪等回収してから処理する。旧専用6テーブルは物理D1に残り得るが、新WorkerのAPI/Drizzleからは参照・更新しない。
 3. 将来のRelease B変更では`.github/scripts/verify-r2-cleanup-release-gate.mjs`をMigrateのmanifest検証から実行し、`r2_cleanup_jobs`の`pending` / `retry` / `dead`と旧`attachments`・`attachment_cleanup_jobs`の残件がすべて0件であることを検査する。手動目視や一部stateだけの確認で代用せず、R2 keyは証跡へ出さない。
 4. 将来のdrop migration適用直前のD1 Time Travel bookmarkと直前deployment versionを対で記録し、復旧単位を確定する。
-5. **Release B**: 上記ゲートを通った将来の別変更で、次の未使用番号 (`0040` 以降) にdrop migrationを追加し、明示承認で適用する。
+5. **Release B**: 上記ゲートを通った将来の別変更で、次の未使用番号 (`0051` 以降) にdrop migrationを追加し、明示承認で適用する。
 
-account-loginの0039と、将来のdrop migrationを同じ変更・同じpending集合へ置くことを禁止します。drop migrationは別の明示承認でだけ適用します。
+Better Auth切替の0050と、将来のdrop migrationを同じpending集合へ置くことを禁止します。drop migrationは別の明示承認でだけ適用します。
 
 ## 7. スモークテスト
 
@@ -432,11 +441,11 @@ pnpm --filter @kanjo/api exec wrangler d1 time-travel restore kanjo-db --bookmar
 
 本番D1のrestore、手動`UPDATE` / `DELETE`、リソース削除は通常運用に含めず、実行前に必ず対象と影響を確認します。
 
-### 10.3 将来のRelease B（0040以降）適用後の復旧
+### 10.3 将来のRelease B（0051以降）適用後の復旧
 
 将来のdrop migrationにはreverse migrationを用意しません。適用後に旧Workerだけをrollbackすると、旧Workerが既に無いテーブルを参照するため禁止します。
 
-復旧が必要な場合は、0039適用直前に記録したD1 Time Travel bookmarkとRelease Aの互換アプリ世代を一体で使います。復元可能期間外などでその組を利用できない場合は、逆DDLや旧Worker単体復帰を行わずforward-fixします。
+復旧が必要な場合は、drop migration適用直前に記録したD1 Time Travel bookmarkと直前の互換アプリ世代を一体で使います。復元可能期間外などでその組を利用できない場合は、逆DDLや旧Worker単体復帰を行わずforward-fixします。
 
 ## 10.5 夜間メンテナンスへ相乗りするジョブ
 
@@ -456,13 +465,13 @@ pnpm --filter @kanjo/api exec wrangler d1 time-travel restore kanjo-db --bookmar
 - [ ] `production` Environmentが`main`だけを許可している
 - [ ] Cloudflare APIトークンを最小権限・単一アカウントに限定した
 - [ ] GitHub secretsと`APP_URL`をリポジトリ所有者本人が登録した
-- [ ] Worker secretの`SESSION_SECRET`を登録した(共有パスワードは廃止済みで登録対象ではない)
-- [ ] 初期管理者を1件作成し、資格情報を運用者へ引き渡した
+- [ ] Worker secretの`BETTER_AUTH_SECRET` / `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `RESEND_API_KEY`を登録した
+- [ ] 既存管理者の移行ログインを確認し、新規利用者は管理画面の招待から本人登録した
 - [ ] Cloudflare Workers BuildsのGit連携を無効にした
 - [ ] `Deploy`が破壊的migrationと判定不能を配信前に停止し、追加だけを自動適用する
 - [ ] 自動適用がTime Travelの復元地点を記録してから行われ、後条件のD1検査で未適用ゼロを確認する
 - [ ] D1 migrationがコードデプロイより先に適用され、逆順が起こりえない
-- [ ] Release Aでは0038だけを先に適用済みで、現行headは`0039_account_login.sql`、破壊的なRelease Bの`0040_drop_tax_and_receipt_tables.sql`を配布物に含めていない
+- [ ] 現行headは`0050_login_v2_better_auth.sql`で、証憑用テーブルを落とす将来のRelease B migrationを配布物に含めていない
 - [ ] 将来のRelease Bでは機械ゲートがcleanupのpending/retry/deadと旧`attachments`・`attachment_cleanup_jobs`の残件0を確認し、適用前復元点を記録している
 - [ ] `Deploy`と`Migrate`が同じconcurrency群に属し、本番D1への書き換えが重ならない
 - [ ] `Migrate`がrepository head・ordered migrations digest・remote pendingを適用直前に再照合する

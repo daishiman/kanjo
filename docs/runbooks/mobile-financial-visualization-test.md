@@ -22,7 +22,7 @@
    test -f packages/api/.dev.vars || cp packages/api/.dev.vars.example packages/api/.dev.vars
    ```
 
-2. `packages/api/.dev.vars` の `SESSION_SECRET` に次で作った値を入れる。
+2. `packages/api/.dev.vars` の `BETTER_AUTH_SECRET` に次で作った値を入れる。
 
    ```sh
    openssl rand -hex 32
@@ -31,13 +31,13 @@
 3. `ACCESS_AUD` と `ACCESS_TEAM_DOMAIN` は空のままにする。値はチャット、
    画面キャプチャ、tracked fileのどこにも貼らない。
 
-ログイン情報は次の通りです。
+ローカルidentityは、preview起動後に招待から本人登録します。
 
 | 項目 | ローカルテスト値 |
 |---|---|
 | URL | `http://localhost:8787/` |
 | メールアドレス | `admin@kanjo.local` |
-| パスワード | `scripts/seed-admin.mjs` が作るローカルfixture値 |
+| パスワード | 招待承諾画面で自分が決めた値 |
 
 `packages/api/.dev.vars` はGitのignore対象です。読み上げや画面共有をせず、
 このマシンだけで使います。
@@ -64,22 +64,33 @@ curl -sS -o /dev/null -w 'auth %{http_code}\n' http://localhost:8787/api/auth/me
 
 期待値は `SPA 200`、`auth 401`です。
 
-## 4. 匿名テストデータを投入
+## 4. ローカル招待を承諾し、匿名テストデータを投入
 
-起動したterminalはそのままにし、別のterminalで次を実行します。
+起動したterminalはそのままにし、別のterminalでローカル専用の招待を作ります。
+このscriptは初期パスワードや利用者行を作らず、D1にハッシュ済みの招待tokenだけを保存します。
+管理者はTOTPを通すまでセッションが出ないため、データ投入には member の招待を別に作ります。
 
 ```sh
-set -a
-source packages/api/.dev.vars
-set +a
-node scripts/seed-local.mjs
-unset SESSION_SECRET
+node scripts/seed-admin.mjs
+node scripts/seed-admin.mjs --email member@kanjo.local --role member
 ```
 
-値をcommand lineに埋め込まず、ignore済み設定から現在のshellへだけ読みます。
-shellの実行トレース (`set -x`) は無効にしてください。このscriptは固定seedから
-`samples/sample-mf-2025.csv`等の架空明細だけを生成し、同じlocalhost専用
-identityに取り込みます。再実行時も同じ内容に収束します。
+表示されたlocalhostの承諾URLをそれぞれChromeで開き、自分で決めたパスワードを登録します。
+管理者は続けてTOTPを設定し、復旧コードはこのローカル検証の安全な保管場所にだけ保存します。
+
+登録した member のidentityで匿名データを取り込みます。パスワードは非表示で読み、argvや履歴へ入れません。
+
+```sh
+export KANJO_SEED_EMAIL=member@kanjo.local
+read -rs 'KANJO_SEED_PASSWORD?Local password: '
+export KANJO_SEED_PASSWORD
+node scripts/seed-local.mjs
+unset KANJO_SEED_EMAIL KANJO_SEED_PASSWORD
+```
+
+shellの実行トレース (`set -x`) は無効にしてください。`seed-local.mjs`は固定seedから
+`samples/sample-mf-2025.csv`等の架空明細だけを生成し、招待承諾済みのlocalhost専用
+identityでBetter Authへログインして取り込みます。再実行時も同じ内容に収束します。
 
 8787以外で起動した場合だけ、読み込み前に次を追加します。
 
@@ -87,10 +98,13 @@ identityに取り込みます。再実行時も同じ内容に収束します。
 export KANJO_BASE_URL=http://localhost:<terminalに表示されたport>
 ```
 
+APIと画面を別portで起動した場合 (Viteのproxy経由など) は、`BETTER_AUTH_URL` と同じ
+画面側のoriginを `KANJO_SEED_ORIGIN` に渡します。未指定なら `KANJO_BASE_URL` のoriginを使います。
+
 ## 5. ログイン
 
-Chromeでlocalhost URLを開き、`admin@kanjo.local` とローカルfixtureのパスワードで
-ログインします。ログイン後、ホームに架空の金額が表示されれば準備完了です。
+Chromeでlocalhost URLを開き、`admin@kanjo.local` と招待承諾時に自分が決めたパスワードで
+ログインします。TOTPを求められたら登録済みのコードを入力します。ホームに架空の金額が表示されれば準備完了です。
 
 ## 6. モバイル画面の確認
 
@@ -162,8 +176,8 @@ pnpm --filter @kanjo/web build
 node packages/web/scripts/check-mobile-financial-layout.mjs
 ```
 
-`preview:smoke` は一時D1/R2、一時的な架空パスワードとセッション、架空現金明細だけを
-使います。migration、SPA、未認証ガード、ログイン、現金明細の作成→一覧→削除→空一覧と、
+`preview:smoke` は一時D1/R2、一時的な合成招待・架空パスワード・セッション、架空現金明細だけを
+使います。migration、SPA、未認証ガード、招待承諾、Better Authログイン、現金明細の作成→一覧→削除→空一覧と、
 廃止済み添付・税申告APIがJSON 404を返すことを確認して自動停止します。証憑の登録・取得・削除は
 行いません。一時的な認証値は表示せず、完了時に一時保管先ごと削除します。
 
@@ -171,9 +185,12 @@ node packages/web/scripts/check-mobile-financial-layout.mjs
 
 | 症状 | 確認すること |
 |---|---|
-| `auth_not_configured` | `packages/api/.dev.vars` に `SESSION_SECRET` があるか確認し、previewを再起動する |
-| パスワードが違う | ローカルfixtureを再seedし、失敗を繰り返さない |
-| seedが401 | `source packages/api/.dev.vars` 後に実行したか、`KANJO_BASE_URL` のportが正しいか確認する |
+| `auth_not_configured` | `packages/api/.dev.vars` に `BETTER_AUTH_SECRET` があるか確認し、previewを再起動する |
+| 招待が利用できない | `node scripts/seed-admin.mjs` を再実行し、最後に表示されたlocalhost URLを開く |
+| パスワードが違う | 招待承諾時に自分が決めた値を非表示入力し、失敗を繰り返さない |
+| seedが401 | `KANJO_SEED_EMAIL` / `KANJO_SEED_PASSWORD` と `KANJO_BASE_URL` のportを確認する |
+| seedが403 (`MISSING_OR_NULL_ORIGIN` 等) | `KANJO_SEED_ORIGIN` を `BETTER_AUTH_URL` と同じoriginにする |
+| seedが「TOTPを通すまで」で止まる | `KANJO_SEED_EMAIL` を admin ではなく member の identity にする |
 | 金額が空 | seed commandの「取込」がすべて成功したか確認し、ページをreloadする |
 | グラフが白い | hard reload後も続く場合はrender testを実行し、canvasの大きさとbitmapのFAILを確認する |
 | 画面全体が横に動く | 発生route、viewport、zoom、横溢れした要素のDevTools screenshotを記録する |

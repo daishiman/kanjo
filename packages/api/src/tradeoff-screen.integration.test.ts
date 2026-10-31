@@ -34,7 +34,7 @@ const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../..
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  SESSION_SECRET: 'synthetic-test-secret',
+  BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
 };
 const PERIOD = '?from=2026-01&to=2026-06';
 const RENT = tradeoffCandidateKey('地代家賃', '架空不動産');
@@ -226,7 +226,7 @@ describe('GET /api/tradeoff', () => {
     expect(res.status).toBe(401);
   });
 
-  it('パスワード変更前は fence で止まる', async () => {
+  it('停止中の利用者は401で止まる', async () => {
     const pending = await loginForTest(
       app,
       { ...auth, DB: d1 },
@@ -234,11 +234,11 @@ describe('GET /api/tradeoff', () => {
         id: 'temp-user',
         email: 'temp-user@example.test',
         password: 'Synthetic-Temp-Password-1',
-        mustChangePassword: true,
+        status: 'suspended',
       },
     );
     const res = await request(`/tradeoff${PERIOD}`, 'GET', undefined, pending);
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(401);
   });
 });
 

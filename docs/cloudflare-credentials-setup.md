@@ -61,7 +61,11 @@ Cloudflareでは1人が複数Accountへ所属できます。共有Accountでは�
 | `CLOUDFLARE_API_TOKEN` | 対象AccountのAccount API Tokens | GitHub `production` Environment secret | 秘密 |
 | `CLOUDFLARE_ACCOUNT_ID` | 対象Account Home | GitHub `production` Environment secret | secretとして管理 |
 | `APP_URL` | WorkerのDomains | GitHub Repository variable | 公開情報 |
-| `SESSION_SECRET` | ローカルで安全に生成 | Cloudflare Worker secret | 秘密 |
+| `MAIL_FROM` | Resendで検証済みの送信元 | GitHub Repository variable | 公開情報 |
+| `BETTER_AUTH_SECRET` | helperが安全に生成 | Cloudflare Worker secret | 秘密 |
+| `GOOGLE_CLIENT_ID` | Google Auth Platform | Cloudflare Worker secret | 秘密に準じて管理 |
+| `GOOGLE_CLIENT_SECRET` | Google Auth Platform | Cloudflare Worker secret | 秘密 |
+| `RESEND_API_KEY` | Resend | Cloudflare Worker secret | 秘密 |
 
 取得・登録しないもの:
 
@@ -237,17 +241,20 @@ account-owned tokenは通常`cfat_`で始まります。`cfut_`はuser-owned、`
 node .cloudflare/setup-production.mjs
 ```
 
-画面の案内に従い、Account IDとAPI Tokenを貼り付けます。入力文字は表示されません。helperは次を行います。
+画面の案内に従い、Account ID、API Token、Google OAuthのClient ID/Secret、Resend API Keyと、Resendで検証済みの`MAIL_FROM`を入力します。
+秘密値の入力文字は表示されません。helperは次を行います。
 
 - Tokenのactive状態を確認
 - GitHub `production` Environmentを作成・確認
 - `main`だけを本番許可
 - `CLOUDFLARE_ACCOUNT_ID`と`CLOUDFLARE_API_TOKEN`をEnvironment secretへ非表示登録
-- `APP_URL`をRepository variableへ登録
+- `APP_URL`と`MAIL_FROM`をRepository variableへ登録（デプロイ時に`BETTER_AUTH_URL`/`MAIL_FROM` bindingへ渡す）
 - Worker secret名を確認し、**不足しているものだけ**登録
 - secret値をファイル、ログ、コマンド引数へ残さない
 
-既存Worker secretがある場合はローテーションせず、そのまま残します。
+既存Worker secretがある場合はローテーションせず、そのまま残します。意図して更新する場合だけ、
+`--rotate-better-auth-secret`または`--replace-provider-secrets`を付けます。前者はセッションとTOTP暗号化鍵に影響するため、
+[`account-login-operations.md`](runbooks/account-login-operations.md)の保守計画なしに実行しません。
 
 既存`production`のbranch policyが想定外の場合、helperはreviewerや待機時間を上書きせず停止します。既存設定を残したまま変更方法を判断するため、secret値ではなくエラー文だけをAIへ伝えます。
 
@@ -269,7 +276,7 @@ node .cloudflare/setup-production.mjs
 APP_URL="https://kanjo-console.daishimanju.workers.dev" bash .github/scripts/smoke.sh
 ```
 
-`APP_URL`は公開情報なのでRepository Variableです。Environment secretへ入れません。
+`APP_URL`と検証済み送信元`MAIL_FROM`は公開情報なのでRepository Variableです。Environment secretへ入れません。
 
 ## 6. GitHub production Environment
 
@@ -297,10 +304,20 @@ pnpm --dir packages/api exec wrangler secret list
 ```
 
 
-### 7.1 `SESSION_SECRET`
+### 7.1 Better Authに必要な4値
 
-helperは不足時だけ32バイトの乱数を生成して登録します。値は表示しません。既存値は保持します。変更すると既存セッションが無効になります。
-共有パスワードの`AUTH_PASSWORD`はhelperの生成・登録対象ではありません。切替と旧secret削除の順序は[`account-login-operations.md`](runbooks/account-login-operations.md#3-本番を共有パスワードから切り替える)を正本とします。
+helperは`BETTER_AUTH_SECRET`が無いときだけ32バイトの乱数を生成し、値を表示せず登録します。
+GoogleのClient ID/SecretとResend API Keyは、未登録のものだけを非表示で対話入力します。
+
+登録後は値を表示せず、名前だけを確認します。
+
+```bash
+pnpm --dir packages/api exec wrangler secret list
+```
+
+合格条件は`BETTER_AUTH_SECRET`、`GOOGLE_CLIENT_ID`、`GOOGLE_CLIENT_SECRET`、`RESEND_API_KEY`の4名があることです。
+Google Cloud Consoleの許可済みredirect URIは`https://<配信元>/api/auth/callback/google`に一致させます。
+OAuthクライアントと同意画面の作り方は[`Google ログインの設定`](runbooks/google-oauth-setup.md)を参照します。
 
 
 コードをrollbackしてもWorker secretは戻りません。変更前の値が必要なsecretはパスワードマネージャーで管理します。
@@ -377,8 +394,8 @@ secret値をActionsログへ出しません。
 |---|---|
 | Workerコード | `wrangler deployments list`後、所有者判断で`wrangler rollback` |
 | API Token | 新Token確認前なら旧Tokenを残す。漏えい時は即失効 |
-| 利用者パスワード | 旧値をsecretへ再登録せず、管理者による一時パスワード再発行またはbreak-glass resetで復旧 |
-| セッション署名 | 旧値を再登録。なければ新規発行し全員再ログイン |
+| 利用者パスワード | 旧値をsecretとして扱わず、本人がログイン画面から再設定メールを依頼 |
+| Better Auth署名・暗号化鍵 | 旧値を再登録。なければ全員の再ログインと管理者のMFA再登録を計画して新規発行 |
 | D1 | コードrollbackでは戻らない。事前に確認したTime Travel/バックアップから所有者判断で復旧 |
 | R2公開設定 | 公開を直ちに無効化し、アクセス履歴を確認 |
 
@@ -395,7 +412,7 @@ secret値をActionsログへ出しません。
 - [ ] 不要なKV・全Zone・全Account権限なし
 - [ ] GitHub Environment secrets 2件とRepository variable 1件を確認
 - [ ] `production`は`main`だけを許可
-- [ ] `SESSION_SECRET`をWorkerへ登録
+- [ ] `BETTER_AUTH_SECRET` / `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `RESEND_API_KEY`をWorkerへ登録
 - [ ] CI成功commitとDeploy対象commitが一致
 - [ ] 30秒後・90秒後のsmokeが両方成功
 - [ ] 直前の正常deploymentを特定できる

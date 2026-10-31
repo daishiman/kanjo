@@ -106,3 +106,88 @@
 - 参照のブランド名と匿名fixtureのベンダー名・金額は一致させない。構造・密度・操作状態だけを視覚比較する。
 
 final result: passed
+
+---
+
+# Design QA — Login v2
+
+- Source: `design/FINAL-UI/images/01-login-v2.png`
+- Implementation: `docs/login-v2/evidence/login-1024x1536-cdp.png`
+- Responsive evidence: `docs/login-v2/evidence/login-375x812-cdp.png`, `login-768x1024-cdp.png`, `login-1600x1000-cdp.png`
+- Reference viewport / pixels: 1024 x 1536 / 1024 x 1536
+- Implementation viewport / pixels: 1024 x 1536 / 1024 x 1536
+- Device scale factor: 1
+- State: initial login, email focused, password intentionally empty, unauthenticated service-status API unavailable locally
+
+## Comparison
+
+- Full frame: the one-column public shell, brand, 590px card, information order, trust section, and three-part footer match the reference hierarchy.
+- Authentication focus: the Google mark is 28px with a computed 10px gap, fields share the common input surface, the visual checkbox is 24px over a 44px input and control row, and the footer separators compute to 1px on desktop.
+- Responsive focus: at 375px the card is 343px wide with 16px outer gutters; document and body widths are both 375px, so there is no horizontal overflow. Footer separators collapse at the mobile breakpoint.
+- Intentional differences: the password is empty, focus is visibly outlined, the background and typography use the approved project tokens, and local service status is shown as unavailable instead of copying the static mock state.
+
+## Iteration history
+
+1. Baseline found an unstyled email input, ineffective Google flex gap, a 44px visible checkbox, missing footer separators, and underscaled card/type hierarchy.
+2. The common input selector, login layout, checkbox hit-area split, footer, card width, type hierarchy, and authentication busy/error states were corrected.
+3. Google brand colors were moved from application source to the official static mark, login radii were unified to `--radius`, and the 375px form heading was tightened to the approved `--fs-lg` step.
+
+## Final result
+
+passed
+
+## 30思考法による最終監査
+
+思考リセット後、論理・構造、メタ・発想、システム・戦略の3系統を並列に検証し、実装・仕様・テストへ反映した。
+
+1. **批判的思考**: 既存認証を前提にせず、公開可能な認証面をdefault-denyで再判定した。
+2. **演繹思考**: 「招待された本人だけが登録できる」制約から、一回限りの招待grantと原子的消費を導いた。
+3. **帰納的思考**: 認証分岐に反復していたtoken・rate-limit・audit処理を共通モジュールへ集約した。
+4. **アブダクション**: セッション挙動の不整合を旧認証とBetter Authの二重管理が原因と推定し、旧経路を撤去した。
+5. **垂直思考**: 表示差ではなく、認証・設定・管理画面に分散したsource of truthまで掘り下げて解消した。
+6. **要素分解**: UI、API、DB、メール、運用、テスト、仕様へ分けて独立検証した。
+7. **MECE**: 未認証、認証中、MFA、連携、管理、保守の状態を重複なく網羅した。
+8. **2軸思考**: 「未認証/認証済み」と「参照/更新」の2軸でendpointの許可範囲を整理した。
+9. **プロセス思考**: 招待→承諾→ログイン→MFA→セッション、および再設定・連携・失効の順序を検証した。
+10. **メタ思考**: 実装だけでなく、画像証跡、契約テスト、統合テスト、運用手順を監査可能な形にした。
+11. **抽象化思考**: 招待・再設定・MFA設定・連携を「期限付き一回限りgrant」として共通化した。
+12. **ダブル・ループ思考**: 管理者が仮パスワードを発行する前提自体を廃止し、本人招待方式へ置き換えた。
+13. **ブレインストーミング**: 複数案から、画面追加を抑えつつ既存設定画面へ管理機能を統合する案を採用した。
+14. **水平思考**: ログイン専用部品を公開画面・設定・利用者管理で共有できるauth featureへ再配置した。
+15. **逆説思考**: 機能を増やすだけでなく、不要な認証endpointと旧rate-limit実装を削ることで安全性を上げた。
+16. **類推思考**: one-time capabilityの設計を招待、再設定、MFA、アカウント連携へ一貫適用した。
+17. **if思考**: 同時承諾、取消中の再送、二重作成、昇格中のsession残存など競合シナリオを試験した。
+18. **素人思考**: 初見でも招待、ログイン保持、再設定、MFA、連携の次の操作が分かる文言と導線にした。
+19. **システム思考**: UI、Worker、D1、メール、Cloudflare設定、CI、runbookの接続を通しで確認した。
+20. **因果関係分析**: 列挙可能な応答、再利用可能token、残存sessionが不正利用へ至る因果を遮断した。
+21. **因果ループ**: 認証失敗→rate-limit/audit→運用確認→失効/復旧という監視・改善ループを整備した。
+22. **トレードオン思考**: セキュリティと利便性を両立し、保持30日/非保持12時間とMFA境界を明示した。
+23. **プラスサム思考**: 共通Input・auth feature・共通guardにより、UI統一と保守性とテスト容易性を同時に上げた。
+24. **価値提案思考**: 「招待された利用者が迷わず安全に利用開始できる」を画面と認証契約の中心に置いた。
+25. **戦略的思考**: Better Authをセッションの正本にし、アプリ固有の招待・権限・監査だけを境界層へ残した。
+26. **why思考**: 不整合の根本原因を5段階で追い、最終的に二重認証経路と分散責務へ到達した。
+27. **改善思考**: 重複削除、component化、原子更新、fail-closed設定、運用手順まで一体で改善した。
+28. **仮説思考**: 各リスクを再現可能な仮説に変え、境界・競合・統合・DOMテストで反証した。
+29. **論点思考**: pixel一致だけでなく、安全な認証完了と保守可能な単一構造を本質的論点とした。
+30. **KJ法**: 発見事項をUI、認証境界、データ整合、運用、検証、仕様の6群へ統合し、重複を除いた。
+
+## 検証4条件
+
+| 条件 | 判定 | 根拠 |
+|---|---|---|
+| 矛盾なし | PASS | Better Authをsessionの正本に統一し、旧認証経路を削除 |
+| 漏れなし | PASS | 招待、Google/パスワード、再設定、MFA、連携、管理、監査、保守を実装・試験 |
+| 整合性あり | PASS | auth feature、共通部品、design token、endpoint guard、仕様用語を統一 |
+| 依存関係整合 | PASS | pageへの逆依存を除去し、UI→API→DB→運用の依存とgraph lineageを検証 |
+
+## Login v2 統合後の再確認（2026-10-31）
+
+上の24pxチェックは統合前の履歴。最新mainの共通SelectionCheckboxへ統一し、最終表示は20×20px、
+native操作領域は実Chromeで520×44pxと測定した。ログイン専用のnative寸法や疑似チェック描画を重ねない。
+
+- 最新画像: `docs/login-v2/evidence/final-login-1024x1536.png`、`final-login-375x812.png`
+- 実操作の記録: `docs/login-v2/evidence/browser-acceptance.json`（8項目成功）
+- 375pxで横はみ出しなし。未認証のヘルプ/プライバシー、next付きログイン、設定の本人欄、ログアウト、誤パスワード表示を確認。
+- ログイン画面は即表示し、AuthenticatedAppは認証後にだけ読む。初期JSは86.40KiB/110KiB。
+- 既存ブラウザや個人profileは使わず、新規の一時Chrome profile・合成利用者・一時D1だけで確認。
+- 実Google認証、実メール配送、本番の受入とCore Web Vitalsは未確認。

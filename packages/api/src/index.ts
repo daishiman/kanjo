@@ -1,3 +1,5 @@
+import { settingsJsonFromBackup, summarizeSettings, validateSettingsJson } from '@kanjo/core';
+import { getSessionCookie } from 'better-auth/cookies';
 /**
  * kanjo-console Worker エントリ。
  * - /api/auth/*: ログイン(アプリ内セッション)。Access併用時は不要だが常設(冪等)
@@ -5,25 +7,41 @@
  * - それ以外: Workers Assets がSPAを配信(データを含まないため公開)
  * - scheduled: 夜間バックアップ(統合JSON→R2 backups/、JST 2:00、30日保持)
  */
-import { settingsJsonFromBackup, summarizeSettings, validateSettingsJson } from '@kanjo/core';
-import { Hono } from 'hono';
+import { Hono, type MiddlewareHandler } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { type RequestIdVariables, requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { runAuditDetailRetention, runAuditHeaderRetention } from './audit-log.js';
-import { type AuthEnv, type AuthVariables, authGuard, mustChangePasswordFence } from './auth.js';
+import { writeLegacyAuthAudit } from './auth-audit.js';
+import { runScheduledAuthCleanup } from './auth-cleanup.js';
+import {
+  AUTH_RATE_LIMIT_ERROR,
+  authRetryAfterSeconds,
+  clearAuthRateLimit,
+  inspectAuthRateLimit,
+  recordAuthRateLimitFailure,
+} from './auth-rate-limit.js';
+import {
+  type AuthEnv,
+  type AuthVariables,
+  authGuard,
+  authModePolicy,
+  authRuntime,
+  authenticateAccessUser,
+  resolveAuthMode,
+} from './auth.js';
+import { compensateFailedGoogleProvisioning } from './better-auth.js';
 import { canonicalMutationFence } from './canonical-mutation-fence.js';
 import { cashPurgeLogLine, runCashSoftDeletePurge } from './cash-purge.js';
 import { runDeletionRetention } from './deletion-retention.js';
 import { importOriginGuard, runImportStagingCleanup } from './import-rate-limit.js';
-import { cleanupStalePasswordLoginRateLimits } from './login-rate-limit.js';
 import { PRIVATE_NO_STORE } from './public-validation.js';
 import { runR2Cleanup } from './r2-cleanup.js';
+import { accountRoute } from './routes/account.js';
 import { adminUsersRoute } from './routes/admin-users.js';
 import { aiAgentRoute, aiRoute } from './routes/ai.js';
 import { analysisHubRoute } from './routes/analysis-hub.js';
 import { analyticsRoute } from './routes/analytics.js';
-import { authRoute } from './routes/auth.js';
 import { backupsRoute, listAllBackups } from './routes/backups.js';
 import { balancesRoute } from './routes/balances.js';
 import { budgetPlansRoute } from './routes/budget-plans.js';
@@ -38,6 +56,7 @@ import { reconciliationRoute } from './routes/reconciliation.js';
 import { savedFiltersRoute } from './routes/saved-filters.js';
 import { settingsScreenRoute } from './routes/settings-screen.js';
 import { settingsRoute } from './routes/settings.js';
+import { statusRoute } from './routes/status.js';
 import { subsRoute } from './routes/subs.js';
 import { taxAccountMapRoute } from './routes/tax-account-map.js';
 import { totalCashflowRoute } from './routes/total-cashflow.js';
@@ -49,11 +68,26 @@ import {
 } from './scheduled-maintenance-budget.js';
 import { runtimeSchemaGuard } from './schema-guard.js';
 import { getDb, loadBackupPayload } from './store.js';
-import { cleanupExpiredTemporaryPasswords } from './users.js';
+import { findAccountUserDetails, findUserByEmail, normalizeEmail } from './users.js';
+
+/** Better AuthのOAuth失敗はHTTP 302 + Locationのerror queryで表される。 */
+export function isFailedOAuthCallbackResponse(response: Response, requestUrl: string): boolean {
+  if (response.status >= 400) return true;
+  if (response.status < 300 || response.status >= 400) return false;
+  const location = response.headers.get('Location');
+  if (!location) return true;
+  try {
+    // 監査分類のために解釈するだけで、このURLへfetch/再redirectはしない。
+    return new URL(location, requestUrl).searchParams.has('error');
+  } catch {
+    return true;
+  }
+}
 
 type Ctx = { Bindings: AuthEnv; Variables: AuthVariables & RequestIdVariables };
 
 export const app = new Hono<Ctx>();
+const apiSchemaGuard = runtimeSchemaGuard as unknown as MiddlewareHandler<Ctx>;
 
 // 外から渡されたIDは短い安全文字だけを受理し、それ以外はUUIDへ置き換える。
 // 失敗応答とログを同じIDで結び、内部値をクライアントへ出さずに調査可能にする。
@@ -92,6 +126,12 @@ app.use(
 
 /* -------- 認証エンドポイント(未認証で到達可能なのはここだけ) -------- */
 
+// 内部構成を含めない公開probe。authRuntime/authGuardより先に確定する。
+app.route('/api', statusRoute);
+
+// Access/Better Authの選択を、公開ログイン入口・schema gate・保護APIより上流で1回だけ確定する。
+app.use('/api/*', authModePolicy());
+
 // 公開JSON endpointを巨大bodyの読み込み前に止める。CSV/画像uploadは別routeの上限を使う。
 app.use(
   '/api/auth/*',
@@ -101,7 +141,171 @@ app.use(
       c.json({ error: { code: 'payload_too_large', message: 'リクエストが大きすぎます' } }, 413),
   }),
 );
-app.route('/api', authRoute);
+
+// auth tableへ触る前に0059を確認する。CookieもBearerも無い保護routeだけは、
+// D1へ触れず従来どおりauthGuardの401へ落とす。
+app.use('/api/*', async (c, next) => {
+  const needsSchema =
+    c.req.path.startsWith('/api/auth/') ||
+    Boolean(getSessionCookie(c.req.raw, { cookiePrefix: 'kanjo' })) ||
+    Boolean(c.req.header('Authorization')) ||
+    resolveAuthMode(c.env) === 'cloudflare-access';
+  if (!needsSchema) return next();
+  return apiSchemaGuard(c, next);
+});
+
+// 1要求につき1個だけBetter Authを組み、handlerとauthGuardで共有する。
+app.use('/api/*', authRuntime());
+
+// Accessモードで唯一公開する認証DTO。assertion検証は保護APIと同じ境界を使い、Better Auth sessionは作らない。
+app.get('/api/auth/me', async (c, next) => {
+  if (resolveAuthMode(c.env) !== 'cloudflare-access') return next();
+  const user = await authenticateAccessUser(c.env, c.req.header('Cf-Access-Jwt-Assertion'));
+  if (!user) {
+    return c.json({ error: { code: 'unauthorized', message: '認証が必要です' } }, 401, {
+      'Cache-Control': 'no-store',
+    });
+  }
+  const details = await findAccountUserDetails(c.env.DB, user.id);
+  if (!details) {
+    return c.json({ error: { code: 'unauthorized', message: '認証が必要です' } }, 401, {
+      'Cache-Control': 'no-store',
+    });
+  }
+  return c.json({ authenticated: true, user: details }, 200, { 'Cache-Control': 'no-store' });
+});
+
+// Better Auth/pluginが増やすendpointを暗黙公開しない。仕様にあるmethod/pathだけを許す。
+const allowedAuthRoutes = new Map<string, ReadonlySet<string>>([
+  ['/api/auth/callback/google', new Set(['GET'])],
+  ['/api/auth/me', new Set(['GET'])],
+  ['/api/auth/sign-in/email', new Set(['POST'])],
+  ['/api/auth/sign-in/social', new Set(['POST'])],
+  ['/api/auth/sign-out', new Set(['POST'])],
+  ['/api/auth/reset-password', new Set(['POST'])],
+  ['/api/auth/change-password', new Set(['POST'])],
+  ['/api/auth/link-social', new Set(['POST'])],
+  ['/api/auth/unlink-account', new Set(['POST'])],
+  ['/api/auth/two-factor/enable', new Set(['POST'])],
+  ['/api/auth/two-factor/disable', new Set(['POST'])],
+  ['/api/auth/two-factor/verify-totp', new Set(['POST'])],
+  ['/api/auth/two-factor/verify-backup-code', new Set(['POST'])],
+  ['/api/auth/two-factor/generate-backup-codes', new Set(['POST'])],
+  ['/api/auth/mfa-setup/start', new Set(['POST'])],
+  ['/api/auth/mfa-setup/complete', new Set(['POST'])],
+  ['/api/auth/invite/inspect', new Set(['POST'])],
+  ['/api/auth/invite/accept', new Set(['POST'])],
+  ['/api/auth/invite/resend-request', new Set(['POST'])],
+  ['/api/auth/password-reset/request', new Set(['POST'])],
+]);
+
+app.all('/api/auth/*', async (c) => {
+  if (!allowedAuthRoutes.get(c.req.path)?.has(c.req.method)) {
+    return c.json({ error: { code: 'not_found', message: 'エンドポイントがありません' } }, 404);
+  }
+  const auth = c.get('auth');
+  const scope = c.get('authScope');
+  if (!auth || !scope) {
+    return c.json({ error: { code: 'auth_not_configured', message: '認証が未設定です' } }, 503);
+  }
+
+  // Google OAuthは設定漏れを provider_not_found に丸めず、運用者が原因を特定できる形で止める。
+  // secret値そのものは応答にもログにも含めない。
+  let isGoogleAuth = c.req.path === '/api/auth/callback/google';
+  if (c.req.path === '/api/auth/sign-in/social') {
+    try {
+      const body = (await c.req.raw.clone().json()) as { provider?: unknown };
+      isGoogleAuth = body.provider === 'google';
+    } catch {
+      // Better Authのvalidationへ委ねる。
+    }
+  }
+  if (isGoogleAuth && (!c.env.GOOGLE_CLIENT_ID || !c.env.GOOGLE_CLIENT_SECRET)) {
+    return c.json({ error: { code: 'google_auth_not_configured', message: 'Google認証が未設定です' } }, 503, {
+      'Cache-Control': 'no-store',
+    });
+  }
+
+  const isPassword = c.req.path === '/api/auth/sign-in/email';
+  const isMfa =
+    c.req.path === '/api/auth/two-factor/verify-totp' ||
+    c.req.path === '/api/auth/two-factor/verify-backup-code';
+  let rate: Awaited<ReturnType<typeof inspectAuthRateLimit>> | null = null;
+  let rateAccount: string | undefined;
+  if (isPassword || isMfa) {
+    if (isPassword) {
+      try {
+        const body = (await c.req.raw.clone().json()) as { email?: unknown };
+        if (typeof body.email === 'string') rateAccount = normalizeEmail(body.email);
+      } catch {
+        // Better Authのvalidationへ渡す。ここで別のerror形を作らない。
+      }
+    }
+    rate = await inspectAuthRateLimit(c.env.DB, isPassword ? 'login' : 'mfa', c.req.raw, rateAccount);
+    if (rate.lockedUntil) {
+      return c.json(
+        {
+          error: {
+            ...AUTH_RATE_LIMIT_ERROR,
+            retryAfterSeconds: authRetryAfterSeconds(rate.lockedUntil),
+          },
+        },
+        429,
+        { 'Retry-After': String(authRetryAfterSeconds(rate.lockedUntil)), 'Cache-Control': 'no-store' },
+      );
+    }
+  }
+
+  const isGoogleCallback = c.req.path === '/api/auth/callback/google';
+  let response: Response;
+  try {
+    response = await auth.handler(c.req.raw);
+  } catch (error) {
+    if (isGoogleCallback) await compensateFailedGoogleProvisioning(c.env.DB, scope);
+    throw error;
+  }
+  response.headers.set('Cache-Control', 'no-store');
+  if (scope.mfaSetup && isPassword) {
+    if (rate) await clearAuthRateLimit(c.env.DB, rate);
+    return c.json({ mfaSetupRequired: true, ...scope.mfaSetup }, 200, { 'Cache-Control': 'no-store' });
+  }
+  const failedGoogleCallback = isGoogleCallback && isFailedOAuthCallbackResponse(response, c.req.raw.url);
+  if (failedGoogleCallback) await compensateFailedGoogleProvisioning(c.env.DB, scope);
+  const isLoginAttempt = isPassword || isMfa || isGoogleCallback;
+  if (scope.auditLoginUserId && response.status < 400 && !failedGoogleCallback) {
+    await writeLegacyAuthAudit(c.env.DB, {
+      action: 'auth_login',
+      actorUserId: scope.auditLoginUserId,
+      result: 'succeeded',
+    });
+  } else if (isLoginAttempt && (response.status >= 400 || failedGoogleCallback)) {
+    const known = rateAccount ? await findUserByEmail(c.env.DB, rateAccount) : null;
+    await writeLegacyAuthAudit(c.env.DB, {
+      action: 'auth_login_failed',
+      actorUserId: known?.id ?? null,
+      result: 'failed',
+    });
+  }
+  if (scope.auditLogoutUserId && c.req.path === '/api/auth/sign-out' && response.status < 400) {
+    await writeLegacyAuthAudit(c.env.DB, {
+      action: 'auth_logout',
+      actorUserId: scope.auditLogoutUserId,
+      result: 'succeeded',
+    });
+  }
+  if (rate) {
+    if (response.ok) await clearAuthRateLimit(c.env.DB, rate);
+    else await recordAuthRateLimitFailure(c.env.DB, rate);
+  }
+  if (isPassword && response.status === 401) {
+    return c.json(
+      { error: { code: 'invalid_credentials', message: 'メールアドレスまたはパスワードが違います' } },
+      401,
+      { 'Cache-Control': 'no-store' },
+    );
+  }
+  return response;
+});
 
 // AIエージェント用(依頼ごとの使い捨てトークンで認証。セッション不要)
 app.route('/api', aiAgentRoute);
@@ -111,14 +315,12 @@ app.route('/api', improvementAgentRoute);
 /* -------- 保護されたAPI -------- */
 
 app.use('/api/*', authGuard());
-// 一時パスワードのまま業務データへ触らせない。画面側の分岐はURL直打ちで越えられる。
-app.use('/api/*', mustChangePasswordFence());
-app.use('/api/*', runtimeSchemaGuard);
 app.use('/api/*', canonicalMutationFence());
 // 取込の変更要求は Origin を自サイトに限る (security 章)。GET は対象外
 app.use('/api/imports', importOriginGuard());
 app.use('/api/imports/*', importOriginGuard());
 app.route('/api', adminUsersRoute);
+app.route('/api', accountRoute);
 app.route('/api', aiRoute);
 // 差分は importsRoute より先に載せる。/imports/:id 形のルートに /imports/diff を拾わせない
 app.route('/api', importDiffRoute);
@@ -296,10 +498,7 @@ export async function scheduledMaintenance(
   // Recordで予算表と実行jobを型結合する。jobの追加・宣言漏れはtypecheckで止まる。
   const concurrentJobs = {
     r2_cleanup: runR2Cleanup(env),
-    password_login_rate_limit_cleanup: Promise.all([
-      cleanupStalePasswordLoginRateLimits(env),
-      cleanupExpiredTemporaryPasswords(env.DB),
-    ]),
+    password_login_rate_limit_cleanup: runScheduledAuthCleanup(env.DB),
     improvement_retention: runImprovementRetention(env),
     deletion_undo_retention: runDeletionRetention(env),
     audit_header_retention: runAuditHeaderRetention(env),
@@ -367,8 +566,9 @@ export async function scheduledMaintenance(
       JSON.stringify({
         level: 'info',
         job: 'password_login_rate_limit_cleanup',
-        deleted: loginRateLimit.value[0],
-        expiredTemporaryPasswords: loginRateLimit.value[1],
+        deleted: loginRateLimit.value.rateLimitsDeleted,
+        retentionKind: loginRateLimit.value.kind,
+        retentionDeleted: loginRateLimit.value.deleted,
       }),
     );
   } else {

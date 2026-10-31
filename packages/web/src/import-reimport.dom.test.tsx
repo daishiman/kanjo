@@ -62,8 +62,8 @@ const stub = (runs: ImportRunRowView[], reimport: (body: unknown, index: number)
 const replaceButtons = () => screen.findAllByRole('button', { name: /の取込を置換$/ }, { timeout: 5000 });
 
 beforeEach(() => {
-  // runRow の履歴を取り消し・置換できる30日間の内側に置く。実行日が進んでも契約を変えない。
-  vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-09-21T00:00:00.000Z'));
+  // 履歴の操作は取込後30日で変わる。検証時計を取込2日後に固定し、Retry-Afterの待機は実時間で行う。
+  vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-09-22T00:00:00.000Z'));
   vi.stubGlobal(
     'confirm',
     vi.fn(() => true),
@@ -72,8 +72,8 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
-  vi.unstubAllGlobals();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe('取込履歴の置換', () => {

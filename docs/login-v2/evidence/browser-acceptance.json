@@ -1,0 +1,49 @@
+{
+  "checked_at": "2026-10-31T06:05:27.669Z",
+  "code_revision": "d22b6fab219ba381b0519d4fd839c9ca4b479fc5",
+  "runtime": "一時Workers/D1・合成利用者のみ",
+  "browser": "156.0.8078.79",
+  "isolation": "新しい一時profile・外部URL要求を遮断",
+  "checks": [
+    {
+      "scenario": "共通checkboxの20px表示と44px以上の操作領域",
+      "status": "passed",
+      "visual": {
+        "width": 20,
+        "height": 20
+      },
+      "hit": {
+        "width": 520,
+        "height": 44
+      }
+    },
+    {
+      "scenario": "初期ログイン・保持既定ON・認証前の業務shell非読込",
+      "status": "passed"
+    },
+    {
+      "scenario": "375pxで横はみ出しなし",
+      "status": "passed"
+    },
+    {
+      "scenario": "ヘルプとプライバシーへ未認証で到達",
+      "status": "passed"
+    },
+    {
+      "scenario": "未認証settingsをnext付きログインへ誘導",
+      "status": "passed"
+    },
+    {
+      "scenario": "実フォーム認証・設定へ復帰・本人アカウント表示・業務shell遅延読込",
+      "status": "passed"
+    },
+    {
+      "scenario": "実フォーム操作でログアウトしログインへ戻る",
+      "status": "passed"
+    },
+    {
+      "scenario": "誤ったパスワードを同じ画面で説明",
+      "status": "passed"
+    }
+  ]
+}

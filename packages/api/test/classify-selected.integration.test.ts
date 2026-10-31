@@ -29,7 +29,11 @@ import { splitMigrationStatements } from '../src/migration-test-support.js';
 import { recordTestMigrationHead } from '../src/schema-guard.test-support.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
-const auth = { ACCESS_AUD: '', ACCESS_TEAM_DOMAIN: '', SESSION_SECRET: 'synthetic-test-secret' };
+const auth = {
+  ACCESS_AUD: '',
+  ACCESS_TEAM_DOMAIN: '',
+  BETTER_AUTH_SECRET: 'synthetic-better-auth-secret-32-characters-minimum',
+};
 const MONTH = '2026-09';
 const PERIOD = `from=${MONTH}&to=${MONTH}`;
 /** 同じ月に入れる架空の明細の数。表示件数 100 でも 2 ページ目ができる数にする */
@@ -179,16 +183,15 @@ describe('選択の読み出しの要求全体の拒否', () => {
     expect(response.status).toBe(401);
   });
 
-  it('初回のパスワード変更が済んでいない利用者は 403 password_change_required', async () => {
+  it('停止中の利用者は 401', async () => {
     const pending = await loginForTest(app, env(), {
       id: 'selected-temp-user',
       email: 'selected-temp-user@example.test',
       password: 'Synthetic-Temp-Password-1',
-      mustChangePassword: true,
+      status: 'suspended',
     });
     const response = await get(selectedPath(['mf:tx-sel-sep']), { headers: { cookie: pending } });
-    expect(response.status).toBe(403);
-    expect(await response.json()).toMatchObject({ error: { code: 'password_change_required' } });
+    expect(response.status).toBe(401);
   });
 
   it('51 件・重複・空の keys・keys 無しは 400 invalid_query', async () => {

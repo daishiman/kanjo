@@ -188,6 +188,190 @@
       ]
     },
     {
+      "id": "arch-ai-analysis-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "AI分析 — 利用者経路はフェンスの内側、エージェント経路は agentGuard 1 か所で 401 に揃える",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "43dfdc557b5f5aaf98b06b941235ed93dba451d3a240fd2721a898a582678f37",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "AI分析 — 依頼の段階を core の純関数 1 か所で導き、キャンセル・再実行・使用するデータの経路を足す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "AI分析 — ai_tasks へ出来事の時刻と連番を足す追加のみの migration 0046",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "AI分析 — Ai.tsx を pages/ai/ へ分割し、core の判定結果を描くだけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "AI分析 — 基盤を変えず Migrate → Deploy の順で列の追加だけを反映する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2dd60db420ad646ddde4503af53e0162b59f324570faa0ddfe547fc7b417fd88",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "AI分析 — 段階の規則を docs/ai-screen/ の表と境界テストで固定し、skill 不変を緑のまま保つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2b3f704b5a4f10f10bf1f37852d1094d0c80cb21fbe1ec9470a3b9fa1f01ee08",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "AI分析 — 固定 4 MiB の request budget で過大転送を止め、集計値だけを外へ出す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8f446762dac8ac8a6d4309890f85c19832143ab42e22e3bc11914f39c88a8831",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
+      "id": "arch-ai-analysis-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "AI分析 — 依頼・実行中・レポートの 3 段と選択中バーで、依頼から版の比較までを 1 画面に並べる",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/ai-analysis-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-19T13:11:57Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-ai-analysis-screen"
+      ]
+    },
+    {
       "id": "arch-analysis-hub-auth",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -369,6 +553,726 @@
       },
       "referenced_by": [
         "feat-analysis-hub"
+      ]
+    },
+    {
+      "id": "arch-budget-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "予算 — 既存の認証とフェンスの内側に置く取得・保存と利用者単位の区切り",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "8bac5a1830455e332c0527f6ffc5c1aa3d6d49387e3d8b3ec611a14c17fd101f",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "予算 — 予算画面の算出と予算の読み出しを担う core 純関数 1 か所と取得・保存の 2 経路",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "cd68f3959122014af143291a3f5a61039e84bbe13f348a0b7cd3a106585725d1",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "予算 — 期間別の年額表 budget_plans を足す追加のみの migration とバックアップ・復元への編入",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "a27bde88c9d11399fcacdf470fb1e1a25db503a875d1b5b26b5ee648721353d3",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "予算 — pages/budget への分割と URL・サーバ状態・端末下書きの分離",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "c555b213773f5d2a3bea4d0f51d770d843672c6cf70ba55a1d50827c63badf66",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "予算 — 基盤を変えず行数上限と 1 回の D1 batch で無料枠に収める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "d69bafe2c6f37b37fd1c18513b3e15eeb609d7830c50a59b0f9c67adbf1570fb",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "予算 — 式と整合を core の単体テストで固定し旧実装で落ちる検算を受入の根拠にする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "8cfbe5fbed898db6065b9c6529a6018d9e1ac7edeb7bbb5c1c7b05306cf48019",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "予算 — zod の型と範囲・行数上限・フェンス登録・外部送信なし・下書きの消去",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "b796b626b18f8470e2c88875dca536473b2a7b53652fc411602769c7900057d2",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-budget-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "予算 — KPI と過不足から一覧と科目パネルを往復し保存バーで確定する 1 画面",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/budget-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-22-budget-screen/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "cdcb7210699bd4c8fedd6a834ad74b55bed23a17a36441417b285fdbd14665c1",
+        "imported_at": "2026-09-21T13:59:08Z"
+      },
+      "referenced_by": [
+        "feat-budget-screen"
+      ]
+    },
+    {
+      "id": "arch-cash-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "現金入力 — 既存のセッションのまま、新しい削除・復元・一括の経路も userId で絞り、他人の行を 404 にする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "4f3863710e7af200fe3cbc217fefc99570d6c56266d26e5ead16c5358161d73d",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "現金入力 — DELETE を論理削除にし、復元と一括の経路を足して、削除中の行を読む全経路から外す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c3b9b94a0b805e19f69d52b6fe19b4513b5f1a77956b42807fdd01f42f5c6305",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "現金入力 — 追加のみの migration 0050 で owner・transit_purpose・deleted_at を足し、既存行を書き換えずに論理削除と名義を持つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a956740a1c4085f5d7bff8b9f49d6a114c452b20336491a6ce713bca62b63c1d",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "現金入力 — Cash.tsx を pages/cash/ に分け、表示条件を URL・下書きを localStorage に置き、数字は view-model 経由で core から受け取る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0f4a8db2cf8cf65afdf35b35472b1e08b63e067eb0b68c11e1f7722805e324ac",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "現金入力 — 完全消去を既存の夜間 cron に独立 job で相乗りさせ、新しい binding・cron・外部サービスを足さない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "11a259426013adb293cb3c3d9e2ac948aa5394cdc30fd8fd4641747d444774a3",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "現金入力 — 削除中の行を出さない規則を経路ごとの API テストと 29 日 / 31 日の境界で固定し、check:cash-screen を verify:full に組み込む",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "6101bc7549cfb1cd1f2fc96915120a6dd9aa17678c0d23eb631c8e06ca8d6827",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "現金入力 — zod で候補と長さを限り、領収書ファイルと下書きをサーバーへ受け取らず、削除中の行を混ぜない不変条件を API テストで固定する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "7a260e661c2e48f4d802219de5c52e287612c9173f56eab3a28231ee69788688",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-cash-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "現金入力 — 入力 2 枚と一覧を 17-cash.png の順に並べ、削除は行内確認と『元に戻す』で取り返せるようにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/cash-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:58:36Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "5818a2ca9eda2ad5eca982405969af14a8ecb9211416f162b7aecc1a967d2e47",
+        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-classify-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "明細仕分け — 既存の認証とフェンスの内側に置く新経路と利用者単位の区切り",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "0380be1d0882724cbfb1302956f76a9aeb05544ee6c9dfb8f71fa2fb42f9c186",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "明細仕分け — 分類ステータスと提案を導く core 純関数 1 か所と変更系 API",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "28297c3d03be9cf9a1f52e5d03cb310b2ca3291534bb4e2591ba22da81ed9035",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "明細仕分け一括保存 — 選択の読み出し・一括保存・勘定科目の対応表を既存のセッション認証と利用者の区切りの配下に置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/auth.md",
+        "source_version": "0.1.16",
+        "source_digest": "39dc98bbb339173ca4a394060045561241f79a2620b3ca338c6a268ed873ecc2",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "明細仕分け一括保存 — サーバが明細を引き直して core で値を解決し、json_each で束ねた 1 回の batch で書く API",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/backend.md",
+        "source_version": "0.1.16",
+        "source_digest": "ab269614a9358535d89563df46c2e288b6d52894cd7db12588c9cb529f983c51",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "明細仕分け一括保存 — 勘定科目の対応表の表を 1 つ足し、設定の変更履歴を承認つきで作り直し、一括保存を 1 回の batch で全件か無しに書くデータ設計",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/database.md",
+        "source_version": "0.1.16",
+        "source_digest": "12f08e168e97d84b37f27da2d8379f5e1d60a5431857d5c7688360f5d107d623",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "明細仕分け一括保存 — 選択の読み出し・失敗の分類関数・直前の本文の保持",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/frontend.md",
+        "source_version": "0.1.16",
+        "source_digest": "0e7b7f2409859c73414efe597a232e4058a00780cd6df53d4d050ce4a2aefa6e",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "明細仕分け一括保存 — 1 起動 49 本の予算と対応表 migration の承認つき配備",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/infrastructure.md",
+        "source_version": "0.1.16",
+        "source_digest": "9a4eaa14ba4a71c8800747bed11d35d5562cc2635086f9f3b92a0bedb72837e9",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "明細仕分け一括保存 — O1〜O9 を 4 層のテストと 1264px の画面検査で固定する回帰検出",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/maintenance-ops.md",
+        "source_version": "0.1.16",
+        "source_digest": "b12cfcee5a7b7de7613084fb545e100724d284e7e09e39aa10317f9544f2317b",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "明細仕分け一括保存 — 入力の境界を許可リストで閉じ、本文と書き込みの上限・フェンス・項目ごとの履歴で一括保存を守る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/security.md",
+        "source_version": "0.1.16",
+        "source_digest": "85b474d994a4d8b7d31e97f571c03fad75bf7d5e1dad066c05fbafd42619e06c",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-bulk-save-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "明細仕分け一括保存 — 6 列の一覧・一括指定と保存前の内訳・失敗ごとの知らせ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-bulk-save-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-31-pre-login-v2-main-79/ui-ux.md",
+        "source_version": "0.1.16",
+        "source_digest": "b1c03ab76d1f3b2747236c7eb125c53b68b1d651eaf371d5dbf85b07c3731fad",
+        "imported_at": "2026-10-01T12:13:05Z"
+      },
+      "referenced_by": [
+        "feat-classify-bulk-save"
+      ]
+    },
+    {
+      "id": "arch-classify-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "明細仕分け — 2 表と既存表への列を足す追加のみの migration",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "64a5feecbecad51c781e6e8fcf07d055304f0a93cba019ee29d5586aa3be8aba",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "明細仕分け — pages/classify への分割と URL・サーバ状態・端末下書きの分離",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "331f13c5d50b4b0807e4b39c944536f191fe4680ef2fc901e924c804a0c8ec4c",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "明細仕分け — 基盤を変えず件数上限と batch の区切りで無料枠に収める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "6de2efee9fda877fe65cd1545eba12549dbf0d9e7d9797f186235936a5ef4027",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "明細仕分け — 3 区分の不変条件テストと旧実装で落ちる検算による回帰検出",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "5b8f24c0344ea95abaf6eba3e8a983caa814090f7de068bb89e433cc4fcb38ee",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "明細仕分け — zod の長さ制限・フェンス登録・外部送信なし・証憑面を持たない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "9d1fbf27441cf7ee74f85d419f4611beeda5aac386765a3f669b0a939c1508d6",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
+      ]
+    },
+    {
+      "id": "arch-classify-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "明細仕分け — 問いと件数から 3 カラムの確定、結果の通知までの 1 画面",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/classify-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-21-classify-screen/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "7afdc6ecbca54a0a7aeb3e4498bc6a9cbe6b98c8f58cd8f1c18ca364ec711f62",
+        "imported_at": "2026-09-19T14:03:38Z"
+      },
+      "referenced_by": [
+        "feat-classify-screen"
       ]
     },
     {
@@ -814,6 +1718,174 @@
       ]
     },
     {
+      "id": "arch-guide-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "使い方 — /api/guide を既存の authGuard と mustChangePasswordFence の配下の /api/* に置き、userId の Dataset だけを読み、新しい権限・資格情報を作らない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "6750698bc3023d6fde3c45b95ce211667ad33ca8372193ffeb5475baf684061f",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "使い方 — core に guide-screen・信頼度の段階関数・shiftedPeriod・防衛ラインの算出期間の定数を置き、GET /api/guide は loadScoped の結果を core に渡して { screen } に写すだけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "d0cb72d133251ca361263ca8bebba44f3d9a531a938fceab8f5234c89a1d7847",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "使い方 — DB の表と列は足さず、ガイド本文は core の定数として版管理し、数値は既存の loadDataset の読み取りから毎回導く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "262454a435c86a72714c047a24f18f51d84e187fbc5bb2a0e40d210dc847e07b",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "使い方 — Guide.tsx を pages/guide/ に分け、トピックと検索語を URL に置き、数字と文言は view-model 経由で core の guide-screen から受け取る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "91756674aaa74956621cba80f0cbd496d790626d431d0e24ed476ea7c725b49f",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "使い方 — 新しい Worker・binding・cron・環境変数を足さず、/api/guide は既存の api Worker に載せ、画面は遅延 chunk にして初期 JS 110KiB の予算を守る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "00053ca510de65ebd9915185fd8438088ba8875359d36ba66752c54b25ce906f",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "使い方 — check:guide-screen (KANJO_VISUAL_SCOPE=guide) を verify:full に足し、境界値と防衛ラインの説明文をテストで固定し、記録は docs/guide-screen/ に置き、check-glossary のため用語と目安で全用語を出し続ける",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "cc113059f1c56ef51d31fd20416c85d51894eaba0cb8c8af7f351e8acafe56e6",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "使い方 — topic は許可リスト・q は 100 字で切り検索はサーバへ送らず、フッタは明細を送らない事実に限って AI 送信の補足を 3 か所に残し、CSP は変えない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "c0921d456f4e06dc42879df45252b78dd5acec3ccf9b7dfccf3103e60f9f82cd",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-guide-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "使い方 — 問いの見出しの下に 4 ステップと元画面への戻り道を置き、総収支を実データで読み解かせ、信頼度は段階＋%・ヘッダは防衛ラインのまま・フッタは事実どおりにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/guide-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-guide-screen/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "37aa1d855046a7d5b432aacf16f2c36fddccf269a12ab678d3f5139f71a78333",
+        "imported_at": "2026-09-23T13:27:15Z"
+      },
+      "referenced_by": []
+    },
+    {
       "id": "arch-household-cashflow-auth",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -1021,6 +2093,190 @@
       "referenced_by": []
     },
     {
+      "id": "arch-import-screen-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "データ取込 — 全経路を既存のセッションのフェンスの内側に置き、他人・期限切れ・別検査の ID はすべて 404 にそろえる",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f1a1572295b16d6fc096c4b441d4f72748a1460b078fbb5f85e0562dc15adf25",
+        "source_path": "system-spec/archive/2026-09-23-import-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "データ取込 — 検査と確定を 2 経路に分け、状態・要約・結果・上限値を core の import-screen.ts 1 か所で導く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f1e820c99e3f8424452e73decb691a16873c228b6f14aff5b491081f07d05755",
+        "source_path": "system-spec/archive/2026-09-23-import-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "データ取込 — 検査・ファイル項目・レート制限の 3 表と import_runs の列を 0050 以降の追加だけで持つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "4b40739265566acb82504749214ed94e5071bf84a5375a7a1f898d1d3a1acd64",
+        "source_path": "system-spec/archive/2026-09-23-import-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "データ取込 — Import.tsx を pages/import/ へ分割し、上限の判定も含めて core の結果を描くだけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a7e3437bf267934ab3c6b44de73a738606c8af419fba667ca59ef8e2f536cf31",
+        "source_path": "system-spec/archive/2026-09-23-import-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "データ取込 — 仮置きを既存 R2 の専用接頭辞に置き、片づけを既存の夜間保守に載せて、基盤は D1 の表の追加だけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2e050c28b0a7fc383a43286e8c150e1d4551196f7a0b6f57310c26f729ff084c",
+        "source_path": "system-spec/archive/2026-09-23-import-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "データ取込 — 規則を docs/import-screen/ と境界表のテストで固定し、上限の数値リテラルを字面の検査で core の 1 か所に閉じ込める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0e03da0aed7e1bed0f3e37eafeb8df1e8e76a249f5f35465d0b4060fae426293",
+        "source_path": "system-spec/archive/2026-09-23-import-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "データ取込 — 合計・ファイル単位・展開前の 3 段で大きさを止め、レート制限と同一オリジンの検査を入口に置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "7d2806984e761ff45eddfa2cae491f0c9c4338f30709d2cc955ec21f33d0cd8f",
+        "source_path": "system-spec/archive/2026-09-23-import-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
+      "id": "arch-import-screen-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "データ取込 — 選択・一覧・内容確認・結果・履歴の 5 段を問いの見出しの下に並べ、取り込む前に何が入るかを必ず見せる",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/import-screen-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:53:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f14062b5b29edd57c4d2b9795cf43de5db309be4bcb263dc47cab8187ed1b26e",
+        "source_path": "system-spec/archive/2026-09-23-import-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-import-screen"
+      ]
+    },
+    {
       "id": "arch-improvement-request-pipeline",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -1046,6 +2302,342 @@
       "referenced_by": [
         "feat-improvement-request"
       ]
+    },
+    {
+      "id": "arch-improvement-screen-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "改善リクエスト — 削除・復元・一覧の検索を既存のセッション Cookie と authGuard の配下に置き、他の利用者の依頼と削除中の依頼をどの経路からも 404 にそろえる",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "e97adcfd5be8331dcdc57c615ade418260e0a9f530e410024e38c455ae8f61da",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "改善リクエスト — 状態の遷移・一覧・関連・履歴の判定を core の improvement-screen に置き、API は zod で検証して D1 batch 1 つで依頼と履歴を書き、削除中の行を全経路で読まず、夜間に 30 日後の完全消去を他 job の枠 1 本で回す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "13f0f32a2b6dfc894e328acfe9efd46454e5b6642111f6088ac9bd61366a5d95",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "改善リクエスト — migration 0053 で improvement_requests を作り直して状態を 4 つに改め、利用者ごとの連番・論理削除・履歴表を足し、既存の行・画像・トークンを 1 件も落とさずバックアップの外に置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "c982ad2a18786c75d0d9c1f523c1adb00d6c5cc0fdabfeada0219c68af5950b3",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "改善リクエスト — pages/improvement/ に分けて core を呼ぶのは view-model だけにし、表示条件は URL を正本に、撮影は遅延読み込みの DOM 複製に伏字と範囲選択を足して画像はメモリだけに持つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "1153b45360c5786d15aee28f19d9d684aa3155b8d44ae0b83e6b9a354c5101c6",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "改善リクエスト — 削除から 30 日後の完全消去を新しい cron を足さず夜間の improvement_retention に相乗りさせ、audit_header_retention から 1 本回して D1 予算の合計 49 を保つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "7c10807c3331802623de4fae6013177370c39b9dae5377ecd19f48cd1a1cadf2",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "改善リクエスト — 既存の品質ゲートを全て緑に保ち、0053 の適用前バックアップと戻し方を runbook に置き、夜間の完全消去の件数を個人情報なしの JSON ログで追えるようにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "d0a9ec61c38694ac6f85838678d0a9f3adcdb9070a6e9e77b03db4189b4cbfdc",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "改善リクエスト — 同じ core のマスク規則をブラウザとサーバの 2 層で掛け、入力を 5 つの境界で閉じ、論理削除から 30 日後の完全消去までを保持期限で守る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "46502737710bfbffc42ed88bf9f2404279b72b5fdf193e1ec7af50260cf43ade",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-improvement-screen-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "改善リクエスト — 上段に作成フォーム・下段に一覧と詳細の 2 ペインを置き、プライバシー確認 2 つとマスク対象の説明を送信の直前に、削除は『元に戻す』で取り返せるようにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/improvement-screen-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-25-improvement-screen/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "55d1437d6fba626dd898122b48d66e5e981a95dfc2f5a71af1dff3e7e7de94b0",
+        "imported_at": "2026-09-23T13:47:00Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "ログイン v2 — Better Auth 継続、招待だけの利用者作成、許可側で書く管理者 MFA 関門と保持 30 日 / 非保持 12 時間",
+      "file_path": "architecture/login-v2-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "7a69f92e77e282c4368aba6fc630e6a6b0f65c6179f4bfcff14291e7223c6464",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "ログイン v2 — Better Auth を /api/auth/* に載せ、招待・MFA 設定・再設定を許可側の関門と 1 か所の送信関数で束ねる",
+      "file_path": "architecture/login-v2-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "7f9867e1cbf2d6eda0a9b43b558b18737df233f02ee8e44fc234d735661d8bfa",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "ログイン v2 — 認証の表・招待・MFA 設定トークンを追加のみの migration で業務データから分けて置く",
+      "file_path": "architecture/login-v2-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "97ea39db385a3a25db26a59937488b68cefd4f95b997cf3ef6278e2fe2544e7c",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "ログイン v2 — ログイン画面の部品分割、未認証の 5 経路、薄い認証 client と招待方式の利用者管理",
+      "file_path": "architecture/login-v2-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "28d907a2e1b4bd5414c34f565225b0d834e67a18c3ba02aac05329664809ab3f",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "ログイン v2 — Better Auth を同じ Worker に置き、外部は Google と Resend だけ、秘密は Workers の secret で必須にする",
+      "file_path": "architecture/login-v2-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "770103c73397f376877965f33b05edb030ab7f97ef9c92f8d4eb5a8c6070a510",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "ログイン v2 — 移行と戻し・締め出しからの復旧を runbook に置き、account-login の契約テストを Better Auth 版で緑にする",
+      "file_path": "architecture/login-v2-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "9fcba90bc9dffee036f5cf79106f837776098dfd42738f59d26aab2042be0d94",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "ログイン v2 — 4 入口のレート制限と列挙防止、secret と署名 Cookie、外部送信は Google と Resend だけ",
+      "file_path": "architecture/login-v2-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "fbb9e67c4ceecb54ef6323259062a6d2c8d3bcf67b3fd1edeccc8bebef876336",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "ログイン v2 — 画像どおりの単一カラムと 6 状態、同じカード型の招待承諾・再設定・MFA・連携画面",
+      "file_path": "architecture/login-v2-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "a37523cc7be348e2f6da5cda7ed9ba854b5998c0c32b24e61a0a6c2360703d04",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
     },
     {
       "id": "arch-mf-business-auth",
@@ -1678,6 +3270,710 @@
       ]
     },
     {
+      "id": "arch-settings-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "設定 — 既存の認証と 4 層の内側に置き、書込みだけをフェンスへ登録し更新者をセッションから決める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "1968df8fa1eed625d5ba1376decf22c7c0a3e636d0e0ecda927fce14049294ff",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "設定 — core の純関数で照合・現金上書き・設定 JSON を解き 全節の保存と変更履歴を 1 つの D1 batch に閉じ 復元は preview と本適用に分ける",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "8ed202ee635561a574f5fb733a146afe35b10e295340e7e5a49f50d75ec1bb3c",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "設定 — 集計ルール・現金上書き・変更履歴を利用者単位の新表に追加のみで置き 既存行は写しの元として読むだけにする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "0f71b39eb0d4aef2864a0fb9b5ba913b68a72fb2d69bd08ef7a7792ef470f78f",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "設定 — 画面の入口が 1 本の取得を節ごとの部品へ配り 4 節の編集を 1 つの下書きに集めて 1 回で保存する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "711a2fd0946231628d693ec05f71d6f7013ad9d4d589f3b06dc548264f76f000",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "設定 — 基盤を変えず cron を JST 2:00 へ移し、各回の成否・メモ・要約を R2 に残して失敗も一覧に出す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "6b7af8e430bf9e58190417f42bb9e68c682f79d5c790e70419330e6e5ef75192",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "設定 — 変更は追記のみの履歴で辿り、誤りは D1 全体を上書きせず設定の復元と元に戻すで直す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "55b201ec86e261da7cb5fceb2ba2d639875931c7a72a259401e72e623add4452",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "設定 — 公開向け検証と本文上限・復元は厳密検証で全か無か・取引は消さない・外部送信なし",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "c0d64d31afc54115c07bc73eaa3884d65f3a33205d92327fda0e583c56edb163",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "id": "arch-settings-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "設定 — 節ナビで 8 節を移り集計ルールの表と説明パネルを往復し保存バーで 1 回に確定する 1 画面",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/settings-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-09-24-settings-screen/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "376a461e32d6277d040822ed6cd4d4b016c46332dece3f6f8c7c412114b754de",
+        "imported_at": "2026-09-22T10:13:43Z"
+      },
+      "referenced_by": [
+        "feat-settings-screen"
+      ]
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-auth.md",
+      "id": "arch-statements-auth",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T22:38:08Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "7bce6415965c0d792d7b8bbda988ffddefcfe679591e6adf72713134c21314e1",
+        "source_path": "system-spec/archive/2026-09-21-statements-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 2 経路を既存の authGuard と一時パスワードの fence の内側に置き、user_id と組で引く"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-backend.md",
+      "id": "arch-statements-backend",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T23:36:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c7df4f617d6b5584de1046f01f33acd1da7e396a903ac403bbea6802927859fc",
+        "source_path": "system-spec/archive/2026-09-21-statements-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — core の statementsScreen 1 か所と、GET /api/statements の screen-only 契約・PUT の項目単位 upsert"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-database.md",
+      "id": "arch-statements-database",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T22:38:08Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a72d7ffaaa1919526a5975eb739dc52250162c735a4a024818a3f05924fbbbe8",
+        "source_path": "system-spec/archive/2026-09-21-statements-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — balance_entries に状態列を足し、監査は新表 liability_audit_log で持つ追加のみの migration 0046"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-frontend.md",
+      "id": "arch-statements-frontend",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T23:36:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e08a7544aa1da43742a06cd81aa8348b2c219aa4c1d153c69751660d9e010820",
+        "source_path": "system-spec/archive/2026-09-21-statements-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 薄いページと `pages/statements/` の部品、1 本の取得と 1 本の保存、利用者別の下書き"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-infrastructure.md",
+      "id": "arch-statements-infrastructure",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T22:38:08Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "9f317cd28a76d3182c8481438a351013f992e45b44247cfbd7b5ae24f2f7c90c",
+        "source_path": "system-spec/archive/2026-09-21-statements-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 既存の Worker・D1・静的配信と ci / deploy / migrate の流れに乗せ、新しい基盤を足さない"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-maintenance-ops.md",
+      "id": "arch-statements-maintenance-ops",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T23:36:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "342df0a3bb828c5fe8c971d23a780a99cefdb816226db5b9558dc98eaf4b0adc",
+        "source_path": "system-spec/archive/2026-09-21-statements-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 恒等式と 3 状態を契約テストで固定し、既存テストを旧実装で落ちる形へ更新し、規則を docs に残す"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-security.md",
+      "id": "arch-statements-security",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T22:38:08Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e7373096230225e022ceb7e55f8c181d0384679fa70979420a0b218130e20a76",
+        "source_path": "system-spec/archive/2026-09-21-statements-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 負債の保存経路に金額と本文の上限・監査を足し、CSV エクスポートの数式注入を防ぐ"
+    },
+    {
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/statements-ui-ux.md",
+      "id": "arch-statements-ui-ux",
+      "referenced_by": [],
+      "source_lineage": {
+        "imported_at": "2026-09-19T23:36:20Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c0bfb4dcb73ff2a5fe9d619b8fc6b0bcf742184d11c5ec7eaae9a9c8889b2809",
+        "source_path": "system-spec/archive/2026-09-21-statements-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "status": "active",
+      "title": "決算書 — 問いの見出しから根拠へ降りる 1 画面と、負債の 3 状態入力"
+    },
+    {
+      "id": "arch-subscriptions-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "サブスク画面 — 新設 4 経路を既存 authGuard の内側に置き userId と組で引く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "bbbdb0f3f20821bab23f4630cf52590be216844fc88f52cdfc9b298128b2af5c",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "サブスク画面 — core の subscriptionsScreen 1 か所と既存 API の延長",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "102b53266ca9482459d9e09387eee03cbf38511e454facd753abccbfde75e7c0",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "サブスク画面 — migration 0043 で category と見直し判断だけを足す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "a134f80aef224140a8f2e00afd7b0a78840fd535a82953fb4bce53bb90648132",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "サブスク画面 — URL の選択・2 本の取得・部品境界と旧 UI の吸収",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "0385cef0f9a5fc253c897319fd57272535bb16b673021801905ecf18a0299dcb",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "サブスク画面 — 配信構成を変えずベンダー数 × 月数の計算量に収める",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "bb164e7e24bdf08c42118ba28bafd7da1b202af00db698e1186e1a9eded03256",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "サブスク画面 — 検算済み fixture・規則の docs 化・旧テストの移設",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f8daeaa66129e8592eb9875eba41e3ec019734a6d5be99149c79dd5586b29b18",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-merge-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "サブスク統合 — 新しい API を既存のセッション認証とテナントキーの配下に置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-auth.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "4c648293a2fe5cf00573e2ee541d2bbbf80ed7f5821d1d871acb13a76fc2f1ff",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "サブスク統合 — 名寄せを1つの照合一覧に寄せ、書込みと subs 集計を1つの batch で適用する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-backend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "acef0cab09dfc80de17703b8d956670f4c32dcb338e26f7b519e9636887b6b02",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "サブスク統合 — migration 0058 で統合の参照・操作記録・revision を追加だけで足す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-database.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "6f3a7e7c9459d6c6baf56bf84623837dc95cd830ff6b5fe50b083288c651503e",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "サブスク統合 — 書込みを1つの scope で直列化し、操作状態と取り消しを画面に持つ",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-frontend.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "0fb662a8b175a8a816b276bd707fa8a4b33f44f7823ee29eb432cfe8c856904f",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "サブスク統合 — Workers + D1 の上限の内側で統合を完了させ、lease を短くする",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-infrastructure.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "8bc7c72bdc980f5ef7f00da0356e8fcc3bced2203e554f656eb2e02774bbc017",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "サブスク統合 — 統合・並行操作・取り消しを core・api・web のテストで固定する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-maintenance-ops.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "85038de93396791d5832c9a757f7103bfed977078321c558b9b5cfc63274e5f6",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "サブスク統合 — 所有者の検査・入力の上限・操作記録の最小化・fence への登録",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-security.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "06e0bb9aadd5f67da71b831e6c92a6dd1e06a37f0989d0ae3ac792d9de4d57bc",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-merge-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "サブスク統合 — 行チェック・選択バー・操作状態・取り消しを画像どおりに置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-merge-ui-ux.md",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "a99e6335d85a64194464559f5c308617b7730d4075e8f725d19f0df20a3f7c7d",
+        "imported_at": "2026-09-30T15:18:20Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-subscriptions-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "サブスク画面 — 入力は許可リストで閉じ、外部取得と HTML 描画の経路を作らない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "6567f6d8c87bcbb896e448870b953cebeee86e94308a5b547775c066b8b464de",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
+      "id": "arch-subscriptions-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "サブスク画面 — 見直し候補を先に読ませる縦の並び・詳細パネル・検出理由カード",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/subscriptions-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-18T07:04:09Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "c57c493d5fccb5546f47fbcffb51582dfc2f062eb0e9a6e19d3aa556bf35321c",
+        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-subscriptions-screen"
+      ]
+    },
+    {
       "id": "arch-tax-preparation-boundary",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -2099,6 +4395,190 @@
       ]
     },
     {
+      "id": "arch-tradeoff-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トレードオフ — 既存の /api/* フェンスの内側に置き、全経路を user_id で絞る",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-auth.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "cca5fd48cb1d938da9b371d40412023e78e6017563c1b9768f077aa650609ea8",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/auth.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "トレードオフ — 候補・必要度・試算・推奨を core の純関数に置き、POST はサーバで再計算する",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-backend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "bea33a5eda7582bf617c4e922dede268af508d3701b261f70dc7f23961f01164",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/backend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "トレードオフ — 追加のみの migration で試算条件の列と候補ごとの上書きの表を足す",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-database.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "f83a4e3de0ac081a8399e78ef1a668a510a56fa1757973a401ed8834ddae0c26",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/database.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トレードオフ — pages/tradeoff/ へ分割し、数字は core の試算関数の結果だけを読む",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-frontend.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8b1f93d9cb74bac83fab5cc5db7d9f5f3320b4b55152f486e05b2939ecf2a386",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/frontend.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トレードオフ — 構成を変えず、EXPECTED_D1_MIGRATION と Migrate → Deploy に従う",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-infrastructure.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "ecbe51bb97c8d67d6a6bf138061ee63143b09d1c24a47b8f6542a5e1d8c4fd04",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/infrastructure.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "トレードオフ — 規則を FR-09 の表と core の契約テストの期待値に 1 対 1 で置く",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-maintenance-ops.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "e10c770f84aef936d92cf9a5beace59448148b1a1df69e7b5dc2bfdaa928614a",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/maintenance-ops.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "トレードオフ — zod の上限とサーバ再計算でクライアントの計算値を信用しない",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-security.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "8da2d2e7da29edfc641f8cf35d24f685165fe0f323749a7b78a769ac70d5274e",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/security.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
+      "id": "arch-tradeoff-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "トレードオフ — 画像の構成要素を 1 画面に並べ、差額と防衛ラインを文字で伝える",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "file_path": "architecture/tradeoff-ui-ux.md",
+      "source_lineage": {
+        "imported_at": "2026-09-21T22:35:02Z",
+        "origin_kind": "system-spec-harness",
+        "source_digest": "2682e1d737675bd52781e250e8d536b0b04dc4c1189477e902a9778332afe050",
+        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/ui-ux.md",
+        "source_plugin": "system-spec-harness",
+        "source_version": "0.1.14"
+      },
+      "referenced_by": [
+        "feat-tradeoff-screen"
+      ]
+    },
+    {
       "id": "arch-transaction-split-projection",
       "artifact_kind": "architecture",
       "artifact_subtypes": [
@@ -2351,2318 +4831,6 @@
       },
       "referenced_by": [
         "feat-ui-navigation-cognitive-load"
-      ]
-    },
-    {
-      "id": "arch-subscriptions-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "サブスク画面 — 新設 4 経路を既存 authGuard の内側に置き userId と組で引く",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-auth.md",
-      "source_lineage": {
-        "imported_at": "2026-09-18T07:04:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "bbbdb0f3f20821bab23f4630cf52590be216844fc88f52cdfc9b298128b2af5c",
-        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-subscriptions-screen"
-      ]
-    },
-    {
-      "id": "arch-subscriptions-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "サブスク画面 — core の subscriptionsScreen 1 か所と既存 API の延長",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-backend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-18T07:04:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "102b53266ca9482459d9e09387eee03cbf38511e454facd753abccbfde75e7c0",
-        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/backend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-subscriptions-screen"
-      ]
-    },
-    {
-      "id": "arch-subscriptions-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "サブスク画面 — migration 0043 で category と見直し判断だけを足す",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-database.md",
-      "source_lineage": {
-        "imported_at": "2026-09-18T07:04:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "a134f80aef224140a8f2e00afd7b0a78840fd535a82953fb4bce53bb90648132",
-        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/database.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-subscriptions-screen"
-      ]
-    },
-    {
-      "id": "arch-subscriptions-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "サブスク画面 — URL の選択・2 本の取得・部品境界と旧 UI の吸収",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-frontend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-18T07:04:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "0385cef0f9a5fc253c897319fd57272535bb16b673021801905ecf18a0299dcb",
-        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/frontend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-subscriptions-screen"
-      ]
-    },
-    {
-      "id": "arch-subscriptions-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "サブスク画面 — 配信構成を変えずベンダー数 × 月数の計算量に収める",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-infrastructure.md",
-      "source_lineage": {
-        "imported_at": "2026-09-18T07:04:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "bb164e7e24bdf08c42118ba28bafd7da1b202af00db698e1186e1a9eded03256",
-        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/infrastructure.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-subscriptions-screen"
-      ]
-    },
-    {
-      "id": "arch-subscriptions-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "サブスク画面 — 検算済み fixture・規則の docs 化・旧テストの移設",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-maintenance-ops.md",
-      "source_lineage": {
-        "imported_at": "2026-09-18T07:04:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "f8daeaa66129e8592eb9875eba41e3ec019734a6d5be99149c79dd5586b29b18",
-        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/maintenance-ops.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-subscriptions-screen"
-      ]
-    },
-    {
-      "id": "arch-subscriptions-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "サブスク画面 — 入力は許可リストで閉じ、外部取得と HTML 描画の経路を作らない",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-security.md",
-      "source_lineage": {
-        "imported_at": "2026-09-18T07:04:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "6567f6d8c87bcbb896e448870b953cebeee86e94308a5b547775c066b8b464de",
-        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/security.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-subscriptions-screen"
-      ]
-    },
-    {
-      "id": "arch-subscriptions-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "サブスク画面 — 見直し候補を先に読ませる縦の並び・詳細パネル・検出理由カード",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-ui-ux.md",
-      "source_lineage": {
-        "imported_at": "2026-09-18T07:04:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "c57c493d5fccb5546f47fbcffb51582dfc2f062eb0e9a6e19d3aa556bf35321c",
-        "source_path": "system-spec/archive/2026-09-18-subscriptions-screen/ui-ux.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-subscriptions-screen"
-      ]
-    },
-    {
-      "id": "arch-ai-analysis-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "AI分析 — 依頼・実行中・レポートの 3 段と選択中バーで、依頼から版の比較までを 1 画面に並べる",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/ai-analysis-ui-ux.md",
-      "source_lineage": {
-        "imported_at": "2026-09-19T13:11:57Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06",
-        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/ui-ux.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-ai-analysis-screen"
-      ]
-    },
-    {
-      "id": "arch-ai-analysis-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "AI分析 — Ai.tsx を pages/ai/ へ分割し、core の判定結果を描くだけにする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/ai-analysis-frontend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-19T13:11:57Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4",
-        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/frontend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-ai-analysis-screen"
-      ]
-    },
-    {
-      "id": "arch-ai-analysis-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "AI分析 — 依頼の段階を core の純関数 1 か所で導き、キャンセル・再実行・使用するデータの経路を足す",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/ai-analysis-backend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-19T13:11:57Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4",
-        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/backend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-ai-analysis-screen"
-      ]
-    },
-    {
-      "id": "arch-ai-analysis-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "AI分析 — ai_tasks へ出来事の時刻と連番を足す追加のみの migration 0046",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/ai-analysis-database.md",
-      "source_lineage": {
-        "imported_at": "2026-09-19T13:11:57Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb",
-        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/database.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-ai-analysis-screen"
-      ]
-    },
-    {
-      "id": "arch-ai-analysis-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "AI分析 — 利用者経路はフェンスの内側、エージェント経路は agentGuard 1 か所で 401 に揃える",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/ai-analysis-auth.md",
-      "source_lineage": {
-        "imported_at": "2026-09-19T13:11:57Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "43dfdc557b5f5aaf98b06b941235ed93dba451d3a240fd2721a898a582678f37",
-        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-ai-analysis-screen"
-      ]
-    },
-    {
-      "id": "arch-ai-analysis-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "AI分析 — 固定 4 MiB の request budget で過大転送を止め、集計値だけを外へ出す",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/ai-analysis-security.md",
-      "source_lineage": {
-        "imported_at": "2026-09-19T13:11:57Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "8f446762dac8ac8a6d4309890f85c19832143ab42e22e3bc11914f39c88a8831",
-        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/security.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-ai-analysis-screen"
-      ]
-    },
-    {
-      "id": "arch-ai-analysis-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "AI分析 — 基盤を変えず Migrate → Deploy の順で列の追加だけを反映する",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/ai-analysis-infrastructure.md",
-      "source_lineage": {
-        "imported_at": "2026-09-19T13:11:57Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "2dd60db420ad646ddde4503af53e0162b59f324570faa0ddfe547fc7b417fd88",
-        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/infrastructure.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-ai-analysis-screen"
-      ]
-    },
-    {
-      "id": "arch-ai-analysis-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "AI分析 — 段階の規則を docs/ai-screen/ の表と境界テストで固定し、skill 不変を緑のまま保つ",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/ai-analysis-maintenance-ops.md",
-      "source_lineage": {
-        "imported_at": "2026-09-19T13:11:57Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "2b3f704b5a4f10f10bf1f37852d1094d0c80cb21fbe1ec9470a3b9fa1f01ee08",
-        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/maintenance-ops.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-ai-analysis-screen"
-      ]
-    },
-    {
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/statements-ui-ux.md",
-      "id": "arch-statements-ui-ux",
-      "referenced_by": [],
-      "source_lineage": {
-        "imported_at": "2026-09-19T23:36:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "c0bfb4dcb73ff2a5fe9d619b8fc6b0bcf742184d11c5ec7eaae9a9c8889b2809",
-        "source_path": "system-spec/archive/2026-09-21-statements-screen/ui-ux.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "status": "active",
-      "title": "決算書 — 問いの見出しから根拠へ降りる 1 画面と、負債の 3 状態入力"
-    },
-    {
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/statements-frontend.md",
-      "id": "arch-statements-frontend",
-      "referenced_by": [],
-      "source_lineage": {
-        "imported_at": "2026-09-19T23:36:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "e08a7544aa1da43742a06cd81aa8348b2c219aa4c1d153c69751660d9e010820",
-        "source_path": "system-spec/archive/2026-09-21-statements-screen/frontend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "status": "active",
-      "title": "決算書 — 薄いページと `pages/statements/` の部品、1 本の取得と 1 本の保存、利用者別の下書き"
-    },
-    {
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/statements-backend.md",
-      "id": "arch-statements-backend",
-      "referenced_by": [],
-      "source_lineage": {
-        "imported_at": "2026-09-19T23:36:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "c7df4f617d6b5584de1046f01f33acd1da7e396a903ac403bbea6802927859fc",
-        "source_path": "system-spec/archive/2026-09-21-statements-screen/backend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "status": "active",
-      "title": "決算書 — core の statementsScreen 1 か所と、GET /api/statements の screen-only 契約・PUT の項目単位 upsert"
-    },
-    {
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/statements-database.md",
-      "id": "arch-statements-database",
-      "referenced_by": [],
-      "source_lineage": {
-        "imported_at": "2026-09-19T22:38:08Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "a72d7ffaaa1919526a5975eb739dc52250162c735a4a024818a3f05924fbbbe8",
-        "source_path": "system-spec/archive/2026-09-21-statements-screen/database.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "status": "active",
-      "title": "決算書 — balance_entries に状態列を足し、監査は新表 liability_audit_log で持つ追加のみの migration 0046"
-    },
-    {
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/statements-auth.md",
-      "id": "arch-statements-auth",
-      "referenced_by": [],
-      "source_lineage": {
-        "imported_at": "2026-09-19T22:38:08Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "7bce6415965c0d792d7b8bbda988ffddefcfe679591e6adf72713134c21314e1",
-        "source_path": "system-spec/archive/2026-09-21-statements-screen/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "status": "active",
-      "title": "決算書 — 2 経路を既存の authGuard と一時パスワードの fence の内側に置き、user_id と組で引く"
-    },
-    {
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/statements-security.md",
-      "id": "arch-statements-security",
-      "referenced_by": [],
-      "source_lineage": {
-        "imported_at": "2026-09-19T22:38:08Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "e7373096230225e022ceb7e55f8c181d0384679fa70979420a0b218130e20a76",
-        "source_path": "system-spec/archive/2026-09-21-statements-screen/security.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "status": "active",
-      "title": "決算書 — 負債の保存経路に金額と本文の上限・監査を足し、CSV エクスポートの数式注入を防ぐ"
-    },
-    {
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/statements-infrastructure.md",
-      "id": "arch-statements-infrastructure",
-      "referenced_by": [],
-      "source_lineage": {
-        "imported_at": "2026-09-19T22:38:08Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "9f317cd28a76d3182c8481438a351013f992e45b44247cfbd7b5ae24f2f7c90c",
-        "source_path": "system-spec/archive/2026-09-21-statements-screen/infrastructure.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "status": "active",
-      "title": "決算書 — 既存の Worker・D1・静的配信と ci / deploy / migrate の流れに乗せ、新しい基盤を足さない"
-    },
-    {
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/statements-maintenance-ops.md",
-      "id": "arch-statements-maintenance-ops",
-      "referenced_by": [],
-      "source_lineage": {
-        "imported_at": "2026-09-19T23:36:20Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "342df0a3bb828c5fe8c971d23a780a99cefdb816226db5b9558dc98eaf4b0adc",
-        "source_path": "system-spec/archive/2026-09-21-statements-screen/maintenance-ops.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "status": "active",
-      "title": "決算書 — 恒等式と 3 状態を契約テストで固定し、既存テストを旧実装で落ちる形へ更新し、規則を docs に残す"
-    },
-    {
-      "id": "arch-classify-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "明細仕分け — 既存の認証とフェンスの内側に置く新経路と利用者単位の区切り",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-auth.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-21-classify-screen/auth.md",
-        "source_version": "0.1.14",
-        "source_digest": "0380be1d0882724cbfb1302956f76a9aeb05544ee6c9dfb8f71fa2fb42f9c186",
-        "imported_at": "2026-09-19T14:03:38Z"
-      },
-      "referenced_by": [
-        "feat-classify-screen"
-      ]
-    },
-    {
-      "id": "arch-classify-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "明細仕分け — 分類ステータスと提案を導く core 純関数 1 か所と変更系 API",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-backend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-21-classify-screen/backend.md",
-        "source_version": "0.1.14",
-        "source_digest": "28297c3d03be9cf9a1f52e5d03cb310b2ca3291534bb4e2591ba22da81ed9035",
-        "imported_at": "2026-09-19T14:03:38Z"
-      },
-      "referenced_by": [
-        "feat-classify-screen"
-      ]
-    },
-    {
-      "id": "arch-classify-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "明細仕分け — 2 表と既存表への列を足す追加のみの migration",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-database.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-21-classify-screen/database.md",
-        "source_version": "0.1.14",
-        "source_digest": "64a5feecbecad51c781e6e8fcf07d055304f0a93cba019ee29d5586aa3be8aba",
-        "imported_at": "2026-09-19T14:03:38Z"
-      },
-      "referenced_by": [
-        "feat-classify-screen"
-      ]
-    },
-    {
-      "id": "arch-classify-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "明細仕分け — pages/classify への分割と URL・サーバ状態・端末下書きの分離",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-frontend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-21-classify-screen/frontend.md",
-        "source_version": "0.1.14",
-        "source_digest": "331f13c5d50b4b0807e4b39c944536f191fe4680ef2fc901e924c804a0c8ec4c",
-        "imported_at": "2026-09-19T14:03:38Z"
-      },
-      "referenced_by": [
-        "feat-classify-screen"
-      ]
-    },
-    {
-      "id": "arch-classify-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "明細仕分け — 基盤を変えず件数上限と batch の区切りで無料枠に収める",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-infrastructure.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-21-classify-screen/infrastructure.md",
-        "source_version": "0.1.14",
-        "source_digest": "6de2efee9fda877fe65cd1545eba12549dbf0d9e7d9797f186235936a5ef4027",
-        "imported_at": "2026-09-19T14:03:38Z"
-      },
-      "referenced_by": [
-        "feat-classify-screen"
-      ]
-    },
-    {
-      "id": "arch-classify-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "明細仕分け — 3 区分の不変条件テストと旧実装で落ちる検算による回帰検出",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-maintenance-ops.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-21-classify-screen/maintenance-ops.md",
-        "source_version": "0.1.14",
-        "source_digest": "5b8f24c0344ea95abaf6eba3e8a983caa814090f7de068bb89e433cc4fcb38ee",
-        "imported_at": "2026-09-19T14:03:38Z"
-      },
-      "referenced_by": [
-        "feat-classify-screen"
-      ]
-    },
-    {
-      "id": "arch-classify-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "明細仕分け — zod の長さ制限・フェンス登録・外部送信なし・証憑面を持たない",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-security.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-21-classify-screen/security.md",
-        "source_version": "0.1.14",
-        "source_digest": "9d1fbf27441cf7ee74f85d419f4611beeda5aac386765a3f669b0a939c1508d6",
-        "imported_at": "2026-09-19T14:03:38Z"
-      },
-      "referenced_by": [
-        "feat-classify-screen"
-      ]
-    },
-    {
-      "id": "arch-classify-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "明細仕分け — 問いと件数から 3 カラムの確定、結果の通知までの 1 画面",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-ui-ux.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-21-classify-screen/ui-ux.md",
-        "source_version": "0.1.14",
-        "source_digest": "7afdc6ecbca54a0a7aeb3e4498bc6a9cbe6b98c8f58cd8f1c18ca364ec711f62",
-        "imported_at": "2026-09-19T14:03:38Z"
-      },
-      "referenced_by": [
-        "feat-classify-screen"
-      ]
-    },
-    {
-      "id": "arch-budget-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "予算 — 既存の認証とフェンスの内側に置く取得・保存と利用者単位の区切り",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/budget-auth.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-22-budget-screen/auth.md",
-        "source_version": "0.1.14",
-        "source_digest": "8bac5a1830455e332c0527f6ffc5c1aa3d6d49387e3d8b3ec611a14c17fd101f",
-        "imported_at": "2026-09-21T13:59:08Z"
-      },
-      "referenced_by": [
-        "feat-budget-screen"
-      ]
-    },
-    {
-      "id": "arch-budget-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "予算 — 予算画面の算出と予算の読み出しを担う core 純関数 1 か所と取得・保存の 2 経路",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/budget-backend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-22-budget-screen/backend.md",
-        "source_version": "0.1.14",
-        "source_digest": "cd68f3959122014af143291a3f5a61039e84bbe13f348a0b7cd3a106585725d1",
-        "imported_at": "2026-09-21T13:59:08Z"
-      },
-      "referenced_by": [
-        "feat-budget-screen"
-      ]
-    },
-    {
-      "id": "arch-budget-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "予算 — 期間別の年額表 budget_plans を足す追加のみの migration とバックアップ・復元への編入",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/budget-database.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-22-budget-screen/database.md",
-        "source_version": "0.1.14",
-        "source_digest": "a27bde88c9d11399fcacdf470fb1e1a25db503a875d1b5b26b5ee648721353d3",
-        "imported_at": "2026-09-21T13:59:08Z"
-      },
-      "referenced_by": [
-        "feat-budget-screen"
-      ]
-    },
-    {
-      "id": "arch-budget-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "予算 — pages/budget への分割と URL・サーバ状態・端末下書きの分離",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/budget-frontend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-22-budget-screen/frontend.md",
-        "source_version": "0.1.14",
-        "source_digest": "c555b213773f5d2a3bea4d0f51d770d843672c6cf70ba55a1d50827c63badf66",
-        "imported_at": "2026-09-21T13:59:08Z"
-      },
-      "referenced_by": [
-        "feat-budget-screen"
-      ]
-    },
-    {
-      "id": "arch-budget-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "予算 — 基盤を変えず行数上限と 1 回の D1 batch で無料枠に収める",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/budget-infrastructure.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-22-budget-screen/infrastructure.md",
-        "source_version": "0.1.14",
-        "source_digest": "d69bafe2c6f37b37fd1c18513b3e15eeb609d7830c50a59b0f9c67adbf1570fb",
-        "imported_at": "2026-09-21T13:59:08Z"
-      },
-      "referenced_by": [
-        "feat-budget-screen"
-      ]
-    },
-    {
-      "id": "arch-budget-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "予算 — 式と整合を core の単体テストで固定し旧実装で落ちる検算を受入の根拠にする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/budget-maintenance-ops.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-22-budget-screen/maintenance-ops.md",
-        "source_version": "0.1.14",
-        "source_digest": "8cfbe5fbed898db6065b9c6529a6018d9e1ac7edeb7bbb5c1c7b05306cf48019",
-        "imported_at": "2026-09-21T13:59:08Z"
-      },
-      "referenced_by": [
-        "feat-budget-screen"
-      ]
-    },
-    {
-      "id": "arch-budget-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "予算 — zod の型と範囲・行数上限・フェンス登録・外部送信なし・下書きの消去",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/budget-security.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-22-budget-screen/security.md",
-        "source_version": "0.1.14",
-        "source_digest": "b796b626b18f8470e2c88875dca536473b2a7b53652fc411602769c7900057d2",
-        "imported_at": "2026-09-21T13:59:08Z"
-      },
-      "referenced_by": [
-        "feat-budget-screen"
-      ]
-    },
-    {
-      "id": "arch-budget-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "予算 — KPI と過不足から一覧と科目パネルを往復し保存バーで確定する 1 画面",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/budget-ui-ux.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-22-budget-screen/ui-ux.md",
-        "source_version": "0.1.14",
-        "source_digest": "cdcb7210699bd4c8fedd6a834ad74b55bed23a17a36441417b285fdbd14665c1",
-        "imported_at": "2026-09-21T13:59:08Z"
-      },
-      "referenced_by": [
-        "feat-budget-screen"
-      ]
-    },
-    {
-      "id": "arch-import-screen-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "データ取込 — 選択・一覧・内容確認・結果・履歴の 5 段を問いの見出しの下に並べ、取り込む前に何が入るかを必ず見せる",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/import-screen-ui-ux.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:53:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "f14062b5b29edd57c4d2b9795cf43de5db309be4bcb263dc47cab8187ed1b26e",
-        "source_path": "system-spec/archive/2026-09-23-import-screen/ui-ux.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-import-screen"
-      ]
-    },
-    {
-      "id": "arch-import-screen-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "データ取込 — Import.tsx を pages/import/ へ分割し、上限の判定も含めて core の結果を描くだけにする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/import-screen-frontend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:53:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "a7e3437bf267934ab3c6b44de73a738606c8af419fba667ca59ef8e2f536cf31",
-        "source_path": "system-spec/archive/2026-09-23-import-screen/frontend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-import-screen"
-      ]
-    },
-    {
-      "id": "arch-import-screen-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "データ取込 — 検査と確定を 2 経路に分け、状態・要約・結果・上限値を core の import-screen.ts 1 か所で導く",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/import-screen-backend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:53:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "f1e820c99e3f8424452e73decb691a16873c228b6f14aff5b491081f07d05755",
-        "source_path": "system-spec/archive/2026-09-23-import-screen/backend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-import-screen"
-      ]
-    },
-    {
-      "id": "arch-import-screen-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "データ取込 — 検査・ファイル項目・レート制限の 3 表と import_runs の列を 0050 以降の追加だけで持つ",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/import-screen-database.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:53:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "4b40739265566acb82504749214ed94e5071bf84a5375a7a1f898d1d3a1acd64",
-        "source_path": "system-spec/archive/2026-09-23-import-screen/database.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-import-screen"
-      ]
-    },
-    {
-      "id": "arch-import-screen-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "データ取込 — 全経路を既存のセッションのフェンスの内側に置き、他人・期限切れ・別検査の ID はすべて 404 にそろえる",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/import-screen-auth.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:53:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "f1a1572295b16d6fc096c4b441d4f72748a1460b078fbb5f85e0562dc15adf25",
-        "source_path": "system-spec/archive/2026-09-23-import-screen/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-import-screen"
-      ]
-    },
-    {
-      "id": "arch-import-screen-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "データ取込 — 合計・ファイル単位・展開前の 3 段で大きさを止め、レート制限と同一オリジンの検査を入口に置く",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/import-screen-security.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:53:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "7d2806984e761ff45eddfa2cae491f0c9c4338f30709d2cc955ec21f33d0cd8f",
-        "source_path": "system-spec/archive/2026-09-23-import-screen/security.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-import-screen"
-      ]
-    },
-    {
-      "id": "arch-import-screen-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "データ取込 — 仮置きを既存 R2 の専用接頭辞に置き、片づけを既存の夜間保守に載せて、基盤は D1 の表の追加だけにする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/import-screen-infrastructure.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:53:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "2e050c28b0a7fc383a43286e8c150e1d4551196f7a0b6f57310c26f729ff084c",
-        "source_path": "system-spec/archive/2026-09-23-import-screen/infrastructure.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-import-screen"
-      ]
-    },
-    {
-      "id": "arch-import-screen-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "データ取込 — 規則を docs/import-screen/ と境界表のテストで固定し、上限の数値リテラルを字面の検査で core の 1 か所に閉じ込める",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/import-screen-maintenance-ops.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:53:09Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "0e03da0aed7e1bed0f3e37eafeb8df1e8e76a249f5f35465d0b4060fae426293",
-        "source_path": "system-spec/archive/2026-09-23-import-screen/maintenance-ops.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-import-screen"
-      ]
-    },
-    {
-      "id": "arch-tradeoff-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "トレードオフ — 画像の構成要素を 1 画面に並べ、差額と防衛ラインを文字で伝える",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/tradeoff-ui-ux.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:35:02Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "2682e1d737675bd52781e250e8d536b0b04dc4c1189477e902a9778332afe050",
-        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/ui-ux.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-tradeoff-screen"
-      ]
-    },
-    {
-      "id": "arch-tradeoff-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "トレードオフ — pages/tradeoff/ へ分割し、数字は core の試算関数の結果だけを読む",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/tradeoff-frontend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:35:02Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "8b1f93d9cb74bac83fab5cc5db7d9f5f3320b4b55152f486e05b2939ecf2a386",
-        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/frontend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-tradeoff-screen"
-      ]
-    },
-    {
-      "id": "arch-tradeoff-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "トレードオフ — 候補・必要度・試算・推奨を core の純関数に置き、POST はサーバで再計算する",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/tradeoff-backend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:35:02Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "bea33a5eda7582bf617c4e922dede268af508d3701b261f70dc7f23961f01164",
-        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/backend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-tradeoff-screen"
-      ]
-    },
-    {
-      "id": "arch-tradeoff-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "トレードオフ — 追加のみの migration で試算条件の列と候補ごとの上書きの表を足す",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/tradeoff-database.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:35:02Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "f83a4e3de0ac081a8399e78ef1a668a510a56fa1757973a401ed8834ddae0c26",
-        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/database.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-tradeoff-screen"
-      ]
-    },
-    {
-      "id": "arch-tradeoff-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "トレードオフ — 既存の /api/* フェンスの内側に置き、全経路を user_id で絞る",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/tradeoff-auth.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:35:02Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "cca5fd48cb1d938da9b371d40412023e78e6017563c1b9768f077aa650609ea8",
-        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-tradeoff-screen"
-      ]
-    },
-    {
-      "id": "arch-tradeoff-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "トレードオフ — zod の上限とサーバ再計算でクライアントの計算値を信用しない",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/tradeoff-security.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:35:02Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "8da2d2e7da29edfc641f8cf35d24f685165fe0f323749a7b78a769ac70d5274e",
-        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/security.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-tradeoff-screen"
-      ]
-    },
-    {
-      "id": "arch-tradeoff-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "トレードオフ — 構成を変えず、EXPECTED_D1_MIGRATION と Migrate → Deploy に従う",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/tradeoff-infrastructure.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:35:02Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "ecbe51bb97c8d67d6a6bf138061ee63143b09d1c24a47b8f6542a5e1d8c4fd04",
-        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/infrastructure.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-tradeoff-screen"
-      ]
-    },
-    {
-      "id": "arch-tradeoff-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "トレードオフ — 規則を FR-09 の表と core の契約テストの期待値に 1 対 1 で置く",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/tradeoff-maintenance-ops.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:35:02Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "e10c770f84aef936d92cf9a5beace59448148b1a1df69e7b5dc2bfdaa928614a",
-        "source_path": "system-spec/archive/2026-09-22-tradeoff-screen/maintenance-ops.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": [
-        "feat-tradeoff-screen"
-      ]
-    },
-    {
-      "id": "arch-cash-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "現金入力 — 入力 2 枚と一覧を 17-cash.png の順に並べ、削除は行内確認と『元に戻す』で取り返せるようにする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/cash-ui-ux.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:58:36Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "5818a2ca9eda2ad5eca982405969af14a8ecb9211416f162b7aecc1a967d2e47",
-        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/ui-ux.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-cash-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "現金入力 — Cash.tsx を pages/cash/ に分け、表示条件を URL・下書きを localStorage に置き、数字は view-model 経由で core から受け取る",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/cash-frontend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:58:36Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "0f4a8db2cf8cf65afdf35b35472b1e08b63e067eb0b68c11e1f7722805e324ac",
-        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/frontend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-cash-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "現金入力 — DELETE を論理削除にし、復元と一括の経路を足して、削除中の行を読む全経路から外す",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/cash-backend.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:58:36Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "c3b9b94a0b805e19f69d52b6fe19b4513b5f1a77956b42807fdd01f42f5c6305",
-        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/backend.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-cash-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "現金入力 — 追加のみの migration 0050 で owner・transit_purpose・deleted_at を足し、既存行を書き換えずに論理削除と名義を持つ",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/cash-database.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:58:36Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "a956740a1c4085f5d7bff8b9f49d6a114c452b20336491a6ce713bca62b63c1d",
-        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/database.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-cash-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "現金入力 — 既存のセッションのまま、新しい削除・復元・一括の経路も userId で絞り、他人の行を 404 にする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/cash-auth.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:58:36Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "4f3863710e7af200fe3cbc217fefc99570d6c56266d26e5ead16c5358161d73d",
-        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/auth.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-cash-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "現金入力 — zod で候補と長さを限り、領収書ファイルと下書きをサーバーへ受け取らず、削除中の行を混ぜない不変条件を API テストで固定する",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/cash-security.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:58:36Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "7a260e661c2e48f4d802219de5c52e287612c9173f56eab3a28231ee69788688",
-        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/security.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-cash-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "現金入力 — 完全消去を既存の夜間 cron に独立 job で相乗りさせ、新しい binding・cron・外部サービスを足さない",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/cash-infrastructure.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:58:36Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "11a259426013adb293cb3c3d9e2ac948aa5394cdc30fd8fd4641747d444774a3",
-        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/infrastructure.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-cash-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "現金入力 — 削除中の行を出さない規則を経路ごとの API テストと 29 日 / 31 日の境界で固定し、check:cash-screen を verify:full に組み込む",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/cash-maintenance-ops.md",
-      "source_lineage": {
-        "imported_at": "2026-09-21T22:58:36Z",
-        "origin_kind": "system-spec-harness",
-        "source_digest": "6101bc7549cfb1cd1f2fc96915120a6dd9aa17678c0d23eb631c8e06ca8d6827",
-        "source_path": "system-spec/archive/2026-09-23-cash-entry-screen/maintenance-ops.md",
-        "source_plugin": "system-spec-harness",
-        "source_version": "0.1.14"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-improvement-screen-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "改善リクエスト — 上段に作成フォーム・下段に一覧と詳細の 2 ペインを置き、プライバシー確認 2 つとマスク対象の説明を送信の直前に、削除は『元に戻す』で取り返せるようにする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/improvement-screen-ui-ux.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-improvement-screen/ui-ux.md",
-        "source_version": "0.1.14",
-        "source_digest": "55d1437d6fba626dd898122b48d66e5e981a95dfc2f5a71af1dff3e7e7de94b0",
-        "imported_at": "2026-09-23T13:47:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-improvement-screen-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "改善リクエスト — pages/improvement/ に分けて core を呼ぶのは view-model だけにし、表示条件は URL を正本に、撮影は遅延読み込みの DOM 複製に伏字と範囲選択を足して画像はメモリだけに持つ",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/improvement-screen-frontend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-improvement-screen/frontend.md",
-        "source_version": "0.1.14",
-        "source_digest": "1153b45360c5786d15aee28f19d9d684aa3155b8d44ae0b83e6b9a354c5101c6",
-        "imported_at": "2026-09-23T13:47:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-improvement-screen-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "改善リクエスト — 状態の遷移・一覧・関連・履歴の判定を core の improvement-screen に置き、API は zod で検証して D1 batch 1 つで依頼と履歴を書き、削除中の行を全経路で読まず、夜間に 30 日後の完全消去を他 job の枠 1 本で回す",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/improvement-screen-backend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-improvement-screen/backend.md",
-        "source_version": "0.1.14",
-        "source_digest": "13f0f32a2b6dfc894e328acfe9efd46454e5b6642111f6088ac9bd61366a5d95",
-        "imported_at": "2026-09-23T13:47:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-improvement-screen-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "改善リクエスト — migration 0053 で improvement_requests を作り直して状態を 4 つに改め、利用者ごとの連番・論理削除・履歴表を足し、既存の行・画像・トークンを 1 件も落とさずバックアップの外に置く",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/improvement-screen-database.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-improvement-screen/database.md",
-        "source_version": "0.1.14",
-        "source_digest": "c982ad2a18786c75d0d9c1f523c1adb00d6c5cc0fdabfeada0219c68af5950b3",
-        "imported_at": "2026-09-23T13:47:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-improvement-screen-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "改善リクエスト — 削除・復元・一覧の検索を既存のセッション Cookie と authGuard の配下に置き、他の利用者の依頼と削除中の依頼をどの経路からも 404 にそろえる",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/improvement-screen-auth.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-improvement-screen/auth.md",
-        "source_version": "0.1.14",
-        "source_digest": "e97adcfd5be8331dcdc57c615ade418260e0a9f530e410024e38c455ae8f61da",
-        "imported_at": "2026-09-23T13:47:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-improvement-screen-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "改善リクエスト — 同じ core のマスク規則をブラウザとサーバの 2 層で掛け、入力を 5 つの境界で閉じ、論理削除から 30 日後の完全消去までを保持期限で守る",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/improvement-screen-security.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-improvement-screen/security.md",
-        "source_version": "0.1.14",
-        "source_digest": "46502737710bfbffc42ed88bf9f2404279b72b5fdf193e1ec7af50260cf43ade",
-        "imported_at": "2026-09-23T13:47:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-improvement-screen-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "改善リクエスト — 削除から 30 日後の完全消去を新しい cron を足さず夜間の improvement_retention に相乗りさせ、audit_header_retention から 1 本回して D1 予算の合計 49 を保つ",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/improvement-screen-infrastructure.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-improvement-screen/infrastructure.md",
-        "source_version": "0.1.14",
-        "source_digest": "7c10807c3331802623de4fae6013177370c39b9dae5377ecd19f48cd1a1cadf2",
-        "imported_at": "2026-09-23T13:47:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-improvement-screen-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "改善リクエスト — 既存の品質ゲートを全て緑に保ち、0053 の適用前バックアップと戻し方を runbook に置き、夜間の完全消去の件数を個人情報なしの JSON ログで追えるようにする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/improvement-screen-maintenance-ops.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-improvement-screen/maintenance-ops.md",
-        "source_version": "0.1.14",
-        "source_digest": "d0a9ec61c38694ac6f85838678d0a9f3adcdb9070a6e9e77b03db4189b4cbfdc",
-        "imported_at": "2026-09-23T13:47:00Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-settings-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "設定 — 既存の認証と 4 層の内側に置き、書込みだけをフェンスへ登録し更新者をセッションから決める",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/settings-auth.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-24-settings-screen/auth.md",
-        "source_version": "0.1.14",
-        "source_digest": "1968df8fa1eed625d5ba1376decf22c7c0a3e636d0e0ecda927fce14049294ff",
-        "imported_at": "2026-09-22T10:13:43Z"
-      },
-      "referenced_by": [
-        "feat-settings-screen"
-      ]
-    },
-    {
-      "id": "arch-settings-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "設定 — core の純関数で照合・現金上書き・設定 JSON を解き 全節の保存と変更履歴を 1 つの D1 batch に閉じ 復元は preview と本適用に分ける",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/settings-backend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-24-settings-screen/backend.md",
-        "source_version": "0.1.14",
-        "source_digest": "8ed202ee635561a574f5fb733a146afe35b10e295340e7e5a49f50d75ec1bb3c",
-        "imported_at": "2026-09-22T10:13:43Z"
-      },
-      "referenced_by": [
-        "feat-settings-screen"
-      ]
-    },
-    {
-      "id": "arch-settings-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "設定 — 集計ルール・現金上書き・変更履歴を利用者単位の新表に追加のみで置き 既存行は写しの元として読むだけにする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/settings-database.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-24-settings-screen/database.md",
-        "source_version": "0.1.14",
-        "source_digest": "0f71b39eb0d4aef2864a0fb9b5ba913b68a72fb2d69bd08ef7a7792ef470f78f",
-        "imported_at": "2026-09-22T10:13:43Z"
-      },
-      "referenced_by": [
-        "feat-settings-screen"
-      ]
-    },
-    {
-      "id": "arch-settings-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "設定 — 画面の入口が 1 本の取得を節ごとの部品へ配り 4 節の編集を 1 つの下書きに集めて 1 回で保存する",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/settings-frontend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-24-settings-screen/frontend.md",
-        "source_version": "0.1.14",
-        "source_digest": "711a2fd0946231628d693ec05f71d6f7013ad9d4d589f3b06dc548264f76f000",
-        "imported_at": "2026-09-22T10:13:43Z"
-      },
-      "referenced_by": [
-        "feat-settings-screen"
-      ]
-    },
-    {
-      "id": "arch-settings-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "設定 — 基盤を変えず cron を JST 2:00 へ移し、各回の成否・メモ・要約を R2 に残して失敗も一覧に出す",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/settings-infrastructure.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-24-settings-screen/infrastructure.md",
-        "source_version": "0.1.14",
-        "source_digest": "6b7af8e430bf9e58190417f42bb9e68c682f79d5c790e70419330e6e5ef75192",
-        "imported_at": "2026-09-22T10:13:43Z"
-      },
-      "referenced_by": [
-        "feat-settings-screen"
-      ]
-    },
-    {
-      "id": "arch-settings-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "設定 — 変更は追記のみの履歴で辿り、誤りは D1 全体を上書きせず設定の復元と元に戻すで直す",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/settings-maintenance-ops.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-24-settings-screen/maintenance-ops.md",
-        "source_version": "0.1.14",
-        "source_digest": "55b201ec86e261da7cb5fceb2ba2d639875931c7a72a259401e72e623add4452",
-        "imported_at": "2026-09-22T10:13:43Z"
-      },
-      "referenced_by": [
-        "feat-settings-screen"
-      ]
-    },
-    {
-      "id": "arch-settings-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "設定 — 公開向け検証と本文上限・復元は厳密検証で全か無か・取引は消さない・外部送信なし",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/settings-security.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-24-settings-screen/security.md",
-        "source_version": "0.1.14",
-        "source_digest": "c0d64d31afc54115c07bc73eaa3884d65f3a33205d92327fda0e583c56edb163",
-        "imported_at": "2026-09-22T10:13:43Z"
-      },
-      "referenced_by": [
-        "feat-settings-screen"
-      ]
-    },
-    {
-      "id": "arch-settings-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "設定 — 節ナビで 8 節を移り集計ルールの表と説明パネルを往復し保存バーで 1 回に確定する 1 画面",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/settings-ui-ux.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-24-settings-screen/ui-ux.md",
-        "source_version": "0.1.14",
-        "source_digest": "376a461e32d6277d040822ed6cd4d4b016c46332dece3f6f8c7c412114b754de",
-        "imported_at": "2026-09-22T10:13:43Z"
-      },
-      "referenced_by": [
-        "feat-settings-screen"
-      ]
-    },
-    {
-      "id": "arch-guide-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "使い方 — /api/guide を既存の authGuard と mustChangePasswordFence の配下の /api/* に置き、userId の Dataset だけを読み、新しい権限・資格情報を作らない",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/guide-auth.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-guide-screen/auth.md",
-        "source_version": "0.1.14",
-        "source_digest": "6750698bc3023d6fde3c45b95ce211667ad33ca8372193ffeb5475baf684061f",
-        "imported_at": "2026-09-23T13:27:15Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-guide-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "使い方 — core に guide-screen・信頼度の段階関数・shiftedPeriod・防衛ラインの算出期間の定数を置き、GET /api/guide は loadScoped の結果を core に渡して { screen } に写すだけにする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/guide-backend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-guide-screen/backend.md",
-        "source_version": "0.1.14",
-        "source_digest": "d0cb72d133251ca361263ca8bebba44f3d9a531a938fceab8f5234c89a1d7847",
-        "imported_at": "2026-09-23T13:27:15Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-guide-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "使い方 — DB の表と列は足さず、ガイド本文は core の定数として版管理し、数値は既存の loadDataset の読み取りから毎回導く",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/guide-database.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-guide-screen/database.md",
-        "source_version": "0.1.14",
-        "source_digest": "262454a435c86a72714c047a24f18f51d84e187fbc5bb2a0e40d210dc847e07b",
-        "imported_at": "2026-09-23T13:27:15Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-guide-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "使い方 — Guide.tsx を pages/guide/ に分け、トピックと検索語を URL に置き、数字と文言は view-model 経由で core の guide-screen から受け取る",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/guide-frontend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-guide-screen/frontend.md",
-        "source_version": "0.1.14",
-        "source_digest": "91756674aaa74956621cba80f0cbd496d790626d431d0e24ed476ea7c725b49f",
-        "imported_at": "2026-09-23T13:27:15Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-guide-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "使い方 — 新しい Worker・binding・cron・環境変数を足さず、/api/guide は既存の api Worker に載せ、画面は遅延 chunk にして初期 JS 110KiB の予算を守る",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/guide-infrastructure.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-guide-screen/infrastructure.md",
-        "source_version": "0.1.14",
-        "source_digest": "00053ca510de65ebd9915185fd8438088ba8875359d36ba66752c54b25ce906f",
-        "imported_at": "2026-09-23T13:27:15Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-guide-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "使い方 — check:guide-screen (KANJO_VISUAL_SCOPE=guide) を verify:full に足し、境界値と防衛ラインの説明文をテストで固定し、記録は docs/guide-screen/ に置き、check-glossary のため用語と目安で全用語を出し続ける",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/guide-maintenance-ops.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-guide-screen/maintenance-ops.md",
-        "source_version": "0.1.14",
-        "source_digest": "cc113059f1c56ef51d31fd20416c85d51894eaba0cb8c8af7f351e8acafe56e6",
-        "imported_at": "2026-09-23T13:27:15Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-guide-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "使い方 — topic は許可リスト・q は 100 字で切り検索はサーバへ送らず、フッタは明細を送らない事実に限って AI 送信の補足を 3 か所に残し、CSP は変えない",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/guide-security.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-guide-screen/security.md",
-        "source_version": "0.1.14",
-        "source_digest": "c0921d456f4e06dc42879df45252b78dd5acec3ccf9b7dfccf3103e60f9f82cd",
-        "imported_at": "2026-09-23T13:27:15Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-guide-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "使い方 — 問いの見出しの下に 4 ステップと元画面への戻り道を置き、総収支を実データで読み解かせ、信頼度は段階＋%・ヘッダは防衛ラインのまま・フッタは事実どおりにする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/guide-ui-ux.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-09-25-guide-screen/ui-ux.md",
-        "source_version": "0.1.14",
-        "source_digest": "37aa1d855046a7d5b432aacf16f2c36fddccf269a12ab678d3f5139f71a78333",
-        "imported_at": "2026-09-23T13:27:15Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-subscriptions-merge-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "サブスク統合 — 行チェック・選択バー・操作状態・取り消しを画像どおりに置く",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-merge-ui-ux.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/ui-ux.md",
-        "source_version": "0.1.14",
-        "source_digest": "a99e6335d85a64194464559f5c308617b7730d4075e8f725d19f0df20a3f7c7d",
-        "imported_at": "2026-09-30T15:18:20Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-subscriptions-merge-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "サブスク統合 — 書込みを1つの scope で直列化し、操作状態と取り消しを画面に持つ",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-merge-frontend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/frontend.md",
-        "source_version": "0.1.14",
-        "source_digest": "0fb662a8b175a8a816b276bd707fa8a4b33f44f7823ee29eb432cfe8c856904f",
-        "imported_at": "2026-09-30T15:18:20Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-subscriptions-merge-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "サブスク統合 — 名寄せを1つの照合一覧に寄せ、書込みと subs 集計を1つの batch で適用する",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-merge-backend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/backend.md",
-        "source_version": "0.1.14",
-        "source_digest": "acef0cab09dfc80de17703b8d956670f4c32dcb338e26f7b519e9636887b6b02",
-        "imported_at": "2026-09-30T15:18:20Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-subscriptions-merge-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "サブスク統合 — migration 0058 で統合の参照・操作記録・revision を追加だけで足す",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-merge-database.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/database.md",
-        "source_version": "0.1.14",
-        "source_digest": "6f3a7e7c9459d6c6baf56bf84623837dc95cd830ff6b5fe50b083288c651503e",
-        "imported_at": "2026-09-30T15:18:20Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-subscriptions-merge-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "サブスク統合 — 新しい API を既存のセッション認証とテナントキーの配下に置く",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-merge-auth.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/auth.md",
-        "source_version": "0.1.14",
-        "source_digest": "4c648293a2fe5cf00573e2ee541d2bbbf80ed7f5821d1d871acb13a76fc2f1ff",
-        "imported_at": "2026-09-30T15:18:20Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-subscriptions-merge-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "サブスク統合 — 所有者の検査・入力の上限・操作記録の最小化・fence への登録",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-merge-security.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/security.md",
-        "source_version": "0.1.14",
-        "source_digest": "06e0bb9aadd5f67da71b831e6c92a6dd1e06a37f0989d0ae3ac792d9de4d57bc",
-        "imported_at": "2026-09-30T15:18:20Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-subscriptions-merge-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "サブスク統合 — Workers + D1 の上限の内側で統合を完了させ、lease を短くする",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-merge-infrastructure.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/infrastructure.md",
-        "source_version": "0.1.14",
-        "source_digest": "8bc7c72bdc980f5ef7f00da0356e8fcc3bced2203e554f656eb2e02774bbc017",
-        "imported_at": "2026-09-30T15:18:20Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-subscriptions-merge-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "サブスク統合 — 統合・並行操作・取り消しを core・api・web のテストで固定する",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/subscriptions-merge-maintenance-ops.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/archive/2026-10-01-subscriptions-merge/maintenance-ops.md",
-        "source_version": "0.1.14",
-        "source_digest": "85038de93396791d5832c9a757f7103bfed977078321c558b9b5cfc63274e5f6",
-        "imported_at": "2026-09-30T15:18:20Z"
-      },
-      "referenced_by": []
-    },
-    {
-      "id": "arch-classify-bulk-save-ui-ux",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "明細仕分け一括保存 — 6 列の一覧・一括指定と保存前の内訳・失敗ごとの知らせ",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-bulk-save-ui-ux.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/ui-ux.md",
-        "source_version": "0.1.16",
-        "source_digest": "b1c03ab76d1f3b2747236c7eb125c53b68b1d651eaf371d5dbf85b07c3731fad",
-        "imported_at": "2026-10-01T12:13:05Z"
-      },
-      "referenced_by": [
-        "feat-classify-bulk-save"
-      ]
-    },
-    {
-      "id": "arch-classify-bulk-save-frontend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "frontend"
-      ],
-      "title": "明細仕分け一括保存 — 選択の読み出し・失敗の分類関数・直前の本文の保持",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-bulk-save-frontend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/frontend.md",
-        "source_version": "0.1.16",
-        "source_digest": "0e7b7f2409859c73414efe597a232e4058a00780cd6df53d4d050ce4a2aefa6e",
-        "imported_at": "2026-10-01T12:13:05Z"
-      },
-      "referenced_by": [
-        "feat-classify-bulk-save"
-      ]
-    },
-    {
-      "id": "arch-classify-bulk-save-backend",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "backend"
-      ],
-      "title": "明細仕分け一括保存 — サーバが明細を引き直して core で値を解決し、json_each で束ねた 1 回の batch で書く API",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-bulk-save-backend.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/backend.md",
-        "source_version": "0.1.16",
-        "source_digest": "ab269614a9358535d89563df46c2e288b6d52894cd7db12588c9cb529f983c51",
-        "imported_at": "2026-10-01T12:13:05Z"
-      },
-      "referenced_by": [
-        "feat-classify-bulk-save"
-      ]
-    },
-    {
-      "id": "arch-classify-bulk-save-database",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "data"
-      ],
-      "title": "明細仕分け一括保存 — 勘定科目の対応表の表を 1 つ足し、設定の変更履歴を承認つきで作り直し、一括保存を 1 回の batch で全件か無しに書くデータ設計",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-bulk-save-database.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/database.md",
-        "source_version": "0.1.16",
-        "source_digest": "12f08e168e97d84b37f27da2d8379f5e1d60a5431857d5c7688360f5d107d623",
-        "imported_at": "2026-10-01T12:13:05Z"
-      },
-      "referenced_by": [
-        "feat-classify-bulk-save"
-      ]
-    },
-    {
-      "id": "arch-classify-bulk-save-auth",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "明細仕分け一括保存 — 選択の読み出し・一括保存・勘定科目の対応表を既存のセッション認証と利用者の区切りの配下に置く",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-bulk-save-auth.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/auth.md",
-        "source_version": "0.1.16",
-        "source_digest": "39dc98bbb339173ca4a394060045561241f79a2620b3ca338c6a268ed873ecc2",
-        "imported_at": "2026-10-01T12:13:05Z"
-      },
-      "referenced_by": [
-        "feat-classify-bulk-save"
-      ]
-    },
-    {
-      "id": "arch-classify-bulk-save-security",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "security"
-      ],
-      "title": "明細仕分け一括保存 — 入力の境界を許可リストで閉じ、本文と書き込みの上限・フェンス・項目ごとの履歴で一括保存を守る",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-bulk-save-security.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/security.md",
-        "source_version": "0.1.16",
-        "source_digest": "85b474d994a4d8b7d31e97f571c03fad75bf7d5e1dad066c05fbafd42619e06c",
-        "imported_at": "2026-10-01T12:13:05Z"
-      },
-      "referenced_by": [
-        "feat-classify-bulk-save"
-      ]
-    },
-    {
-      "id": "arch-classify-bulk-save-infrastructure",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "明細仕分け一括保存 — 1 起動 49 本の予算と対応表 migration の承認つき配備",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-bulk-save-infrastructure.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/infrastructure.md",
-        "source_version": "0.1.16",
-        "source_digest": "9a4eaa14ba4a71c8800747bed11d35d5562cc2635086f9f3b92a0bedb72837e9",
-        "imported_at": "2026-10-01T12:13:05Z"
-      },
-      "referenced_by": [
-        "feat-classify-bulk-save"
-      ]
-    },
-    {
-      "id": "arch-classify-bulk-save-maintenance-ops",
-      "artifact_kind": "architecture",
-      "artifact_subtypes": [
-        "infrastructure"
-      ],
-      "title": "明細仕分け一括保存 — O1〜O9 を 4 層のテストと 1264px の画面検査で固定する回帰検出",
-      "status": "active",
-      "confirmation_status": "confirmed",
-      "evaluation_status": "pass",
-      "file_path": "architecture/classify-bulk-save-maintenance-ops.md",
-      "source_lineage": {
-        "origin_kind": "system-spec-harness",
-        "source_plugin": "system-spec-harness",
-        "source_path": "system-spec/maintenance-ops.md",
-        "source_version": "0.1.16",
-        "source_digest": "b12cfcee5a7b7de7613084fb545e100724d284e7e09e39aa10317f9544f2317b",
-        "imported_at": "2026-10-01T12:13:05Z"
-      },
-      "referenced_by": [
-        "feat-classify-bulk-save"
       ]
     }
   ]

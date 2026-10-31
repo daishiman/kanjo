@@ -1,0 +1,211 @@
+{
+  "feature_id": "feat-login-v2",
+  "repository_id": "github:daishiman/kanjo",
+  "run_id": "plan-feat-login-v2-20260921T1447Z",
+  "artifact_kind": "feature",
+  "generated_at": "2026-09-21T14:51:07Z",
+  "identity_check": {
+    "graph_node_id": "feat-login-v2",
+    "graph_node_id_matches_feature_id": true,
+    "artifact_kind_matches": true,
+    "feature_context_path": "features/feat-login-v2.context.json",
+    "feature_context_sha256": "48277ee87b7a68488828edc64ee83a73e5b0f983b65f530d728ff6983a2d3d36",
+    "resolved_by": "呼出し元 (run-system-dev-plan, C09 resolve-project-context.py preflight) が明示した feature-context digest。features/feat-login-v2.context.json の graph_node_id=feat-login-v2 と --feature-id が一致することを確認した。"
+  },
+  "purpose": "金融明細を預かる入口を、テナント管理者に招待された本人だけが、自分で選んだ認証手段 (Google アカウント、またはメールアドレスとパスワード) で入れる場にする。管理者は他人の秘密 (仮パスワード) を一切持たず、招待はメールのリンクで本人に届く。本人はパスワードを自分で再設定でき、同じメールアドレスの Google とパスワードは再認証とメール確認を経て 1 つのアカウントに連携でき、パスワードでのログインには TOTP を重ねる (管理者は必須、一般は任意)。ログイン画面は何が守られるかと稼働状況・ヘルプ・プライバシーをログイン前に示す。保守者に対しては、認証を Better Auth の正規の機能に寄せて自前の暗号処理 (kanjo_session の署名・世代照合・一時パスワード) を撤去し、既存 20 画面と API の認証契約 (401/403/409・監査の actor 記録) を同じ契約テストで守る。",
+  "goal": "/login が 01-login-v2.png の全構成要素 (ロゴと見出し・説明・Googleでログイン・区切り・メールとパスワードのフォーム (表示切替・保持のチェック・パスワードをお忘れの方)・招待の囲み・連携の囲み・安心 3 項目・フッター (稼働状況・ヘルプ・プライバシー)) を画像と完全一致の文言でトークンと共通部品により描画し、送信中・認証失敗・ロック中・MFA コード入力・再送受付・再設定受付の 6 状態を持ち、未認証で /invite/accept・/reset-password・/mfa・/help・/privacy に到達でき、認証基盤が Better Auth v1.7.5 (メールとパスワード・Google・D1 の session 表・TOTP と復旧コード・連携) へ移って自前の署名と一時パスワードと初回変更の強制が 0 件になり、既存の PBKDF2 利用者が再設定なしでログインでき、TOTP 未設定の管理者はパスワードでのログインでも招待の登録直後でも設定を終えるまでセッションを得ず、招待・再送・再設定・MFA の各入口にレート制限と列挙防止が効き、migration 0048 が既存行を書き換えず、既存 20 画面の認証ガードと契約テスト (401/403/409・actor) が緑のままの状態。",
+  "scope_in": [
+    "/login の作り直し (01-login-v2.png の全構成要素と、送信中・認証失敗・ロック中・MFA コード入力・再送受付・再設定受付の 6 状態)。文言は画像と完全一致",
+    "未認証で到達できる画面の新設: /invite/accept・/reset-password・/mfa (設定と入力)・/help・/privacy。公開経路以外の未認証は /login?next= へ",
+    "設定画面のアカウント欄に連携 (追加・解除) と MFA (有効化・無効化・復旧コードの再発行) を置き、利用者管理を招待の作成・再送・取消と状態表示に作り直す",
+    "Better Auth (v1.7.5 固定) の導入: メールとパスワード・Google (OIDC)・D1 の session 表・twoFactor (TOTP と復旧コード)・アカウント連携。createAuthClient は web の container に閉じる",
+    "自前認証の撤去: kanjo_session の署名と世代照合、一時パスワードの発行、初回変更の強制 (mustChangePasswordFence・PasswordChange の forced 表示・403 password_change_required)、一時パスワードの掃除",
+    "migration 0048: 既存 users と PBKDF2 ハッシュの Better Auth の表への複写 (既存行を書き換えない)、招待・MFA 設定トークンの表",
+    "招待の API、ログイン画面からの再送依頼・再設定依頼、MFA 設定の開始と完了の API、稼働状態 API (GET /api/status)",
+    "Resend によるメール送信 (招待・再設定・連携確認) を sendMail(to, template, params) の 1 関数に閉じ、テストで差し替える",
+    "レート制限と列挙防止の新しい入口 (MFA・再送・再設定・MFA 設定) への拡張と、監査ログの新しい action",
+    "docs の更新: 移行と戻し、secret、Google Cloud Console、Resend、締め出し (最後の管理者の停止・MFA 喪失) からの復旧、プライバシー"
+  ],
+  "scope_out": [
+    "自己登録 (サインアップ)。招待制だけを保つ (U7)",
+    "Google 以外のソーシャルログインと SAML などの企業 SSO",
+    "パスキー (WebAuthn) と SMS の MFA。MFA は TOTP だけ (decision-003)",
+    "信頼端末 (trustDevice)。管理者の MFA 必須を素通りさせないため使わない (security-web-004)",
+    "複数テナント (既存の単一テナント 'default' の管理者を指す)",
+    "外部の状況ページサービスとの連携 (稼働状態は自前の GET /api/status)",
+    "独自ドメインの取得と DNS 設定そのもの (手順だけを docs に書く)",
+    "web 以外のプラットフォーム",
+    "旧表 (users・旧 audit の列など) の削除 (本サイクルでは消さない。C3)",
+    "Cloudflare Access のサーバ側検証経路の変更 (2026-09-11 の利用者決定どおり残置。C9)"
+  ],
+  "acceptance": [
+    "S1 (G1): /login に 01-login-v2.png の構成要素がすべて出て、文言は画像と完全一致、色・余白・部品はトークンと共通部品経由で直書き色の lint が 0 件。送信中・認証失敗・ロック中・MFA コード入力・再送受付・再設定受付の 6 状態を持つ。",
+    "S2 (G2/G7): Better Auth へ移しても、未認証の /api/* が 401、停止利用者の既存セッションが 401、非管理者の管理 API が 403、最後の管理者の停止が 409。既存の PBKDF2 利用者が再設定なしでログインできる。旧 kanjo_session の署名経路が 0 件。",
+    "S3 (G3): 招待された本人がメールのリンクから Google かパスワードを選んで登録を完了できる。管理者がパスワードを設定する経路が 0 件。再送依頼の応答で招待の有無が分からない。自己登録の経路が 0 件。",
+    "S4 (G4): 本人がメールで再設定を完了すると既存セッションが全て失効し、応答から登録の有無が分からない。連携は再認証とメール確認を経たときだけ成立する。",
+    "S5 (G5): TOTP 未設定の管理者は、パスワードでのログインでも招待のパスワード登録直後でも TOTP の設定を終えるまでセッションを得ない。TOTP 設定済みの利用者はコード入力を経てだけ得る。Google でログインした管理者には TOTP を求めない。各入口で連続失敗がロックされる。",
+    "S6 (G6): 未認証で稼働状態・ヘルプ・プライバシーが見られ、稼働状態の応答に内部情報が含まれない。",
+    "S7 (G7): 既存 20 画面の認証ガードと契約テストが緑のまま。migration は既存行を書き換えない。旧経路への戻し手順が docs にある。既知の逸脱・未実施・一部適合は PASS に数えない。"
+  ],
+  "architecture_refs": [
+    "architecture/login-v2-ui-ux.md",
+    "architecture/login-v2-frontend.md",
+    "architecture/login-v2-backend.md",
+    "architecture/login-v2-database.md",
+    "architecture/login-v2-auth.md",
+    "architecture/login-v2-security.md",
+    "architecture/login-v2-infrastructure.md",
+    "architecture/login-v2-maintenance-ops.md",
+    "specs/spec-login-v2.md"
+  ],
+  "readiness_pin": {
+    "checked_at": "2026-09-21T14:42:36Z",
+    "completeness_report": "system-spec/completeness-findings.json",
+    "missing_sections": [],
+    "source_pin": {
+      "compile_entrypoint": "run-system-spec-compile",
+      "completeness_entrypoint": "assign-system-spec-completeness-evaluator",
+      "plugin": "system-spec-harness",
+      "source_digest": "sha256:fa8cf87fa96e8e6da32a9f874722d101d61e8a2f3f7153239d41c9154d29fc40",
+      "version": "0.1.14"
+    },
+    "status": "complete"
+  },
+  "notes": [
+    "features/feat-login-v2.md の Handoff 節を正本として、以下の前提条件・食い違いを task 生成側 (R2-decompose 以降) へそのまま引き継ぐ。本 goal-spec は値を決めず、参照だけを残す。",
+    "K-1/K-4/K-5/K-6/K-7/K-9 (specs/spec-login-v2.md §既知の課題): MFA 設定の開始入口、Google 保持なし Cookie の署名、CHECK 制約拡張の再構築方式、招待消費と利用者作成の整合、復旧コードのハッシュ保存可否、固定版 Better Auth API の事前確認。K-2・K-3・K-8 は system-spec 側の記録整備で実装は止めない。",
+    "system-spec/completeness-findings.json の findings に medium 1 件 (foundation_trace: MFA 設定を始める入口が未定義) があるが、gaps 欄に『任意 (PASS を妨げない)』と明記されており、verdict は PASS。K-1 の前提条件として引き継ぐ。",
+    "正本内の食い違い: 再設定トークンの発行元 (backend-002=独自発行 と database-004=Better Auth verification 表)。frontend-web-002 (薄い auth-client 関数) と frontend-web-006 (createAuthClient を container に閉じる) は、feature.md により後発の -006 に従うと既に決定済み。",
+    "Cookie の SameSite は旧 Strict から Lax へ変わる (OAuth の戻りに要る)。旧仕様のテストの期待値を更新する必要がある。",
+    "未決事項 Q-1〜Q-17 は specs/spec-login-v2.md §未決事項 (plan で決める) を正本とし、本書の案の値 (Q-17 の agent 推定値を含む) で実装を進める。"
+  ],
+  "open_items": [
+    {
+      "id": "K-1",
+      "item": "TOTP 未設定の管理者が設定トークンで TOTP の設定を始める入口 (POST /api/auth/mfa-setup/start 案) が未定義。FAILED_TO_CREATE_SESSION (401) のときに設定トークンを返す手段、トークン消費とセッション作成を同じ D1 batch に置けるかも未確定。",
+      "note": "system-spec/completeness-findings.json findings[0] (severity=medium, bucket=foundation_trace) と features/feat-login-v2.md Handoff K-1 を正本とする。PASS を妨げない任意事項として記録されている。",
+      "resolution_owner": "MFA の関門を実装する task (R2-decompose/R3-emit で割り当てを確定)。固定版 v1.7.5 で hooks.after が応答を置き換えられるかを先に確かめること。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "K-5",
+      "item": "password_login_rate_limits.scope_kind と audit_log.action の CHECK 拡張は表の再構築になり、migration 0048 の『追加のみ』方針と字面で衝突する。",
+      "note": "features/feat-login-v2.md Handoff K-5 を正本とする。0034・0039 の前例どおり値を変えずに再構築するか新しい表を足すかは未確定。",
+      "resolution_owner": "migration の task (R2-decompose 以降)。",
+      "status": "unresolved_precondition"
+    },
+    {
+      "id": "conflict-reset-token",
+      "item": "パスワード再設定トークンの発行元が正本内で食い違う: backend-002 (独自発行) と database-004 (Better Auth の verification 表を使う)。",
+      "note": "features/feat-login-v2.md Handoff『正本内の食い違い』を正本とする。本 goal-spec は値を決めない。",
+      "resolution_owner": "backend と database の task (R2-decompose) でどちらに寄せるか揃える。",
+      "status": "unresolved_conflict"
+    },
+    {
+      "id": "conflict-auth-client",
+      "item": "frontend-web-002 (lib/auth-client.ts の薄い関数) と frontend-web-006 (createAuthClient を container に閉じる) の食い違い。",
+      "note": "features/feat-login-v2.md Handoff により、後から置き換えた -006 に従うと既に決定済み。",
+      "resolution_owner": "frontend の task (R2-decompose) で -006 の方針を適用する。",
+      "status": "resolved_precedence_noted"
+    }
+  ],
+  "source_lineage": [
+    {
+      "source_kind": "feature_context",
+      "path": "features/feat-login-v2.context.json",
+      "sha256": "48277ee87b7a68488828edc64ee83a73e5b0f983b65f530d728ff6983a2d3d36",
+      "note": "呼出し元 (run-system-dev-plan) から明示された feature-context の digest。graph_node_id=feat-login-v2 と --feature-id が一致することを確認した。"
+    },
+    {
+      "source_kind": "feature_document",
+      "path": "features/feat-login-v2.md",
+      "sha256": "fa8cf87fa96e8e6da32a9f874722d101d61e8a2f3f7153239d41c9154d29fc40",
+      "note": "features/feat-login-v2.md frontmatter の confirmation_evidence.evaluated_digest (confirmation_status=confirmed, evaluation_status=pass) をそのまま引用した。本セッションにハッシュ計算ツールが無く、ファイル本文の再計算はしていない。"
+    },
+    {
+      "source_kind": "specification",
+      "path": "specs/spec-login-v2.md",
+      "sha256": "8ffdbded85951b5f951f9be6d9ccba7736fef504463004bc973f33f696ce9778",
+      "note": "画面仕様の正本 (confirmation_status=confirmed, evaluation_status=pass)。digest は features/feat-login-v2.md frontmatter の source_lineage.source_digest (source_path=specs/spec-login-v2.md, source_version=0.1.11, source_plugin=dev-graph) をそのまま引用した。",
+      "version": "0.1.11"
+    },
+    {
+      "source_kind": "system_spec_requirements",
+      "path": "system-spec/00-requirements-definition.md",
+      "sha256": "fa8cf87fa96e8e6da32a9f874722d101d61e8a2f3f7153239d41c9154d29fc40",
+      "note": "system-spec-harness 0.1.14 の要件定義書。specs/spec-login-v2.md frontmatter の source_lineage.source_digest / confirmation_evidence.evaluated_digest から引用した。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "completeness_evaluation",
+      "path": "system-spec/completeness-findings.json",
+      "sha256": "fa8cf87fa96e8e6da32a9f874722d101d61e8a2f3f7153239d41c9154d29fc40",
+      "note": "verdict=PASS の完成度 evaluator 記録 (evaluator=assign-system-spec-completeness-evaluator, spec_dir=system-spec)。digest はこのファイルが評価した対象 (00-requirements-definition.md) の evaluated_digest を引用したもので、completeness-findings.json 自体のバイト内容のハッシュではない。gate_results は全 5 件 exit_code=0。findings に blocking (high/critical) は無く、medium 1 件 (K-1 と同一事項) は gaps 欄で PASS を妨げないと明記されている。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/login-v2-ui-ux.md",
+      "sha256": "e545b6aa295a014f262afcf43c74efac12673144bbea00fa80c33d9d17ed56e5",
+      "note": "arch-login-v2-ui-ux (confirmation_status=confirmed, evaluation_status=pass)。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/ui-ux.md, version=0.1.14) から引用した。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/login-v2-frontend.md",
+      "sha256": "dcda01de03ff3fb7ee8255b773bdca9d9daf36ec13ef40bd4428df9072b76801",
+      "note": "arch-login-v2-frontend (confirmation_status=confirmed, evaluation_status=pass)。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/frontend.md, version=0.1.14) から引用した。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/login-v2-backend.md",
+      "sha256": "7f9867e1cbf2d6eda0a9b43b558b18737df233f02ee8e44fc234d735661d8bfa",
+      "note": "arch-login-v2-backend (confirmation_status=confirmed, evaluation_status=pass)。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/backend.md, version=0.1.14) から引用した。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/login-v2-database.md",
+      "sha256": "97ea39db385a3a25db26a59937488b68cefd4f95b997cf3ef6278e2fe2544e7c",
+      "note": "arch-login-v2-database (confirmation_status=confirmed, evaluation_status=pass)。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/database.md, version=0.1.14) から引用した。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/login-v2-auth.md",
+      "sha256": "7a69f92e77e282c4368aba6fc630e6a6b0f65c6179f4bfcff14291e7223c6464",
+      "note": "arch-login-v2-auth (confirmation_status=confirmed, evaluation_status=pass)。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/auth.md, version=0.1.14) から引用した。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/login-v2-security.md",
+      "sha256": "1e7e1f3b3fc1b09c3734d93765230c03790309076ac2e52838a3fb228501f9a7",
+      "note": "arch-login-v2-security (confirmation_status=confirmed, evaluation_status=pass)。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/security.md, version=0.1.14) から引用した。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/login-v2-infrastructure.md",
+      "sha256": "f4d45a070b691744fc0dba160be78d9b2d16cfc8adab97204848860e4fc1d304",
+      "note": "arch-login-v2-infrastructure (confirmation_status=confirmed, evaluation_status=pass)。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/infrastructure.md, version=0.1.14) から引用した。",
+      "version": "0.1.14"
+    },
+    {
+      "source_kind": "architecture",
+      "path": "architecture/login-v2-maintenance-ops.md",
+      "sha256": "9fcba90bc9dffee036f5cf79106f837776098dfd42738f59d26aab2042be0d94",
+      "note": "arch-login-v2-maintenance-ops (confirmation_status=confirmed, evaluation_status=pass)。confirmation_evidence.evaluated_digest / source_lineage.source_digest (source_path=system-spec/maintenance-ops.md, version=0.1.14) から引用した。",
+      "version": "0.1.14"
+    }
+  ],
+  "checklist_summary": {
+    "feature_identity_matches": true,
+    "purpose_goal_scope_acceptance_nonempty": true,
+    "architecture_refs_resolved_in_repo": true,
+    "system_spec_source_confirmed_pass": true,
+    "lineage_has_path_version_digest": "true: feature_context は呼出し元 (C09 preflight) から明示された digest をそのまま採用し、feature_document・specification・system_spec_requirements・completeness_evaluation・architecture x8 の計 12 件は各文書の frontmatter に埋め込まれた confirmed digest (confirmation_evidence.evaluated_digest / source_lineage.source_digest) を引用した。本セッションにハッシュ計算ツールが無いため、いずれも自己算出したバイト内容ハッシュではない。",
+    "no_feature_split_or_task_generation": true
+  }
+}

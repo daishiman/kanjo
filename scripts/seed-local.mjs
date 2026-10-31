@@ -15,9 +15,14 @@ import { mkdir, writeFile } from 'node:fs/promises';
 
 const outDir = new URL('../samples/', import.meta.url);
 const base = process.env.KANJO_BASE_URL ?? 'http://localhost:8787';
-/** 共有パスワードは廃止された。scripts/seed-admin.mjs が作る seed 管理者で入る。 */
-const email = process.env.KANJO_SEED_EMAIL ?? 'admin@kanjo.local';
-const password = process.env.KANJO_SEED_PASSWORD ?? 'LocalAdmin-2026-Kanjo';
+/** better-auth は Origin の無い POST を拒否する。API と画面の窓口が別ポートなら画面側(BETTER_AUTH_URL)を渡す。 */
+const origin = process.env.KANJO_SEED_ORIGIN ?? new URL(base).origin;
+/**
+ * 招待承諾済みのローカル member。管理者はTOTPを通すまでセッションが出ないため seed には使えない。
+ * 未承諾なら先に `scripts/seed-admin.mjs --email member@kanjo.local --role member` のURLを開く。
+ */
+const email = process.env.KANJO_SEED_EMAIL ?? 'member@kanjo.local';
+const password = process.env.KANJO_SEED_PASSWORD;
 const generateOnly = process.argv.includes('--generate-only');
 /** 'healthy'(既定) か 'tight'。tight は直近の事業入金を落として事前警告を発火させる */
 const scenario = process.env.KANJO_SEED_SCENARIO === 'tight' ? 'tight' : 'healthy';
@@ -546,18 +551,31 @@ async function main() {
     }
   }
   if (generateOnly) return;
+  if (!password) {
+    throw new Error(
+      'KANJO_SEED_PASSWORD が必要です。招待承諾時に本人が決めたローカル用の値を非表示入力してください',
+    );
+  }
 
   // --- ログイン ---
-  const login = await fetch(`${base}/api/auth/login`, {
+  const login = await fetch(`${base}/api/auth/sign-in/email`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email, password, remember: true }),
+    headers: { 'content-type': 'application/json', origin },
+    body: JSON.stringify({ email, password, rememberMe: true }),
   });
   if (!login.ok) {
     throw new Error(`ログイン失敗 ${login.status}: ${await login.text()}`);
   }
   const cookie = (login.headers.getSetCookie?.() ?? []).map((c) => c.split(';')[0]).join('; ');
-  if (!cookie) throw new Error('セッションCookieを取得できませんでした');
+  if (!cookie) {
+    const body = await login.json().catch(() => ({}));
+    if (body.mfaSetupRequired || body.twoFactorRedirect) {
+      throw new Error(
+        '管理者はTOTPを通すまでセッションが出ません。KANJO_SEED_EMAIL に member の招待を承諾した identity を指定してください',
+      );
+    }
+    throw new Error('セッションCookieを取得できませんでした');
+  }
 
   // --- 取込(force=1 で毎回洗い替え。ローカル検証用。1ファイルずつ直列に投げる) ---
   for (const { name, csv } of files) {
