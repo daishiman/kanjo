@@ -179,3 +179,15 @@ passed
 | 漏れなし | PASS | 招待、Google/パスワード、再設定、MFA、連携、管理、監査、保守を実装・試験 |
 | 整合性あり | PASS | auth feature、共通部品、design token、endpoint guard、仕様用語を統一 |
 | 依存関係整合 | PASS | pageへの逆依存を除去し、UI→API→DB→運用の依存とgraph lineageを検証 |
+
+## Login v2 統合後の再確認（2026-10-31）
+
+上の24pxチェックは統合前の履歴。最新mainの共通SelectionCheckboxへ統一し、最終表示は20×20px、
+native操作領域は実Chromeで520×44pxと測定した。ログイン専用のnative寸法や疑似チェック描画を重ねない。
+
+- 最新画像: `docs/login-v2/evidence/final-login-1024x1536.png`、`final-login-375x812.png`
+- 実操作の記録: `docs/login-v2/evidence/browser-acceptance.json`（8項目成功）
+- 375pxで横はみ出しなし。未認証のヘルプ/プライバシー、next付きログイン、設定の本人欄、ログアウト、誤パスワード表示を確認。
+- ログイン画面は即表示し、AuthenticatedAppは認証後にだけ読む。初期JSは86.40KiB/110KiB。
+- 既存ブラウザや個人profileは使わず、新規の一時Chrome profile・合成利用者・一時D1だけで確認。
+- 実Google認証、実メール配送、本番の受入とCore Web Vitalsは未確認。

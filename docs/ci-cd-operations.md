@@ -65,7 +65,7 @@ SQLiteで列の型や制約を変える定型手順（新テーブル作成 → 
 - ランナー: `ubuntu-latest`
 - アプリのNode.js: 22
 - GitHub公式Actions: Node.js 24対応版
-- CIタイムアウト: ジョブごと（静的検査20分 / core・webテスト15分 / apiテスト20分 / ビルド10分 / `verify`5分）
+- CIタイムアウト: ジョブごと（静的検査20分 / core・webテスト15分 / apiテスト30分 / ビルド10分 / `verify`5分）
 - Deploy / Migrateタイムアウト: 20分
 - 権限: `contents: read`のみ
 - `concurrency`で重複実行を制御
@@ -80,6 +80,11 @@ CIの品質ゲートは4つのジョブ（`static-checks` / `test-core-web` / `t
 CIジョブを増やすときは`verify`の`needs`にも足してください。足し忘れると、そのジョブは走るのにmergeを止めません。
 
 ### 2.1 CIテストの測定記録
+
+2026-10-31の再確認では、mainの成功run（2026-10-01、commit `9b5bbf3`）のAPI jobが18分42秒かかり、
+従来20分枠の余白は78秒だった。Login v2の認証回帰を追加し、ローカルの認証coverage6ファイルだけでも
+140.80秒を実測したため、API jobの実行環境枠を30分へ補正した。assert・対象件数・並列度・必須verifyは維持する。
+アプリの初期JS予算110KiBとは別の枠であり、JSの閾値引上げや検査省略ではない。
 
 以下は2026-09-03時点のローカル10コア環境、API38ファイル・485件で行った**過去の比較記録**であり、現在の設定値の正本ではありません。
 
@@ -120,7 +125,7 @@ Miniflareがファイルごとにworkerdプロセスとproxy socketを開きま�
 - GitHub Actionsのrunner、Vitest、Miniflareまたはworkerdの版を変更した
 - ルートの`--workspace-concurrency=1`を変更した
 - `EADDRNOTAVAIL`などsocket・port関連の失敗が再発した
-- `test-api`が20分へ近づく、または打ち切られた
+- `test-api`が現行の実行枠へ近づく、または打ち切られた
 
 ### 2.2 CIジョブのタイムアウトの決め方
 

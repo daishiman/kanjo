@@ -345,13 +345,38 @@ artifactの巡回番号も2日単位で進め、8日で全4種類を掃除する
 | コマンド | 確認結果 |
 |---|---|
 | `pnpm test` | 統合前: core 981件成功/実データfixture未指定6件skip、APIは中断130。統合後の正式全件はCI確認待ち |
-| `pnpm typecheck` | 最新main統合後に成功。認証fixture追従差分はCIでも確認する |
+| `pnpm typecheck` | 最新main統合後に成功。preview内の最終web型検査も成功。CIでも確認する |
 | `pnpm lint` | 最新main統合後に成功。206 architecture章と公開文書の実データ参照検査も合格 |
-| `pnpm build` | 監査開始時は成功。初期JS 108.53KiB/110KiB。修正後の最終確認待ち |
-| `pnpm run test:coverage:account-login` | 未実行 |
-| `pnpm run preview:smoke` | 未実行 |
+| `pnpm build` | 統合直後の初期JS 113.06KiB超過を検出し、業務shellを認証後の遅延読込へ変更。最終web buildは86.40KiB/110KiB、Worker dry-runも成功 |
+| `pnpm run test:coverage:account-login` | API 89件・web107件成功。API行94.09%、web行95.45%。全設定threshold成功 |
+| `pnpm run preview:smoke` | 一時D1の0059適用→合成招待承諾→ログイン→現金作成/一覧/削除/空一覧→廃止API404が107.57秒で成功 |
 | `pnpm run auth:readiness` | 想定どおり終了コード1。Google2項目・Resend・送信元が不足。秘密値の出力なし |
 | `node .cloudflare/setup-production.mjs --dry-run` | 成功。外部設定の変更なし |
+
+追加回帰: 保守最悪経路/8日間巡回5件、actor表示2件、設定・Importのfixture32件、
+認証と表示契約115件、認証と共通checkbox契約105件が成功。
+coverageは統合後のAPIソースと、業務shell遅延読込・共通checkbox化後のwebソースを対象に測定した。
+runtimeの実装保存点は `cbfc8f33564411a3d64e55b74a8c50fa15f9d85c`。
+表示テストの20px/44px追従とAPI検査枠を含む保存点は `d22b6fab219ba381b0519d4fd839c9ca4b479fc5`（runtimeソースは同一）。
+正式全件の結果は [PR #80のChecks](https://github.com/daishiman/kanjo/pull/80/checks) とこのSHAの対応で判定する。
+`d22b6fa` の [CI run 41175336641](https://github.com/daishiman/kanjo/actions/runs/41175336641) は、
+この証跡整備時点でstatic/build/package/macOSが成功、core-web/API/Windowsは実行中。全件成功とは記録しない。
+この後の証跡のみの保存版でも、最新headの必須検査が揃ってからマージ可否を判断する。
+
+CIで見つかった既存画面のfixtureも修正した。新しい本人DTOを設定のテストで型保証し、
+Import履歴の30日以内の操作テストは `Date.now` だけをfixture日付へ固定した。実行日が進んだことを、
+取込画面の操作欠落として扱わない。公開画面のcheckboxはmainの共通SelectionCheckboxへ統一した。
+
+fresh migrationがローカルの60秒step枠で打ち切られたことを記録し、正常完了する実測に基づき、
+移行コマンドだけ120秒へ枠を補正した。全体310秒の上限と以後の失敗検出は維持した。
+
+実ブラウザ受入は [`evidence/browser-acceptance.json`](evidence/browser-acceptance.json) の8項目すべて成功。
+MCPのブラウザ接続は利用できなかったため、既存PlaywrightとChrome 156を使うテスト専用の新しい一時profileで実行した。
+個人profileや既存ブラウザを使わず、ブラウザの外部URL要求を遮断し、一時D1の合成利用者だけを操作した。
+公開画面、375px横はみ出しなし、共通checkbox20px/操作領域44px以上、保護経路からのnext復帰、実フォーム認証、
+本人アカウント欄、認証後の業務shell読込、ログアウト、誤パスワード表示を確認した。
+初回の受入runnerは冷起動待ちとメニュー項目のrole期待が合わず失敗したが、runtimeを変更せず実際の節ナビ/メニュー操作へ合わせて成功した。
+これはローカルの機能受入であり、本番Core Web Vitalsや実Google/実メールの受入ではない。
 
 ## 第6章 受入条件との対応（P07）
 
@@ -359,7 +384,7 @@ artifactの巡回番号も2日単位で進め、8日で全4種類を掃除する
 
 | AT | ローカルの検証元 | 外部環境に残る確認 |
 |---|---|---|
-| AT-01・02 | `packages/web/src/account-login.dom.test.tsx`、`design-qa.md`、既存4幅の画像 | 現行previewの実ブラウザ確認 |
+| AT-01・02 | `packages/web/src/account-login.dom.test.tsx`、`design-qa.md`、最新1024/375pxの実Chrome画像と受入8項目 | 実Google/実メールを伴う本番相当の状態遷移 |
 | AT-03 | lint・typecheck・web初期JS予算 | 最終差分の全コマンド完走 |
 | AT-04・05 | `account-login.test.ts`、`login-v2-migration.test.ts` | 本番既存利用者の移行と認証 |
 | AT-06 | `account-login.test.ts`、`auth-boundaries.test.ts` の期限・Cookie・保持分岐 | 実Google callbackを通した保持の確認 |
@@ -402,9 +427,11 @@ artifactの巡回番号も2日単位で進め、8日で全4種類を掃除する
 | 型・文書・秘密参照 | 型検査とlint | `pnpm typecheck`、`pnpm lint` |
 | 初期JS・Worker bundle | buildとdry-run | `pnpm build` |
 | 本番相当の一時D1 | 合成招待・本人承諾・現金記帳 | `pnpm run preview:smoke` |
+| 実Chromeの画面/操作 | [`受入8項目`](evidence/browser-acceptance.json)、`evidence/final-login-1024x1536.png`、`evidence/final-login-375x812.png` | 一時Workers上で `/settings`→ログイン→アカウント→ログアウト→誤パスワード、および `/help`・`/privacy` と375px表示を確認 |
 | ローカル設定不足 | 設定名だけの診断 | `pnpm run auth:readiness` |
 | 設定helper | 対話手順・互換回帰 | `pnpm run auth:readiness:test`、`node .cloudflare/setup-production.mjs --dry-run` |
 | 独立レビュー | [`final-review.md`](final-review.md) | 対象差分と固定版ソースを再確認 |
+| 仕様グラフの整合 | architecture206章/206ノード一致、描画46ノード/42辺、両feature各0/13、登録receipt一致、外部依存0、入力schema合格 | `node scripts/check-graph-lineage.mjs` とdev-graph rendererのschema/hash照合 |
 | 運用・戻し・本人作業 | [`認証運用`](../runbooks/account-login-operations.md)、[`Google設定`](../runbooks/google-oauth-setup.md) | 手順の読取確認後、所有者が安全なTerminalで実施 |
 
 ## 第10章 配信状態（P13）
