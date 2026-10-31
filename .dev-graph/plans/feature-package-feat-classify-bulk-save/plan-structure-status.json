@@ -1,0 +1,115 @@
+{
+  "_generated": "project-task-status.py (派生ビュー・手書き編集しない・再生成で上書き)",
+  "graph_hash": null,
+  "summary": {
+    "total": 13,
+    "by_state": {
+      "pending": 13,
+      "running": 0,
+      "done": 0,
+      "blocked": 0
+    },
+    "completion_rate": 0.0,
+    "blocked_tasks": [],
+    "route_report_count": 0,
+    "completion_gate": null,
+    "effective_status": "in_progress"
+  },
+  "nodes": [
+    {
+      "id": "SYS-CLASSIFY-BULK-P01",
+      "title": "一括保存の要件の棚卸し: FR・BR・AC と未決事項の担当 phase の確定",
+      "phase_ref": "P01",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P02",
+      "title": "core の解決関数・行の key・D1 上限の名前・対応表の API と表の名前・『カテゴリなし』の字面の設計",
+      "phase_ref": "P02",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P03",
+      "title": "設計の照合: spec・architecture 8 本・既存コードとの食い違いと重複の確認",
+      "phase_ref": "P03",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P04",
+      "title": "解決関数・一括保存・選択の読み出し・一覧・対応表・migration・画面のテストを先に書き、旧実装で落ちることを確かめる",
+      "phase_ref": "P04",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P05",
+      "title": "core の解決関数と『カテゴリなし』・一括保存と選択の読み出しと一覧 API・勘定科目の対応表と migration 2 本・取引一覧と一括操作バーと設定画面・check:classify-screen の実装",
+      "phase_ref": "P05",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P06",
+      "title": "全テストと verify:full の実行: 緑の確認と、落ちたときの原因の切り分け",
+      "phase_ref": "P06",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P07",
+      "title": "受入の確認: AC-01〜AC-30 の根拠の表と、sel に 50 件を選んだ状態の再現",
+      "phase_ref": "P07",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P08",
+      "title": "参照の消えた旧い定義の削除と migration の突き合わせ: 番号・承認の sha256・EXPECTED_D1_MIGRATION の一致",
+      "phase_ref": "P08",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P09",
+      "title": "品質ゲート: lint・typecheck・test・skills:test・初期 JS 予算・security:content",
+      "phase_ref": "P09",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P10",
+      "title": "独立レビュー: 認可・上限・本文の大きさ・予約の値・差分の範囲",
+      "phase_ref": "P10",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P11",
+      "title": "証跡の索引: 設計・テスト・受入・品質・レビューの記録を 1 か所から辿れるようにする",
+      "phase_ref": "P11",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P12",
+      "title": "文書の同期: data-schema と architecture への対応表の記録と、未決事項の閉じ方の記録",
+      "phase_ref": "P12",
+      "entity_ref": null,
+      "state": "pending"
+    },
+    {
+      "id": "SYS-CLASSIFY-BULK-P13",
+      "title": "リリース: merge 前の最終確認、deploy.yml での migration の適用、本番の /classify での確認",
+      "phase_ref": "P13",
+      "entity_ref": null,
+      "state": "pending"
+    }
+  ],
+  "discovered_pending": [],
+  "route_reports": [],
+  "build_summary": null,
+  "completion_evidence": null
+}

@@ -1,0 +1,234 @@
+{
+  "feature_id": "feat-classify-bulk-save",
+  "gates": {
+    "C08": "complete",
+    "C11": true,
+    "validate_system_plan": "pass"
+  },
+  "graph_revision": 3,
+  "graph_snapshot_digest": "a5d2c7f929b6151f15a49a0531f9ea9292a2a26204ca8c486fc99bb62318403e",
+  "missing_sections": [],
+  "nodes": [
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P01",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P01",
+      "resource_scope_count": 1,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P01"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P02",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P02",
+      "resource_scope_count": 1,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P02"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P03",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P03",
+      "resource_scope_count": 1,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P03"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P04",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P04",
+      "resource_scope_count": 30,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P04"
+      ],
+      "domain": "frontend",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P05",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P05",
+      "resource_scope_count": 52,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P05"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P06",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P06",
+      "resource_scope_count": 1,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P06"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P07",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P07",
+      "resource_scope_count": 1,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P07"
+      ],
+      "domain": "data",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P08",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P08",
+      "resource_scope_count": 14,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P08"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P09",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P09",
+      "resource_scope_count": 1,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P09"
+      ],
+      "domain": "quality",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P10",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P10",
+      "resource_scope_count": 1,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P10"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P11",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P11",
+      "resource_scope_count": 1,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P11"
+      ],
+      "domain": "documentation",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P12",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P12",
+      "resource_scope_count": 4,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    },
+    {
+      "confirmation_status": "confirmed",
+      "depends_on": [
+        "SYS-CLASSIFY-BULK-P12"
+      ],
+      "domain": "operations",
+      "evaluation_status": "pass",
+      "gate_problems": [],
+      "graph_node_id": "SYS-CLASSIFY-BULK-P13",
+      "implementation_readiness": "complete",
+      "missing_sections": [],
+      "phase_ref": "P13",
+      "resource_scope_count": 1,
+      "source_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+      "source_version": "0.1.0"
+    }
+  ],
+  "plan_validated_digest": "601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+  "status": "pass",
+  "requirements_decisions": [],
+  "carried_findings_open": [
+    "OI-1",
+    "OI-2",
+    "OI-3",
+    "OI-4",
+    "OI-5",
+    "OI-6",
+    "OI-7",
+    "OI-8",
+    "RQ-F1",
+    "RQ-F2"
+  ]
+}

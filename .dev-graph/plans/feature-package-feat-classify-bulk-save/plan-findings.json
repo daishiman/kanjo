@@ -1,0 +1,201 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/plan-feat-classify-bulk-save-20261001T1245Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "矛盾なし。P04 の括弧は「次の制約のとおり、分かった時点に応じて P04 か P08 が固定値の行を直す」となり、P04・P05・P08 の規則文 (逐語一致) と矛盾しない。P13 に足した受入は Rollout and rollback・Completion projection・既存の受入と矛盾しない。 (根拠の行: phase-04:32-33、phase-05:31、phase-08:18,31、phase-13:81,96-97,107-108。) 評価後に readiness の pin を取り直した新 digest でも判断は成り立つ (finding readiness_repin_rebind 参照)。",
+      "evidence": [
+        "task-specs/phase-04-test-design.md#制約",
+        "task-specs/phase-05-implementation.md#制約",
+        "task-specs/phase-08-refactoring-migration.md#制約",
+        "task-specs/phase-13-release-deploy.md#受入",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "漏れなし。4 周目の low 2 件は現物で閉じた。merge 後の確認が失敗した場合の扱い (Rollback の手順で戻し、直しは別 feature) が P13 に書かれた。OI-1〜OI-8 の担当 phase は変化なし。 (根拠: phase-13:96-97、goal-spec.json#open_items。) 評価後に readiness の pin を取り直した新 digest でも判断は成り立つ (finding readiness_repin_rebind 参照)。",
+      "evidence": [
+        "task-specs/phase-13-release-deploy.md#受入",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "整合性あり。goal-spec の source_lineage 13 件を再ハッシュし path と sha256 が全件一致 (不一致 0)。write_scope は inventory と一致のまま (inventory の sha256 は前周と同一)。実データ・.dev.vars を書く指示は無い。 (根拠: goal-spec.json#source_lineage の 13 件を再ハッシュして全件一致。) 評価後に readiness の pin を取り直した新 digest でも判断は成り立つ (finding readiness_repin_rebind 参照)。",
+      "evidence": [
+        "workstream-inventory.json",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "依存関係整合。task-graph・inventory・handoff の sha256 は前周と同一で直鎖 P01→P13 に変更なし。manifest の 17 ファイルの sha256 は実測と一致 (不一致 0)、canonical_digest は validation-report.json の validated_digest と一致。 (根拠: validation-report.json の validated_digest が canonical_digest と一致。) 評価後に readiness の pin を取り直した新 digest でも判断は成り立つ (finding readiness_repin_rebind 参照)。",
+      "evidence": [
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<HOME>/.claude/plugins/cache/harness-local/system-dev-planner/0.1.11/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<REPO_ROOT>",
+        "--staging",
+        ".dev-graph/staging/plan-feat-classify-bulk-save-20261001T1245Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286\",\n  \"feature_package_id\": \"feature-package/feat-classify-bulk-save\",\n  \"parent_feature\": \"feat-classify-bulk-save\",\n  \"phase_refs\": [\n    \"P01\",\n    \"P02\",\n    \"P03\",\n    \"P04\",\n    \"P05\",\n    \"P06\",\n    \"P07\",\n    \"P08\",\n    \"P09\",\n    \"P10\",\n    \"P11\",\n    \"P12\",\n    \"P13\"\n  ],\n  \"violations\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "fa070af71d6e7944e98a7cf04e0bca3d6bc16666c53b11b75489e99489db3966"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "5b09eb8b79c45d6ba089e790b5442ff2e577ab4ca62110a07cffded30f432938"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "5b7a14a4b1bfdbcebbadc011e6bc2adc8d7bd23b122fa98de0c406c3285e3b9f"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "dce19afde041203e472ce292ee9143d5c5722370dd1b7a1cb86655cab4af4b4f"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "bb2bc11fafe59ea9bf1843340f1be96ee3e4a37b210d6d896e37bd1979001de1"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "a464c44b6d4319c681ae9f511d05fda1bcd2babf55100dbf8c9401e619b6b38c"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "a9ea99633658db280f3dee3893915e0bc822ed84ec6bc0df8fa56fd39b74f150"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "2747b42bd86dd32f569ec8132706383daa4b600f67de51dcc5edbcc337e78606"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "8717929e9aceab6a7d16bff4c9c3f0bdaabb90e27490a3892a5f3455c6d51db7"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "51a749d9c46f809751bd12d15bdfdc230b2c80abd4ce1c950928bb0ecfc17731"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "ec76e683620232f7e56df508fa96a1482a34012a53cdf6109fbdf36aa6270b0d"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "45166a8df9d3c970da7f8ea5207ecfaac708b5262195590b3ee70790789311c4"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "5a42055f4fe36569cb80a46b2a05610b4a6506d2a78154953eec792a00d4fa8d"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "a0c2c51969b67bf51604c61948a025c00a756fe2caf3fae00adcb4bccee0f014"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "df34e4458698ec97fc1b0f2eb116f774a390230b6563cf88718f18244290cf77"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "acde872f9dcc843fb2ce053cc86b636fddc06139235c364833145c83b78f20dc"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "d9e8010019880ecd3822a81cb5a963ec7ed59b3c1ad71b4b6ca2e9994f700274"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "34ce3d6324f0857d574d1ff195734eaa0afafc02ad3f84956a935c91a9bf7307"
+    }
+  ],
+  "staleness_rule": "評価対象は evaluated_digest の canonical digest (staging-manifest.json の canonical_digest) と evaluated_inputs の sha256 の組。staging の bytes が 1 つでも変わる、または別の digest の package を promotion しようとする場合、この verdict は破棄して評価をやり直す。goal-spec.json と validation-report.json は manifest の files に入らないが、本評価はその sha256 も固定した。repository の HEAD (9b5bbf3) が進んだ場合も、行番号の参照と migration の番号は取り直しが要る (P05 の Entry step)。 本評価は C12 を再実行せず、staging の validation-report.json を読んで gate_results の stdout に原文のまま入れた (digest の一致のみ確認)。goal-spec.json と validation-report.json は evaluated_inputs に入らないが、前者は source_lineage の再ハッシュ、後者は digest の照合で確認した。",
+  "findings": [
+    {
+      "severity": "info",
+      "bucket": "round4_low_resolution",
+      "observation": "4 周目の low 2 件を現物で確認し、どちらも解消。(1) p04_renumber_parenthetical_mismatch: P04 の 32 行目の括弧が「次の制約のとおり、分かった時点に応じて P04 か P08 が固定値の行を直す」になり、33 行目と P05:31・P08:31 の規則文 (P05 着手時は P04 へ差し戻して P04、P08・P13 の突き合わせで分かれば P08) と一致。(2) p13_post_merge_acceptance_vs_done: P13 の 97 行目が、merge 後の 2 点は done の条件でなく done は default branch への merge で確定する (81 行目と一致)、失敗時は Rollback の手順 (107-108 行目の revert と Time Travel) で戻し、直しは別 feature とすると明記。96 行目の PR コメントへの記録とも両立する。",
+      "evidence": [
+        "task-specs/phase-04-test-design.md:32-33",
+        "task-specs/phase-05-implementation.md:31",
+        "task-specs/phase-08-refactoring-migration.md:31",
+        "task-specs/phase-13-release-deploy.md:81,96-97,107-108"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "followup_feature_wording",
+      "observation": "P13:97 の「直しは別の feature として起こす」は、planner の「発見した独立作業は package に追加せず follow-up feature candidate として返す」と同じ向き (package の task を開き直さない) で矛盾しない。語を揃えるなら「follow-up feature candidate として返す」とするとより厳密だが、任意。",
+      "evidence": [
+        "task-specs/phase-13-release-deploy.md:97"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "code_reference_and_inventory_recheck",
+      "observation": "変化なし (前周から inventory・task-graph・handoff・feature-package の sha256 は同一で、直鎖 P01→P13 と write_scope・repo_identity は不変。今周の変更は P04 と P13 の文言のみ。HEAD 9b5bbf3 は評価時点で前周と同じ想定。コード行番号の参照は前周の確認を引き継ぐ)。packages/api/.dev.vars・data/ を書く指示は無い。",
+      "evidence": [
+        "packages/api/src/deletion-schema.test.ts:63",
+        "packages/api/src/schema-guard.ts:4",
+        "packages/web/src/pages/classify/view-model.ts:98",
+        "git status (packages・scripts・docs・.github・samples が空)",
+        "workstream-inventory.json",
+        "task-graph.json",
+        "system-build-handoff.json",
+        "staging-manifest.json (17 ファイルの sha256 を実測して不一致 0 件、canonical_digest は validation-report.json の validated_digest と一致)"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "readiness_repin_rebind",
+      "observation": "main (#75) 取り込みで architecture/graph.json が変わり、readiness の pin を取り直した (checked_at 2026-10-01T14:41:20Z、source_digest sha256:13f5da18…)。旧 digest sha256:dae7fc6702ed9d3429e7a012e73c8aad6f17127295a8385e99dc38fd7fb20e30 から新 digest sha256:601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286 へ結び直した。独立に確認: (1) 旧版 staging との差は、implementation-readiness.json と workstream-inventory.json の checked_at・source_digest の置換、goal-spec.json の generated_at と note 内の短縮 digest、およびハッシュ連鎖 (manifest・handoff・validation-report) だけ。task-specs 13 本・feature-package.json・task-graph.json は manifest の sha256 が不変。(2) graph.json は 198→206 node で、加わったのは arch-subscriptions-merge-* の 8 node のみ、消えた・変わった node は 0、arch-classify-bulk-save-* 8 node は不変。(3) manifest 17 ファイルの sha256 の不一致 0、validation-report は status pass で validated_digest が新 digest と一致。goal-spec の source_lineage 13 件は再ハッシュして不一致 0。HEAD は 9b5bbf3 のまま、migrations の最後は 0058 で 0059・0060 の前提も不変。C12 は再実行せず validation-report を読んだ。",
+      "evidence": [
+        "implementation-readiness.json",
+        "workstream-inventory.json",
+        "staging-manifest.json",
+        "goal-spec.json#source_lineage",
+        "architecture/graph.json (node 単位の差)"
+      ]
+    }
+  ]
+}
