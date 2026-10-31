@@ -1,0 +1,146 @@
+{
+  "feature_package_id": "feature-package/feat-login-v2",
+  "nodes": [
+    {
+      "depends_on": [],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P01",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P01",
+      "title": "要件ベースライン確定と前提条件・未決事項の着手時整理（K-1・K-5・reset-token 発行者衝突・frontend-002 と -006 の優先）"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P01"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P02",
+      "lifecycle_role": "preparation",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P02",
+      "title": "Better Auth 設定・関門・招待/MFA設定/再設定経路・D1 batch順序のワークストリーム設計決定記録"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P02"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P03",
+      "lifecycle_role": "design-review",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P03",
+      "title": "認証契約・API 契約・migration 契約・画面契約の独立レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P03"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P04",
+      "lifecycle_role": "test-design",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P04",
+      "title": "core/API/migration/DOM の失敗テスト先行作成（未解決前提条件に該当する分岐を除く）"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P04"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P05",
+      "lifecycle_role": "mutation",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P05",
+      "title": "Better Auth 導入・招待/MFA設定/再設定/連携 API・migration 0048・ログイン画面群の最終実装"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P05"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P06",
+      "lifecycle_role": "test-run",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P06",
+      "title": "全テスト・型検査・lint の実行記録"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P06"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P07",
+      "lifecycle_role": "acceptance",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P07",
+      "title": "受入基準 S1〜S7（AT-01〜AT-15）の検証"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P07"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P08",
+      "lifecycle_role": "audit",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P08",
+      "title": "旧 kanjo_session 署名・mustChangePasswordFence・一時パスワード発行参照の読取専用監査"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P08"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P09",
+      "lifecycle_role": "quality-assurance",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P09",
+      "title": "レート制限・列挙防止・CSP・secret 非出力・JS バンドル予算の保証確認"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P09"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P10",
+      "lifecycle_role": "independent-review",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P10",
+      "title": "独立最終レビュー"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P10"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P11",
+      "lifecycle_role": "evidence",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P11",
+      "title": "再現可能な証跡索引の作成"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P11"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P12",
+      "lifecycle_role": "documentation-sync",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P12",
+      "title": "移行と戻し・secret・Google/Resend設定・締め出し復旧・プライバシーの docs 最終同期"
+    },
+    {
+      "depends_on": [
+        "SYS-LOGIN-V2-P12"
+      ],
+      "feature_package_id": "feature-package/feat-login-v2",
+      "id": "SYS-LOGIN-V2-P13",
+      "lifecycle_role": "release",
+      "parent_feature": "feat-login-v2",
+      "phase_ref": "P13",
+      "title": "単一 PR での配信、secret 投入、migration 0048 適用、Deploy、クローズアウト"
+    }
+  ]
+}

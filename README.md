@@ -24,7 +24,7 @@
 単一 Worker (kanjo-console)
 ├── Workers Assets ── React SPA (packages/web のビルド成果物)
 ├── /api/*         ── Hono REST API (packages/api)
-│     └── 認証ガード必須 (Cloudflare Access JWT または パスワード+署名Cookie)
+│     └── Better Auth v1.7.5 + D1 session の認証ガード必須
 ├── D1 (kanjo-db)   ── 明細・仕訳・ルール・集計キャッシュ (migrations/)
 └── R2 (kanjo-files)── アップロード原本 + 夜間バックアップ (cron 03:00 JST)
 ```
@@ -50,17 +50,18 @@ pnpm run preview:smoke # 一時D1/R2+架空認証で起動確認し、自動停�
 
 ```bash
 cd packages/api
-cp .dev.vars.example .dev.vars   # SESSION_SECRET を設定 (openssl rand -hex 32)
+cp .dev.vars.example .dev.vars
+# .dev.vars の BETTER_AUTH_SECRET を `openssl rand -hex 32` の出力で置き換える
 ```
 
 `pnpm run preview`は起動前に未適用のlocal migrationを自動適用する。CIや有限の動作確認は
-`pnpm run preview:smoke`を使い、`.dev.vars`を読まず一時ディレクトリのD1/R2と架空認証値で
-SPA・未認証ガード・ログインに加え、架空現金明細の作成→一覧→削除→空一覧まで確認して
+`pnpm run preview:smoke`を使い、`.dev.vars`を読まず一時ディレクトリのD1/R2と合成招待で
+SPA・未認証ガード・招待承諾・Better Authログインに加え、架空現金明細の作成→一覧→削除→空一覧まで確認して
 自動停止する。人が画面を確認するときは必ず
 `pnpm run preview`(8787、Workersランタイム)を使う。`pnpm dev`(3000、Vite)は画面開発の補助。
 
-現在のmigration headとpreview適用上限はRelease Aの`0039_account_login.sql`。旧証憑用テーブルを
-物理削除するRelease Bは将来の別変更であり、現行配布物には含めない。段階適用のゲートは
+現在のmigration headは`0050_login_v2_better_auth.sql`。未適用migrationの自動/手動判定と、
+列・テーブル削除の段階適用ゲートは
 [`CI/CD・本番運用ガイド`](docs/ci-cd-operations.md#63-列を削除する場合contract)を正本とする。
 
 ## デプロイ
@@ -75,14 +76,12 @@ GitHub Environment `production` に `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT
 
 GitHub・Cloudflareの初回設定、通常リリース、D1 migration、障害調査、rollbackの詳細は [`docs/ci-cd-operations.md`](docs/ci-cd-operations.md) を参照。
 
-本番シークレットは `wrangler secret put SESSION_SECRET` の1本だけ。共有パスワード(旧 `AUTH_PASSWORD`)は廃止し、
-ログインは利用者ごとのメールアドレスとパスワードで行う。パスワードはD1に PBKDF2-HMAC-SHA256 100,000回(本番 Workers の上限)の
-ハッシュだけを保存し、平文も復号可能な形も持たない。`SESSION_SECRET` を差し替えると発行済みのログイン状態は
-すべて無効になる（緊急時の全端末ログアウト手段）。Cloudflare Access に切り替える場合は wrangler.jsonc の
-`ACCESS_AUD` / `ACCESS_TEAM_DOMAIN` を設定する（設定するとパスワード認証は無効化される）。
-パスワード認証はD1の接続元単位と対象メールアドレス単位の独立2軸rate limitで保護され、既定は15分間に5回失敗で15分lock。
-変更が必要な場合だけ、非secretの`PASSWORD_LOGIN_WINDOW_SECONDS` / `PASSWORD_LOGIN_MAX_FAILURES` /
-`PASSWORD_LOGIN_LOCK_SECONDS` / `PASSWORD_LOGIN_STALE_AFTER_SECONDS`をWorker varsでoverrideする。不正値は安全な既定値へ戻る。
+本番のWorker secretは`BETTER_AUTH_SECRET`、`GOOGLE_CLIENT_ID`、`GOOGLE_CLIENT_SECRET`、
+`RESEND_API_KEY`の4つ。利用者は管理画面から招待し、本人がGoogleまたは自分で決めたパスワードで
+登録を完了する。運用者が初期パスワードを作成・伝達する経路はない。パスワードはD1に
+PBKDF2-HMAC-SHA256のハッシュだけを保存する。`BETTER_AUTH_SECRET`の変更は発行済みsessionと
+TOTP暗号化鍵に影響するため、必ず[`アカウント認証運用`](docs/runbooks/account-login-operations.md)の計画に従ってローテーションする。
+ログイン・MFA・招待・再設定の入口はD1の接続元と対象アカウントの独立したrate limitで保護する。
 
 ## ドキュメント
 

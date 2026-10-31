@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
+import { resolve } from 'node:path';
 import { stdin as input, stdout as output } from 'node:process';
 import { createInterface } from 'node:readline/promises';
+import { fileURLToPath } from 'node:url';
 
 const REPO = 'daishiman/kanjo';
 const ENVIRONMENT = 'production';
@@ -11,9 +13,15 @@ const ACCOUNT_NAME = 'Worker「kanjo-console」を所有する既存Account';
 const ACCOUNT_MODE = 'existing';
 const APP_URL = 'https://kanjo-console.daishimanju.workers.dev';
 const WRANGLER_COMMAND = ['pnpm', '--dir', 'packages/api', 'exec', 'wrangler'];
-const SESSION_SECRET = 'SESSION_SECRET';
+const BETTER_AUTH_SECRET = 'BETTER_AUTH_SECRET';
+const PROVIDER_SECRETS = [
+  { name: 'GOOGLE_CLIENT_ID', label: 'Google OAuth Client ID' },
+  { name: 'GOOGLE_CLIENT_SECRET', label: 'Google OAuth Client Secret' },
+  { name: 'RESEND_API_KEY', label: 'Resend API Key' },
+];
 const DRY_RUN = process.argv.includes('--dry-run');
-const ROTATE_SESSION_SECRET = process.argv.includes('--rotate-session-secret');
+const ROTATE_BETTER_AUTH_SECRET = process.argv.includes('--rotate-better-auth-secret');
+const REPLACE_PROVIDER_SECRETS = process.argv.includes('--replace-provider-secrets');
 
 function executable(command) {
   return process.platform === 'win32' && ['gh', 'pnpm', 'npm', 'npx', 'yarn'].includes(command)
@@ -25,6 +33,7 @@ function run(command, args, options = {}) {
   const result = spawnSync(executable(command), args, {
     encoding: 'utf8',
     input: options.input,
+    env: options.env ?? process.env,
     stdio: options.capture ? [options.input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'] : 'inherit',
   });
   if (result.error) throw result.error;
@@ -53,9 +62,9 @@ function runWrangler(args, options = {}) {
   return run(command, [...baseArgs, ...args], options);
 }
 
-function putStdin(command, args, value) {
+function putStdin(command, args, value, env = process.env) {
   return new Promise((resolve, reject) => {
-    const child = spawn(executable(command), args, { stdio: ['pipe', 'inherit', 'inherit'] });
+    const child = spawn(executable(command), args, { env, stdio: ['pipe', 'inherit', 'inherit'] });
     child.once('error', reject);
     child.once('exit', (code) =>
       code === 0 ? resolve() : reject(new Error(`${command}の登録処理に失敗しました。`)),
@@ -68,9 +77,46 @@ function putGithubSecret(name, value) {
   return putStdin('gh', ['secret', 'set', name, '--env', ENVIRONMENT, '--repo', REPO], value);
 }
 
-function putWorkerSecret(name, value) {
+export function putGithubVariable(name, value, { run = runGh, probe = probeGh } = {}) {
+  // gh variable を持たない旧CLIでも、安定したREST APIとstdinで登録する。
+  const endpoint = `repos/${REPO}/actions/variables`;
+  const current = probe(['api', `${endpoint}/${encodeURIComponent(name)}`]);
+  const exists = current.status === 0;
+  if (!exists && !/HTTP 404|Not Found/i.test(current.stderr || '')) {
+    throw new Error(`GitHub Variable ${name}の確認に失敗しました。`);
+  }
+  run(
+    [
+      'api',
+      '--method',
+      exists ? 'PATCH' : 'POST',
+      exists ? `${endpoint}/${encodeURIComponent(name)}` : endpoint,
+      '--input',
+      '-',
+    ],
+    {
+      input: JSON.stringify({ name, value }),
+      capture: true,
+    },
+  );
+}
+
+function validateMailFrom(value) {
+  const normalized = value.trim();
+  if (
+    !normalized ||
+    /[\r\n]/.test(normalized) ||
+    !normalized.includes('@') ||
+    /@(?:[^>]*\.)?example\.(?:com|net|org|invalid)>?$/i.test(normalized)
+  ) {
+    throw new Error('MAIL_FROMはResendで検証済みの実在送信元を入力してください。');
+  }
+  return normalized;
+}
+
+function putWorkerSecret(name, value, credentials) {
   const [command, ...baseArgs] = WRANGLER_COMMAND;
-  return putStdin(command, [...baseArgs, 'secret', 'put', name], value);
+  return putStdin(command, [...baseArgs, 'secret', 'put', name], value, credentials);
 }
 
 async function readHidden(label) {
@@ -192,23 +238,41 @@ function ensureGitHubEnvironment() {
   }
 }
 
-function listWorkerSecrets() {
-  try {
-    return runWrangler(['secret', 'list', '--format', 'json'], { capture: true });
-  } catch {
-    return runWrangler(['secret', 'list'], { capture: true });
-  }
+function listWorkerSecrets(credentials) {
+  return runWrangler(['secret', 'list'], { capture: true, env: credentials });
 }
 
-async function configureWorkerSecrets() {
-  const current = listWorkerSecrets();
-  if (SESSION_SECRET) {
-    if (current.includes(SESSION_SECRET) && !ROTATE_SESSION_SECRET) {
-      console.log(`✓ ${SESSION_SECRET}: 登録済みのため変更しません`);
-    } else {
-      await putWorkerSecret(SESSION_SECRET, randomBytes(32).toString('hex'));
-      console.log(`✓ ${SESSION_SECRET}: 値を表示せず登録しました`);
+function workerSecretNames(credentials) {
+  const output = listWorkerSecrets(credentials);
+  try {
+    const parsed = JSON.parse(output);
+    if (Array.isArray(parsed)) {
+      return new Set(parsed.map((entry) => entry?.name).filter((name) => typeof name === 'string'));
     }
+  } catch {
+    // 旧Wranglerの表形式は次の行単位検査で扱う。
+  }
+  const required = [BETTER_AUTH_SECRET, ...PROVIDER_SECRETS.map(({ name }) => name)];
+  return new Set(required.filter((name) => new RegExp(`(^|\\s)${name}(\\s|$)`, 'm').test(output)));
+}
+
+async function configureWorkerSecrets(current, credentials) {
+  if (current.has(BETTER_AUTH_SECRET) && !ROTATE_BETTER_AUTH_SECRET) {
+    console.log(`✓ ${BETTER_AUTH_SECRET}: 登録済みのため変更しません`);
+  } else {
+    await putWorkerSecret(BETTER_AUTH_SECRET, randomBytes(32).toString('hex'), credentials);
+    console.log(`✓ ${BETTER_AUTH_SECRET}: 値を表示せず登録しました`);
+  }
+
+  for (const { name, label } of PROVIDER_SECRETS) {
+    if (current.has(name) && !REPLACE_PROVIDER_SECRETS) {
+      console.log(`✓ ${name}: 登録済みのため変更しません`);
+      continue;
+    }
+    const value = await readHidden(`${label}を貼り付けてEnter`);
+    if (!value) throw new Error(`${name}が空のため停止しました。`);
+    await putWorkerSecret(name, value, credentials);
+    console.log(`✓ ${name}: 値を表示せず登録しました`);
   }
 }
 
@@ -219,9 +283,7 @@ async function main() {
   }
 
   runGh(['auth', 'status'], { capture: true });
-  const actualRepo = runGh(['repo', 'view', REPO, '--json', 'nameWithOwner', '-q', '.nameWithOwner'], {
-    capture: true,
-  }).trim();
+  const actualRepo = JSON.parse(runGh(['api', `repos/${REPO}`], { capture: true })).full_name;
   if (actualRepo !== REPO) throw new Error(`対象リポジトリが違います（期待: ${REPO}）。`);
   await confirmTeamAccount();
 
@@ -235,30 +297,49 @@ async function main() {
   await verifyToken(accountId, apiToken);
   console.log('✓ Cloudflare Account API Token: active');
 
-  const whoami = runWrangler(['whoami'], { capture: true });
+  // 本人が検証したAccount/Tokenを子プロセスの環境だけへ渡し、別のOAuthログイン先へ書き込まない。
+  const workerCredentials = {
+    ...process.env,
+    CLOUDFLARE_ACCOUNT_ID: accountId,
+    CLOUDFLARE_API_TOKEN: apiToken,
+  };
+  const whoami = runWrangler(['whoami'], { capture: true, env: workerCredentials });
   if (!whoami.includes(accountId)) {
     throw new Error(
       'Wranglerのログイン先と選択したCloudflare Accountが一致しません。wrangler login後にやり直してください。',
     );
   }
 
+  // Worker所有先と必要APIへの読取権限を、外部設定の変更前に確認する。
+  const currentWorkerSecrets = workerSecretNames(workerCredentials);
+  runGh(['api', `repos/${REPO}/actions/variables`], { capture: true });
   ensureGitHubEnvironment();
   await putGithubSecret('CLOUDFLARE_ACCOUNT_ID', accountId);
   await putGithubSecret('CLOUDFLARE_API_TOKEN', apiToken);
   apiToken = null;
-  runGh(['variable', 'set', 'APP_URL', '--body', APP_URL, '--repo', REPO], { capture: true });
-  console.log(`✓ GitHub ${ENVIRONMENT}: Environment secretsとAPP_URLを登録しました`);
+  putGithubVariable('APP_URL', APP_URL);
+  const rl = createInterface({ input, output });
+  const mailFrom = validateMailFrom(
+    await rl.question('Resendで検証済みのMAIL_FROM（例: Focus Ledger <no-reply@your-domain.jp>）を入力: '),
+  );
+  rl.close();
+  putGithubVariable('MAIL_FROM', mailFrom);
+  console.log(`✓ GitHub ${ENVIRONMENT}: Environment secretsとAPP_URL・MAIL_FROMを登録しました`);
 
-  await configureWorkerSecrets();
-  console.log('完了しました。secret値は表示・保存・送信していません。');
+  await configureWorkerSecrets(currentWorkerSecrets, workerCredentials);
+  workerCredentials.CLOUDFLARE_API_TOKEN = undefined;
+  console.log(
+    '完了しました。秘密値はGitHub/Cloudflareの登録先にだけ送信し、画面やファイルへ出していません。',
+  );
   console.log('このTerminalの完了メッセージだけをAIへ伝えてください。');
 }
 
-main().catch((error) => {
-  try {
-    clipboard('');
-  } catch {}
-  console.error(`エラー: ${error.message}`);
-  console.error('secret値ではなく、このエラー文だけをAIへ伝えてください。');
-  process.exitCode = 1;
-});
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url))
+  main().catch((error) => {
+    try {
+      clipboard('');
+    } catch {}
+    console.error(`エラー: ${error.message}`);
+    console.error('secret値ではなく、このエラー文だけをAIへ伝えてください。');
+    process.exitCode = 1;
+  });

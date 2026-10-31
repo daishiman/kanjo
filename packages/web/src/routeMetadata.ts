@@ -365,6 +365,51 @@ export function routeMetadata(id: AppRouteId): (typeof APP_ROUTES)[number] {
   return route;
 }
 
+/**
+ * 未認証でも描く経路 (spec-login-v2 §7.16)。これ以外に未認証で来たら /login?next= へ置き換える。
+ * 業務の枠 (APP_ROUTES) とは混ぜない。枠の中に置くと、未認証のまま業務 API を叩く経路が残る。
+ */
+export const PUBLIC_ROUTES = [
+  { id: 'login', path: '/login', label: 'ログイン', preserveSignInFlow: true, authenticated: 'return' },
+  { id: 'mfa', path: '/mfa', label: '2段階認証', preserveSignInFlow: true, authenticated: 'mfa' },
+  {
+    id: 'invite',
+    path: '/invite/accept',
+    label: '招待の承諾',
+    preserveSignInFlow: false,
+    authenticated: 'home',
+  },
+  {
+    id: 'reset',
+    path: '/reset-password',
+    label: 'パスワードの再設定',
+    preserveSignInFlow: false,
+    authenticated: 'home',
+  },
+  { id: 'help', path: '/help', label: 'ヘルプ', preserveSignInFlow: false, authenticated: 'allow' },
+  {
+    id: 'privacy',
+    path: '/privacy',
+    label: 'プライバシー',
+    preserveSignInFlow: false,
+    authenticated: 'allow',
+  },
+] as const;
+
+export type PublicRoutePath = (typeof PUBLIC_ROUTES)[number]['path'];
+export type PublicRouteId = (typeof PUBLIC_ROUTES)[number]['id'];
+
+export const publicRoutePolicy = (pathname: string) => PUBLIC_ROUTES.find((route) => route.path === pathname);
+
+export const publicRoutePath = (id: PublicRouteId): PublicRoutePath => {
+  const route = PUBLIC_ROUTES.find((candidate) => candidate.id === id);
+  if (!route) throw new Error(`Unknown public route: ${id}`);
+  return route.path;
+};
+
+export const isPublicRoute = (pathname: string): pathname is PublicRoutePath =>
+  Boolean(publicRoutePolicy(pathname));
+
 /** path から本文幅を決める唯一の境界。analysis の子タブは親 route の用途を継承する。 */
 export function routeContentWidth(pathname: string): 'reading' | 'data' {
   if (pathname === '/improvement' || pathname === '/login') return 'reading';
@@ -383,6 +428,8 @@ export function routePageTitle(pathname: string): string {
   const tab = ANALYSIS_TABS.find((candidate) => candidate.path === pathname);
   if (tab) return `${tab.label} | 支出分析 | Focus Ledger`;
   if (pathname === '/improvement') return '改善要望 | Focus Ledger';
+  const publicRoute = PUBLIC_ROUTES.find((candidate) => candidate.path === pathname);
+  if (publicRoute) return `${publicRoute.label} | Focus Ledger`;
   const route = APP_ROUTES.find((candidate) =>
     candidate.path === '/'
       ? pathname === '/'

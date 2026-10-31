@@ -1,4 +1,9 @@
 # ローカル開発用の環境変数。コピーして .dev.vars を作る (コミット禁止)。
-# SESSION_SECRET: セッションCookie署名用 (openssl rand -hex 32 で生成)
+# BETTER_AUTH_SECRET: Cookie・TOTP暗号化用 (openssl rand -hex 32 で生成)
 # この値を変えると、発行済みのログイン状態はすべて無効になる。
-SESSION_SECRET=change-me-64-hex-chars
+BETTER_AUTH_SECRET=change-me-64-hex-chars
+GOOGLE_CLIENT_ID=replace-with-google-oauth-client-id
+GOOGLE_CLIENT_SECRET=replace-with-google-oauth-client-secret
+RESEND_API_KEY=replace-with-resend-api-key
+MAIL_FROM=Focus Ledger <replace-with-verified-sender@your-domain.example>
+BETTER_AUTH_URL=http://localhost:8787

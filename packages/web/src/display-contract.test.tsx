@@ -12,12 +12,13 @@ const PAGE_SOURCES = import.meta.glob('./pages/*.tsx', {
 }) as Record<string, string>;
 const STYLE_SOURCE = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
 const APP_SOURCE = readFileSync(new URL('./App.tsx', import.meta.url), 'utf8');
+const PUBLIC_ROUTES_SOURCE = readFileSync(
+  new URL('./features/auth/PublicRoutes.tsx', import.meta.url),
+  'utf8',
+);
 const AUTHENTICATED_APP_SOURCE = readFileSync(new URL('./AuthenticatedApp.tsx', import.meta.url), 'utf8');
-// Login・PasswordChange・Improvement は routeMetadata の業務ルートではない。
-// 前2枚は認証の「門」(未認証と一時パスワード)、最後は「アプリの不具合を伝える」ための
-// 画面で、いずれも PageHeader が要求する route id を持たない。
-// 業務ルートの表示契約はこの3枚を除いた集合に掛ける
-const NON_ROUTED_PAGES = ['/Login.tsx', '/PasswordChange.tsx', '/Improvement.tsx'];
+// Improvement は routeMetadata の業務ルートではない。認証UIは features/auth/ だけを正本とする。
+const NON_ROUTED_PAGES = ['/Improvement.tsx'];
 // 実装を下位ディレクトリへ分けたページ (例: pages/household/) は、ルートの import 先に再輸出だけを残す。
 // 契約は再輸出の先の実体に掛ける (再輸出の1行だけを見て PageHeader 無しと判定しない)
 const NESTED_PAGE_SOURCES = import.meta.glob('./pages/*/*.tsx', {
@@ -67,12 +68,13 @@ describe('業務ルート契約', () => {
     expect(ROUTED_PAGE_SOURCES.some((source) => source.includes('<h1 className="page-title"'))).toBe(false);
   });
 
-  it('業務ルートは全てルート単位の遅延読み込みで、eagerな同期importは認証2画面だけに限る', () => {
+  it('業務ルートは全てルート単位の遅延読み込みで、eagerな同期importは未認証のログイン画面だけに限る', () => {
     // 業務ルートは正本の件数、routeMetadata 外は改善要望1枚と AI分析の子ルート3枚が lazy。
-    // 同期 import を許すのは業務画面へ入る「門」だけ: 未認証の Login と、
-    // 一時パスワードのままの利用者を止める PasswordChange。門で「読み込み中…」を挟むと
-    // 締め出されたのか読み込み中なのかが利用者に判別できない。
-    // 件数ではなく名前の完全一致で固定する。3枚目が黙って増えたらここで落ちる。
+    // 同期 import を許すのは業務画面へ入る「門」だけ: 未認証のログイン画面 (LoginContainer)。
+    // 門で「読み込み中…」を挟むと、締め出されたのか読み込み中なのかが利用者に判別できない。
+    // 一時パスワードの門 (PasswordChange) は login-v2 で無くなった (decision-004)。
+    // 公開経路の残り (/mfa・/invite/accept・/reset-password・/help・/privacy) は PublicRoutes が lazy で持つ。
+    // 件数ではなく名前の完全一致で固定する。2枚目が黙って増えたらここで落ちる。
     // routeMetadata の外にある lazy ページは名前で列挙し、黙って増えたら落ちるようにする
     expect([...AUTHENTICATED_APP_SOURCE.matchAll(/^const (\w+) = lazy\(/gm)].map((m) => m[1])).toEqual([
       'ImprovementPage',
@@ -86,9 +88,19 @@ describe('業務ルート契約', () => {
     expect(AUTHENTICATED_APP_SOURCE).toMatch(/<Suspense\s+fallback=/);
     expect(APP_SOURCE).toContain("import { AuthenticatedApp } from './AuthenticatedApp.js'");
     expect(APP_SOURCE).not.toMatch(/lazy\(\(\) =>\s*import\('\.\/pages\//);
-    expect(APP_SOURCE.match(/import \{ \w+Page \} from '\.\/pages\//g)).toEqual([
-      "import { LoginPage } from './pages/",
-      "import { PasswordChangePage } from './pages/",
+    expect(APP_SOURCE.match(/import \{ \w+ \} from '\.\/pages\//g)).toBeNull();
+    expect(APP_SOURCE.match(/import \{ \w+ \} from '\.\/features\//g)).toEqual([
+      "import { PublicRoutes } from './features/",
+    ]);
+    expect(PUBLIC_ROUTES_SOURCE.match(/^import \{ \w+ \} from '\.\/\w+\.js';$/gm)).toEqual([
+      "import { LoginContainer } from './LoginContainer.js';",
+    ]);
+    expect([...PUBLIC_ROUTES_SOURCE.matchAll(/^const (\w+) = lazy\(/gm)].map((m) => m[1])).toEqual([
+      'MfaPage',
+      'InviteAcceptPage',
+      'ResetPasswordPage',
+      'HelpPage',
+      'PrivacyPage',
     ]);
   });
 });
@@ -142,6 +154,29 @@ describe('共通表示契約', () => {
     expect(annual).toContain('+150.0%');
     expect(annual).toContain('scope="col"');
     expect(annual).toContain('scope="row"');
+  });
+});
+
+describe('ログイン画面の見た目契約', () => {
+  it('メール欄も共通入力の枠・文字・面を使う', () => {
+    expect(STYLE_SOURCE).toMatch(/input\[type="text"\],\s*input\[type="email"\],\s*input\[type="password"\]/);
+  });
+
+  it('ログイン操作はアイコンと文字を flex で離し、チェックは視覚24pxと操作44pxを両立する', () => {
+    expect(STYLE_SOURCE).toMatch(/\.login-google\s*\{[^}]*display:\s*inline-flex/s);
+    expect(STYLE_SOURCE).toMatch(/\.login-remember-control\s*\{[^}]*min-height:\s*var\(--tap-target-min\)/s);
+    expect(STYLE_SOURCE).toMatch(
+      /\.login-remember input\s*\{[^}]*width:\s*var\(--tap-target-min\)[^}]*height:\s*var\(--tap-target-min\)/s,
+    );
+    expect(STYLE_SOURCE).toMatch(
+      /\.login-remember-control span::before\s*\{[^}]*width:\s*24px[^}]*height:\s*24px/s,
+    );
+  });
+
+  it('デスクトップのフッターは3項目を縦線で区切る', () => {
+    expect(STYLE_SOURCE).toMatch(
+      /\.login-footer-item\s*\+\s*\.login-footer-item\s*\{[^}]*border-left:\s*1px solid var\(--line\)/s,
+    );
   });
 });
 

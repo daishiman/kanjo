@@ -1,0 +1,48 @@
+{
+  "feature_id": "feat-login-v2",
+  "feature_package_id": "feature-package/feat-login-v2",
+  "graph_revision": 2,
+  "graph_snapshot_digest": "fb6750c09f7a431149c0990bc5e06990c5ab7bbaeccc42e71f1afda1beb60ab6",
+  "graph_snapshot_digest_algorithm": "sha256(.dev-graph/state/graph.json bytes)",
+  "handoff_target": "task-graph",
+  "implementation_code_generated": 0,
+  "package_reference": {
+    "registration_receipt": ".dev-graph/plans/feature-package-feat-login-v2/dev-graph-registration-receipt.json",
+    "system_build_handoff": ".dev-graph/plans/feature-package-feat-login-v2/system-build-handoff.json",
+    "task_graph": ".dev-graph/plans/feature-package-feat-login-v2/task-graph.json"
+  },
+  "plan_validated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+  "readiness_matrix": "requirements-readiness-matrix.json",
+  "registered_node_ids": [
+    "SYS-LOGIN-V2-P01",
+    "SYS-LOGIN-V2-P02",
+    "SYS-LOGIN-V2-P03",
+    "SYS-LOGIN-V2-P04",
+    "SYS-LOGIN-V2-P05",
+    "SYS-LOGIN-V2-P06",
+    "SYS-LOGIN-V2-P07",
+    "SYS-LOGIN-V2-P08",
+    "SYS-LOGIN-V2-P09",
+    "SYS-LOGIN-V2-P10",
+    "SYS-LOGIN-V2-P11",
+    "SYS-LOGIN-V2-P12",
+    "SYS-LOGIN-V2-P13"
+  ],
+  "repository_id": "github:daishiman/kanjo",
+  "schema_version": "1.0.0",
+  "task_artifacts": [
+    "tasks/feat-login-v2/sys-login-v2-p01.md",
+    "tasks/feat-login-v2/sys-login-v2-p02.md",
+    "tasks/feat-login-v2/sys-login-v2-p03.md",
+    "tasks/feat-login-v2/sys-login-v2-p04.md",
+    "tasks/feat-login-v2/sys-login-v2-p05.md",
+    "tasks/feat-login-v2/sys-login-v2-p06.md",
+    "tasks/feat-login-v2/sys-login-v2-p07.md",
+    "tasks/feat-login-v2/sys-login-v2-p08.md",
+    "tasks/feat-login-v2/sys-login-v2-p09.md",
+    "tasks/feat-login-v2/sys-login-v2-p10.md",
+    "tasks/feat-login-v2/sys-login-v2-p11.md",
+    "tasks/feat-login-v2/sys-login-v2-p12.md",
+    "tasks/feat-login-v2/sys-login-v2-p13.md"
+  ]
+}

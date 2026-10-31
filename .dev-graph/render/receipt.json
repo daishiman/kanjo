@@ -1,28 +1,23 @@
 {
-  "schema_version": "1.0.0",
-  "verb": "render",
-  "status": "pass",
-  "output": ".dev-graph/render/index.html",
-  "scope": "all",
-  "graph_revision": 4,
-  "counts": {
-    "nodes": 23,
-    "edges": 21,
-    "feature_progress": {
-      "feat-classify-screen": {
-        "done": 0,
-        "total": 13
-      }
-    }
+ "edges": 21,
+ "feature_progress": {
+  "aggregate": {
+   "done": 0,
+   "total": 13
   },
-  "registration": {
-    "feature_package_id": "feature-package/feat-classify-screen",
-    "path": ".dev-graph/plans/feature-package-feat-classify-screen/dev-graph-registration-receipt.json",
-    "expected_count": 13,
-    "applied_count": 13,
-    "source_digest": "sha256:7c218fe0d853660e36f0514a16a73caf263ddd8dfe8c20e45ab7eb46dd88d6ce"
-  },
-  "input_sha256": "8e286b2edd96fafae112aa7bff02fc99d164e1dc93f404fa39db5bc46b86cc46",
-  "output_sha256": "fbdd639cf0f9f4f19e3465ceba44448ea15a98d2ba5bbc7c0dea7a95011d4ad5",
-  "rendered_at": "2026-09-19T15:08:58Z"
+  "by_feature": {
+   "feat-login-v2": {
+    "done": 0,
+    "total": 13
+   }
+  }
+ },
+ "input_sha256": "47c0b9cc4e8ff6345ce9e19826958818fa54aeb808f32b0111de433e85e217ce",
+ "nodes": 23,
+ "ok": true,
+ "out": ".dev-graph/render/index.html",
+ "output_sha256": "604dcc38086b03c02788dc9c2f26827fe1ecc710e74947395e3168bbcfa438b5",
+ "graph_sha256_file": "47c0b9cc4e8ff6345ce9e19826958818fa54aeb808f32b0111de433e85e217ce",
+ "graph_revision": 3,
+ "receipt_source": "render-graph-html.py stdout (renderer は receipt を書かない)"
 }

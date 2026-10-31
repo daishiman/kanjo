@@ -207,6 +207,29 @@ pnpm --filter @kanjo/api exec wrangler d1 execute kanjo-db --local \
 | 外部原本 | 取込原本、夜間バックアップ、改善要望の画像 | 取込・復旧・改善要望それぞれの経路で管理 | 取込原本以外は対象外 | R2で用途別prefixと保持期間を管理 |
 | disposable UI | filter、開閉、未保存draft | 対象外 | 対象外 | 画面/セッション内のみ |
 
+## Login v2 認証schema（0050）
+
+現行の認証主体はBetter Authの`user`で、資格情報は`account`、sessionは`session`、TOTPは`twoFactor`に分離する。
+管理一覧APIは`user`の公開要約だけ、本人APIはMFA状態と認証手段を加えた詳細だけを返し、password・token・secret・
+backup codeはDTOへ含めない。
+
+| テーブル | 役割と不変条件 |
+|---|---|
+| `user` | 認証主体。`role`はadmin/member、`status`はactive/suspended。最後のactive adminの停止・降格を条件付きUPDATEで拒否する |
+| `account` | credential/Googleの認証手段。credentialのpasswordは自己記述PBKDF2 hash。本人以外のDTOへ出さない |
+| `session` | Better Auth session。停止・admin昇格・MFA復旧では対象利用者の行を削除する |
+| `verification` | Better Authの期限付き検証値。reset tokenの平文は保存しない |
+| `twoFactor` | 暗号化TOTP secretとハッシュ済み復旧コード。`user.twoFactorEnabled`との確定はMFA setup token消費と同じD1 batch |
+| `invitations` | tokenはSHA-256だけを保存。同一メールの未承諾・未取消は部分一意。再送メール失敗時は旧tokenへCAS復元する |
+| `mfa_setup_token` | 初回MFA用の短命・1回限りtoken hash。消費・user・factor更新を`changes()`で鎖にする |
+| `link_confirmation_token` | 認証手段追加の確認。平文はheader/bodyだけで運び、D1はhashだけ |
+| `auth_rate_limits` | invite/reset/MFAのIP・account別失敗数。raw IP・メールは保存しない |
+| `auth_audit_log` | Login v2固有action。秘密やメール本文を持たず、actor/target・結果・無害な件数だけを400日保持 |
+
+0050の旧`users`複写は非破壊で、`must_change_password=0`だけを`user`とcredential `account`へ写す。
+`must_change_password=1`は両方から除外し、同じメールへ通常招待できる状態を保つ。旧`users`自体は履歴・rollback境界の
+ため書き換えずに残す。認証モードと復旧手順は[`アカウント認証運用`](runbooks/account-login-operations.md)を参照する。
+
 ## 手動編集(オーバーライド)の設計
 
 ### 同一性キー
@@ -250,7 +273,7 @@ MF側で `ID` が振り直された場合の第二の引き当てキー(`stable_
 `receipt_source_profiles`、`receipt_source_overrides`、`tax_account_settings`）は物理D1に互換データとして
 残り得るが、runtime/API/Drizzleの現行定義からは退役済みであり、このactive schema一覧には載せない。
 
-現行のrepository headは認証基盤の`0039_account_login.sql`である。証懑退役の物理削除は将来の別変更である
+現行のrepository headは認証基盤の`0050_login_v2_better_auth.sql`である。証懑退役の物理削除は将来の別変更である
 Release Bの`0040_drop_tax_and_receipt_tables.sql`が担う。Release Bはcleanupの`pending` / `retry` / `dead`と
 旧`attachments` / `attachment_cleanup_jobs`の残件がすべて0であることを機械ゲートで確認した後にだけ別pending集合で適用する。
 `0010`〜`0028`は適用履歴なので書き換えない。`cash_entries.receipt_waived`は交通費入力の
@@ -260,8 +283,8 @@ Release A/Bの適用順序・復旧契約は
 
 password login throttleの既定は15分window / 5回目から15分lock / 7日後stale cleanupで、
 1 requestは成功・失敗とも最大2 D1 queries。nightly scheduledは`updated_at`のindexから
-最大100件を1 queryで消去する。夜間7 jobの同一invocation予算は中央SSOTで46 queries
-（backup 1 + R2 cleanup 20 + password throttle 1 + improvement 3 + undo 12 + audit header 3 + audit detail 6）
+最大100件を掃除する。夜間7 jobの同一invocation予算は中央SSOTで48 queries
+（backup 1 + R2 cleanup 20 + rate-limit/auth artifact 3 + improvement 3 + undo 12 + audit header 3 + audit detail 6）
 に固定し、backupを先に確定して残る6 jobを並列実行する。全jobを記録後、1件でもjob-level rejectなら
 内容を含まないgeneric errorをCronへ返す。
 validation、安全なfallback、非secret override名は`packages/api/src/login-rate-limit.ts`を正本とする。

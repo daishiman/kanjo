@@ -1,150 +1,248 @@
-/**
- * 利用者管理 (設定画面の「利用者」セクション)。admin だけが到達できる。
- *
- * 自己サインアップは持たない。増やすのも止めるのも既存 admin の操作としてだけ起きる。
- * 平文パスワードを返すのは一時パスワード発行の応答1回だけで、保存はしない。
- */
+import { invitationExpiresAt, invitationStatus } from '@kanjo/core';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { type AuthEnv, type AuthVariables, adminGuard } from '../auth.js';
+import { buildAuditStatements } from '../audit-log.js';
+import { writeAuthV2Audit } from '../auth-audit.js';
+import { newOpaqueToken, newRowId, sha256Hex } from '../auth-tokens.js';
+import { type AuthEnv, type AuthVariables, TENANT_ID, adminGuard } from '../auth.js';
+import { rotateAndDeliverInvitation } from '../invitations.js';
+import { MailSendError, createSendMail } from '../mail.js';
 import { publicJsonValidator } from '../public-validation.js';
 import {
-  PASSWORD_MAX_LENGTH,
   USER_ROLES,
   USER_STATUSES,
   findUserByEmail,
   findUserById,
-  generateTemporaryPassword,
-  hashPassword,
   isValidEmail,
   listUsers,
   normalizeEmail,
-  passwordPolicyError,
-  preparePasswordUpdateAndRevoke,
+  prepareSuspendedSessionPurge,
   prepareUserAdminUpdate,
-  prepareUserInvitation,
   toPublicUser,
 } from '../users.js';
-import { buildAuthAuditPlan } from './auth.js';
 
 type Ctx = { Bindings: AuthEnv; Variables: AuthVariables };
+type InvitationRole = (typeof USER_ROLES)[number];
 
-const createSchema = z.object({
-  email: z.string().min(3).max(254),
-  role: z.enum(USER_ROLES),
-  // 省略時は一時パスワードを発行する。管理者が初期値を決め打ちしなくてよい。
-  password: z.string().min(1).max(PASSWORD_MAX_LENGTH).optional(),
+interface InvitationRow {
+  id: string;
+  email: string;
+  role: InvitationRole;
+  expires_at: string;
+  accepted_at: string | null;
+  revoked_at: string | null;
+  invited_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+const invitationDto = (row: InvitationRow, now = new Date()) => ({
+  id: row.id,
+  email: row.email,
+  role: row.role,
+  status: invitationStatus(
+    {
+      expiresAt: new Date(row.expires_at),
+      acceptedAt: row.accepted_at ? new Date(row.accepted_at) : null,
+      revokedAt: row.revoked_at ? new Date(row.revoked_at) : null,
+    },
+    now,
+  ),
+  expiresAt: row.expires_at,
+  invitedBy: row.invited_by,
+  createdAt: row.created_at,
+  acceptedAt: row.accepted_at,
 });
 
 const updateSchema = z
   .object({ role: z.enum(USER_ROLES).optional(), status: z.enum(USER_STATUSES).optional() })
-  .refine((value) => value.role !== undefined || value.status !== undefined, {
-    message: 'role か status のどちらかを指定してください',
-  });
-
-const notFound = { error: { code: 'not_found', message: '利用者が見つかりません' } } as const;
-
-const lastAdmin = {
-  error: { code: 'last_admin', message: '有効な管理者が0人になる操作はできません' },
-} as const;
+  .refine((value) => value.role !== undefined || value.status !== undefined);
+const inviteSchema = z.object({ email: z.string().min(3).max(254), role: z.enum(USER_ROLES) });
+const notFound = { error: { code: 'not_found', message: '対象が見つかりません' } } as const;
 
 export const adminUsersRoute = new Hono<Ctx>();
-
-// /api/* の共通authGuardを通過済み。ここではadmin認可だけを1度適用する。
 adminUsersRoute.use('/admin/*', adminGuard());
 
-adminUsersRoute.get('/admin/users', async (c) => {
-  const rows = await listUsers(c.env.DB);
-  return c.json({ users: rows.map(toPublicUser) });
+adminUsersRoute.get('/admin/users', async (c) =>
+  c.json({ users: (await listUsers(c.env.DB)).map(toPublicUser) }),
+);
+
+adminUsersRoute.patch('/admin/users/:id', publicJsonValidator(updateSchema), async (c) => {
+  const target = await findUserById(c.env.DB, c.req.param('id'));
+  if (!target) return c.json(notFound, 404);
+  const body = c.req.valid('json');
+  const promotesToAdmin = target.role !== 'admin' && body.role === 'admin';
+  const now = new Date().toISOString();
+  const operationId = crypto.randomUUID();
+  const audit = buildAuditStatements({
+    database: c.env.DB,
+    auditId: operationId,
+    userId: TENANT_ID,
+    actorUserId: c.get('actor').id,
+    operationId,
+    action: body.status === 'suspended' ? 'admin_user_suspend' : 'admin_user_update',
+    scope: { kind: 'account', userId: target.id },
+    counts: {},
+    occurredAt: now,
+    result: 'succeeded',
+    onlyIfPreviousStatementChanged: true,
+  });
+  const [updated] = await c.env.DB.batch([
+    prepareUserAdminUpdate(c.env.DB, target.id, body, now),
+    ...audit.statements,
+    prepareSuspendedSessionPurge(c.env.DB, target.id, promotesToAdmin),
+  ]);
+  if (Number(updated.meta.changes ?? 0) === 0) {
+    return c.json({ error: { code: 'last_admin', message: '有効な管理者が0人になる操作はできません' } }, 409);
+  }
+  const user = await findUserById(c.env.DB, target.id);
+  return c.json({ user: user ? toPublicUser(user) : null });
 });
 
-adminUsersRoute.post('/admin/users', publicJsonValidator(createSchema), async (c) => {
-  const env = c.env;
-  const actor = c.get('actor');
+adminUsersRoute.get('/admin/invitations', async (c) => {
+  const rows = await c.env.DB.prepare(
+    `SELECT id,email,role,expires_at,accepted_at,revoked_at,invited_by,created_at,updated_at
+       FROM invitations ORDER BY created_at DESC,id DESC LIMIT 200`,
+  ).all<InvitationRow>();
+  return c.json({ invitations: (rows.results ?? []).map((row) => invitationDto(row)) });
+});
+
+const applicationOrigin = (env: AuthEnv, requestUrl: string) =>
+  (env.BETTER_AUTH_URL?.trim() || new URL(requestUrl).origin).replace(/\/api\/auth$/, '');
+
+adminUsersRoute.post('/admin/invitations', publicJsonValidator(inviteSchema), async (c) => {
   const body = c.req.valid('json');
   const email = normalizeEmail(body.email);
   if (!isValidEmail(email)) {
     return c.json({ error: { code: 'invalid_email', message: 'メールアドレスの形式が不正です' } }, 400);
   }
-  if (await findUserByEmail(env.DB, email)) {
-    return c.json({ error: { code: 'email_taken', message: 'そのメールアドレスは登録済みです' } }, 409);
+  if (await findUserByEmail(c.env.DB, email)) {
+    return c.json({ error: { code: 'user_exists', message: 'このメールアドレスは登録済みです' } }, 409);
   }
-  if (body.password) {
-    const policyError = passwordPolicyError(body.password);
-    if (policyError) return c.json({ error: { code: 'weak_password', message: policyError } }, 400);
-  }
-
-  // 管理者が決めた初期パスワードも一時扱いにする。管理者が知っている値のまま使わせない。
-  const temporaryPassword = body.password ?? generateTemporaryPassword();
-  const now = new Date().toISOString();
-  const invitation = prepareUserInvitation({
-    db: env.DB,
+  const token = newOpaqueToken();
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const expiresAt = invitationExpiresAt(now).toISOString();
+  const write = c.env.DB.prepare(
+    `INSERT INTO invitations
+       (id,email,role,token_hash,expires_at,accepted_at,revoked_at,invited_by,created_at,updated_at)
+     SELECT ?,?,?,?,?,NULL,NULL,?,?,?
+       WHERE NOT EXISTS (SELECT 1 FROM "user" WHERE email=?)
+     ON CONFLICT(email) WHERE accepted_at IS NULL AND revoked_at IS NULL DO UPDATE SET
+       role=excluded.role,
+       token_hash=excluded.token_hash,
+       expires_at=excluded.expires_at,
+       updated_at=excluded.updated_at
+     WHERE NOT EXISTS (SELECT 1 FROM "user" WHERE email=excluded.email)
+     RETURNING id,email,role,expires_at,accepted_at,revoked_at,invited_by,created_at,updated_at`,
+  ).bind(
+    newRowId(),
     email,
-    passwordHash: await hashPassword(temporaryPassword),
-    role: body.role,
-    mustChangePassword: true,
-    now,
-  });
-  const audit = buildAuthAuditPlan(env.DB, {
+    body.role,
+    await sha256Hex(token),
+    expiresAt,
+    c.get('actor').id,
+    nowIso,
+    nowIso,
+    email,
+  );
+  const operationId = crypto.randomUUID();
+  const audit = buildAuditStatements({
+    database: c.env.DB,
+    auditId: operationId,
+    userId: TENANT_ID,
+    actorUserId: c.get('actor').id,
+    operationId,
     action: 'admin_user_invite',
-    actorUserId: actor.id,
-    scope: { kind: 'account', userId: invitation.user.id },
-    occurredAt: now,
-    result: 'succeeded',
-  });
-  await env.DB.batch([invitation.statement, ...audit.statements]);
-  // この応答が平文を見せる唯一の機会。以後どこからも取り出せない。
-  return c.json({ user: toPublicUser(invitation.user), temporaryPassword }, 201);
-});
-
-adminUsersRoute.patch('/admin/users/:id', publicJsonValidator(updateSchema), async (c) => {
-  const env = c.env;
-  const actor = c.get('actor');
-  const target = await findUserById(env.DB, c.req.param('id'));
-  if (!target) return c.json(notFound, 404);
-  const body = c.req.valid('json');
-
-  const now = new Date().toISOString();
-  const update = prepareUserAdminUpdate(env.DB, target.id, body, now);
-  const audit = buildAuthAuditPlan(env.DB, {
-    action: body.status === 'suspended' ? 'admin_user_suspend' : 'admin_user_update',
-    actorUserId: actor.id,
-    scope: { kind: 'account', userId: target.id },
-    occurredAt: now,
+    scope: { kind: 'account' },
+    counts: {},
+    occurredAt: nowIso,
     result: 'succeeded',
     onlyIfPreviousStatementChanged: true,
   });
-  const [updatedResult] = await env.DB.batch([update, ...audit.statements]);
-  if ((updatedResult.meta.changes ?? 0) === 0) return c.json(lastAdmin, 409);
-  const updated = await findUserById(env.DB, target.id);
-  return c.json({ user: updated ? toPublicUser(updated) : null });
+  const [writeResult] = await c.env.DB.batch([write, ...audit.statements]);
+  const row = (writeResult.results as unknown as InvitationRow[])[0];
+  if (!row) {
+    return c.json({ error: { code: 'user_exists', message: 'このメールアドレスは登録済みです' } }, 409);
+  }
+  try {
+    await createSendMail(c.env)(row.email, 'invite', {
+      url: `${applicationOrigin(c.env, c.req.url)}/invite/accept?token=${encodeURIComponent(token)}`,
+      role: row.role,
+    });
+  } catch (error) {
+    if (error instanceof MailSendError) {
+      return c.json(
+        { error: { code: 'mail_send_failed', message: '招待メールを送信できませんでした' } },
+        502,
+      );
+    }
+    throw error;
+  }
+  return c.json({ invitation: invitationDto(row) }, 201);
 });
 
-adminUsersRoute.post('/admin/users/:id/password-reset', async (c) => {
-  const env = c.env;
-  const actor = c.get('actor');
-  const target = await findUserById(env.DB, c.req.param('id'));
-  if (!target) return c.json(notFound, 404);
+adminUsersRoute.post('/admin/invitations/:id/resend', async (c) => {
+  let updated: InvitationRow | null = null;
+  try {
+    updated = await rotateAndDeliverInvitation({
+      db: c.env.DB,
+      sendMail: createSendMail(c.env),
+      appOrigin: applicationOrigin(c.env, c.req.url),
+      selector: { id: c.req.param('id') },
+    });
+  } catch (error) {
+    if (error instanceof MailSendError) {
+      return c.json(
+        { error: { code: 'mail_send_failed', message: '招待メールを送信できませんでした' } },
+        502,
+      );
+    }
+    throw error;
+  }
+  if (!updated) {
+    const exists = await c.env.DB.prepare('SELECT id FROM invitations WHERE id=?')
+      .bind(c.req.param('id'))
+      .first();
+    return exists
+      ? c.json({ error: { code: 'invitation_not_pending', message: 'この招待は再送できません' } }, 409)
+      : c.json(notFound, 404);
+  }
+  await writeAuthV2Audit(c.env.DB, {
+    action: 'admin_invite_resend',
+    actorUserId: c.get('actor').id,
+    result: 'succeeded',
+    counts: { mail_queued: 1 },
+  });
+  return c.json({ invitation: invitationDto(updated) });
+});
 
-  const temporaryPassword = generateTemporaryPassword();
-  const temporaryHash = await hashPassword(temporaryPassword);
+adminUsersRoute.post('/admin/invitations/:id/revoke', async (c) => {
   const now = new Date().toISOString();
-  // 世代も進む。再発行はパスワードを失った状況で行うため、古い端末のセッションを残さない。
-  const update = preparePasswordUpdateAndRevoke(env.DB, target.id, temporaryHash, true, now);
-  const audit = buildAuthAuditPlan(env.DB, {
-    action: 'admin_user_password_reset',
-    actorUserId: actor.id,
-    scope: { kind: 'account', userId: target.id },
-    occurredAt: now,
+  const result = await c.env.DB.prepare(
+    `UPDATE invitations SET revoked_at=?,updated_at=?
+      WHERE id=? AND accepted_at IS NULL AND revoked_at IS NULL`,
+  )
+    .bind(now, now, c.req.param('id'))
+    .run();
+  if (Number(result.meta.changes ?? 0) !== 1) {
+    const exists = await c.env.DB.prepare('SELECT id FROM invitations WHERE id=?')
+      .bind(c.req.param('id'))
+      .first();
+    return exists
+      ? c.json({ error: { code: 'invitation_not_pending', message: 'この招待は取消できません' } }, 409)
+      : c.json(notFound, 404);
+  }
+  const row = (await c.env.DB.prepare(
+    `SELECT id,email,role,expires_at,accepted_at,revoked_at,invited_by,created_at,updated_at
+       FROM invitations WHERE id=?`,
+  )
+    .bind(c.req.param('id'))
+    .first<InvitationRow>())!;
+  await writeAuthV2Audit(c.env.DB, {
+    action: 'admin_invite_revoke',
+    actorUserId: c.get('actor').id,
     result: 'succeeded',
   });
-  await env.DB.batch([update, ...audit.statements]);
-  return c.json({
-    user: toPublicUser({
-      ...target,
-      must_change_password: 1,
-      temporary_password_expires_at: new Date(Date.parse(now) + 72 * 60 * 60 * 1000).toISOString(),
-    }),
-    temporaryPassword,
-  });
+  return c.json({ invitation: invitationDto(row) });
 });

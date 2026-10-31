@@ -11,11 +11,14 @@
     "types": "wrangler types",
     "typecheck": "pnpm run types && tsc --noEmit",
     "test": "vitest run",
-    "test:coverage:account-login": "vitest run src/account-login.test.ts src/login-rate-limit.test.ts src/index.test.ts src/scheduled-maintenance-budget.test.ts --coverage.enabled --coverage.provider=v8 --coverage.reporter=text --coverage.include=src/auth.ts --coverage.include=src/users.ts --coverage.include=src/login-rate-limit.ts --coverage.include=src/routes/auth.ts --coverage.include=src/routes/admin-users.ts --coverage.include=src/index.ts --coverage.include=src/scheduled-maintenance-budget.ts --coverage.thresholds.statements=80 --coverage.thresholds.functions=80 --coverage.thresholds.lines=80"
+    "test:coverage:account-login": "vitest run src/account-login.test.ts src/auth-boundaries.test.ts src/login-v2-endpoints.integration.test.ts src/index.test.ts src/login-v2-migration.test.ts --coverage.enabled --coverage.provider=v8 --coverage.reporter=text --coverage.include=src/auth.ts --coverage.include=src/better-auth.ts --coverage.include=src/auth-endpoints.ts --coverage.include=src/auth-rate-limit.ts --coverage.include=src/auth-audit.ts --coverage.include=src/auth-cleanup.ts --coverage.include=src/mail.ts --coverage.include=src/routes/account.ts --coverage.include=src/routes/admin-users.ts --coverage.include=src/routes/status.ts --coverage.thresholds.statements=80 --coverage.thresholds.functions=80 --coverage.thresholds.lines=80"
   },
   "dependencies": {
+    "@better-auth/drizzle-adapter": "1.7.5",
     "@hono/zod-validator": "^0.4.2",
     "@kanjo/core": "workspace:*",
+    "@better-auth/utils": "0.4.2",
+    "better-auth": "1.7.5",
     "drizzle-orm": "^0.45.2",
     "fflate": "^0.8.2",
     "hono": "^4.13.5",

@@ -1,0 +1,1315 @@
+{
+  "schema_version": "1.0.0",
+  "source_digest": "sha256:604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+  "promotion_receipt": ".dev-graph/plans/feature-package-feat-login-v2/atomic-promotion-receipt.json",
+  "feature_package_id": "feature-package/feat-login-v2",
+  "parent_feature": "feat-login-v2",
+  "expected_count": 13,
+  "phase_refs": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P11",
+    "P12",
+    "P13"
+  ],
+  "binding_intents": {
+    "SYS-LOGIN-V2-P01": "beads",
+    "SYS-LOGIN-V2-P02": "beads",
+    "SYS-LOGIN-V2-P03": "beads",
+    "SYS-LOGIN-V2-P04": "beads",
+    "SYS-LOGIN-V2-P05": "beads",
+    "SYS-LOGIN-V2-P06": "beads",
+    "SYS-LOGIN-V2-P07": "beads",
+    "SYS-LOGIN-V2-P08": "beads",
+    "SYS-LOGIN-V2-P09": "beads",
+    "SYS-LOGIN-V2-P10": "beads",
+    "SYS-LOGIN-V2-P11": "beads",
+    "SYS-LOGIN-V2-P12": "beads",
+    "SYS-LOGIN-V2-P13": "beads"
+  },
+  "nodes": [
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P01",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "要件ベースライン確定と前提条件・未決事項の着手時整理（K-1・K-5・reset-token 発行者衝突・frontend-002 と -006 の優先）",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p01",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P01",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p01.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-01-requirements.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p01.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P02",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "Better Auth 設定・関門・招待/MFA設定/再設定経路・D1 batch順序のワークストリーム設計決定記録",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p02",
+        "preparation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P01"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P02",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p02.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-02-architecture.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p02.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P03",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "認証契約・API 契約・migration 契約・画面契約の独立レビュー",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p03",
+        "design-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P02"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P03",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p03.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-03-design-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p03.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P04",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "core/API/migration/DOM の失敗テスト先行作成（未解決前提条件に該当する分岐を除く）",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p04",
+        "test-design"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P03"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "packages/api/src/account-login.test.ts",
+        "packages/api/src/auth.test-support.ts",
+        "packages/api/src/login-rate-limit.test.ts",
+        "packages/api/src/password-hash-workerd.test.ts",
+        "packages/api/src/invitation-lifecycle.test.ts",
+        "packages/api/src/mfa-setup.test.ts",
+        "packages/web/src/account-login.dom.test.tsx"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P04",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p04.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-04-test-design.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p04.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P05",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "Better Auth 導入・招待/MFA設定/再設定/連携 API・migration 0048・ログイン画面群の最終実装",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "backend",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p05",
+        "mutation"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P04"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "packages/api/src/auth.ts",
+        "packages/api/src/routes/auth.ts",
+        "packages/api/src/routes/admin-users.ts",
+        "packages/api/src/routes/invitations.ts",
+        "packages/api/src/mfa-setup.ts",
+        "packages/api/src/users.ts",
+        "packages/api/src/login-rate-limit.ts",
+        "packages/api/src/audit-log.ts",
+        "packages/api/src/db/schema.ts",
+        "packages/api/src/schema-guard.ts",
+        "packages/api/src/public-validation.ts",
+        "packages/api/src/canonical-mutation-fence.ts",
+        "packages/api/src/index.ts",
+        "packages/api/wrangler.jsonc",
+        "packages/api/package.json",
+        "packages/core/src/invitation.ts",
+        "packages/core/src/index.ts",
+        "packages/core/src/exports.ts",
+        "packages/core/src/types.ts",
+        "migrations/0048_better_auth.sql",
+        "packages/web/src/pages/Login.tsx",
+        "packages/web/src/pages/login/",
+        "packages/web/src/pages/PasswordChange.tsx",
+        "packages/web/src/pages/Settings.tsx",
+        "packages/web/src/components/UserAdmin.tsx",
+        "packages/web/src/components/Input.tsx",
+        "packages/web/src/App.tsx",
+        "packages/web/src/AuthenticatedApp.tsx",
+        "packages/web/src/api.ts",
+        "packages/web/src/api-client.ts",
+        "packages/web/src/styles.css",
+        "packages/web/src/routeMetadata.ts",
+        "packages/web/package.json"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P05",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p05.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-05-implementation.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p05.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P06",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "全テスト・型検査・lint の実行記録",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p06",
+        "test-run"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P05"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P06",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p06.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-06-test-run.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p06.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P07",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "受入基準 S1〜S7（AT-01〜AT-15）の検証",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p07",
+        "acceptance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P06"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P07",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p07.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-07-acceptance.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p07.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P08",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "旧 kanjo_session 署名・mustChangePasswordFence・一時パスワード発行参照の読取専用監査",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p08",
+        "audit"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P07"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P08",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p08.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-08-refactoring-migration.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p08.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P09",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "レート制限・列挙防止・CSP・secret 非出力・JS バンドル予算の保証確認",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p09",
+        "quality-assurance"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P08"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P09",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p09.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-09-quality-assurance.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p09.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P10",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "独立最終レビュー",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "quality",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p10",
+        "independent-review"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P09"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P10",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p10.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-10-final-review.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p10.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P11",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "再現可能な証跡索引の作成",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p11",
+        "evidence"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P10"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P11",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p11.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-11-evidence.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p11.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P12",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "移行と戻し・secret・Google/Resend設定・締め出し復旧・プライバシーの docs 最終同期",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "documentation",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p12",
+        "documentation-sync"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P11"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md",
+        "docs/runbooks/account-login-operations.md",
+        "docs/data-schema.md",
+        "docs/ui-decisions.md",
+        "docs/cloudflare-credentials-setup.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P12",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p12.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-12-documentation-operations.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p12.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    },
+    {
+      "graph_node_id": "SYS-LOGIN-V2-P13",
+      "artifact_kind": "task",
+      "artifact_subtypes": [],
+      "title": "単一 PR での配信、secret 投入、migration 0048 適用、Deploy、クローズアウト",
+      "project_id": "feature-package-feat-login-v2",
+      "domain": "operations",
+      "status": "active",
+      "owners": [
+        "daishiman"
+      ],
+      "tags": [
+        "login-v2",
+        "p13",
+        "release"
+      ],
+      "priority": null,
+      "start_date": null,
+      "target_date": null,
+      "iteration": null,
+      "created_at": "2026-09-21T15:10:37Z",
+      "updated_at": "2026-09-21T15:10:37Z",
+      "depends_on": [
+        "SYS-LOGIN-V2-P12"
+      ],
+      "related_nodes": [
+        "arch-login-v2-auth",
+        "arch-login-v2-backend",
+        "arch-login-v2-database",
+        "arch-login-v2-frontend",
+        "arch-login-v2-infrastructure",
+        "arch-login-v2-maintenance-ops",
+        "arch-login-v2-security",
+        "arch-login-v2-ui-ux",
+        "spec-login-v2"
+      ],
+      "resource_scope": [
+        "docs/login-v2/design-decisions.md"
+      ],
+      "parent_feature": "feat-login-v2",
+      "feature_package_id": "feature-package/feat-login-v2",
+      "phase_ref": "P13",
+      "file_path": "tasks/feat-login-v2/sys-login-v2-p13.md",
+      "template_id": "task",
+      "template_version": "1.0.0",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "confirmation_evidence": {
+        "evaluator": "system-dev-plan-evaluator",
+        "evidence_ref": ".dev-graph/plans/feature-package-feat-login-v2/plan-findings.json",
+        "evaluated_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313"
+      },
+      "source_lineage": {
+        "origin_kind": "system-dev-planner",
+        "source_plugin": "system-dev-planner",
+        "source_path": ".dev-graph/plans/feature-package-feat-login-v2/task-specs/phase-13-release-deploy.md",
+        "source_version": "0.1.0",
+        "source_digest": "604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+        "imported_at": "2026-09-21T15:10:37Z"
+      },
+      "classification_confidence": 0.95,
+      "classification_reason": "単一責務の実行タスクであり、artifact_kind は task 以外に取り得ない",
+      "classification_candidates": [
+        {
+          "artifact_kind": "task",
+          "candidate_path": "tasks/feat-login-v2/sys-login-v2-p13.md",
+          "confidence": 0.95
+        }
+      ],
+      "github_publication": {
+        "labels": [],
+        "milestone": null,
+        "mode": "local_only",
+        "project_aliases": []
+      },
+      "issue_linkage": null,
+      "tracker_binding": "repo-config-default",
+      "beads_linkage": null,
+      "github_project_linkages": [],
+      "pull_request_linkages": [],
+      "execution_contexts": [],
+      "completion_evidence": {
+        "policy": "linked_pr_merged_all",
+        "status": "in_progress",
+        "source": null,
+        "completed_at": null,
+        "reconciled_at": null,
+        "evidence_refs": []
+      },
+      "implementation_readiness": {
+        "checked_at": "2026-09-21T15:00:18Z",
+        "missing_sections": [],
+        "status": "complete"
+      }
+    }
+  ]
+}

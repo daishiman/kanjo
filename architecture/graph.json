@@ -2552,7 +2552,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "5c6788a52947b35f54ae87183aa1e3e6f17ed9ff5e8ff0b86f3192ca418f7a06",
-        "source_path": "system-spec/ui-ux.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/ui-ux.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2575,7 +2575,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "eba3e33334b9f5c6dcff8e1b78b8fff1804f2f52604edca0382f1a6158f36ef4",
-        "source_path": "system-spec/frontend.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/frontend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2598,7 +2598,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "e39b090e33900452ae1d5ce73e97bb80e02c65be0deb210278f19af238dafca4",
-        "source_path": "system-spec/backend.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/backend.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2621,7 +2621,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "1a0540e072013253e364b82ad4a3f1e91124019fd5baba6c85772025d47dcbfb",
-        "source_path": "system-spec/database.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/database.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2644,7 +2644,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "43dfdc557b5f5aaf98b06b941235ed93dba451d3a240fd2721a898a582678f37",
-        "source_path": "system-spec/auth.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/auth.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2667,7 +2667,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "8f446762dac8ac8a6d4309890f85c19832143ab42e22e3bc11914f39c88a8831",
-        "source_path": "system-spec/security.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/security.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2690,7 +2690,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2dd60db420ad646ddde4503af53e0162b59f324570faa0ddfe547fc7b417fd88",
-        "source_path": "system-spec/infrastructure.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/infrastructure.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -2713,7 +2713,7 @@
         "imported_at": "2026-09-19T13:11:57Z",
         "origin_kind": "system-spec-harness",
         "source_digest": "2b3f704b5a4f10f10bf1f37852d1094d0c80cb21fbe1ec9470a3b9fa1f01ee08",
-        "source_path": "system-spec/maintenance-ops.md",
+        "source_path": "system-spec/archive/2026-09-22-ai-analysis-screen/maintenance-ops.md",
         "source_plugin": "system-spec-harness",
         "source_version": "0.1.14"
       },
@@ -3072,6 +3072,174 @@
       "referenced_by": [
         "feat-classify-screen"
       ]
+    },
+    {
+      "id": "arch-login-v2-ui-ux",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "ログイン v2 — 画像どおりの単一カラムと 6 状態、同じカード型の招待承諾・再設定・MFA・連携画面",
+      "file_path": "architecture/login-v2-ui-ux.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/ui-ux.md",
+        "source_version": "0.1.14",
+        "source_digest": "a37523cc7be348e2f6da5cda7ed9ba854b5998c0c32b24e61a0a6c2360703d04",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-frontend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "frontend"
+      ],
+      "title": "ログイン v2 — ログイン画面の部品分割、未認証の 5 経路、薄い認証 client と招待方式の利用者管理",
+      "file_path": "architecture/login-v2-frontend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/frontend.md",
+        "source_version": "0.1.14",
+        "source_digest": "28d907a2e1b4bd5414c34f565225b0d834e67a18c3ba02aac05329664809ab3f",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-backend",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "backend"
+      ],
+      "title": "ログイン v2 — Better Auth を /api/auth/* に載せ、招待・MFA 設定・再設定を許可側の関門と 1 か所の送信関数で束ねる",
+      "file_path": "architecture/login-v2-backend.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/backend.md",
+        "source_version": "0.1.14",
+        "source_digest": "7f9867e1cbf2d6eda0a9b43b558b18737df233f02ee8e44fc234d735661d8bfa",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-database",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "data"
+      ],
+      "title": "ログイン v2 — 認証の表・招待・MFA 設定トークンを追加のみの migration で業務データから分けて置く",
+      "file_path": "architecture/login-v2-database.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/database.md",
+        "source_version": "0.1.14",
+        "source_digest": "97ea39db385a3a25db26a59937488b68cefd4f95b997cf3ef6278e2fe2544e7c",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-auth",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "ログイン v2 — Better Auth 継続、招待だけの利用者作成、許可側で書く管理者 MFA 関門と保持 30 日 / 非保持 12 時間",
+      "file_path": "architecture/login-v2-auth.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/auth.md",
+        "source_version": "0.1.14",
+        "source_digest": "7a69f92e77e282c4368aba6fc630e6a6b0f65c6179f4bfcff14291e7223c6464",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-security",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "security"
+      ],
+      "title": "ログイン v2 — 4 入口のレート制限と列挙防止、secret と署名 Cookie、外部送信は Google と Resend だけ",
+      "file_path": "architecture/login-v2-security.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/security.md",
+        "source_version": "0.1.14",
+        "source_digest": "fbb9e67c4ceecb54ef6323259062a6d2c8d3bcf67b3fd1edeccc8bebef876336",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-infrastructure",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "ログイン v2 — Better Auth を同じ Worker に置き、外部は Google と Resend だけ、秘密は Workers の secret で必須にする",
+      "file_path": "architecture/login-v2-infrastructure.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/infrastructure.md",
+        "source_version": "0.1.14",
+        "source_digest": "770103c73397f376877965f33b05edb030ab7f97ef9c92f8d4eb5a8c6070a510",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
+    },
+    {
+      "id": "arch-login-v2-maintenance-ops",
+      "artifact_kind": "architecture",
+      "artifact_subtypes": [
+        "infrastructure"
+      ],
+      "title": "ログイン v2 — 移行と戻し・締め出しからの復旧を runbook に置き、account-login の契約テストを Better Auth 版で緑にする",
+      "file_path": "architecture/login-v2-maintenance-ops.md",
+      "status": "active",
+      "confirmation_status": "confirmed",
+      "evaluation_status": "pass",
+      "source_lineage": {
+        "origin_kind": "system-spec-harness",
+        "source_plugin": "system-spec-harness",
+        "source_path": "system-spec/maintenance-ops.md",
+        "source_version": "0.1.14",
+        "source_digest": "9fcba90bc9dffee036f5cf79106f837776098dfd42738f59d26aab2042be0d94",
+        "imported_at": "2026-09-21T14:22:03Z"
+      },
+      "referenced_by": []
     }
   ]
 }

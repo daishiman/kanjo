@@ -29,7 +29,7 @@ let files: R2Bucket;
 const auth = {
   ACCESS_AUD: '',
   ACCESS_TEAM_DOMAIN: '',
-  SESSION_SECRET: 'synthetic-test-secret',
+  BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
 };
 
 const env = (filesBinding: R2Bucket = files, dbBinding: D1Database = d1) => ({

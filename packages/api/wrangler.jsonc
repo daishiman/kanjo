@@ -4,7 +4,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-08-24",
   "compatibility_flags": ["nodejs_compat"],
-  "upload_source_maps": true,
+  "upload_source_maps": false,
   "assets": {
     "directory": "../web/dist",
     "binding": "ASSETS",
@@ -36,10 +36,13 @@
   },
   // 値はCloudflareのsecret storeだけに置き、ここでは必須名だけを機械検証する。
   "secrets": {
-    // 共有パスワード(AUTH_PASSWORD)は撤去済み。秘密はセッション署名鍵の1本だけ。
-    "required": ["SESSION_SECRET"]
+    "required": ["BETTER_AUTH_SECRET", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "RESEND_API_KEY"]
   },
   "vars": {
+    // ローカルは要求元originを使う。CIは検証済みAPP_URLを本番deploy時に必ず上書きする。
+    "BETTER_AUTH_URL": "",
+    // 手元から誤ってdeployした場合はメールをfail-closedにする。CIの検証済み値だけが上書きする。
+    "MAIL_FROM": "",
     // Cloudflare Access を使う場合のみ設定(両方設定でAccess JWT検証へ切替)
     "ACCESS_AUD": "",
     "ACCESS_TEAM_DOMAIN": ""

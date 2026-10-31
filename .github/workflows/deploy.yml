@@ -37,6 +37,9 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       APP_URL: ${{ vars.APP_URL }}
+      MAIL_FROM: ${{ vars.MAIL_FROM }}
+      ACCESS_AUD: ${{ vars.ACCESS_AUD }}
+      ACCESS_TEAM_DOMAIN: ${{ vars.ACCESS_TEAM_DOMAIN }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -47,6 +50,12 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::productionのCLOUDFLARE_API_TOKENが未登録です"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::productionのCLOUDFLARE_ACCOUNT_IDが未登録です"; exit 1; }
           test -n "$APP_URL" || { echo "::error::Repository VariableのAPP_URLが未登録です"; exit 1; }
+          test -n "$MAIL_FROM" || { echo "::error::Repository VariableのMAIL_FROMが未登録です"; exit 1; }
+          case "$MAIL_FROM" in *$'\n'*|*$'\r'*|*@example.com*|*@example.net*|*@example.org*|*@example.invalid*) echo "::error::MAIL_FROMは検証済み送信元を登録してください"; exit 1;; esac
+          if { test -n "$ACCESS_AUD" && test -z "$ACCESS_TEAM_DOMAIN"; } || { test -z "$ACCESS_AUD" && test -n "$ACCESS_TEAM_DOMAIN"; }; then
+            echo "::error::ACCESS_AUDとACCESS_TEAM_DOMAINは両方設定するか両方空にしてください"
+            exit 1
+          fi
       - name: Lint（手動実行時）
         if: github.event_name == 'workflow_dispatch'
         run: pnpm lint
@@ -79,7 +88,12 @@ jobs:
       - name: D1 migrationの未適用を検査
         run: node .github/scripts/check-d1-migrations.mjs
       - name: Workerをデプロイ
-        run: pnpm --filter @kanjo/api exec wrangler deploy
+        run: >-
+          pnpm --filter @kanjo/api exec wrangler deploy
+          --var BETTER_AUTH_URL:"$APP_URL"
+          --var MAIL_FROM:"$MAIL_FROM"
+          --var ACCESS_AUD:"$ACCESS_AUD"
+          --var ACCESS_TEAM_DOMAIN:"$ACCESS_TEAM_DOMAIN"
       - name: 反映待ち後の1回目確認
         run: sleep 30 && pnpm run smoke
       - name: 旧実行環境の終了待ち後の2回目確認

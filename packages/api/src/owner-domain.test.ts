@@ -195,7 +195,7 @@ describe('owner API / restore compatibility', () => {
   const auth = {
     ACCESS_AUD: '',
     ACCESS_TEAM_DOMAIN: '',
-    SESSION_SECRET: 'synthetic-test-secret',
+    BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
   };
 
   it('旧self復元をcanonical exportへ変換し、family全経路とunknown 400を守る', async () => {

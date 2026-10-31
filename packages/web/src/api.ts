@@ -84,20 +84,42 @@ export { AUTH_EVENT, ApiError, type ApiRequestPolicy, api, apiUpload } from './a
  * GET /api/auth/me の応答。認証まわりの画面はすべて同じ queryKey ['auth'] でこれを読む。
  * 型をここに1つ置くのは、同じ endpoint を別の形で名乗る画面が出ると cache が食い違うため。
  */
-/** /auth/me と /admin/users が共有する、外部公開用の唯一の利用者DTO。 */
-export interface AccountUser {
+/** 管理者一覧が返す最小DTO。本人だけに返す認証手段やMFA状態を含めない。 */
+export interface AdminUserSummary {
   id: string;
   email: string;
   role: 'admin' | 'member';
   status: 'active' | 'suspended';
-  mustChangePassword: boolean;
   createdAt: string;
   lastLoginAt: string | null;
 }
 
+/** /auth/me が本人へ返す詳細DTO。 */
+export interface AccountUserDetails extends AdminUserSummary {
+  twoFactorEnabled: boolean;
+  /** 登録済みの認証手段。Better Auth の providerId (`credential` はパスワード) */
+  providers: AuthProvider[];
+  /** 解除APIへ渡せる本人所有のaccount row。token類は含まない。 */
+  authAccounts: Array<{ id: string; providerId: AuthProvider }>;
+}
+
+export type AuthProvider = 'credential' | 'google';
+
 export interface AuthState {
   authenticated: boolean;
-  user: AccountUser | null;
+  user: AccountUserDetails | null;
+}
+
+/** GET /api/admin/invitations の1行。status はサーバが core の関数 (BR-04) で出す。トークンは含まない */
+export interface Invitation {
+  id: string;
+  email: string;
+  role: 'admin' | 'member';
+  status: 'pending' | 'accepted' | 'expired' | 'revoked';
+  expiresAt: string;
+  invitedBy: string | null;
+  createdAt: string;
+  acceptedAt: string | null;
 }
 
 /* -------- エンドポイント別の型 -------- */

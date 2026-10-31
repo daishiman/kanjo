@@ -1,0 +1,187 @@
+{
+  "schema_version": "1.0.0",
+  "plan_dir": ".dev-graph/staging/run-feat-login-v2-20260921T1447Z",
+  "evaluator": {
+    "name": "assign-system-dev-plan-evaluator",
+    "version": "0.1.11",
+    "context": "fork"
+  },
+  "evaluated_digest": "sha256:604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313",
+  "verdict": "PASS",
+  "conditions": {
+    "C1": {
+      "id": "C1",
+      "status": "PASS",
+      "summary": "feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json は同一 feature_package_id (feature-package/feat-login-v2) と parent_feature (feat-login-v2) を一貫して持つ。K-1・K-5・reset-token 発行者衝突 (backend-002 対 database-004)・frontend-002 対 -006・K-4・K-6・K-7・K-9・SameSite=Lax 変更は、staging 内 task-specs (P01 前提条件としての着手時整理・P02 Blocker として一方の方針へ確定する責務・P05 P02 決定を踏まえた実装・P08 旧実装参照の読取専用監査・P09 SameSite=Lax の保証確認・P12 docs 最終同期の entry gate として全解消済みを要求) の本文へ同一文言でそのまま再掲されており、語彙・扱いが task 間で矛盾なく一貫している。reset-token 発行者衝突は P02 で一方確定・P05以降で踏襲という同じ解決フローが全 task で共有され、frontend-002 対 -006 は全 task で frontend-006 優先という同一結論が繰り返されている。P07 の受入検証は P06 (全テスト実行) の完了を entry gate とする。P13 は既存の配信順序 (ci.yml→migrate.yml→deploy.yml) を維持し、P12 の docs 同期完了を前提としており矛盾は検出されなかった。なお、これらの前提条件の一次典拠は staging-manifest.json#files 外の goal-spec.json (open_items) と features/feat-login-v2.md Handoff 節であり、本評価は staging-manifest.json 記載ファイルに再掲された同一文言を evidence として判定している (goal-spec.json 自体は evaluated_inputs に含まれない manifest 外参照)。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "task-specs/phase-01-requirements.md",
+        "task-specs/phase-02-architecture.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-08-refactoring-migration.md",
+        "task-specs/phase-09-quality-assurance.md",
+        "task-specs/phase-12-documentation-operations.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C2": {
+      "id": "C2",
+      "status": "PASS",
+      "summary": "P01..P13 exact-13 が揃い (validator phase_refs=P01..P13, violations=[])、各 task-spec は 127〜223 行・14 見出しの実質記述を持ち、空 section・placeholder (TODO/TBD/FIXME) は0件。S1〜S7・AT-01〜AT-15 の受入基準一覧は task-specs/phase-07-acceptance.md の Verification/Acceptance 節に S1(G1)〜S7(G7) の全項目と AT-01〜AT-15 が文中で逐一列挙されており、goal-spec.json / specs/spec-login-v2.md (いずれも staging-manifest.json#files 外の manifest 外参照) を出典としつつ、その内容が task-spec 本文へそのまま写し取られている。P11 は P01〜P10 全記録への索引を成果物とし、S1〜S7・AT-01〜AT-15 の検証記録への到達性を担保する。画面構成要素 (10領域) は task-specs/phase-04-test-design.md と phase-05-implementation.md 本文中で『画像の全構成要素と6状態』という表現により参照されているが、この文言の典拠である design/FINAL-UI/images/01-login-v2.png および specs/spec-login-v2.md §7.1 はいずれも staging-manifest.json#files に含まれない manifest 外参照であり、task-spec 本文の記述自体を evidence として判定した。P12 は移行と戻し・secret・Google/Resend設定・締め出し復旧・プライバシーの docs 最終同期を entry gate 付きで担う。P08 はP13と同様 node を省略していない。",
+      "evidence": [
+        "gate:deterministic-validation",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md",
+        "task-specs/phase-07-acceptance.md",
+        "task-specs/phase-11-evidence.md",
+        "task-specs/phase-12-documentation-operations.md"
+      ]
+    },
+    "C3": {
+      "id": "C3",
+      "status": "PASS",
+      "summary": "feature-package.json / task-graph.json / workstream-inventory.json / system-build-handoff.json は同一 feature_package_id・parent_feature・repository_id (github:daishiman/kanjo) を持ち、task_node_ids と task-graph.json の node id が SYS-LOGIN-V2-P01..P13 で完全一致する。staging-manifest.json 記載17ファイルの sha256 を独立に再計算し全件一致した (shasum -a 256 による再算出、差分0件)。feature-package.json の source_feature_digest (sha256:48277ee8...) と system-build-handoff.json の identity.source_feature_digest は完全一致し、両者とも同一 feature_id/feature_package_id/parent_feature/repository_id を identity ブロックへ記録している。features/feat-login-v2.context.json (repo リポジトリ内の実ファイル、staging-manifest.json#files には含まれない manifest 外参照) の実測 sha256 も上記 source_feature_digest と一致することを別途確認したが、これは manifest 外の追加照合であり、本 condition の evidence 束縛には含めていない。同様に goal-spec.json の identity_check.feature_context_sha256 は manifest 外参照のため evidence には含めない。staging-manifest.json#canonical_digest と validator の validated_digest も一致する。task-specs 内で参照される既存ファイルパス (packages/api/src/auth.ts・packages/web/src/pages/Login.tsx 等) は全て実在を確認し、routes/invitations.ts・core/src/invitation.ts・wrangler.jsonc は task-specs/phase-05-implementation.md の Produced artifacts (新規生成物) として明記されており、実在しない既存 path を既存物として扱っている箇所は検出されなかった。",
+      "evidence": [
+        "feature-package.json",
+        "task-graph.json",
+        "workstream-inventory.json",
+        "system-build-handoff.json",
+        "staging-manifest.json",
+        "task-specs/phase-05-implementation.md",
+        "gate:deterministic-validation"
+      ]
+    },
+    "C4": {
+      "id": "C4",
+      "status": "PASS",
+      "summary": "task-graph.json の13 node は P01→P02→...→P13 の単一直鎖 (depends_on は常に直前 phase_ref 1件のみ、P01 の depends_on=[])。循環・後方 edge・cross-feature task 参照は検出されず、全 edge が同一 feature_package_id/parent_feature (feature-package/feat-login-v2) 内に閉じている。system-build-handoff.json の execution_tasks も同じ直鎖を再掲しており矛盾はない。",
+      "evidence": [
+        "task-graph.json",
+        "system-build-handoff.json",
+        "gate:deterministic-validation"
+      ]
+    }
+  },
+  "gate_results": [
+    {
+      "id": "deterministic-validation",
+      "name": "validate-system-plan",
+      "command": [
+        "python3",
+        "<harness>/plugins/system-dev-planner/scripts/validate-system-plan.py",
+        "--repo-root",
+        "<repo-root>",
+        "--staging",
+        ".dev-graph/staging/run-feat-login-v2-20260921T1447Z"
+      ],
+      "exit_code": 0,
+      "conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "stdout": "{\n  \"schema_version\": \"1.0.0\",\n  \"status\": \"pass\",\n  \"validated_digest\": \"sha256:604dd483139018d64ab786385b6e8815666d51cad511ddbc73c3c88a03e35313\",\n  \"feature_package_id\": \"feature-package/feat-login-v2\",\n  \"parent_feature\": \"feat-login-v2\",\n  \"phase_refs\": [\"P01\",\"P02\",\"P03\",\"P04\",\"P05\",\"P06\",\"P07\",\"P08\",\"P09\",\"P10\",\"P11\",\"P12\",\"P13\"],\n  \"violations\": []\n}",
+      "stderr": ""
+    }
+  ],
+  "evaluated_inputs": [
+    {
+      "path": "feature-package.json",
+      "sha256": "b40d40dc08c63dea9c20fdd023eef1d73977b4ad48bd9f3992f69f581d1964fc"
+    },
+    {
+      "path": "system-build-handoff.json",
+      "sha256": "055b34cadfa21031997a02696e1b41aef030ea8fd58e6fba1ae230ffc57f9cee"
+    },
+    {
+      "path": "task-graph.json",
+      "sha256": "82240c94f6f36fe518ceb69b5264e01ebe1e546989edb4d563d47836346081d1"
+    },
+    {
+      "path": "task-specs/phase-01-requirements.md",
+      "sha256": "113520d1d293d547b545907cee8a63ab935cad172772f463cd12c81b066fb1c0"
+    },
+    {
+      "path": "task-specs/phase-02-architecture.md",
+      "sha256": "eb1d5e8ce5fb4f97ba43c45c77d785f7c0fc005cd9e1a08e56aaa5ad3ab1aa95"
+    },
+    {
+      "path": "task-specs/phase-03-design-review.md",
+      "sha256": "c4ead8f027a660de0acf020690f03af072ba4451dee610d8b2526811b53b5f8d"
+    },
+    {
+      "path": "task-specs/phase-04-test-design.md",
+      "sha256": "cbee6c5e7738114132a8879573093114285e75f57d4a18e3216900229a7bc793"
+    },
+    {
+      "path": "task-specs/phase-05-implementation.md",
+      "sha256": "a6f73241c8641d78fad00d4c3b4fc0b71b4eb99a22284b40bd1b565a005619d8"
+    },
+    {
+      "path": "task-specs/phase-06-test-run.md",
+      "sha256": "3d98f61e834f38dc5c63664b1c77ac92edc797d321a30b00a73ef9cfd0848f2e"
+    },
+    {
+      "path": "task-specs/phase-07-acceptance.md",
+      "sha256": "74039df0a53b71e3fec96e9577d27977e001eb7137cbe8758baed792b041b2da"
+    },
+    {
+      "path": "task-specs/phase-08-refactoring-migration.md",
+      "sha256": "7e6c3d0022a537bbe19b62155334a33f16ff4f41aa3f7239184b60076b072791"
+    },
+    {
+      "path": "task-specs/phase-09-quality-assurance.md",
+      "sha256": "ee02c73560692665022c79c06047937b7816dc37eea4c67e8c1fa2b9a8c66aea"
+    },
+    {
+      "path": "task-specs/phase-10-final-review.md",
+      "sha256": "8121f0318b23246f481fdd6c9226b86ca2db08b0e5faea1bcd3823a2b90bc0dd"
+    },
+    {
+      "path": "task-specs/phase-11-evidence.md",
+      "sha256": "42c7b888693dc123b362a687325d502ef1fe73b14ef2cd816bcd659633d36dad"
+    },
+    {
+      "path": "task-specs/phase-12-documentation-operations.md",
+      "sha256": "a4e24037ba37d6cdc872a5ceac18789849ff98acbd24f638eb14554c9f50b8b0"
+    },
+    {
+      "path": "task-specs/phase-13-release-deploy.md",
+      "sha256": "3e5d123aaaa02bc183345c2d0463e6b110f1c0d228f1a404b000695c647c165e"
+    },
+    {
+      "path": "workstream-inventory.json",
+      "sha256": "a7ff6f6cb4bb2568654ec00ce531f785dec4509fcf665012040ef4ce037b8a5c"
+    },
+    {
+      "path": "staging-manifest.json",
+      "sha256": "63fad44a5516d0ddf22c6110f0fa87cd54339ad0154bb8aa4f3bd638f4907c47"
+    }
+  ],
+  "staleness_rule": "promotion 直前に staging-manifest.json#files 記載17ファイルおよび staging-manifest.json 自身の current-byte SHA-256 を再計算し、本 evaluated_inputs の記録値・本 evaluated_digest (validated_digest)・staging-manifest.json#canonical_digest の三者へ再照合する。1バイトでも current-byte が evaluated_inputs の記録値と異なれば、本 plan-findings は stale として無効化し、evaluator を再起動して新しい validated_digest に対する verdict を再発行する。別 digest に対する古い verdict は promotion gate で破棄する。",
+  "findings": [
+    {
+      "severity": "low",
+      "bucket": "C2/P13-close-out-receipt",
+      "observation": "feature-execution-package-contract.md はP13に『実デプロイ不要でも N/A: reason と close-out receipt を持つ』ことを求めるが、task-specs/phase-13-release-deploy.md は今回実デプロイが必要なケースであり、目的・Rollout欄に『クローズアウト』という語はあるものの、close-out receipt に相当する独立した成果物・Required evidence 項目は明記されていない (Required evidence は docs/login-v2/design-decisions.md のみ)。verdict を左右する high/medium ではないが、promotion 前に close-out receipt の所在 (例: 既存の PR merge/CI Deploy ログをそのまま充当する旨) を明記すると監査性が上がる。",
+      "evidence": [
+        "task-specs/phase-13-release-deploy.md",
+        "../../references/feature-execution-package-contract.md#3"
+      ]
+    },
+    {
+      "severity": "info",
+      "bucket": "C2/image-reference-indirect",
+      "observation": "design/FINAL-UI/images/01-login-v2.png への直接パス参照は task-specs 内に見当たらず、代わりに specs/spec-login-v2.md §7.1〜7.2 (画像から書き写した文言・10領域の構成表) が正本として P04/P05 から『画像の全構成要素と6状態』という表現で間接的に参照されている。spec-login-v2.md 自体が画像を正本として文書化した成果物であり、source_lineage にも architecture_refs の一部として組み込まれているため C2 の漏れとはしないが、画像ファイルへの直接パス記載が task-spec に無い点は監査性の観点で記録する。",
+      "evidence": [
+        "specs/spec-login-v2.md#7.1",
+        "task-specs/phase-04-test-design.md",
+        "task-specs/phase-05-implementation.md"
+      ]
+    }
+  ]
+}

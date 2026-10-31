@@ -1,26 +1,39 @@
 /**
- * 設定画面の「利用者管理」。admin だけに見える。
+ * 設定画面の「利用者管理」。admin だけに見える (spec-login-v2 §7.14・decision-004)。
  *
- * 自己サインアップは持たない。増やすのも止めるのも、ここでの admin の操作としてだけ起きる。
- * 一時パスワードは発行の応答に1度だけ現れる値で、どこにも保存されない。閉じたら二度と出せない。
+ * 自己サインアップは持たない。人を増やす入口は、ここで作る招待だけ。
+ * 招待はメールでだけ届き、管理者は本人の秘密 (パスワード) を一度も手にしない。一時パスワードの発行は持たない。
  *
  * 権限判定の正本はサーバ側の 403。ここで非表示にするのは導線の整理であって、
  * 権限の実装ではない (API を直接叩けば通る、という状態を作らないのはサーバの責務)。
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { type AccountUser, ApiError, type AuthState, api } from '../api.js';
+import { useId, useState } from 'react';
+import { type AdminUserSummary, ApiError, type AuthState, type Invitation, api } from '../api.js';
+import { ROLE_LABEL, normalizeEmail } from '../features/auth/view-model.js';
 import { Button } from './Button.js';
 import { DataTable } from './DataTable.js';
+import { Input } from './Input.js';
 
-interface IssuedPassword {
-  email: string;
-  password: string;
-  reason: 'invite' | 'reset';
-}
-
-const ROLE_LABEL = { admin: '管理者', member: '一般' } as const;
 const STATUS_LABEL = { active: '有効', suspended: '停止中' } as const;
+const INVITATION_STATUS_LABEL: Record<Invitation['status'], string> = {
+  pending: '未承諾',
+  expired: '期限切れ',
+  accepted: '承諾済み',
+  revoked: '取消',
+};
+
+const MAIL_FAILED = '招待は作成しましたが、メールを送れませんでした。再送してください。';
+
+/** 招待の失敗を文言へ。502 は「作成はできた」ので、一覧を取り直したうえで再送を促す */
+function invitationErrorMessage(err: unknown): string {
+  if (!(err instanceof ApiError)) return '操作に失敗しました。通信状況を確認してください';
+  if (err.status === 502) return MAIL_FAILED;
+  if (err.code === 'user_exists') return 'このメールアドレスの利用者は登録済みです。';
+  if (err.code === 'invitation_not_pending') return 'この招待は承諾済みか取消済みです。一覧を更新しました。';
+  if (err.status === 404) return 'この招待は見つかりません。一覧を更新しました。';
+  return err.message;
+}
 
 const errorMessage = (err: unknown): string =>
   err instanceof ApiError ? err.message : '操作に失敗しました。通信状況を確認してください';
@@ -28,11 +41,17 @@ const errorMessage = (err: unknown): string =>
 const formatMoment = (iso: string | null): string =>
   iso ? new Date(iso).toLocaleString('ja-JP', { dateStyle: 'short', timeStyle: 'short' }) : '—';
 
+/** 再送・取消できるのは、まだ誰も使っていない招待だけ (承諾済み・取消はサーバが 409 を返す) */
+const isOpen = (invitation: Invitation): boolean =>
+  invitation.status === 'pending' || invitation.status === 'expired';
+
 export function UserAdmin() {
   const qc = useQueryClient();
+  const emailId = useId();
+  const roleId = useId();
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'admin' | 'member'>('member');
-  const [issued, setIssued] = useState<IssuedPassword | null>(null);
+  const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
 
   // App と同じ queryKey・同じ endpoint。別の型を名乗ると cache が食い違うので AuthState を共有する
@@ -45,76 +64,83 @@ export function UserAdmin() {
 
   const users = useQuery({
     queryKey: ['admin-users'],
-    queryFn: () => api<{ users: AccountUser[] }>('/admin/users'),
+    queryFn: () => api<{ users: AdminUserSummary[] }>('/admin/users'),
     // admin でない利用者にこの照会を投げても 403 になるだけなので、投げない
     enabled: isAdmin,
   });
 
-  const afterChange = () => {
+  const invitations = useQuery({
+    queryKey: ['admin-invitations'],
+    queryFn: () => api<{ invitations: Invitation[] }>('/admin/invitations'),
+    enabled: isAdmin,
+  });
+
+  const refreshInvitations = () => void qc.invalidateQueries({ queryKey: ['admin-invitations'] });
+
+  const report = (message: string) => {
     setError('');
-    void qc.invalidateQueries({ queryKey: ['admin-users'] });
+    setNotice(message);
+  };
+  const fail = (message: string) => {
+    setNotice('');
+    setError(message);
   };
 
   const invite = useMutation({
-    mutationFn: () =>
-      api<{ user: AccountUser; temporaryPassword: string }>('/admin/users', {
-        method: 'POST',
-        body: JSON.stringify({ email, role }),
-      }),
-    onSuccess: (data) => {
+    mutationFn: (input: { email: string; role: 'admin' | 'member' }) =>
+      api<{ invitation: Invitation }>('/admin/invitations', { method: 'POST', body: JSON.stringify(input) }),
+    onSuccess: ({ invitation }) => {
       setEmail('');
-      setIssued({ email: data.user.email, password: data.temporaryPassword, reason: 'invite' });
-      afterChange();
+      report(`${invitation.email} に招待メールを送りました。`);
     },
-    onError: (err) => setError(errorMessage(err)),
+    onError: (err) => fail(invitationErrorMessage(err)),
+    // 502 でも招待の行はできている。成否どちらでも一覧をサーバの状態に合わせる
+    onSettled: refreshInvitations,
+  });
+
+  const resend = useMutation({
+    mutationFn: (invitation: Invitation) =>
+      api<{ invitation: Invitation }>(`/admin/invitations/${invitation.id}/resend`, { method: 'POST' }),
+    onSuccess: ({ invitation }) => report(`${invitation.email} に招待メールを送り直しました。`),
+    onError: (err) => fail(invitationErrorMessage(err)),
+    onSettled: refreshInvitations,
+  });
+
+  const revoke = useMutation({
+    mutationFn: (invitation: Invitation) =>
+      api<{ invitation: Invitation }>(`/admin/invitations/${invitation.id}/revoke`, { method: 'POST' }),
+    onSuccess: ({ invitation }) => report(`${invitation.email} の招待を取り消しました。`),
+    onError: (err) => fail(invitationErrorMessage(err)),
+    onSettled: refreshInvitations,
   });
 
   const update = useMutation({
     mutationFn: (input: { id: string; role?: 'admin' | 'member'; status?: 'active' | 'suspended' }) =>
-      api<{ user: AccountUser }>(`/admin/users/${input.id}`, {
+      api<{ user: AdminUserSummary }>(`/admin/users/${input.id}`, {
         method: 'PATCH',
         body: JSON.stringify({ role: input.role, status: input.status }),
       }),
-    onSuccess: afterChange,
-    onError: (err) => setError(errorMessage(err)),
-  });
-
-  const resetPassword = useMutation({
-    mutationFn: (user: AccountUser) =>
-      api<{ temporaryPassword: string }>(`/admin/users/${user.id}/password-reset`, { method: 'POST' }).then(
-        (data) => ({ email: user.email, password: data.temporaryPassword }),
-      ),
-    onSuccess: (data) => {
-      setIssued({ ...data, reason: 'reset' });
-      afterChange();
+    onSuccess: () => {
+      setError('');
+      void qc.invalidateQueries({ queryKey: ['admin-users'] });
     },
-    onError: (err) => setError(errorMessage(err)),
+    onError: (err) => fail(errorMessage(err)),
   });
 
   if (!isAdmin) return null;
+
+  const normalized = normalizeEmail(email);
+  const rowBusy = resend.isPending || revoke.isPending;
 
   return (
     <div className="card" id="user-admin">
       <h2>利用者管理</h2>
       <p className="sub">
         このシステムに入れる人を管理します。利用者が自分で登録することはできません。
-        追加も停止も、ここからの操作としてだけ行われ、すべて監査記録に残ります。
+        招待メールを受け取った本人が、自分でパスワードかGoogleを登録します。操作はすべて監査記録に残ります。
       </p>
 
-      {issued && (
-        <div className="user-admin-issued" role="alert">
-          <h3>{issued.reason === 'invite' ? '追加しました' : '一時パスワードを再発行しました'}</h3>
-          <p>
-            {issued.email} の一時パスワードです。<strong>この画面を閉じると二度と表示できません。</strong>
-            別の手段で本人へ渡してください。本人は最初のログイン時に必ず変更します。
-          </p>
-          <code className="user-admin-temp">{issued.password}</code>
-          <Button variant="primary" onClick={() => setIssued(null)}>
-            控えたので閉じる
-          </Button>
-        </div>
-      )}
-
+      {notice && <output className="notice">{notice}</output>}
       {error && (
         <p className="login-error" role="alert">
           {error}
@@ -123,44 +149,83 @@ export function UserAdmin() {
 
       <form
         className="user-admin-invite"
+        aria-label="招待を作る"
         onSubmit={(event) => {
           event.preventDefault();
-          if (!invite.isPending && email) invite.mutate();
+          if (!invite.isPending && normalized) invite.mutate({ email: normalized, role });
         }}
       >
-        <label>
-          メールアドレス
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="member@example.com"
-          />
-        </label>
-        <label>
-          権限
-          <select value={role} onChange={(event) => setRole(event.target.value as 'admin' | 'member')}>
-            <option value="member">一般</option>
-            <option value="admin">管理者</option>
-          </select>
-        </label>
-        <Button type="submit" variant="primary" disabled={invite.isPending || !email}>
-          {invite.isPending ? '追加中…' : '利用者を追加'}
+        <label htmlFor={emailId}>メールアドレス</label>
+        <Input
+          id={emailId}
+          kind="email"
+          autoComplete="off"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="member@example.com"
+        />
+        <label htmlFor={roleId}>権限</label>
+        <select
+          id={roleId}
+          value={role}
+          onChange={(event) => setRole(event.target.value as 'admin' | 'member')}
+        >
+          <option value="member">{ROLE_LABEL.member}</option>
+          <option value="admin">{ROLE_LABEL.admin}</option>
+        </select>
+        <Button type="submit" variant="primary" disabled={invite.isPending || !normalized}>
+          {invite.isPending ? '送信中…' : '招待メールを送る'}
         </Button>
       </form>
 
+      <h3>招待</h3>
+      {invitations.isLoading && <p className="sub">読み込み中…</p>}
+      {invitations.data && (
+        <DataTable
+          className="user-admin-table"
+          caption={<caption className="visually-hidden">招待の一覧</caption>}
+          columns={['メールアドレス', '権限', '状態', '期限', '招待者', { label: '操作', sortable: false }]}
+        >
+          {invitations.data.invitations.map((invitation) => (
+            <tr key={invitation.id}>
+              <td>{invitation.email}</td>
+              <td>{ROLE_LABEL[invitation.role]}</td>
+              <td>{INVITATION_STATUS_LABEL[invitation.status]}</td>
+              <td data-sort={invitation.expiresAt}>{formatMoment(invitation.expiresAt)}</td>
+              <td>{invitation.invitedBy ?? '—'}</td>
+              <td className="user-admin-actions">
+                {isOpen(invitation) && (
+                  <>
+                    <Button size="mini" disabled={rowBusy} onClick={() => resend.mutate(invitation)}>
+                      再送
+                    </Button>
+                    <Button
+                      size="mini"
+                      variant="danger"
+                      disabled={rowBusy}
+                      onClick={() => revoke.mutate(invitation)}
+                    >
+                      取消
+                    </Button>
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
+        </DataTable>
+      )}
+
+      <h3>利用者</h3>
       {users.isLoading && <p className="sub">読み込み中…</p>}
       {users.data && (
         <DataTable
           className="user-admin-table"
+          caption={<caption className="visually-hidden">利用者の一覧</caption>}
           columns={['メールアドレス', '権限', '状態', '最終ログイン', { label: '操作', sortable: false }]}
         >
           {users.data.users.map((user) => (
             <tr key={user.id}>
-              <td>
-                {user.email}
-                {user.mustChangePassword && <span className="user-admin-flag">一時パスワード</span>}
-              </td>
+              <td>{user.email}</td>
               <td data-sort={ROLE_LABEL[user.role]}>
                 <select
                   value={user.role}
@@ -186,9 +251,6 @@ export function UserAdmin() {
                   }
                 >
                   {user.status === 'active' ? '停止する' : '再開する'}
-                </Button>
-                <Button size="mini" onClick={() => resetPassword.mutate(user)}>
-                  一時パスワード再発行
                 </Button>
               </td>
             </tr>

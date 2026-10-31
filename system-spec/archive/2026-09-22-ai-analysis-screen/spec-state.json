@@ -1,0 +1,1053 @@
+{
+  "schema_version": "1.0",
+  "categories": [
+    {
+      "id": "database",
+      "label": "データベース"
+    },
+    {
+      "id": "auth",
+      "label": "認証(ログイン)"
+    },
+    {
+      "id": "ui-ux",
+      "label": "UI-UX"
+    },
+    {
+      "id": "security",
+      "label": "セキュリティ"
+    },
+    {
+      "id": "infrastructure",
+      "label": "インフラ"
+    },
+    {
+      "id": "backend",
+      "label": "バックエンド"
+    },
+    {
+      "id": "frontend",
+      "label": "フロントエンド"
+    },
+    {
+      "id": "maintenance-ops",
+      "label": "保守運用管理"
+    }
+  ],
+  "platforms": [
+    "web",
+    "mobile",
+    "tablet",
+    "desktop-windows",
+    "desktop-linux",
+    "desktop-macos"
+  ],
+  "matrix": {
+    "database": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ai-database-web-001",
+        "serves_goals": [
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ai-database-web-evidence-001",
+          "qa-ai-database-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、database では端末内に依頼とレポートを持つ場合のローカル DB と D1 の同期規則を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、database では共有端末に残るレポート本文のキャッシュ期限を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、database ではオフライン時に貼り付けたレポートを保留する端末内の保存形を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、database では端末内に保留したレポートの保存先のファイル権限を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、database では端末内に保留したレポートを Keychain とファイルのどちらに置くかを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      }
+    },
+    "auth": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ai-auth-web-001",
+        "serves_goals": [
+          "G3",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ai-auth-web-evidence-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、auth では端末の生体認証とセッションの結び付け、依頼トークンを端末に残さない方法を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、auth では家族で共有するタブレットでの利用者切替とセッションの分離を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、auth ではWindows 資格情報マネージャへのセッション保存の可否を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、auth ではSecret Service が無い環境でのセッション保存の代替を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、auth ではKeychain へのセッション保存と、コピーした依頼トークンの扱いを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      }
+    },
+    "ui-ux": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ai-ui-ux-web-001",
+        "serves_goals": [
+          "G1",
+          "G3",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-ai-ui-ux-web-evidence-001",
+          "qa-ai-ui-ux-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、ui-ux では3 段 (依頼 / 実行中 / レポート) を縦 1 列に並べる順序と、実行中の表をカードに変える規則を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、ui-ux では横向きで 2 段を左右に並べるか、レポート詳細を全面に出すかの切替を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、ui-ux ではWindows のクリップボード履歴に依頼文が残ることへの注記とメニュー配置を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、ui-ux ではデスクトップ環境ごとのクリップボード挙動の違いの吸収を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、ui-ux ではメニューバーとショートカット (コピー・取り込み) の割り当てを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      }
+    },
+    "security": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ai-security-web-001",
+        "serves_goals": [
+          "G4",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ai-security-web-evidence-001",
+          "qa-ai-security-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、security では端末紛失時にレポートを消す手段と、画面の録画・スクリーンショット対策を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、security では共有端末にレポートと下書きが残らないようにするキャッシュ方針を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、security ではインストーラの署名と自動更新の改ざん対策を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、security では配布パッケージの署名検証とサンドボックス権限を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、security では公証 (notarization) とサンドボックスの権限範囲を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      }
+    },
+    "infrastructure": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ai-infrastructure-web-001",
+        "serves_goals": [
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ai-infrastructure-web-evidence-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、infrastructure ではApp Store / Google Play の配布と審査、プッシュ通知の基盤を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、infrastructure ではタブレット向けビルドの配布経路と対応 OS 版を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、infrastructure ではMSI / MSIX の配布と自動更新サーバを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、infrastructure ではdeb / rpm / AppImage のどれで配るかと更新の経路を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、infrastructure ではdmg の配布と Sparkle などの自動更新を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      }
+    },
+    "backend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ai-backend-web-001",
+        "serves_goals": [
+          "G2",
+          "G3",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ai-backend-web-evidence-001",
+          "qa-ai-backend-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、backend では端末からの長いポーリングを避けるための依頼の状態変化の通知 APIを決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、backend ではタブレットと web で同じ依頼を同時に操作したときの競合規則を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリ向けの API 版管理と後方互換の期間を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリ向けの API 版管理と、古い版からの呼び出しの拒否を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、backend ではデスクトップアプリから AI エージェントを直接起動する経路の要否を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      }
+    },
+    "frontend": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ai-frontend-web-001",
+        "serves_goals": [
+          "G1",
+          "G3",
+          "G4"
+        ],
+        "qa_refs": [
+          "qa-ai-frontend-web-evidence-001"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、frontend ではReact Native などへの移植と、web と共有できる部品の範囲を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、frontend ではタブレット向けの分割表示の部品と、画面回転時の状態保持を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、frontend ではElectron / Tauri などの殻の選定と、web 版との差分管理を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、frontend では殻の選定と、Linux のフォント・DPI 差の吸収を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、frontend では殻の選定と、macOS のウィンドウ復元時の状態保持を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      }
+    },
+    "maintenance-ops": {
+      "web": {
+        "state": "確定",
+        "qa_ref": "qa-ai-maintenance-ops-web-001",
+        "serves_goals": [
+          "G1",
+          "G2",
+          "G5"
+        ],
+        "qa_refs": [
+          "qa-ai-maintenance-ops-web-evidence-001",
+          "qa-ai-maintenance-ops-web-003"
+        ]
+      },
+      "mobile": {
+        "state": "対象外",
+        "reason": "スマートフォン向け専用アプリを提供していたなら、maintenance-ops ではストア審査に合わせたリリース手順とクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "tablet": {
+        "state": "対象外",
+        "reason": "タブレット向け専用アプリを提供していたなら、maintenance-ops ではタブレット実機での表示回帰の確認手順を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-windows": {
+        "state": "対象外",
+        "reason": "Windows 向けデスクトップアプリを提供していたなら、maintenance-ops ではWindows 実機での回帰確認とクラッシュ収集を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-linux": {
+        "state": "対象外",
+        "reason": "Linux 向けデスクトップアプリを提供していたなら、maintenance-ops では主要ディストリビューションでの回帰確認を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      },
+      "desktop-macos": {
+        "state": "対象外",
+        "reason": "macOS 向けデスクトップアプリを提供していたなら、maintenance-ops ではmacOS 版ごとの回帰確認と公証の更新手順を決める必要があった。対象を web のみとする利用者決定 (qa-ai-target-platforms-001) によりその検討は発生しない。",
+        "qa_ref": "qa-ai-target-platforms-001"
+      }
+    }
+  },
+  "qa_log": [
+    {
+      "id": "qa-ai-decision-001",
+      "question": "画像の期間 (1年 / 2年 / 3年 / 任意) と、現行 AI 分析画面の独自プリセット (月 / 四半期 / 13か月 / 5年) の差をどう埋めるか。",
+      "answer": "共通の期間に統一する。AI 分析画面も usePeriod (1年 / 2年 / 3年 / 任意) を使い、旧プリセットは廃止する。前年との比較に要るデータは API 側が期間から導いて渡す。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:27:09Z",
+      "required_info_items": [
+        "context-of-use",
+        "domain-model",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-ai-decision-002",
+      "question": "画像の実行状況 (待機中 / 実行中 / 完了 / 失敗 と進捗 %) を、アプリが LLM を呼ばない現行の仕組み (依頼を発行し外部の AI が取りに来る) でどう出すか。",
+      "answer": "記録から段階で導出する。発行済みでデータ未取得 = 待機中 0%、データ取得済み = 実行中 50%、レポートが形式エラーで差し戻された = 実行中 75%、レポート受信 = 完了 100%。結果なしで期限切れ = 失敗、利用者が取り消した = キャンセル。skill 側は変更しない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:27:09Z",
+      "required_info_items": [
+        "domain-model",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-ai-decision-003",
+      "question": "画像の操作 (キャンセル / 詳細 / 再実行 / 削除) を、依頼と結果の記録にどう対応させるか。",
+      "answer": "取消は履歴を残す。キャンセルはトークンを無効にし行はキャンセルとして残す。再実行は同じ期間と補足指示で新しい依頼を発行する。削除は結果の無い依頼だけを消す。結果を受信済みの依頼は従来どおり削除できない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:27:09Z",
+      "required_info_items": [
+        "domain-model",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-ai-decision-004",
+      "question": "画像の『使用するデータ』カード (件数と使用データを確認) に何を出すか。",
+      "answer": "kanjo の実データで表示する。対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数を出し、AI へは集計値だけを渡し明細や摘要は渡さないことを注記する。使用データを確認は既存のデータセット表示を開く。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:27:09Z",
+      "required_info_items": [
+        "domain-model",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-ai-decision-005",
+      "question": "画像の『結果の取り込み』(JSON を貼り付けて取り込む) の取り込み先をどう決めるか。現行は依頼ごとに貼り付け欄がある。",
+      "answer": "選択中の依頼へ取り込む。下部の選択中バーで選んだ依頼が取り込み先で、結果待ちの依頼が 1 件だけなら自動で選ぶ。取り込み先が無ければ取り込みボタンを無効にする。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:28:55Z",
+      "required_info_items": [
+        "context-of-use",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-ai-decision-006",
+      "question": "補足指示の『下書き自動保存』をどこに保存するか。",
+      "answer": "ブラウザ内 (localStorage) に保存し、依頼の発行時に消す。サーバーへは保存しない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:28:55Z",
+      "required_info_items": [
+        "context-of-use",
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-ai-decision-007",
+      "question": "レポートの版履歴に出す各版の説明文を何から作るか。",
+      "answer": "依頼の補足指示から作る。補足指示の 1 行目を版の説明にし、無ければ v1 は『初回レポート』、v2 以降は『最新のデータで再分析』とする。レポート JSON の schema と skill は変えない。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:28:55Z",
+      "required_info_items": [
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-ai-decision-008",
+      "question": "レポート詳細のタブ (要約 / 根拠データ / 改善提案 / 関連リンク) に、既存レポートのどの内容を振り分けるか。",
+      "answer": "問い順に振り分ける。要約 = 総評・主な発見・次に取るべきアクション (上位 3 件の次の一手)、根拠データ = 図表・5 節・データ不足、改善提案 = 要点 3 分類・前回の指摘、関連リンク = 必要な情報と各画面へのリンク。要約タブの下には関連ページへのリンクと版履歴を常に出す。",
+      "provenance": "AskUserQuestion / 選択肢と推奨案・preview 提示あり",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:28:55Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-ai-decision-009",
+      "question": "AI分析サイクルの上位概念 U1-U9 (本質的目的 / 背景 / ゴール G1-G5 / 目標 O1-O5 / 成功基準 S1-S6 / ステークホルダー / スコープ / 制約 C1-C8 / 具体策 I1-I7) をこの内容で確定してよいか。",
+      "answer": "この内容で承認する。",
+      "provenance": "AskUserQuestion / 『この内容で承認 / 修正して再提示』の選択肢と U1-U9 要約を提示",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:34:50Z",
+      "required_info_items": [
+        "context-of-use",
+        "product-goal"
+      ]
+    },
+    {
+      "id": "qa-ai-target-platforms-001",
+      "question": "AI分析画面サイクルで、web 以外 (スマートフォン・タブレット・Windows / Linux / macOS のデスクトップ) の専用アプリを対象にするか。",
+      "answer": "対象にしない。上位概念の範囲外 (scope.out) に『スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ』を置き、利用者が U1-U9 をこの内容で承認した (appr-foundation-ai-analysis-001)。狭い画面は既存 web のレスポンシブ規約 (段の縦積み、表の横スクロール) の中で扱う。",
+      "provenance": "AskUserQuestion / U1-U9 承認 (scope.out に web 以外を明記)",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:34:50Z",
+      "required_info_items": [
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-ai-database-web-evidence-001",
+      "question": "database 章の裏付けとして、AI 依頼とレポートの保存形について何を観測したか。",
+      "answer": "ai_tasks (packages/api/src/db/schema.ts:589-611) は id・user_id・period_from/to・report_type・supplement・parent_report_id・token_hash・expires_at・used_at・copied_at・copied_target・report_id・created_at を持ち、連番・データ取得時刻・差し戻し・取消の列は無い。ai_reports (schema.ts:620-640) は version (同じ期間・型の通し番号)・parent_report_id・title・summary・body_json・archived_at を持つ。migration は migrations/ 直下の連番で、最新は 0045_owner_labels.sql である。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-auth-web-evidence-001",
+      "question": "auth 章の裏付けとして、AI の利用者経路とエージェント経路の認証について何を観測したか。",
+      "answer": "packages/api/src/index.ts は aiAgentRoute を /api/* のフェンスより前 (index.ts:95) に載せ、利用者向けの aiRoute を authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence (index.ts:102-106) の後 (index.ts:108) に載せる。エージェント経路は agentGuard (ai.ts:445-470) が Authorization: Bearer kjo_… を SHA-256 で ai_tasks.token_hash と照合し、期限切れと受信済みを 401 で拒否する。トークンの寿命は 24 時間 (ai.ts:36)。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-ui-ux-web-evidence-001",
+      "question": "ui-ux 章の裏付けとして、12-ai.png と現行 /ai の差分として何を観測したか。",
+      "answer": "現行 /ai (packages/web/src/pages/Ai.tsx、1277 行) は独自の期間プリセット PRESETS (Ai.tsx:53) を持ち、依頼の状態は 結果待ち / 期限切れ / 受信済み の 3 値で、依頼番号・進捗・再実行が無い。結果の貼り付け欄は依頼カード (RunCard) ごとにあり、レポート詳細は目次 (ReportToc) つきの縦長 1 ページである。12-ai.png は問いの見出し『AIに分析を依頼し、根拠と版を確認しますか？』・期間タブ・1.依頼 / 2.実行中 / 3.レポートの 3 段・下部の選択中バーを持ち、レポート詳細は 要約 / 根拠データ / 改善提案 / 関連リンク のタブと版履歴 (v3 / v2 / v1 と説明) と『2つの版を比較』を持つ。取り込み欄は構文エラーを『10行目で不正な文字があります。入力内容は保持されています』と示す。画像の件数・日時・進捗はモックである。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-security-web-evidence-001",
+      "question": "security 章の裏付けとして、AI 経路の入力の大きさと検証について何を観測したか。",
+      "answer": "bodyLimit は /api/auth/* にだけ 16KB で掛かっており (index.ts:84-92)、エージェント経路の POST /ai/tasks/:id/report と利用者経路の POST /ai/tasks/:id/paste には body の上限が無い。レポート本文は reportInputSchema (packages/api/src/ai/contract.ts) の zod で検証し、sanitizeText で文字列を整える。リポジトリの lint には security:content (scripts/hooks/guard-real-data.sh --scan-public-docs) が組み込まれ、公開文書への実データ混入を検査している。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-infrastructure-web-evidence-001",
+      "question": "infrastructure 章の裏付けとして、既存の配信と反映の仕組みについて何を観測したか。",
+      "answer": "API は Cloudflare Worker (Hono) と D1 で、配信は .github/workflows/deploy.yml、D1 の migration 適用は .github/workflows/migrate.yml が担う。ルートの build は web の build と wrangler deploy --dry-run を行う (package.json:16)。AI 分析はアプリから LLM を呼ばず、外部の Claude Code / Codex がトークンで API を呼ぶ構成である。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-backend-web-evidence-001",
+      "question": "backend 章の裏付けとして、現行の AI 依頼の状態判定と経路について何を観測したか。",
+      "answer": "packages/api/src/routes/ai.ts の taskStatus (ai.ts:68-72) は used_at があれば done、expires_at を過ぎれば expired、それ以外 waiting の 3 値だけを返す。レポートの形式エラーは reportValidator (ai.ts:40-56) が 400 invalid_report と issues 最大 20 件で返すが、差し戻しの事実は記録しない。エージェントのデータ取得 GET /ai/tasks/:id/data (ai.ts:476) も取得時刻を記録しない。DELETE /ai/tasks/:id (ai.ts:373-411) は結果待ちの依頼を行ごと削除し (画面では『取り消し』と呼ぶ)、受信済みは 409 already_done で拒否する。再実行の経路は無い。AI へ渡すデータは packages/api/src/ai/dataset.ts が組み、冒頭 (dataset.ts:2) に『集計値だけ。明細行・摘要・ルール・編集は含めない』とある。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-frontend-web-evidence-001",
+      "question": "frontend 章の裏付けとして、現行の AI 画面と共通部品について何を観測したか。",
+      "answer": "AI 画面は AuthenticatedApp.tsx:23 で lazy(() => import('./pages/Ai.js')) により遅延読み込みされる。Ai.tsx は AiPage・PromptCard・RunCard・ReportDetail・CompareView・ReportToc・FindingList を 1 ファイルに持ち、useQuery で /summary・/ai/tasks・/ai/reports を取得する (Ai.tsx:98-101)。既存の DOM テスト (ai-copy-log / ai-report-structure / ai-report-archive / ai-task-collapse の各 .dom.test.tsx) が RunCard・FindingList・ReportText・AiPage を Ai.js から直接 import している。共通の期間は packages/web/src/period.tsx の usePeriod / PeriodPicker が担う。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-maintenance-ops-web-evidence-001",
+      "question": "maintenance-ops 章の裏付けとして、既存の検証コマンドと記録の場所について何を観測したか。",
+      "answer": "package.json の verify:full (package.json:40) は test・typecheck・lint・build と web の check 群・preview:smoke を順に走らせる。lint は biome と glossary・design-tokens・graph-lineage などの検査を含む (package.json:24)。test:aux は skills:test を含み、skill (skills/run-kanjo-accounting-report、.claude/skills と .agents/skills に同期) の検査を行う。画面ごとの作業記録は docs/<name>-screen/ に置く慣行がある。",
+      "provenance": "リポジトリの現物 (ファイルと行) を読んで記録した観測",
+      "basis": "observed-fact",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-ui-ux-web-003",
+      "question": "web の AI分析画面で、利用者が決めていない 選択中の依頼の既定値と、2 版比較の既定の組み合わせ・一覧の検索対象 を何にするか。",
+      "answer": "選択中の依頼の既定は、URL に task が無ければ 実行中 → 待機中 → 最新の完了 の順で最初の 1 件とする。2 版比較の既定は 選択中の版と 1 つ前の版 で、v1 のときは比較ボタンを無効にする。一覧の検索はレポート名と対象期間の表示文字列に対する部分一致 (大文字小文字を区別しない) とする。 これは agent の推定で、利用者は未確認である。画像と決定 001〜008 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-backend-web-003",
+      "question": "web の AI分析画面で、利用者が決めていない 段階の判定の優先順位と、使用するデータの数え方 を何にするか。",
+      "answer": "段階は キャンセル (canceled_at あり) → 完了 (used_at あり) → 失敗 (期限切れ) → 実行中 75% (rejected_at あり) → 実行中 50% (data_fetched_at あり) → 待機中 0% の順で最初に当たったものとする。使用するデータは、期間内の freee 取引の件数、期間内で集計対象の MF 明細の件数 (振替と除外を除く)、期間内に出現した科目の種類数、期間内に出現した取引先の種類数とする。 これは agent の推定で、利用者は未確認である。画像と決定 001〜008 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-database-web-003",
+      "question": "web の AI分析画面で、利用者が決めていない 依頼の連番の採番方法と、既存行の番号の扱い を何にするか。",
+      "answer": "連番は利用者ごとに max(seq)+1 で採番し、(user_id, seq) に一意索引を張って衝突時は 1 回だけ採番し直す。既存行は seq が NULL のままで、ID 欄には T-番号の代わりに『旧』と作成日を表示する (行は書き換えない)。 これは agent の推定で、利用者は未確認である。画像と決定 001〜008 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-security-web-003",
+      "question": "web の AI分析画面で、利用者が決めていない エージェント経路と貼り付け経路の body の上限値 を何にするか。",
+      "answer": "POST /ai/tasks/:id/report と POST /ai/tasks/:id/paste の request body 上限を固定 4 MiB (4,194,304 bytes) とし、1 byte でも超えたら JSON 読み込み前に 413 payload_too_large を日本語の文で返す。4 MiB は転送量を抑える request budget であり、個別 field・配列の妥当性は reportInputSchema と normalizeReport が別に検証する。キャンセル・再実行の経路は body を持たないか空の JSON だけを受け、4KB を上限とする。下書きの localStorage のキーは利用者 ID を含め、1000 文字を超える値は保存しない。これは agent の推定で、利用者は未確認である。",
+      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-maintenance-ops-web-003",
+      "question": "web の AI分析画面で、利用者が決めていない 段階の判定を固定する境界テスト を何にするか。",
+      "answer": "core の単体テストで、期限切れと受信が同時に成り立つ行 (完了が勝つ)、キャンセル後に期限が切れた行 (キャンセルが勝つ)、差し戻し後にデータを再取得した行 (75% のまま)、期限ちょうどの時刻 (待機中) の 4 境界を toBe で固定する。 これは agent の推定で、利用者は未確認である。画像と決定 001〜008 のどれにも値が無いため、実装で決定論を保つために置いた。",
+      "provenance": "agent が仕様を決定論にするため補った値。利用者の確認は受けていない。",
+      "basis": "agent-inference",
+      "answered_at": "2026-09-19T12:36:49Z"
+    },
+    {
+      "id": "qa-ai-database-web-001",
+      "question": "AI 依頼の段階を導くために D1 のスキーマをどう変えるか。",
+      "answer": "追加のみの migration 0046 で ai_tasks に 連番 (seq)・データ取得時刻 (data_fetched_at)・差し戻し時刻 (rejected_at)・差し戻し回数 (reject_count、既定 0)・取消時刻 (canceled_at) を足す。既存行は書き換えない。段階・進捗・版の説明は保存せず記録から導く。ai_reports は変えない。runtimeSchemaGuard の必須列に新しい列を加え、migration 適用前の Worker が新しい経路を中途半端に動かさないようにする。具体の採番は qa-ai-database-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:36:49Z",
+      "required_info_items": [
+        "data-persistence",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-ai-auth-web-001",
+      "question": "AI分析画面の新しい経路は、誰がどの条件で読み書きできるか。",
+      "answer": "利用者向けの新経路 (キャンセル・再実行・使用するデータ) は既存の aiRoute と同じく /api/* の authGuard → mustChangePasswordFence → runtimeSchemaGuard → canonicalMutationFence の内側に置き、c.get('userId') で自分の依頼だけを扱う。エージェント経路は従来どおり依頼ごとの使い捨てトークン (SHA-256 保存・24 時間) だけで認証し、キャンセル済みの依頼のトークンを期限切れ・受信済みと同じく 401 で拒否する (qa-ai-decision-003)。再実行は新しいトークンを発行し、元のトークンは生かさない。新しい役割や長期トークンは設けない。",
+      "provenance": "利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:36:49Z",
+      "required_info_items": [
+        "auth-model"
+      ]
+    },
+    {
+      "id": "qa-ai-ui-ux-web-001",
+      "question": "web の AI分析画面 (/ai) の UI-UX 要件は何か。画面の構成要素・文言・状態・選択・タブ・版の見せ方をどうするか。",
+      "answer": "12-ai.png の構成にする。問いの見出し『AIに分析を依頼し、根拠と版を確認しますか？』と説明文、共通の期間タブ (1年 / 2年 / 3年 / 任意と範囲の送り) を上に置き、1.依頼 (期間・補足指示 0/1000 と下書き自動保存・Claude Code 用 / Codex 用のコピー・使用するデータのカードと使用データを確認・データは自動送信されませんの注記)、2.実行中の表 (ID・ステータス・依頼期間・作成日時・進捗・依頼内容・操作 キャンセル / 詳細 / 再実行 / 削除)、3.レポート (レポート一覧の検索とアーカイブを表示・結果の取り込みと 結果を取り込む / クリア・詳細のタブ 要約 / 根拠データ / 改善提案 / 関連リンク と、要約の下の関連ページへのリンクと版履歴と 2 つの版を比較) の 3 段に並べ、下部に選択中バー (選択中の依頼の ID・状態・進捗と詳細を開く) を置く。タブは問い順に振り分ける (qa-ai-decision-008)。版の説明は補足指示の 1 行目から (qa-ai-decision-007)。取り込みは選択中の依頼へ (qa-ai-decision-005)。読込・空・失敗の状態を各段に持ち、状態は色だけで伝えず文字を添える。具体の既定値は qa-ai-ui-ux-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:36:49Z",
+      "required_info_items": [
+        "context-of-use",
+        "information-priority",
+        "product-goal",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-ai-security-web-001",
+      "question": "AI分析画面で新しく生じる入力・出力・外部送信のリスクにどう備えるか。",
+      "answer": "エージェント経路のレポート送信と利用者経路の貼り付けに body の上限を設け、超過は 413 で止める。キャンセル・再実行・使用するデータの経路の id と期間は zod で書式を検証する。AI へ渡すのは集計値だけで、明細行と摘要は渡さない (qa-ai-decision-004)。アプリは外部へ自動送信せず、データは利用者が依頼をコピーしたときだけ外へ出る。レポートの文字列と補足指示は React の既定のエスケープで描き、dangerouslySetInnerHTML を使わない。取り込みの JSON は構文検査と契約検査を通ったものだけを保存し、失敗しても入力は画面に保持する。下書きはブラウザ内だけに置く (qa-ai-decision-006)。具体の上限値は qa-ai-security-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:36:49Z",
+      "required_info_items": [
+        "security-posture"
+      ]
+    },
+    {
+      "id": "qa-ai-infrastructure-web-001",
+      "question": "AI分析画面のために配信・実行・DB 反映の基盤をどう変えるか。",
+      "answer": "基盤は変えない。既存の Cloudflare Worker と D1 のまま、migration 0046 を既存の Migrate の手順とゲートで適用してから Deploy する。アプリから LLM を呼ぶ経路・キュー・外部ストレージは足さない (scope.out)。",
+      "provenance": "利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:36:49Z",
+      "required_info_items": [
+        "infra-topology"
+      ]
+    },
+    {
+      "id": "qa-ai-backend-web-001",
+      "question": "AI 依頼の段階・操作・使用するデータの規則をどこに置き、どの契約で返すか。",
+      "answer": "段階と進捗の導出 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル、qa-ai-decision-002)、T-番号の整形、版の説明の導出 (qa-ai-decision-007)、レポートのタブへの振り分け (qa-ai-decision-008)、JSON 取り込みエラーの行・位置の算出を packages/core の純関数に置き、api の taskStatus はこれに置き換える。GET /ai/tasks は段階・進捗・T-番号を返す。POST /ai/tasks/:id/cancel はトークンを無効にして行を残し、POST /ai/tasks/:id/retry は同じ期間と補足指示で新しい依頼とトークンを返す。DELETE /ai/tasks/:id は結果の無い依頼だけを消す (qa-ai-decision-003)。GET /ai/inventory は期間の使用するデータ (freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を返す (qa-ai-decision-004)。エージェントのデータ取得で取得時刻を、形式エラーの差し戻しで差し戻し時刻と回数を記録する。期間は usePeriod の範囲をそのまま受け、前年比較に要る範囲は API が導く (qa-ai-decision-001)。レポート JSON 契約 v3 と skill は変えない。具体の優先順位と数え方は qa-ai-backend-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:36:49Z",
+      "required_info_items": [
+        "api-contract",
+        "domain-model"
+      ]
+    },
+    {
+      "id": "qa-ai-frontend-web-001",
+      "question": "web の AI分析画面のフロントエンド構成 (ファイル分割・状態・取得・部品) をどう作るか。",
+      "answer": "Ai.tsx を packages/web/src/pages/ai/ 配下へ分割し (依頼・実行中・レポート一覧・取り込み・詳細・版履歴・版比較・選択中バー)、段階・進捗・版の説明・タブの振り分け・JSON エラー位置は core の純関数の結果を描くだけにする。期間は usePeriod から取り旧 PRESETS を消す (qa-ai-decision-001)。取得は TanStack Query で依頼一覧・レポート一覧・レポート詳細・使用するデータを分け、キャンセル・再実行・削除・取り込み・アーカイブの mutation 後に該当キーを無効化する。選択中の依頼・レポート・タブは URL の検索パラメータに持つ。補足指示の下書きは localStorage に自動保存し発行時に消す (qa-ai-decision-006)。色はトークン、ボタンは共通 Button、ページは PageShell。画面は遅延読み込みのまま。既存の DOM テストが import する部品名は移設先から再エクスポートするか、テストを新しい構成に合わせて書き直す。",
+      "provenance": "利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:36:49Z",
+      "required_info_items": [
+        "frontend-arch",
+        "target-platforms"
+      ]
+    },
+    {
+      "id": "qa-ai-maintenance-ops-web-001",
+      "question": "AI分析画面の品質をどう保ち、規則をどこに残すか。",
+      "answer": "段階の導出・版の説明・タブの振り分け・使用するデータの数え方・持ち出し範囲を docs/ai-screen/ に明記し、core の単体テスト・API テスト・DOM テストで固定する。既存の AI の API テストと DOM テスト、skills:test (skill 不変の確認)、初期 JS 予算 (CI 実測)、verify:full を緑のまま保つ。境界テストの具体は qa-ai-maintenance-ops-web-003 (agent 推定) を参照。",
+      "provenance": "利用者承認 (appr-foundation-ai-analysis-001) と決定 qa-ai-decision-001〜008 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。",
+      "basis": "user-decision",
+      "answered_at": "2026-09-19T12:36:49Z",
+      "required_info_items": [
+        "ops-runbook"
+      ]
+    }
+  ],
+  "approval_log": [
+    {
+      "id": "appr-foundation-ai-analysis-001",
+      "note": "AI分析画面サイクルの上位概念 U1-U9 を利用者が承認。画像 design/FINAL-UI/images/12-ai.png を正本とする。選択肢は『この内容で承認 / 修正して再提示』で、利用者は承認を選択。先立つ 8 決定 (期間=usePeriod へ統一 / 実行状況=記録から段階で導出 / 操作=取消は履歴を残す / 使用データ=実データの件数 / 取り込み先=選択中の依頼 / 下書き=ブラウザ内 / 版の説明=補足指示から / タブ=問い順に振り分け) を含む。実測時刻 2026-09-19T12:34:50Z。basis=user-decision。"
+    }
+  ],
+  "reopen_log": [],
+  "category_aggregate": {
+    "database": "確定",
+    "auth": "確定",
+    "ui-ux": "確定",
+    "security": "確定",
+    "infrastructure": "確定",
+    "backend": "確定",
+    "frontend": "確定",
+    "maintenance-ops": "確定"
+  },
+  "targets": [
+    {
+      "target_id": "wcag22-use-of-color",
+      "category": "ui-ux"
+    },
+    {
+      "target_id": "tanstack-query-invalidation",
+      "category": "frontend"
+    },
+    {
+      "target_id": "react-router-searchparams",
+      "category": "frontend"
+    },
+    {
+      "target_id": "mdn-localstorage",
+      "category": "frontend"
+    },
+    {
+      "target_id": "hono-zod-validator",
+      "category": "backend"
+    },
+    {
+      "target_id": "hono-body-limit",
+      "category": "security"
+    },
+    {
+      "target_id": "owasp-asvs",
+      "category": "security"
+    },
+    {
+      "target_id": "cloudflare-d1-migrations",
+      "category": "database"
+    },
+    {
+      "target_id": "cloudflare-workers-limits",
+      "category": "infrastructure"
+    },
+    {
+      "target_id": "vitest-expect",
+      "category": "maintenance-ops"
+    }
+  ],
+  "requirements_foundation": {
+    "essential_purpose": "AI分析画面を、『AIに分析を依頼し、根拠と版を確認しますか？』という問いに 1 画面で答え切る場にする。利用者が共通の期間 (1年 / 2年 / 3年 / 任意) を選ぶと、AI へ渡すデータの中身 (件数と集計値だけで明細は渡さないこと) を確かめたうえで Claude Code / Codex 用の依頼をワンステップでコピーでき、依頼が今どの段階にあるか (待機中 / 実行中 / 完了 / 失敗 / キャンセル と進捗) を一覧で追い、取り消し・再実行・削除をその場で決着でき、返ってきたレポートを取り込んで要約 → 根拠データ → 改善提案 → 関連リンクの順に読み、版の履歴と 2 つの版の差を確かめてから、仕分け・予算・総収支などの画面で手を打てる状態にする。アプリ自身は LLM を呼ばず、データは利用者が依頼をコピーするまで外へ出ない。",
+    "background": "現行の /ai (packages/web/src/pages/Ai.tsx、1277 行の 1 ファイル) は、独自の期間プリセット (月 / 四半期 / 13か月 / 5年) を持ち共通の期間選択 (usePeriod) と揃っていない。依頼の状態は 結果待ち / 期限切れ / 受信済み の 3 値だけで、依頼番号・進捗・取り消し・再実行が無く、結果の貼り付け欄は依頼ごとに散らばり、JSON の誤りは行と位置を示さない。レポートは長い 1 ページの読み物で、タブ・一覧の検索・版の説明・関連画面への導線が弱い。AI へ渡すデータの件数を依頼前に確かめる場所も無い。API (packages/api/src/routes/ai.ts) は依頼ごとの使い捨てトークン (SHA-256 保存・24 時間) でエージェントを認証するが、エージェント用の経路 (/api/ai/tasks/:id/report など) には body の大きさの上限が無く、データ取得や差し戻しの時刻も記録していないため段階を導けない。design/FINAL-UI/images/12-ai.png はこれらを 1 画面 (1.依頼 / 2.実行中 / 3.レポート と下部の選択中バー) に統合した完成形である。総収支・推移・家計収支・サブスク・診断を同じ流儀で作り直し終えた今、残る『確認』段階の画面として揃える時期にある。",
+    "goals": [
+      {
+        "id": "G1",
+        "text": "/ai を 12-ai.png どおりの画面にする。問いの見出し『AIに分析を依頼し、根拠と版を確認しますか？』と説明文、共通の期間タブ (1年 / 2年 / 3年 / 任意と範囲の送り)、1.依頼 (期間・補足指示 0/1000 と下書き自動保存・Claude Code 用 / Codex 用のコピー・使用するデータのカード・自動送信しない注記)、2.実行中の表 (ID・ステータス・依頼期間・作成日時・進捗・依頼内容・操作)、3.レポート (一覧の検索とアーカイブ表示・結果の取り込み・詳細のタブと版履歴と版比較)、下部の選択中バーを、既存のデザイントークン・共通 Button・PageShell の上に組む。読込・空・失敗の各状態を持つ。"
+      },
+      {
+        "id": "G2",
+        "text": "依頼の段階と進捗を core の純関数 1 か所で記録から導く。発行済みでデータ未取得 = 待機中 0%、データ取得済み = 実行中 50%、形式エラーで差し戻し = 実行中 75%、受信 = 完了 100%、結果なしで期限切れ = 失敗、取り消し = キャンセル。依頼には利用者ごとの連番から T-0001 形式の ID を振る。"
+      },
+      {
+        "id": "G3",
+        "text": "依頼の操作を画面で決着できるようにする。キャンセルはトークンを無効にして行を残し、再実行は同じ期間と補足指示で新しい依頼を発行し、削除は結果の無い依頼だけを消す (受信済みは削除不可)。依頼の発行とプロンプトのコピーを 1 操作にする。"
+      },
+      {
+        "id": "G4",
+        "text": "結果の取り込みとレポートの読み方を整える。取り込み先は選択中の依頼 (結果待ちが 1 件なら自動選択・無ければ無効)、JSON の構文エラーは行と位置を、契約違反は項目名を日本語で示し、入力は保持する。レポートは 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、版履歴は補足指示の 1 行目 (無ければ既定文) を説明にし、2 つの版を並べて比較できる。一覧は名前で検索でき、アーカイブの表示を切り替えられる。"
+      },
+      {
+        "id": "G5",
+        "text": "データの扱いと安全を固める。使用するデータのカードは実データ (対象期間・freee 事業取引の件数・MF 家計明細の件数・科目数・取引先数) を新しい API で返し、AI へは集計値だけを渡す。エージェント用と貼り付けの経路に body の上限を設け、キャンセル済み・期限切れのトークンを拒否する。段階を導くための列 (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) は追加のみの migration で足す。"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "O1",
+        "text": "AI分析画面が画像の全構成要素を描画する。",
+        "serves": [
+          "G1"
+        ],
+        "serves_goals": [
+          "G1"
+        ],
+        "measure": "DOM テストで、問いの見出し・期間タブ・1.依頼 (補足指示の文字数と下書き復元・コピー 2 種・使用するデータ・注記)・2.実行中の表の 7 列・3.レポートの一覧と取り込みと詳細 4 タブと版履歴・下部の選択中バーが描画され、読込・空・失敗の状態テストが緑である。"
+      },
+      {
+        "id": "O2",
+        "text": "依頼の段階と進捗が記録から一意に決まる。",
+        "serves": [
+          "G2"
+        ],
+        "serves_goals": [
+          "G2"
+        ],
+        "measure": "core の単体テストで、6 つの段階 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル) が記録の組合せから toBe で導かれ、期限切れと受信・取消の優先順位が境界ケースで固定される。"
+      },
+      {
+        "id": "O3",
+        "text": "キャンセル・再実行・削除が規則どおりに効く。",
+        "serves": [
+          "G3"
+        ],
+        "serves_goals": [
+          "G3"
+        ],
+        "measure": "API テストで、キャンセル後のトークンがデータ取得とレポート送信で拒否され行が残ること、再実行が同じ期間と補足指示の新しい依頼を作ること、受信済みの依頼の削除が拒否されることを確かめる。"
+      },
+      {
+        "id": "O4",
+        "text": "取り込みの誤りが直せる形で示され、レポートがタブと版で読める。",
+        "serves": [
+          "G4"
+        ],
+        "serves_goals": [
+          "G4"
+        ],
+        "measure": "DOM と core のテストで、構文エラーの行・列の表示と入力の保持、契約違反の項目名表示、選択中の依頼への取り込み、4 タブへの振り分け、版の説明の導出、2 版比較、一覧の検索とアーカイブ切替を確かめる。"
+      },
+      {
+        "id": "O5",
+        "text": "データの件数が実データと一致し、外部へ出るのは集計値だけである。",
+        "serves": [
+          "G5"
+        ],
+        "serves_goals": [
+          "G5"
+        ],
+        "measure": "API テストで、使用するデータの件数が同じ期間の D1 行数と一致し、エージェントへ渡すデータセットに明細行と摘要が含まれず、上限を超える body が 413 で止まることを確かめる。migration は追加のみで既存行の書き換えが 0 件である。"
+      }
+    ],
+    "success_criteria": [
+      "S1 (G1): /ai で 12-ai.png の構成要素がすべて描画され、色・余白・部品はトークンと共通 Button / PageShell 経由で、直書き色の lint が 0 件である。期間は usePeriod から来て、旧プリセット (月 / 四半期 / 13か月 / 5年) が画面から消えている。",
+      "S2 (G2): 依頼の段階と進捗は core の 1 関数だけが決め、api と web に同じ判定の重複実装が 0 件である。依頼 ID は利用者ごとに T-0001 から欠番なく振られる。",
+      "S3 (G3): キャンセル済みの依頼のトークンはエージェント経路で 401 / 410 相当の拒否になり、行は一覧に キャンセル として残る。受信済みの依頼は削除できない。",
+      "S4 (G4): 取り込みで JSON が壊れていても入力が消えず、行と位置が日本語で示される。レポート JSON の schema と skill (run-kanjo-accounting-report) は変更 0 件である。",
+      "S5 (G5): AI へ渡るデータは集計値 (科目・支払先ごとの月別合計など) だけで、明細行と摘要が 0 件である。エージェント経路と貼り付け経路の body 上限が効き、migration は追加のみである。",
+      "S6 (G1-G5): 既存の AI レポート (受信済み・アーカイブ済み・版つき) が作り直し後も一覧と詳細で読め、既存の API テストと初期 JS 予算 (CI 実測) が緑のままである。"
+    ],
+    "stakeholders": [
+      "SH1 利用者 (個人事業主とその家族の家計を 1 人で管理する): 月次クローズの『確認』段階で、期間を選んで AI に分析を頼み、渡すデータの範囲に納得してから依頼をコピーし、返ってきたレポートを根拠と版つきで読み、手を打つ画面へ進みたい。取り消しや再依頼で迷いたくない。",
+      "SH2 外部の AI エージェント (Claude Code / Codex と skill run-kanjo-accounting-report): 依頼ごとの使い捨てトークンでデータを取りに来てレポートを返す。契約 (レポート JSON v3) が変わらないこと、差し戻しの理由が機械で読めることが要る。",
+      "SH3 保守者 (同一人物、および Claude Code などのコーディングエージェント): 段階の導出規則・版の説明規則・タブへの振り分け・データの持ち出し範囲が core の純関数 1 か所と docs・テストで固定されていること。"
+    ],
+    "scope": {
+      "in": [
+        "AI分析画面 (12-ai.png の全構成要素と読込 / 空 / 失敗の各状態) の作り直しと、Ai.tsx の pages/ai/ 配下への分割",
+        "共通の期間 (usePeriod) への統一と、期間から前年比較に要るデータを導く API 側の変更",
+        "core の純関数: 依頼の段階と進捗の導出、依頼 ID の整形、版の説明の導出、レポートのタブへの振り分け、JSON 取り込みエラーの行・位置の算出",
+        "依頼のキャンセル・再実行 API と、既存の削除規則の維持",
+        "使用するデータの件数を返す API (対象期間・freee 事業取引・MF 家計明細・科目数・取引先数)",
+        "追加のみの migration (連番・データ取得時刻・差し戻し時刻と回数・取消時刻) とエージェント経路での記録",
+        "エージェント経路と貼り付け経路の body 上限、キャンセル済みトークンの拒否",
+        "下書きの localStorage 保存、下部の選択中バー、レポート一覧の検索とアーカイブ切替、版履歴と 2 版比較",
+        "docs への規則 (段階の導出・版の説明・タブの振り分け・持ち出し範囲) の明記と回帰テスト"
+      ],
+      "out": [
+        "共通シェル (ヘッダーの取引ライン・検索・ダウンロード・ヘルプ、サイドバー、フッター) の作り直し: 既存実装をそのまま使う",
+        "アプリから LLM を直接呼ぶこと: データは利用者がコピーするまで外へ出さない方針を保つ",
+        "エージェントが進捗を逐次報告する API: 段階は記録から導く (利用者決定)",
+        "下書きのサーバー保存: ブラウザ内に留める (利用者決定)",
+        "レポート JSON への版の説明欄の追加と skill の変更: 補足指示から導く (利用者決定)",
+        "スマートフォン・タブレット・デスクトップ向け専用アプリ: web のみ (既存方針)",
+        "画像の数値 (件数・日時・進捗) の再現: モックであり実データを正とする"
+      ]
+    },
+    "constraints": [
+      "C1 技術: pnpm monorepo (core は依存ゼロの純関数、api は Hono の Cloudflare Worker と D1/Drizzle、web は React 18 + react-router-dom 7 + TanStack Query 5)。判定と導出は core に置き api/web へ重複実装しない。",
+      "C2 デザイン: docs/design-system.md に従い、色は design-tokens.ts 由来のトークンだけ、ボタンは共通 Button、ページは PageShell。表・タブ・選択中バーは既存画面 (サブスク・診断) の部品と流儀に揃える。",
+      "C3 migration: D1 の migration は追加のみ (新カラム・新表) とし、行を書き換える migration は作らない。本番反映は既存の Deploy / Migrate の手順とゲートに従う。",
+      "C4 セキュリティ: 利用者向け API は /api/* の authGuard・mustChangePasswordFence・runtimeSchemaGuard・canonicalMutationFence の内側に置き、エージェント経路は依頼ごとの使い捨てトークン (SHA-256 保存・24 時間) だけで認証する。入力は zod で検証し、レポートの文字列は React の既定エスケープで描画して HTML として解釈しない。",
+      "C5 データの持ち出し: AI へ渡すのは集計値だけで、明細の摘要は渡さない。アプリは外部へ自動送信しない。",
+      "C6 互換: レポート JSON 契約 v3 と skill run-kanjo-accounting-report を変えない。既存の受信済みレポートとアーカイブ・版の関係を読めるまま保つ。",
+      "C7 性能: 初期 JS 予算 (CI 実測) を超えない。AI分析画面は遅延読み込みのままにする。",
+      "C8 数値の正本: 12-ai.png の件数・日時・進捗はモックで、実データを正とする。"
+    ],
+    "concrete_intents": [
+      {
+        "id": "I1",
+        "text": "Ai.tsx を pages/ai/ 配下へ分割し、問いの見出し・期間タブ・1.依頼・2.実行中・3.レポート・下部の選択中バーの構成に作り直す。選択中の依頼とレポートとタブを URL に保つ。",
+        "serves": [
+          "G1"
+        ]
+      },
+      {
+        "id": "I2",
+        "text": "core に依頼の段階と進捗を導く純関数と T-番号の整形を新設し、api の taskStatus と web の表示をこれに寄せる。",
+        "serves": [
+          "G2"
+        ]
+      },
+      {
+        "id": "I3",
+        "text": "キャンセル (トークン無効化・行を残す) と再実行 (同じ期間と補足指示で新規発行) の API を足し、実行中の表の操作列から呼ぶ。発行とコピーを 1 操作にする。",
+        "serves": [
+          "G3"
+        ]
+      },
+      {
+        "id": "I4",
+        "text": "結果の取り込みを選択中の依頼へ向け、JSON の構文エラーの行・位置と契約違反の項目名を示し、入力を保持する。",
+        "serves": [
+          "G4"
+        ]
+      },
+      {
+        "id": "I5",
+        "text": "レポート詳細を 要約 / 根拠データ / 改善提案 / 関連リンク のタブに問い順で振り分け、要約の下に関連ページのリンクと版履歴 (補足指示の 1 行目から説明) と 2 版比較を置く。一覧に検索とアーカイブ切替を付ける。",
+        "serves": [
+          "G1",
+          "G4"
+        ]
+      },
+      {
+        "id": "I6",
+        "text": "使用するデータの件数 API を足し、エージェント経路と貼り付け経路へ body 上限を掛け、追加のみの migration で段階の記録列を足す。",
+        "serves": [
+          "G2",
+          "G5"
+        ]
+      },
+      {
+        "id": "I7",
+        "text": "補足指示の下書きを localStorage に自動保存し、発行時に消す。",
+        "serves": [
+          "G1"
+        ]
+      }
+    ],
+    "confirmed": true,
+    "approval_ref": "appr-foundation-ai-analysis-001"
+  },
+  "decisions": [],
+  "knowledge_candidates": [],
+  "design_applications": {
+    "backend": {
+      "text": "Clean Architecture card の Dependency Rule を、依頼の段階と進捗の置き場所に適用した。段階 (待機中 0 / 実行中 50 / 実行中 75 / 完了 100 / 失敗 / キャンセル) は ai_tasks の時刻列と現在時刻だけから決まる入出力のない計算なので core の純関数 1 か所に置き、api の taskStatus (done / expired / waiting の 3 値) はこれに置き換える。T-番号の整形・版の説明 (補足指示の 1 行目か既定文)・レポートのタブへの振り分け・JSON 取り込みエラーの行と位置も同じく core に置く。api はキャンセル・再実行・使用するデータの経路で D1 を読み書きし、判定は純関数へ渡して JSON に写すだけにする。こうすると画面の表示と agentGuard の拒否が同じ判定から出るため、キャンセル済みなのに画面では実行中に見えるといったずれを単体テストで塞げる。",
+      "recorded_at": "2026-09-19T12:38:49Z",
+      "basis": "agent-inference"
+    },
+    "database": {
+      "text": "DDD card の『永続化するのはドメインの状態であって表示の都合ではない』を、ai_tasks に足す列の選び方に適用した。進捗 % や段階名は記録から導けるので保存しない。一方でエージェントがデータを取りに来た時刻、形式エラーで差し戻した時刻と回数、利用者が取り消した時刻は、後から導けない出来事なので列として持つ。T-番号の元になる連番も採番時にしか決まらないので保存する。ai_reports は版と親子関係をすでに持っており、版の説明は依頼の補足指示から導けるので列を足さない。",
+      "recorded_at": "2026-09-19T12:38:49Z",
+      "basis": "agent-inference"
+    },
+    "auth": {
+      "text": "Secure by Design card の『既定で拒否し、境界で一度だけ判定する』を、利用者経路とエージェント経路の 2 系統の配置に適用した。キャンセル・再実行・使用するデータは利用者の操作なので /api/* のフェンスの内側に載せ、route の中で個別の認可判定を書かない。エージェント経路は依頼ごとのトークンだけを受け、agentGuard 1 か所で期限切れ・受信済み・キャンセル済みを同じ 401 で拒否する。取り消しをトークンの削除ではなく canceled_at の記録で表すため、拒否の理由を利用者の画面にも残せる。",
+      "recorded_at": "2026-09-19T12:38:49Z",
+      "basis": "agent-inference"
+    },
+    "security": {
+      "text": "Secure by Design card の『入力を許可リストで検証し、大きさを境界で制限する』を、本サイクルで外から入る 2 つの大きな入力 (エージェントのレポート送信と利用者の貼り付け) に適用した。どちらも JSON を読み込む前に body の上限で止め、読み込んだ後は既存の reportInputSchema で契約を検証する。取り込み欄の構文エラーは保存せず、行と位置だけを返して入力を画面に残す。AI へ渡すデータは dataset.ts の集計値だけという既存の境界を、使用するデータのカードの注記として利用者にも見える形にする。",
+      "recorded_at": "2026-09-19T12:38:49Z",
+      "basis": "agent-inference"
+    },
+    "ui-ux": {
+      "text": "Information Design card の『task 頻度 × 失敗コストで束に順位を付ける』を AI分析画面の段の順序とタブの振り分けに適用した。最も頻度が高いのは『依頼をコピーして AI に渡す』なので 1.依頼を最上段に置き、渡すデータの件数と自動送信しない注記をコピーボタンの隣に置く (外へ出るものを確かめずにコピーする失敗コストが高い)。次に頻度が高いのは『今どこまで進んだか』なので 2.実行中の表と下部の選択中バーで進捗を常に見せる。レポートは問い順 (何が分かったか → 何を根拠に → 何をすべきか → どこで手を打つか) にタブを並べ、要約の下に関連ページのリンクと版履歴を常に出して、読んだ直後に動けるようにする。",
+      "recorded_at": "2026-09-19T12:38:49Z",
+      "basis": "agent-inference"
+    },
+    "frontend": {
+      "text": "Clean Architecture card の依存方向を、web が段階の判定を持たない構成に適用した。現行 Ai.tsx は 1277 行の 1 ファイルで、状態の文言や期限の判定を画面側で組んでいるが、新しい構成では api が返す段階・進捗・T-番号・版の説明をそのまま描く部品群 (依頼・実行中の表・レポート一覧・取り込み・詳細・版履歴・版比較・選択中バー) に分ける。画面が持つ状態は選択中の依頼・レポート・タブ (URL) と補足指示の下書き (localStorage) だけにする。",
+      "recorded_at": "2026-09-19T12:38:49Z",
+      "basis": "agent-inference"
+    },
+    "infrastructure": {
+      "text": "本章へ引く card は 0 件である。配信構成 (Worker・Workers Assets・D1) と binding を変えない判断を記録する。AI 分析はアプリが LLM を呼ばず、外部のエージェントがトークンで既存の API を呼ぶ構成なので、キュー・外部ストレージ・LLM の鍵を Worker に持たせない。変更は D1 の列追加だけで、既存の Migrate → Deploy の順序で反映できる。",
+      "recorded_at": "2026-09-19T12:38:49Z",
+      "basis": "agent-inference"
+    },
+    "maintenance-ops": {
+      "text": "Clean Code card の『規則は名前と境界値テストで読めるようにする』を、段階の導出と持ち出し範囲の保守に適用した。段階の優先順位は core の名前付きの順序表 1 か所に置き、段階の優先順位・版の説明の既定文・タブの振り分け・使用するデータの数え方を docs/ai-screen/ に表で残し、同じ表を core の単体テストの期待値にする。skill (run-kanjo-accounting-report) とレポート JSON 契約を変えないことは skills:test と契約テストが緑のままであることで確かめる。",
+      "recorded_at": "2026-09-19T12:38:49Z",
+      "basis": "agent-inference"
+    }
+  },
+  "hearing_progress": {
+    "loop_count": 1,
+    "next_question": null,
+    "complete": true
+  },
+  "doctrine_applications": {
+    "backend": {
+      "application-architecture": {
+        "text": "依存方向を core (段階の導出・T-番号・版の説明・タブの振り分け・JSON エラー位置) ← api (ai route と agent route) ← web (AI分析画面) の一方向へ反映した。api の taskStatus と web の状態文言を削除し、両者が同じ純関数の結果を使う。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      },
+      "data-access": {
+        "text": "データアクセスを route 側に閉じ、段階の純関数は D1 を知らない依頼の記録 (時刻列と現在時刻) だけを受け取る形へ反映した。使用するデータの件数は期間で絞った既存の表の件数読み取りで作り、AI 用の SQL を増やさない。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      }
+    },
+    "database": {
+      "data-access": {
+        "text": "ai_tasks の新しい列の書き込みを、それぞれの出来事の経路 1 か所にだけ置く形へ反映した。データ取得時刻はエージェントのデータ取得、差し戻しはレポートの契約違反、取消時刻はキャンセル経路で書き、段階の導出側は読むだけにする。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      },
+      "reliability": {
+        "text": "migration 0046 を列の追加だけにすることで、既存の依頼とレポートを 1 行も書き換えず、巻き戻しが新しい列を読まないことだけで済む形へ反映した。runtimeSchemaGuard の必須列に新しい列を加え、migration 前の Worker で新経路が動かないようにする。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      }
+    },
+    "auth": {
+      "authentication": {
+        "text": "キャンセル・再実行・使用するデータの 3 経路に、既存のセッション cookie による認証をそのまま効かせる形へ反映した。エージェント経路は既存のトークン認証のままで、キャンセル済みの判定を agentGuard に足す。新しいログイン手段や長期トークンは設けない。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      },
+      "security": {
+        "text": "利用者単位でデータを閉じる規則を、キャンセル・再実行・削除・使用するデータの全経路に反映した。どれも c.get('userId') で自分の依頼と明細だけを扱い、他の利用者の依頼 id を渡されたときは 404 を返すことを API テストで確かめる。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      }
+    },
+    "security": {
+      "security": {
+        "text": "入力の大きさの制限・契約検証・出力の無害化・外部送信なしの 4 点を、AI分析画面で増える入出力に反映した。レポート送信と貼り付けは body 上限の後で zod 契約を通し、レポートの文字列は React のエスケープで描き、AI へ渡すのは集計値だけで、アプリからの自動送信は無い。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      }
+    },
+    "ui-ux": {
+      "presentation": {
+        "text": "状態を色だけで伝えない規則を、実行中の表のステータスと進捗、版履歴の最新版の印に反映した。ステータスには必ず文字 (待機中 / 実行中 / 完了 / 失敗 / キャンセル) を添え、進捗は数値の % と棒の両方で示す。取り込みのエラーは行と位置を文で示し、入力が保持されていることを同じ文で伝える。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      }
+    },
+    "frontend": {
+      "presentation": {
+        "text": "表示の共通部品を使う規則を、AI分析画面の表・タブ・ボタン・選択中バーに反映した。表と選択中バーはサブスク・診断画面の既存部品と同じ流儀で組み、ボタンは共通 Button、色はトークンだけにする。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      },
+      "application-architecture": {
+        "text": "サーバー状態と画面状態を分ける規則を、依頼一覧・レポート一覧・レポート詳細・使用するデータの 4 つの取得と、選択中の依頼・レポート・タブ (URL) と下書き (localStorage) の分離に反映した。操作の後は該当する取得だけを無効化し、選択は URL から復元する。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      }
+    },
+    "infrastructure": {
+      "reliability": {
+        "text": "反映の順序を Migrate → Deploy に固定する形へ反映した。migration 0046 は列の追加だけなので、適用後に旧 Worker が動いていても新しい列を読まないだけで壊れない。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      },
+      "operations": {
+        "text": "基盤の変更が D1 の列追加だけであることを、既存の deploy.yml と migrate.yml をそのまま使う形へ反映した。新しい secret・キュー・外部サービスの登録は発生しない。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      }
+    },
+    "maintenance-ops": {
+      "operations": {
+        "text": "検証の入口を verify:full と CI に一本化する形へ反映した。AI分析画面の core・API・DOM テストを既存の test に載せ、skills:test と初期 JS 予算を緑のまま保つことを完了条件にする。",
+        "recorded_at": "2026-09-19T12:38:49Z",
+        "basis": "agent-inference"
+      }
+    }
+  }
+}

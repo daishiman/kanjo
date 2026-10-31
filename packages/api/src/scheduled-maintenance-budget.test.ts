@@ -174,7 +174,7 @@ describe('scheduled maintenance D1 plan', () => {
     expect(SCHEDULED_MAINTENANCE_D1_PLAN.jobs).toEqual({
       nightly_backup: 1,
       r2_cleanup: 20,
-      password_login_rate_limit_cleanup: 2,
+      password_login_rate_limit_cleanup: 3,
       improvement_retention: 3,
       deletion_undo_retention: 12,
       audit_header_retention: 3,
@@ -197,7 +197,7 @@ describe('scheduled maintenance D1 plan', () => {
     );
   });
 
-  it('backupを先に確定後、R2期限enqueue・資格情報cleanup・両undo sweepでもactual=planned=47', async () => {
+  it('backupを先に確定後、R2期限enqueue・資格情報cleanup・両undo sweepでもactual=planned=48', async () => {
     const chronology: string[] = [];
     const database = worstPathDatabase(chronology);
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
@@ -212,7 +212,7 @@ describe('scheduled maintenance D1 plan', () => {
     expect(records.find((entry) => entry.job === 'scheduled_maintenance_budget')).toEqual({
       level: 'info',
       job: 'scheduled_maintenance_budget',
-      plannedQueries: 47,
+      plannedQueries: 48,
       limit: 50,
     });
     expect(records.find((entry) => entry.job === 'r2_cleanup')).toEqual({

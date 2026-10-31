@@ -1,0 +1,51 @@
+{
+  "graph_node_id": "feat-login-v2",
+  "artifact_kind": "feature",
+  "purpose": "金融明細を預かる入口を、テナント管理者に招待された本人だけが、自分で選んだ認証手段 (Google アカウント、またはメールアドレスとパスワード) で入れる場にする。管理者は他人の秘密 (仮パスワード) を一切持たず、招待はメールのリンクで本人に届く。本人はパスワードを自分で再設定でき、同じメールアドレスの Google とパスワードは再認証とメール確認を経て 1 つのアカウントに連携でき、パスワードでのログインには TOTP を重ねる (管理者は必須、一般は任意)。ログイン画面は何が守られるかと稼働状況・ヘルプ・プライバシーをログイン前に示す。保守者に対しては、認証を Better Auth の正規の機能に寄せて自前の暗号処理 (kanjo_session の署名・世代照合・一時パスワード) を撤去し、既存 20 画面と API の認証契約 (401/403/409・監査の actor 記録) を同じ契約テストで守る。",
+  "goal": "/login が 01-login-v2.png の全構成要素 (ロゴと見出し・説明・Googleでログイン・区切り・メールとパスワードのフォーム (表示切替・保持のチェック・パスワードをお忘れの方)・招待の囲み・連携の囲み・安心 3 項目・フッター (稼働状況・ヘルプ・プライバシー)) を画像と完全一致の文言でトークンと共通部品により描画し、送信中・認証失敗・ロック中・MFA コード入力・再送受付・再設定受付の 6 状態を持ち、未認証で /invite/accept・/reset-password・/mfa・/help・/privacy に到達でき、認証基盤が Better Auth v1.7.5 (メールとパスワード・Google・D1 の session 表・TOTP と復旧コード・連携) へ移って自前の署名と一時パスワードと初回変更の強制が 0 件になり、既存の PBKDF2 利用者が再設定なしでログインでき、TOTP 未設定の管理者はパスワードでのログインでも招待の登録直後でも設定を終えるまでセッションを得ず、招待・再送・再設定・MFA の各入口にレート制限と列挙防止が効き、migration 0048 が既存行を書き換えず、既存 20 画面の認証ガードと契約テスト (401/403/409・actor) が緑のままの状態。",
+  "scope_in": [
+    "/login の作り直し (01-login-v2.png の全構成要素と、送信中・認証失敗・ロック中・MFA コード入力・再送受付・再設定受付の 6 状態)。文言は画像と完全一致",
+    "未認証で到達できる画面の新設: /invite/accept・/reset-password・/mfa (設定と入力)・/help・/privacy。公開経路以外の未認証は /login?next= へ",
+    "設定画面のアカウント欄に連携 (追加・解除) と MFA (有効化・無効化・復旧コードの再発行) を置き、利用者管理を招待の作成・再送・取消と状態表示に作り直す",
+    "Better Auth (v1.7.5 固定) の導入: メールとパスワード・Google (OIDC)・D1 の session 表・twoFactor (TOTP と復旧コード)・アカウント連携。createAuthClient は web の container に閉じる",
+    "自前認証の撤去: kanjo_session の署名と世代照合、一時パスワードの発行、初回変更の強制 (mustChangePasswordFence・PasswordChange の forced 表示・403 password_change_required)、一時パスワードの掃除",
+    "migration 0048: 既存 users と PBKDF2 ハッシュの Better Auth の表への複写 (既存行を書き換えない)、招待・MFA 設定トークンの表",
+    "招待の API、ログイン画面からの再送依頼・再設定依頼、MFA 設定の開始と完了の API、稼働状態 API (GET /api/status)",
+    "Resend によるメール送信 (招待・再設定・連携確認) を sendMail(to, template, params) の 1 関数に閉じ、テストで差し替える",
+    "レート制限と列挙防止の新しい入口 (MFA・再送・再設定・MFA 設定) への拡張と、監査ログの新しい action",
+    "docs の更新: 移行と戻し、secret、Google Cloud Console、Resend、締め出し (最後の管理者の停止・MFA 喪失) からの復旧、プライバシー"
+  ],
+  "scope_out": [
+    "自己登録 (サインアップ)。招待制だけを保つ (U7)",
+    "Google 以外のソーシャルログインと SAML などの企業 SSO",
+    "パスキー (WebAuthn) と SMS の MFA。MFA は TOTP だけ (decision-003)",
+    "信頼端末 (trustDevice)。管理者の MFA 必須を素通りさせないため使わない (security-web-004)",
+    "複数テナント (既存の単一テナント 'default' の管理者を指す)",
+    "外部の状況ページサービスとの連携 (稼働状態は自前の GET /api/status)",
+    "独自ドメインの取得と DNS 設定そのもの (手順だけを docs に書く)",
+    "web 以外のプラットフォーム",
+    "旧表 (users・旧 audit の列など) の削除 (本サイクルでは消さない。C3)",
+    "Cloudflare Access のサーバ側検証経路の変更 (2026-09-11 の利用者決定どおり残置。C9)"
+  ],
+  "acceptance": [
+    "S1 (G1): /login に 01-login-v2.png の構成要素がすべて出て、文言は画像と完全一致、色・余白・部品はトークンと共通部品経由で直書き色の lint が 0 件。送信中・認証失敗・ロック中・MFA コード入力・再送受付・再設定受付の 6 状態を持つ。",
+    "S2 (G2/G7): Better Auth へ移しても、未認証の /api/* が 401、停止利用者の既存セッションが 401、非管理者の管理 API が 403、最後の管理者の停止が 409。既存の PBKDF2 利用者が再設定なしでログインできる。旧 kanjo_session の署名経路が 0 件。",
+    "S3 (G3): 招待された本人がメールのリンクから Google かパスワードを選んで登録を完了できる。管理者がパスワードを設定する経路が 0 件。再送依頼の応答で招待の有無が分からない。自己登録の経路が 0 件。",
+    "S4 (G4): 本人がメールで再設定を完了すると既存セッションが全て失効し、応答から登録の有無が分からない。連携は再認証とメール確認を経たときだけ成立する。",
+    "S5 (G5): TOTP 未設定の管理者は、パスワードでのログインでも招待のパスワード登録直後でも TOTP の設定を終えるまでセッションを得ない。TOTP 設定済みの利用者はコード入力を経てだけ得る。Google でログインした管理者には TOTP を求めない。各入口で連続失敗がロックされる。",
+    "S6 (G6): 未認証で稼働状態・ヘルプ・プライバシーが見られ、稼働状態の応答に内部情報が含まれない。",
+    "S7 (G7): 既存 20 画面の認証ガードと契約テストが緑のまま。migration は既存行を書き換えない。旧経路への戻し手順が docs にある。既知の逸脱・未実施・一部適合は PASS に数えない。"
+  ],
+  "architecture_refs": [
+    "architecture/login-v2-ui-ux.md",
+    "architecture/login-v2-frontend.md",
+    "architecture/login-v2-backend.md",
+    "architecture/login-v2-database.md",
+    "architecture/login-v2-auth.md",
+    "architecture/login-v2-security.md",
+    "architecture/login-v2-infrastructure.md",
+    "architecture/login-v2-maintenance-ops.md",
+    "specs/spec-login-v2.md"
+  ],
+  "updated_at": "2026-09-21T14:42:36Z"
+}

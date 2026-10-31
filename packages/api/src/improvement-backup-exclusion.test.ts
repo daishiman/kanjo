@@ -129,7 +129,7 @@ describe('削除ジョブの失敗が他へ波及しないこと', () => {
     const env = {
       ACCESS_AUD: '',
       ACCESS_TEAM_DOMAIN: '',
-      SESSION_SECRET: 'synthetic-test-secret',
+      BETTER_AUTH_SECRET: 'synthetic-test-secret-at-least-32-chars',
       DB: d1,
       FILES: failing,
     };

@@ -1,187 +1,128 @@
-/**
- * 認証(FR-06 / アカウントログイン)。
- *
- * 資格情報はメールアドレス + パスワード。セッション Cookie の署名対象は
- * 「利用者ID . 有効期限 . 世代」の3要素で、Cookie から操作者を特定できる。
- * 世代は D1 の users.session_generation と照合するため、パスワード変更・再発行・停止の
- * いずれでもセッション表を持たずに即時失効が効く。
- *
- * ACCESS_AUD + ACCESS_TEAM_DOMAIN が設定されていれば Cloudflare Access の JWT を検証する経路も
- * 残す(サーバ側実装のみ。ログイン画面の UI からは除去済み)。
- * 未認証で /api のデータへアクセスできる状態は存在しない。
- */
-import type { Context, MiddlewareHandler } from 'hono';
-import { getCookie, setCookie } from 'hono/cookie';
-import { type UserRow, findUserByEmail, findUserById } from './users.js';
+import { getSessionCookie } from 'better-auth/cookies';
+/** Better Auth を正本にした認証境界。Cloudflare Access の既存分岐だけを薄い adapter として残す。 */
+import type { MiddlewareHandler } from 'hono';
+import {
+  type AuthScope,
+  type BetterAuthEnv,
+  type KanjoAuth,
+  createAuth,
+  newAuthScope,
+} from './better-auth.js';
+import { type UserRow, findUserByEmail } from './users.js';
 
-export interface AuthEnv {
-  DB: D1Database;
+export interface AuthEnv extends BetterAuthEnv {
   FILES: R2Bucket;
   ASSETS: Fetcher;
   ACCESS_AUD: string;
   ACCESS_TEAM_DOMAIN: string;
-  SESSION_SECRET?: string;
-  /** 非secret override。正本・validation・fallbackはlogin-rate-limit.tsに集約する。 */
-  PASSWORD_LOGIN_WINDOW_SECONDS?: string;
-  PASSWORD_LOGIN_MAX_FAILURES?: string;
-  PASSWORD_LOGIN_LOCK_SECONDS?: string;
-  PASSWORD_LOGIN_STALE_AFTER_SECONDS?: string;
 }
 
-/**
- * 業務データのテナントキー。利用者アカウントの導入後もこの値は動かさない。
- * 明細・取引・カテゴリへ所有者列を足さない設計(account-login-database の決定2)のため、
- * 「誰が操作したか」は actor として別に持ち、audit_log.actor_user_id へ書く。
- */
 export const TENANT_ID = 'default';
+
+export type AuthMode = 'better-auth' | 'cloudflare-access' | 'unconfigured' | 'invalid';
+
+/** Accessはaudienceとteam domainの組でだけ有効。片側設定は認証を開けず構成エラーへ倒す。 */
+export function resolveAuthMode(
+  env: Pick<AuthEnv, 'ACCESS_AUD' | 'ACCESS_TEAM_DOMAIN' | 'BETTER_AUTH_SECRET'>,
+): AuthMode {
+  const hasAudience = Boolean(env.ACCESS_AUD?.trim());
+  const hasTeamDomain = Boolean(env.ACCESS_TEAM_DOMAIN?.trim());
+  if (hasAudience !== hasTeamDomain) return 'invalid';
+  if (hasAudience) return 'cloudflare-access';
+  if (env.BETTER_AUTH_SECRET) return 'better-auth';
+  return 'unconfigured';
+}
+
+/** 公開認証入口と保護APIが同じモード判定を使うための上流gate。 */
+export function authModePolicy(): MiddlewareHandler<{ Bindings: AuthEnv }> {
+  return async (c, next) => {
+    const mode = resolveAuthMode(c.env);
+    if (mode === 'invalid') {
+      return c.json(
+        { error: { code: 'access_config_invalid', message: 'Access認証の設定が不完全です' } },
+        503,
+      );
+    }
+    if (
+      mode === 'cloudflare-access' &&
+      c.req.path.startsWith('/api/auth/') &&
+      c.req.path !== '/api/auth/me'
+    ) {
+      return c.json(
+        { error: { code: 'access_mode', message: 'Access認証ではアプリ内ログインを使用できません' } },
+        400,
+      );
+    }
+    return next();
+  };
+}
 
 export interface SessionActor {
   id: string;
   email: string;
   role: 'admin' | 'member';
-  mustChangePassword: boolean;
 }
 
 export type AuthVariables = {
-  /** 既存業務データの共有テナントキー。認証主体IDではない。 */
   userId: string;
   actor: SessionActor;
-  /** 現在のCookieが持つ絶対期限。パスワード変更でTTLを延長しないために引き継ぐ。 */
-  sessionExpiresAt: number | null;
+  sessionCreatedAt?: Date | string;
+  auth?: KanjoAuth;
+  authScope?: AuthScope;
 };
 
-const COOKIE = 'kanjo_session';
-
-/** 既定の帰結は画面のマイクロコピーで開示する。ここはその正本。 */
-export const SESSION_TTL_MS = Object.freeze({
-  remembered: 30 * 24 * 60 * 60 * 1000,
-  transient: 12 * 60 * 60 * 1000,
-});
-
-export const sessionTtlMs = (remember: boolean): number =>
-  remember ? SESSION_TTL_MS.remembered : SESSION_TTL_MS.transient;
-
-const enc = new TextEncoder();
-
-async function hmac(secret: string, msg: string): Promise<Uint8Array> {
-  const key = await crypto.subtle.importKey(
-    'raw',
-    enc.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign'],
-  );
-  return new Uint8Array(await crypto.subtle.sign('HMAC', key, enc.encode(msg)));
-}
-
-const b64url = (b: Uint8Array): string =>
-  btoa(String.fromCharCode(...b))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-
-function b64urlDecode(s: string): Uint8Array {
-  const t = s.replace(/-/g, '+').replace(/_/g, '/');
-  const bin = atob(t + '='.repeat((4 - (t.length % 4)) % 4));
-  return Uint8Array.from(bin, (c) => c.charCodeAt(0));
-}
-
-/** 長さ・内容ともタイミング非依存の比較(SHA-256ダイジェスト同士を比較) */
-async function timingSafeEq(a: string, b: string): Promise<boolean> {
-  const [da, db] = await Promise.all([
-    crypto.subtle.digest('SHA-256', enc.encode(a)),
-    crypto.subtle.digest('SHA-256', enc.encode(b)),
-  ]);
-  const x = new Uint8Array(da);
-  const y = new Uint8Array(db);
-  let diff = 0;
-  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
-  return diff === 0;
-}
-
-/** 署名対象。要素数が3でない payload は旧形式として構造的に拒否される。 */
-const sessionPayload = (userId: string, expiresAt: number, generation: number): string =>
-  `${userId}.${expiresAt}.${generation}`;
-
-export async function issueSession(
-  c: Context,
-  secret: string,
-  user: Pick<UserRow, 'id' | 'session_generation'>,
-  remember: boolean,
-): Promise<void> {
-  // 時刻は1回だけ読む。期限と Max-Age で別々に読むと、間でミリ秒が進んだとき Max-Age が1秒欠ける。
-  const now = Date.now();
-  await issueSessionUntil(c, secret, user, now + sessionTtlMs(remember), now);
-}
-
-/** 元の絶対期限を維持してCookieだけを新しい世代へ載せ替える。 */
-export async function issueSessionUntil(
-  c: Context,
-  secret: string,
-  user: Pick<UserRow, 'id' | 'session_generation'>,
-  expiresAt: number,
-  now: number = Date.now(),
-): Promise<void> {
-  const ttl = Math.max(1_000, expiresAt - now);
-  const payload = sessionPayload(user.id, expiresAt, user.session_generation);
-  const sig = b64url(await hmac(secret, payload));
-  setCookie(c, COOKIE, `${payload}.${sig}`, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'Strict',
-    path: '/',
-    maxAge: Math.floor(ttl / 1000),
-  });
-}
-
-export function clearSession(c: Context): void {
-  setCookie(c, COOKIE, '', { httpOnly: true, secure: true, sameSite: 'Strict', path: '/', maxAge: 0 });
-}
-
-interface SessionClaims {
-  userId: string;
-  generation: number;
-  expiresAt: number;
-}
-
-/** 署名・期限・形式だけを見る。世代の突合は DB を引く verifySession 側で行う。 */
-async function readSessionCookie(c: Context, secret: string): Promise<SessionClaims | null> {
-  const raw = getCookie(c, COOKIE);
-  if (!raw) return null;
-  const parts = raw.split('.');
-  // 旧形式(exp.sig の2要素)はここで落ちる。SESSION_SECRET ローテーションと併せた二段の無効化。
-  if (parts.length !== 4) return null;
-  const [userId, exp, generation, sig] = parts;
-  if (!userId || !/^\d+$/.test(exp) || !/^\d+$/.test(generation)) return null;
-  if (Number(exp) < Date.now()) return null;
-  const want = b64url(await hmac(secret, sessionPayload(userId, Number(exp), Number(generation))));
-  if (!(await timingSafeEq(sig, want))) return null;
-  return { userId, generation: Number(generation), expiresAt: Number(exp) };
-}
-
-/** Cookie の主張を D1 の現在値と突き合わせる。世代・停止のいずれでも即時に失効する。 */
-export async function verifySession(
-  c: Context,
-  secret: string,
-  db: D1Database,
-): Promise<{ user: UserRow; expiresAt: number } | null> {
-  const claims = await readSessionCookie(c, secret);
-  if (!claims) return null;
-  const user = await findUserById(db, claims.userId);
-  if (!user) return null;
-  if (user.status !== 'active') return null;
-  if (user.session_generation !== claims.generation) return null;
-  return { user, expiresAt: claims.expiresAt };
-}
-
-export const actorOf = (user: UserRow): SessionActor => ({
+export const actorOf = (user: Pick<UserRow, 'id' | 'email' | 'role'>): SessionActor => ({
   id: user.id,
   email: user.email,
   role: user.role,
-  mustChangePassword: user.must_change_password === 1,
 });
 
-/* ---------------- Cloudflare Access JWT (RS256) ---------------- */
+/** status より後、Better Auth handler と保護 API より前に1度だけ置く。 */
+export function authRuntime(): MiddlewareHandler<{ Bindings: AuthEnv; Variables: AuthVariables }> {
+  return async (c, next) => {
+    const mode = resolveAuthMode(c.env);
+    if (mode === 'invalid') {
+      return c.json(
+        { error: { code: 'access_config_invalid', message: 'Access認証の設定が不完全です' } },
+        503,
+      );
+    }
+    if (mode !== 'better-auth') {
+      if (
+        (c.req.path.startsWith('/api/auth/') && c.req.path !== '/api/auth/me') ||
+        mode !== 'cloudflare-access'
+      ) {
+        return c.json({ error: { code: 'auth_not_configured', message: '認証が未設定です' } }, 503);
+      }
+      return next();
+    }
+    const isAuthEndpoint = c.req.path.startsWith('/api/auth/');
+    const hasSessionCookie = Boolean(getSessionCookie(c.req.raw, { cookiePrefix: 'kanjo' }));
+    if (!isAuthEndpoint && !hasSessionCookie) {
+      return next();
+    }
+    const waitUntil = (promise: Promise<unknown>): void => {
+      const tracked = promise.catch((error) =>
+        console.error(
+          JSON.stringify({
+            level: 'error',
+            job: 'auth_background',
+            name: error instanceof Error ? error.name : 'UnknownError',
+          }),
+        ),
+      );
+      try {
+        c.executionCtx.waitUntil(tracked);
+      } catch {
+        void tracked;
+      }
+    };
+    const scope = newAuthScope(waitUntil);
+    c.set('authScope', scope);
+    c.set('auth', createAuth(c.env, scope, c.req.url));
+    return next();
+  };
+}
 
 interface Jwk {
   kid: string;
@@ -190,126 +131,122 @@ interface Jwk {
   e: string;
 }
 
-// JWKSはリクエスト横断のキャッシュ(リクエスト固有状態ではない)
 let jwksCache: { keys: Jwk[]; fetchedAt: number } | null = null;
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
+
+function b64urlDecode(value: string): Uint8Array {
+  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(normalized + '='.repeat((4 - (normalized.length % 4)) % 4));
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
 
 async function fetchJwks(teamDomain: string): Promise<Jwk[]> {
-  if (jwksCache && Date.now() - jwksCache.fetchedAt < 1000 * 60 * 60) return jwksCache.keys;
-  const res = await fetch(`https://${teamDomain}/cdn-cgi/access/certs`);
-  if (!res.ok) throw new Error('jwks fetch failed');
-  const body = (await res.json()) as { keys: Jwk[] };
+  if (jwksCache && Date.now() - jwksCache.fetchedAt < 60 * 60 * 1000) return jwksCache.keys;
+  const response = await fetch(`https://${teamDomain}/cdn-cgi/access/certs`);
+  if (!response.ok) throw new Error('jwks_fetch_failed');
+  const body = (await response.json()) as { keys: Jwk[] };
   jwksCache = { keys: body.keys, fetchedAt: Date.now() };
   return body.keys;
 }
 
-async function verifyAccessJwt(token: string, aud: string, teamDomain: string): Promise<string | null> {
-  const parts = token.split('.');
-  if (parts.length !== 3) return null;
-  const header = JSON.parse(new TextDecoder().decode(b64urlDecode(parts[0]))) as {
-    kid?: string;
-    alg?: string;
-  };
-  if (header.alg !== 'RS256') return null;
-  const payload = JSON.parse(new TextDecoder().decode(b64urlDecode(parts[1]))) as {
-    aud?: string | string[];
-    exp?: number;
-    iss?: string;
-    email?: string;
-  };
-  const audOk = Array.isArray(payload.aud) ? payload.aud.includes(aud) : payload.aud === aud;
-  if (!audOk) return null;
-  if (!payload.exp || payload.exp * 1000 < Date.now()) return null;
-  if (payload.iss !== `https://${teamDomain}`) return null;
-  const keys = await fetchJwks(teamDomain);
-  const jwk = keys.find((k) => k.kid === header.kid);
-  if (!jwk) return null;
-  const key = await crypto.subtle.importKey(
-    'jwk',
-    { kty: jwk.kty, n: jwk.n, e: jwk.e },
-    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-    false,
-    ['verify'],
-  );
-  const ok = await crypto.subtle.verify(
-    'RSASSA-PKCS1-v1_5',
-    key,
-    b64urlDecode(parts[2]),
-    enc.encode(`${parts[0]}.${parts[1]}`),
-  );
-  return ok ? (payload.email ?? null) : null;
+async function verifyAccessJwt(token: string, audience: string, teamDomain: string): Promise<string | null> {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const header = JSON.parse(decoder.decode(b64urlDecode(parts[0]))) as { kid?: string; alg?: string };
+    const payload = JSON.parse(decoder.decode(b64urlDecode(parts[1]))) as {
+      aud?: string | string[];
+      exp?: number;
+      iss?: string;
+      email?: string;
+    };
+    const validAudience = Array.isArray(payload.aud)
+      ? payload.aud.includes(audience)
+      : payload.aud === audience;
+    if (
+      header.alg !== 'RS256' ||
+      !validAudience ||
+      !payload.exp ||
+      payload.exp * 1000 < Date.now() ||
+      payload.iss !== `https://${teamDomain}`
+    )
+      return null;
+    const jwk = (await fetchJwks(teamDomain)).find((candidate) => candidate.kid === header.kid);
+    if (!jwk) return null;
+    const key = await crypto.subtle.importKey(
+      'jwk',
+      { kty: jwk.kty, n: jwk.n, e: jwk.e },
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+      false,
+      ['verify'],
+    );
+    const valid = await crypto.subtle.verify(
+      'RSASSA-PKCS1-v1_5',
+      key,
+      b64urlDecode(parts[2]),
+      encoder.encode(`${parts[0]}.${parts[1]}`),
+    );
+    return valid ? (payload.email ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Access assertionからactive userを確定する唯一の境界。保護APIと/auth/meが共有する。 */
+export async function authenticateAccessUser(
+  env: Pick<AuthEnv, 'DB' | 'ACCESS_AUD' | 'ACCESS_TEAM_DOMAIN'>,
+  assertion: string | undefined,
+): Promise<UserRow | null> {
+  if (!assertion) return null;
+  const email = await verifyAccessJwt(assertion, env.ACCESS_AUD, env.ACCESS_TEAM_DOMAIN);
+  const user = email ? await findUserByEmail(env.DB, email) : null;
+  return user?.status === 'active' ? user : null;
 }
 
 const unauthorized = { error: { code: 'unauthorized', message: '認証が必要です' } } as const;
 
-/** /api 配下(認証エンドポイント以外)を保護するミドルウェア */
+/** Better Auth session を毎回D1で照合し、停止・失効を即時反映する。 */
 export function authGuard(): MiddlewareHandler<{ Bindings: AuthEnv; Variables: AuthVariables }> {
   return async (c, next) => {
-    const env = c.env;
-    if (env.ACCESS_AUD && env.ACCESS_TEAM_DOMAIN) {
-      const token = c.req.header('Cf-Access-Jwt-Assertion');
-      if (token) {
-        try {
-          const email = await verifyAccessJwt(token, env.ACCESS_AUD, env.ACCESS_TEAM_DOMAIN);
-          // Access を通っても、利用者として登録され有効でなければ通さない。
-          // 認可の正本はあくまで users であり、外部 IdP の主張を素通しにしない。
-          const user = email ? await findUserByEmail(env.DB, email) : null;
-          if (user && user.status === 'active') {
-            c.set('userId', TENANT_ID);
-            c.set('actor', actorOf(user));
-            c.set('sessionExpiresAt', null);
-            return next();
-          }
-        } catch {
-          // 検証失敗は未認証として扱う(詳細はログに残さない)
-        }
-      }
-      return c.json(unauthorized, 401);
+    if (resolveAuthMode(c.env) === 'cloudflare-access') {
+      const user = await authenticateAccessUser(c.env, c.req.header('Cf-Access-Jwt-Assertion'));
+      if (!user) return c.json(unauthorized, 401);
+      c.set('userId', TENANT_ID);
+      c.set('actor', actorOf(user));
+      return next();
     }
-    if (!env.SESSION_SECRET) {
-      return c.json(
-        { error: { code: 'auth_not_configured', message: '認証が未設定です(SESSION_SECRET)' } },
-        503,
-      );
-    }
-    const session = await verifySession(c, env.SESSION_SECRET, env.DB);
-    if (!session) return c.json(unauthorized, 401);
+
+    const auth = c.get('auth');
+    if (!auth) return c.json(unauthorized, 401);
+    // Cookieが無い要求はD1へ触れる前に止める。認証前のDoS面とschema gateの順序を固定する。
+    if (!getSessionCookie(c.req.raw, { cookiePrefix: 'kanjo' })) return c.json(unauthorized, 401);
+    const result = (await auth.api.getSession({
+      headers: c.req.raw.headers,
+      returnHeaders: true,
+      query: { disableCookieCache: true },
+    })) as {
+      response: null | {
+        session: { createdAt: Date | string };
+        user: { id: string; email: string; role: 'admin' | 'member'; status: 'active' | 'suspended' };
+      };
+      headers?: Headers;
+    };
+    const session = result?.response;
+    if (!session || session.user.status !== 'active') return c.json(unauthorized, 401);
+    result.headers?.forEach((value, key) => {
+      if (key.toLowerCase() === 'set-cookie') c.header('Set-Cookie', value, { append: true });
+    });
     c.set('userId', TENANT_ID);
     c.set('actor', actorOf(session.user));
-    c.set('sessionExpiresAt', session.expiresAt);
+    c.set('sessionCreatedAt', session.session.createdAt);
     return next();
   };
 }
 
-/**
- * 強制パスワード変更の抑止。UI のレンダリング分岐だけでは URL 直打ちで回避されるため、
- * サーバ側でも本人のパスワード変更以外を拒否する。
- */
-export function mustChangePasswordFence(): MiddlewareHandler<{
-  Bindings: AuthEnv;
-  Variables: AuthVariables;
-}> {
-  return async (c, next) => {
-    const actor = c.get('actor');
-    if (actor?.mustChangePassword) {
-      return c.json(
-        {
-          error: {
-            code: 'password_change_required',
-            message: '一時パスワードの変更が必要です',
-          },
-        },
-        403,
-      );
-    }
-    return next();
-  };
-}
-
-/** 管理系の認可。UI のメニュー非表示は補助であり、判定の正本はここの 403。 */
 export function adminGuard(): MiddlewareHandler<{ Bindings: AuthEnv; Variables: AuthVariables }> {
   return async (c, next) => {
-    const actor = c.get('actor');
-    if (actor?.role !== 'admin') {
+    if (c.get('actor')?.role !== 'admin') {
       return c.json({ error: { code: 'forbidden', message: '管理者のみが実行できます' } }, 403);
     }
     return next();

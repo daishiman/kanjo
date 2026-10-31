@@ -130,7 +130,8 @@ describe('20ルートの共通シェル (FR-003)', () => {
   it('ログイン(未認証)は共通シェルの外に描画し、サイドバー・ヘッダー・フッターを持たない', async () => {
     stubFetch(false);
     const { container } = renderApp('/');
-    expect(await screen.findByRole('button', { name: /ログイン/ })).toBeTruthy();
+    // ログイン画面には「ログイン」と「Googleでログイン」の2つのボタンがある。画面の同定は見出しで行う
+    expect(await screen.findByRole('heading', { level: 1, name: 'ログイン' })).toBeTruthy();
     expect(container.querySelectorAll('aside.sidebar, .shell-locked')).toHaveLength(0);
     expect(screen.queryAllByRole('banner')).toHaveLength(0);
   });
