@@ -71,7 +71,9 @@ jobs:
   test-api:
     name: テスト (api)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # mainの成功実測は18分42秒(2026-10-01)。認証回帰追加後も全件を検査できる枠を確保する。
+    # 実行環境の時間枠だけを補正し、assert・件数・並列度・verify必須条件は変えない。
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-pnpm

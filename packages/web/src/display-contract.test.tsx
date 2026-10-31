@@ -164,14 +164,14 @@ describe('ログイン画面の見た目契約', () => {
     expect(STYLE_SOURCE).toMatch(/input\[type="text"\],\s*input\[type="email"\],\s*input\[type="password"\]/);
   });
 
-  it('ログイン操作はアイコンと文字を flex で離し、チェックは視覚24pxと操作44pxを両立する', () => {
+  it('ログイン操作はアイコンと文字を離し、共通チェックの視覚20pxと操作44pxを両立する', () => {
     expect(STYLE_SOURCE).toMatch(/\.login-google\s*\{[^}]*display:\s*inline-flex/s);
-    expect(STYLE_SOURCE).toMatch(/\.login-remember-control\s*\{[^}]*min-height:\s*var\(--tap-target-min\)/s);
+    expect(STYLE_SOURCE).toMatch(/--selection-control-size:\s*20px/);
     expect(STYLE_SOURCE).toMatch(
-      /\.login-remember input\s*\{[^}]*width:\s*var\(--tap-target-min\)[^}]*height:\s*var\(--tap-target-min\)/s,
+      /\.selection-checkbox\s*\{[^}]*min-inline-size:\s*var\(--tap-target-min\)[^}]*min-block-size:\s*var\(--tap-target-min\)/s,
     );
     expect(STYLE_SOURCE).toMatch(
-      /\.login-remember-control span::before\s*\{[^}]*width:\s*24px[^}]*height:\s*24px/s,
+      /\.selection-checkbox__indicator\s*\{[^}]*inline-size:\s*var\(--selection-control-size\)[^}]*block-size:\s*var\(--selection-control-size\)/s,
     );
   });
 
