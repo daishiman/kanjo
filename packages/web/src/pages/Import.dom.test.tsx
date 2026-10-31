@@ -8,7 +8,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ImportRunCommitResponse, ImportRunUndoPreflight } from '../api.js';
 import { ImportPage } from './Import.js';
 import {
@@ -21,9 +21,15 @@ import {
 } from './import/import-test-fakes.js';
 import { importMonthsText } from './import/view-model.js';
 
+beforeEach(() => {
+  // runRow の履歴を操作できる30日間の内側に置き、実行日による期限切れを防ぐ。
+  vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-09-21T00:00:00.000Z'));
+});
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 function mount(server: ReturnType<typeof createImportServer>, initialEntries = ['/']) {
