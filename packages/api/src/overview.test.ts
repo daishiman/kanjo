@@ -182,6 +182,64 @@ describe('認証', () => {
 });
 
 describe('GET /api/overview', () => {
+  it('家族名義でも事業に個別・一括保存したMF明細が次の概要に反映され、総合は増えない', async () => {
+    await d1
+      .prepare(`INSERT INTO category_options (user_id,major,mid,scope)
+      VALUES ('default','架空売上','','biz')`)
+      .run();
+    for (const [id, day, amount] of [
+      ['synthetic-expense', '2026-09-12', -4_200],
+      ['synthetic-income', '2026-09-20', 25_000],
+      ['synthetic-household', '2026-09-21', -700],
+    ] as const) {
+      await d1
+        .prepare(`INSERT INTO mf_transactions
+        (user_id,tx_id,month,date,description,amount,category_major,category_mid,institution,identity_stable)
+        VALUES ('default',?,'2026-09',?,'架空取引',?,'日用品','雑貨','架空銀行',1)`)
+        .bind(id, day, amount)
+        .run();
+    }
+    const overview = async (scope: string) => {
+      const res = await request(`/overview?scope=${scope}&from=2026-09&to=2026-09`);
+      expect(res.status, await res.clone().text()).toBe(200);
+      return (await res.json()) as {
+        kpi: { income: number; expense: number; balance: number };
+        trend: Array<{ month: string; income: number; expense: number; balance: number }>;
+        breakdown: { total: number };
+      };
+    };
+    const totalBefore = await overview('total');
+    expect((await overview('business')).kpi.expense).toBe(0);
+    const saved = await request('/transactions/synthetic-expense/edit', 'PUT', {
+      cls: 'biz',
+      big: '通信費',
+      mid: '',
+      owner: 'family',
+    });
+    expect(saved.status, await saved.clone().text()).toBe(200);
+    expect((await overview('business')).kpi.expense).toBe(4_200);
+    const bulk = await request('/transactions/bulk', 'POST', {
+      items: [{ txId: 'synthetic-income', draft: { cls: 'biz', big: '架空売上', mid: '', owner: 'family' } }],
+    });
+    expect(bulk.status, await bulk.clone().text()).toBe(200);
+    const bulkBody = await bulk.json();
+    expect(bulkBody, JSON.stringify(bulkBody)).toMatchObject({ saved: 1, failed: 0 });
+    const biz = await overview('business');
+    const household = await overview('household');
+    const total = await overview('total');
+    expect(biz.kpi).toMatchObject({ income: 25_000, expense: 4_200, balance: 20_800 });
+    expect(biz.trend).toEqual([{ month: '2026-09', income: 25_000, expense: 4_200, balance: 20_800 }]);
+    expect(biz.breakdown.total).toBe(4_200);
+    expect(household.kpi).toMatchObject({ income: 0, expense: 700, balance: -700 });
+    expect(total.kpi).toEqual(totalBefore.kpi);
+    expect(total.kpi.expense).toBe(biz.kpi.expense + household.kpi.expense);
+    expect(total.kpi.income).toBe(biz.kpi.income + household.kpi.income);
+    expect(biz).not.toHaveProperty('ledger');
+    const cashflow = await request('/total-cashflow');
+    expect(cashflow.status).toBe(200);
+    expect(await cashflow.json()).not.toHaveProperty('ledger');
+  });
+
   it('既定は総合で、4 要素・クローズ状況・データ更新時刻・防衛予測・期間を返す', async () => {
     await seed();
     const res = await request('/overview');

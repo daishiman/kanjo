@@ -5,6 +5,8 @@
 
 ## 次の候補(優先順)
 
+- [品質・公開待ち] 明細の事業分類を概要の事業グラフへ反映する（#82） — 修正・財務回帰・Workers previewを確認済み。確認後に既存の公開経路で反映する
+
 - [品質・着手中] Login v2の全体テスト・受入証跡・設定診断・配信準備を揃える — 実装はあるが完了記録と外部認証設定が未完了。実測結果は `docs/login-v2/design-decisions.md` に集約する
 - [セキュリティ] Login v2の依存監査指摘を互換性確認のうえ解消する — 2026-10-31のpackage auditはcritical 2/high 9。Magic Link/Proxy非導入やWorker非同梱の適用範囲を `docs/login-v2/assurance.md` に記録済み。認証固定版とZod等の更新は後続の互換検証を伴わせる
 - [品質] `packages/api/src/routes/imports.ts` を検査・確定・履歴・互換経路ごとに分割する — 現在は新旧経路が 1 ファイルに集約し、変更影響を追いにくい。大幅な API 構造変更は取込画面の修正と分ける

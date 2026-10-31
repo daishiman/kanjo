@@ -20,7 +20,7 @@ import { canonicalEncode } from './fingerprint.js';
 import { sha256Hex } from './improvement.js';
 import { monthIndex, monthLabel } from './month.js';
 import type { PeriodRange } from './period.js';
-import type { ReconcileReview, TotalCashflowMonth } from './total-cashflow.js';
+import type { ReconcileReview, TotalCashflowLedger, TotalCashflowMonth } from './total-cashflow.js';
 import { type Dataset, type MfTx, isMfCountable } from './types.js';
 
 // ---- 入力検証 (BR-007) ----
@@ -58,7 +58,15 @@ const sumValues = (rec: Record<string, number> | undefined): number =>
 /** scope の出典から月別系列を作る。期間では切らない (前期の比較窓を欠かさないため) */
 export function overviewScopeMonths(
   scope: OverviewScope,
-  { data, totalMonths }: { data: Dataset; totalMonths: readonly TotalCashflowMonth[] },
+  {
+    data,
+    totalMonths,
+    totalLedger,
+  }: {
+    data: Dataset;
+    totalMonths: readonly TotalCashflowMonth[];
+    totalLedger: TotalCashflowLedger;
+  },
 ): ScopeMonth[] {
   if (scope === 'total') {
     return totalMonths.map((m) => {
@@ -71,11 +79,29 @@ export function overviewScopeMonths(
     });
   }
   if (scope === 'business') {
-    return data.months.map((month, i) => {
-      const categories: Record<string, number> = {};
-      for (const [label, series] of Object.entries(data.biz.expense)) categories[label] = series[i] ?? 0;
-      return { month, income: data.biz.revenue[i] ?? 0, expense: sumValues(categories), categories };
-    });
+    // 帳簿・事業現金・JSON復元の既存系列は保持し、MFで事業に仕分けた不足分だけ足す。
+    // 台帳は総収支の照合済み集合なので、freeeと同じMF・要確認・振替・対象外・現金は再加算しない。
+    const months = new Map(
+      data.months.map((month, i) => {
+        const categories: Record<string, number> = {};
+        for (const [label, series] of Object.entries(data.biz.expense)) categories[label] = series[i] ?? 0;
+        return [
+          month,
+          { month, income: data.biz.revenue[i] ?? 0, expense: sumValues(categories), categories },
+        ];
+      }),
+    );
+    for (const row of totalLedger.rows) {
+      if (row.origin !== 'mf' || row.side !== 'business') continue;
+      const month = months.get(row.month) ?? { month: row.month, income: 0, expense: 0, categories: {} };
+      if (row.io === 'income') month.income += row.amount;
+      else {
+        month.expense += row.amount;
+        month.categories[row.category] = (month.categories[row.category] ?? 0) + row.amount;
+      }
+      months.set(row.month, month);
+    }
+    return [...months.values()].sort((a, b) => a.month.localeCompare(b.month));
   }
   return Object.keys(data.personal)
     .sort()

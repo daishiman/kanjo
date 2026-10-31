@@ -56,7 +56,7 @@ Response `OverviewResponse`:
 }
 ```
 
-- 系列の出典 (FR-001): total = `totalCashflowReport(all, deals, verdicts, exclusions).months`、business = `data.biz` (freee)、household = `data.personal` (MF 家計側)。系列は全期間 (`all`) から作り、期間は「表示する月の集合」として core に渡す。前年比の比較窓が期間の外に出ても欠けないようにするためである。
+- 系列の出典 (FR-001): total = `totalCashflowReport(all, deals, verdicts, exclusions).months`、business = `data.biz` (帳簿・事業現金・JSON復元baseline) + 同じレポートの `ledger.rows` のうち `origin=mf` かつ `side=business` の収支、household = `data.personal` (MF 家計側)。系列は全期間 (`all`) から作り、期間は「表示する月の集合」として core に渡す。前年比の比較窓が期間の外に出ても欠けないようにするためである。
 - 集計窓: `kpi`・`yearComparison.current`・`breakdown` は期間内の直近 12 か月 (期間が 12 か月未満ならその月数)、`previous` はその直前の同じ月数。`trend` は期間内の全月。4 要素は同じ `ScopeMonth[]` から出し、`kpi.expense === yearComparison(expense).current === breakdown.total` を core テストで固定する (AC-001)。
 - 内訳: 支出を科目で集計し金額降順の上位 5 件 + 「その他」。`share` は `amount / total` (total=0 なら 0)。total は KPI と同じ消し込み・要確認・除外済み取引集合から科目別に投影し、同名科目を混ぜないよう `事業 / 科目`・`家計 / 大項目` のラベルで区別する。
 - `defenseForecast.level`: 既存 core の `'watch'` を API 境界で `'caution'` に写す。core の型は変えない (他画面の互換)。
@@ -150,3 +150,22 @@ CREATE TABLE IF NOT EXISTS monthly_close_reviews (
 
 - `GET /api/summary` の応答形は変えない。概況画面は新 API に移るが、他の利用箇所 (Layout の防衛ライン等) は summary を使い続けてよい。
 - 分類アルゴリズム (`resolveTx`・vendor memory の判定) は読むだけで変えない。
+
+## 2026-10-31 事業分類の概要への反映（Issue #82）
+
+- 問題: MFを事業へ保存しても、概要だけが `data.biz` を読み、MFの事業収支を落としていた。
+- 修正: 総収支が1回の照合で作った台帳を共有し、MF事業分だけ既存の事業系列へ加算する。名義は公私区分を上書きしない。freee一致・要確認・振替・計算対象外・現金・分割投影の選別は既存台帳へ委ね、新しい照合規則を作らない。
+- 保持: 帳簿・事業現金・JSON復元baselineは `data.biz` に残るため、総収支の事業合計への単純置換はしない。家計・総合の計算式、取込原本、手修正、認証、DB schemaを変えない。既存のfreee除外判断による帳簿系列の扱いも今回変更しない。
+- 体験: 明細を個別または一括保存し、概要で事業を選ぶと、同じ系列からKPI・グラフ・比較・内訳へ反映する。既存の再取得境界を使い、画面構成・色・操作は変更しない。
+- 検証: `overview-business-projection.test.ts` の5件は修正前4件失敗→修正後成功。`overview.test.ts` に家族名義の個別・一括保存→再取得と総合不変、台帳非公開の結合検証を追加した。
+- 要件フラグ: 既存認証あり（変更なし）、AI/メール/公開フォーム/リアルタイムの変更なし。サイズS。追加D1 query・外部送信・本番データ更新なし。
+- ゲート: 準備（独立worktree）、要件/設計（既存正本への本節）、実装（財務回帰）、preview（Workers runtime）、差分監査の順に薄く通過する。公開前確認は親スレッドで行う。
+
+### 修正後の確認記録
+
+- core: 概要・総収支の関連4ファイル81件成功。API: 概要の結合27件成功。web: 概要と派生分析の再取得の2ファイル25件成功。全package型検査・full lint・Worker dry-run成功。
+- Workers preview: `pnpm run preview` の実機で合成招待・ログイン・匿名MF復元・個別保存・一括保存・再取得を確認。事業収入25,000/支出4,200/純収支20,800、家計支出700、総合支出4,900が保存前後で不変。事業のグラフ系列・内訳はKPIと一致。8787を既存プロセスが利用中のためlocalhost:8788で確認。
+- 保存後の更新: webの個別・一括保存は既存 `invalidateClassificationQueries` を通り、共通対象に `['overview']` が含まれる。web側へ別の再取得規則は追加しない。
+- 差分監査: 認証・schema・原本・本番データへの書込み・外部送信は変更なし。既存台帳の再利用でD1 query追加なし。台帳は内部だけで共有し、概要/総収支APIへ新規公開しない。
+- 依存監査（2026-10-31、既存mainと同じlockfile）: prodはcritical 1/high 4。Better Authの既存指摘等は `docs/login-v2/assurance.md` の適用範囲・後続更新へ委ね、この修正では依存を変更しない。差分由来の確定CRITICALは0、既存依存指摘のため判定はCONDITIONAL。
+- 本番公開は未実施。先行するLogin v2（#80）の公開がRepository Variable `MAIL_FROM` 未登録で停止している。これは本修正とは独立の既存設定不足であり、送信元を推測して登録しない。元データ・ログインアカウントの保持を前提に、親スレッドでpreview確認後の既存公開経路へ引き継ぐ。

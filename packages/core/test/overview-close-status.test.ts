@@ -156,7 +156,11 @@ describe('AC-001 4 要素は同じ月別系列から出る', () => {
 
   for (const scope of ['total', 'business', 'household'] as const) {
     it(`${scope}: KPI 支出 = 年次比較の今期支出 = 内訳合計`, () => {
-      const series = overviewScopeMonths(scope, { data, totalMonths: report.months });
+      const series = overviewScopeMonths(scope, {
+        data,
+        totalMonths: report.months,
+        totalLedger: report.ledger,
+      });
       const agg = overviewAggregate(series, null);
       const expenseRow = agg.yearComparison.rows.find((r) => r.key === 'expense');
       expect(agg.kpi.expense).toBeGreaterThan(0);
@@ -175,7 +179,11 @@ describe('AC-001 4 要素は同じ月別系列から出る', () => {
   }
 
   it('内訳は金額降順の上位 5 件 + その他で、表示行の合計と構成比を支出計に保つ', () => {
-    const series = overviewScopeMonths('business', { data, totalMonths: report.months });
+    const series = overviewScopeMonths('business', {
+      data,
+      totalMonths: report.months,
+      totalLedger: report.ledger,
+    });
     const agg = overviewAggregate(series, null);
     expect(agg.breakdown.items).toHaveLength(6);
     expect(agg.breakdown.items[5]?.label).toBe('その他');
@@ -187,7 +195,11 @@ describe('AC-001 4 要素は同じ月別系列から出る', () => {
   });
 
   it('総合の内訳は同じ総支出集合を科目別にし、事業と家計の同名ラベルを混ぜない', () => {
-    const series = overviewScopeMonths('total', { data, totalMonths: report.months });
+    const series = overviewScopeMonths('total', {
+      data,
+      totalMonths: report.months,
+      totalLedger: report.ledger,
+    });
     const agg = overviewAggregate(series, null);
     expect(agg.breakdown.items).toHaveLength(6);
     expect(agg.breakdown.items[0]?.label).toBe('家計 / 食費');
@@ -202,7 +214,11 @@ describe('AC-001 4 要素は同じ月別系列から出る', () => {
   });
 
   it('前期は今期の直前の同じ月数。足りなければ null', () => {
-    const series = overviewScopeMonths('household', { data, totalMonths: report.months });
+    const series = overviewScopeMonths('household', {
+      data,
+      totalMonths: report.months,
+      totalLedger: report.ledger,
+    });
     const short = overviewAggregate(series, null);
     // 15 か月しかないので直前 12 か月が揃わない
     expect(short.yearComparison.previousLabel).toBeNull();
@@ -221,7 +237,11 @@ describe('AC-001 4 要素は同じ月別系列から出る', () => {
   });
 
   it('前期の途中に欠けた月があれば、要素数が足りても null (暦で揃える)', () => {
-    const series = overviewScopeMonths('household', { data, totalMonths: report.months });
+    const series = overviewScopeMonths('household', {
+      data,
+      totalMonths: report.months,
+      totalLedger: report.ledger,
+    });
     // 2026-05 を抜くと 2026-07..09 の直前 3 要素は 2026-03, 04, 06 になり、暦の「前 3 か月」ではない
     const gapped = series.filter((m) => m.month !== '2026-05');
     const agg = overviewAggregate(gapped, { from: '2026-07', to: '2026-09' });
