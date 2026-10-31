@@ -416,3 +416,56 @@ describe('状態・安全・既定値', () => {
     );
   });
 });
+
+describe('CSV削除の確認対象', () => {
+  it('確認件数の取得中は次の削除を受け付けず、最後から遅れて別の確認を開かない', async () => {
+    let finish: ((response: Response) => void) | undefined;
+    const response = new Promise<Response>((resolve) => {
+      finish = resolve;
+    });
+    const server = mount({
+      runs: [runRow({ id: 'source-a' }), runRow({ id: 'source-b' })],
+      route: (_method, path) => (path === '/api/imports/runs/delete/preflight' ? response : undefined),
+    });
+    const region = await screen.findByRole('region', { name: /5\. 取込履歴/ });
+    const buttons = await within(region).findAllByRole('button', { name: /の取込を削除$/ });
+    expect(buttons).toHaveLength(2);
+    fireEvent.click(buttons[0]);
+    await waitFor(() => expect((buttons[1] as HTMLButtonElement).disabled).toBe(true));
+    fireEvent.click(buttons[1]);
+    expect(server.calls.filter((call) => call.includes('/delete/preflight'))).toHaveLength(1);
+    finish?.(
+      new Response(
+        JSON.stringify({
+          fingerprint: 'synthetic-fingerprint',
+          fileCount: 1,
+          counts: { mfTx: 2, freeeDeals: 0, balanceEntries: 0 },
+          originals: { delete: 1, shared: 0 },
+        }),
+        { headers: { 'content-type': 'application/json' } },
+      ),
+    );
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog.textContent).toContain('元に戻せません');
+    expect(dialog.textContent).toContain('最長30日');
+    expect(server.bodies.find((entry) => entry.path.endsWith('/delete/preflight'))?.body).toEqual({
+      ids: ['source-a'],
+    });
+  });
+  it('CSVの帰属が不明な履歴には削除できない理由と管理への導線を表示する', async () => {
+    mount({
+      runs: [
+        runRow({
+          id: 'legacy',
+          canHide: false,
+          deleteBlockedReason: 'この形式はCSVの帰属を特定できません。',
+        }),
+      ],
+    });
+    expect(await screen.findByText('この形式はCSVの帰属を特定できません。')).toBeTruthy();
+    expect(screen.getByRole('link', { name: '取込データの管理へ' }).getAttribute('href')).toBe(
+      '#import-data-maintenance',
+    );
+    expect(document.getElementById('import-data-maintenance')).toBeTruthy();
+  });
+});

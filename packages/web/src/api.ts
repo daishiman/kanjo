@@ -969,6 +969,7 @@ export interface ImportRunRowView {
   replaceable: boolean;
   undoDeadline: string;
   canHide: boolean;
+  deleteBlockedReason?: string | null;
   hasOriginal: boolean;
 }
 

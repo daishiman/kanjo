@@ -12,14 +12,17 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { freeeDealKeys } from '@kanjo/core';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NON_AUTH_AUDIT, loginForTest } from './auth.test-support.js';
 import { planDeletionQueries, planUndoQueries } from './deletion-lifecycle.js';
 import { IMPORT_RATE_WINDOW_MS } from './import-rate-limit.js';
 import { app } from './index.js';
 import { splitMigrationStatements } from './migration-test-support.js';
+import { runR2Cleanup } from './r2-cleanup.js';
 import { isApplicationTableForTestReset, recordTestMigrationHead } from './schema-guard.test-support.js';
+import * as store from './store.js';
 
 const migrationsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../migrations');
 const auth = {
@@ -221,7 +224,9 @@ const monthlyAmount = async (month: string, scope: string): Promise<number> =>
  * 削除とmonthly_agg入れ替えを含むbatchの最後で制約違反を起こす。
  * D1がbatch全体をrollbackし、正本/集計/操作記録の片側だけが残らないことを見る。
  */
-const failCombinedDeletionBatch = (): { database: D1Database; statements: () => string[] } => {
+const failCombinedDeletionBatch = (
+  beforeCommit?: () => Promise<void>,
+): { database: D1Database; statements: () => string[] } => {
   let observed: string[] = [];
   const originals = new WeakMap<object, D1PreparedStatement>();
   const sqlByStatement = new WeakMap<object, string>();
@@ -252,13 +257,15 @@ const failCombinedDeletionBatch = (): { database: D1Database; statements: () => 
           );
           const includesAggregate = observed.some((sql) => /DELETE FROM "monthly_agg"/i.test(sql));
           if (includesCanonical && includesAggregate) {
-            raw.push(
-              target.prepare(
-                `INSERT INTO import_deletion_operations
+            if (beforeCommit) await beforeCommit();
+            else
+              raw.push(
+                target.prepare(
+                  `INSERT INTO import_deletion_operations
                      (id,user_id,kind,granularity,request_json,fingerprint,counts_json,expires_at,created_at)
                    VALUES ('forced-existing','default','delete','transaction','{}','x','{}','2099-01-01','2099-01-01')`,
-              ),
-            );
+                ),
+              );
           }
           return target.batch(raw);
         };
@@ -1218,5 +1225,466 @@ describe('操作の履歴(DR-9)', () => {
     };
     expect(operations.find((op) => op.kind === 'delete')?.undone).toBe(true);
     expect(operations.some((op) => op.kind === 'undo')).toBe(true);
+  });
+});
+
+describe('CSVの不可逆削除', () => {
+  it('取込履歴から削除すると原本・複数月の明細・補正・集計・指紋も消え、再取込できる', async () => {
+    expect((await importMf(JUNE_JULY, 'synthetic-delete.csv')).status).toBe(200);
+    await jsonRequest('/transactions/tx-jun-a/edit', 'PUT', { cls: 'biz' });
+    const runs = (await (await jsonRequest('/imports/runs')).json()) as { runs: Array<{ id: string }> };
+    const ids = [runs.runs[0].id];
+    const originals = (
+      await d1
+        .prepare('SELECT DISTINCT r2_key FROM imports WHERE r2_key IS NOT NULL')
+        .all<{ r2_key: string }>()
+    ).results;
+    const pre = await jsonRequest('/imports/runs/delete/preflight', 'POST', { ids });
+    expect(pre.status).toBe(200);
+    const plan = (await pre.json()) as { fingerprint: string; counts: { mfTx: number } };
+    expect(plan.counts.mfTx).toBe(3);
+    const response = await jsonRequest('/imports/runs/delete', 'POST', {
+      ids,
+      fingerprint: plan.fingerprint,
+    });
+    expect(response.status).toBe(200);
+    expect(await txIds()).toEqual([]);
+    for (const table of [
+      'imports',
+      'import_active_targets',
+      'tx_edits',
+      'import_deleted_rows',
+      'import_deletion_operations',
+    ])
+      expect((await d1.prepare(`SELECT COUNT(*) AS n FROM ${table}`).first<{ n: number }>())?.n, table).toBe(
+        0,
+      );
+    for (const row of originals) expect(await files.head(row.r2_key)).toBeNull();
+    expect((await importMf(JUNE_JULY, 'synthetic-delete.csv')).status).toBe(200);
+    expect(await txIds()).toHaveLength(3);
+  });
+});
+
+async function sourcePlan(ids: string[]) {
+  const response = await jsonRequest('/imports/runs/delete/preflight', 'POST', { ids });
+  expect(response.status).toBe(200);
+  return (await response.json()) as { fingerprint: string };
+}
+async function sourceDelete(ids: string[]) {
+  const plan = await sourcePlan(ids);
+  return jsonRequest('/imports/runs/delete', 'POST', { ids, fingerprint: plan.fingerprint });
+}
+async function sourceRun(filename: string) {
+  return (await d1
+    .prepare('SELECT run_id FROM imports WHERE filename=? ORDER BY id DESC LIMIT 1')
+    .bind(filename)
+    .first<{ run_id: string }>())!.run_id;
+}
+
+describe('CSV削除の所有境界と原子性', () => {
+  it('置換済みCSVを削除しても新しいCSVの同一tx_idと補正を残す', async () => {
+    await importMf(JUNE_JULY, 'older.csv');
+    const old = await sourceRun('older.csv');
+    await importMf(JUNE_JULY.replace('-1000', '-1400'), 'newer.csv');
+    await jsonRequest('/transactions/tx-jun-a/edit', 'PUT', { cls: 'biz' });
+    expect((await sourceDelete([old])).status).toBe(200);
+    expect(await txIds()).toHaveLength(3);
+    expect((await d1.prepare('SELECT count(*) AS n FROM tx_edits').first<{ n: number }>())?.n).toBe(1);
+  });
+  it('混在した過去undoの対象CSVだけを除き、残る件数と復元を一致させる', async () => {
+    await importMf(mfCsv(['1,2026/06/10,-1100,架空費,架空内訳,0,架空A,keep-a,架空口座']), 'a.csv');
+    const runA = await sourceRun('a.csv');
+    await importMf(mfCsv(['1,2026/07/10,-2200,架空費,架空内訳,0,架空B,keep-b,架空口座']), 'b.csv');
+    const request = { granularity: 'period', period: { from: '2026-06', to: '2026-07' } };
+    const pre = (await (await jsonRequest('/data/deletions/preflight', 'POST', request)).json()) as {
+      fingerprint: string;
+    };
+    const deletion = (await (
+      await jsonRequest('/data/deletions', 'POST', { ...request, fingerprint: pre.fingerprint })
+    ).json()) as { operationId: string };
+    expect((await sourceDelete([runA])).status).toBe(200);
+    const ops = (await (await jsonRequest('/data/operations')).json()) as {
+      operations: Array<{ id: string; counts: { mfTx: number }; undoable: boolean }>;
+    };
+    expect(ops.operations.find((r) => r.id === deletion.operationId)).toMatchObject({
+      counts: { mfTx: 1, months: 1 },
+      undoable: true,
+    });
+    expect((await jsonRequest(`/data/undo/${deletion.operationId}`, 'POST')).status).toBe(200);
+    expect(await txIds()).toEqual(['keep-b']);
+  });
+  it('処理中または帰属不明のCSVを含む一括削除は全件を保持', async () => {
+    await importMf(JUNE_JULY, 'normal.csv');
+    const id = await sourceRun('normal.csv');
+    const user = (await d1.prepare('SELECT user_id FROM imports LIMIT 1').first<{ user_id: string }>())!
+      .user_id;
+    await d1
+      .prepare(
+        "INSERT INTO import_runs(id,user_id,status,created_at,updated_at) VALUES ('busy',?,'processing',datetime('now'),datetime('now'))",
+      )
+      .bind(user)
+      .run();
+    expect((await jsonRequest('/imports/runs/delete/preflight', 'POST', { ids: [id, 'busy'] })).status).toBe(
+      409,
+    );
+    expect(await txIds()).toHaveLength(3);
+    await d1.prepare("UPDATE import_runs SET status='failed' WHERE id='busy'").run();
+    await d1.prepare("UPDATE imports SET status='ok' WHERE run_id=?").bind(id).run();
+    expect((await jsonRequest('/imports/runs/delete/preflight', 'POST', { ids: [id, 'busy'] })).status).toBe(
+      409,
+    );
+    expect(await txIds()).toHaveLength(3);
+  });
+  it('共有R2原本を持つ存続CSVがあれば原本を保持し理由を返す', async () => {
+    await importMf(JUNE_JULY, 'shared-a.csv');
+    const a = await sourceRun('shared-a.csv');
+    const original = (await d1
+      .prepare('SELECT r2_key,user_id FROM imports LIMIT 1')
+      .first<{ r2_key: string; user_id: string }>())!;
+    await d1
+      .prepare(
+        "INSERT INTO import_runs(id,user_id,status,created_at,updated_at) VALUES ('shared-b',?,'committed',datetime('now'),datetime('now'))",
+      )
+      .bind(original.user_id)
+      .run();
+    await d1
+      .prepare(
+        "INSERT INTO imports(user_id,filename,kind,months,row_count,status,r2_key,run_id) VALUES (?,'shared-b.csv','mf','[]',0,'duplicate',?,'shared-b')",
+      )
+      .bind(original.user_id, original.r2_key)
+      .run();
+    const response = await sourceDelete([a]);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      originals: { shared: 1, pending: 0, deleted: 0 },
+      sharedReason: expect.any(String),
+    });
+    expect(await files.head(original.r2_key)).not.toBeNull();
+  });
+  it('D1 batch失敗は明細・履歴・原本削除intentをまとめてロールバックする', async () => {
+    await importMf(JUNE_JULY, 'rollback.csv');
+    const ids = [await sourceRun('rollback.csv')];
+    const plan = await sourcePlan(ids);
+    await d1
+      .prepare(
+        "CREATE TRIGGER fail_csv_delete BEFORE DELETE ON imports BEGIN SELECT RAISE(ABORT,'synthetic rollback'); END",
+      )
+      .run();
+    try {
+      expect(
+        (await jsonRequest('/imports/runs/delete', 'POST', { ids, fingerprint: plan.fingerprint })).status,
+      ).toBe(500);
+      expect(await txIds()).toHaveLength(3);
+      expect((await d1.prepare('SELECT count(*) AS n FROM r2_cleanup_jobs').first<{ n: number }>())?.n).toBe(
+        0,
+      );
+    } finally {
+      await d1.prepare('DROP TRIGGER fail_csv_delete').run();
+    }
+  });
+  it('R2失敗でも正本削除は確定し耐久outboxを残してwriterを解放する', async () => {
+    await importMf(JUNE_JULY, 'retry.csv');
+    const ids = [await sourceRun('retry.csv')];
+    const plan = await sourcePlan(ids);
+    const broken = new Proxy(files, {
+      get(target, key) {
+        if (key === 'delete')
+          return async () => {
+            throw new Error('synthetic R2 failure');
+          };
+        const value = Reflect.get(target, key);
+        return typeof value === 'function' ? value.bind(target) : value;
+      },
+    });
+    const response = await app.request(
+      '/api/imports/runs/delete',
+      {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ ids, fingerprint: plan.fingerprint }),
+      },
+      { ...env(), FILES: broken },
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ originals: { pending: 1 } });
+    expect(await txIds()).toHaveLength(0);
+    expect((await d1.prepare('SELECT count(*) AS n FROM r2_cleanup_jobs').first<{ n: number }>())?.n).toBe(1);
+    await runR2Cleanup(env(), new Date(Date.now() + 3 * 60_000));
+    expect((await d1.prepare('SELECT count(*) AS n FROM r2_cleanup_jobs').first<{ n: number }>())?.n).toBe(0);
+    // 解放されているため、直後に同CSVの再取込が成功する。
+    expect((await importMf(JUNE_JULY, 'retry.csv')).status).toBe(200);
+  });
+});
+
+describe('CSV削除の追加退行', () => {
+  it('同一内容freeeの存続旧#1の除外・名指し・過去undoを新#0へ引き継ぐ', async () => {
+    const csv = [
+      FREEE_HEADER,
+      '支出,2026/06/03,通信費,4400,架空共同支払,2026/06/30,2026/06/28,架空口座,4400',
+    ].join('\n');
+    await importMf(csv, 'freee-old.csv');
+    const run = await sourceRun('freee-old.csv');
+    await d1
+      .prepare(
+        "INSERT INTO import_runs(id,user_id,status,created_at,updated_at) VALUES ('freee-keep','default','committed',datetime('now'),datetime('now'))",
+      )
+      .run();
+    const second = await d1
+      .prepare(
+        "INSERT INTO imports(user_id,filename,kind,months,row_count,status,run_id) VALUES ('default','keep.csv','freee','[\"2026-06\"]',1,'committed','freee-keep') RETURNING id",
+      )
+      .first<{ id: number }>();
+    await d1
+      .prepare(
+        'INSERT INTO freee_deals(user_id,month,date,io,partner,account_raw,account_norm,amount,import_id,settle_account,settlement_known) SELECT user_id,month,date,io,partner,account_raw,account_norm,amount,?,settle_account,settlement_known FROM freee_deals LIMIT 1',
+      )
+      .bind(second!.id)
+      .run();
+    const [key0, key1] = freeeDealKeys(
+      [0, 1].map(() => ({
+        month: '2026-06',
+        date: '2026-06-03',
+        io: 'expense' as const,
+        partner: '架空共同支払',
+        accountRaw: '通信費',
+        accountNorm: '通信費',
+        amount: 4400,
+        settleAccount: '架空口座',
+      })),
+    );
+    await d1
+      .prepare(
+        "INSERT INTO freee_deal_exclusions(user_id,freee_key,reason,reason_code) VALUES ('default',?,'架空の維持判断','duplicate')",
+      )
+      .bind(key1)
+      .run();
+    await d1
+      .prepare(
+        "INSERT INTO duplicate_verdicts(user_id,tx_id,verdict,freee_key) VALUES ('default','other-tx','same',?)",
+      )
+      .bind(key1)
+      .run();
+    await d1
+      .prepare(
+        "INSERT INTO total_cashflow_operations(id,user_id,kind,items_json,item_count,created_at) VALUES ('mixed-op','default','exclude',?,2,datetime('now'))",
+      )
+      .bind(
+        JSON.stringify([
+          { freeeKey: key0, before: null },
+          { freeeKey: key1, before: { freeeKey: key1, reason: 'keep' } },
+        ]),
+      )
+      .run();
+    await d1
+      .prepare(
+        "INSERT INTO reconciliation_actions(id,user_id,action,target_count,before_json,after_json,created_at) VALUES ('mixed-action','default','same',2,?,?,datetime('now'))",
+      )
+      .bind(
+        JSON.stringify({
+          verdicts: [
+            { txId: 'gone-link', row: { freeeKey: key0 } },
+            { txId: 'other-tx', row: { freeeKey: key1 } },
+          ],
+          mfExclusions: [],
+          freeeExclusions: [],
+        }),
+        JSON.stringify({
+          verdicts: [
+            { txId: 'gone-link', freeeKey: key0, verdict: 'same' },
+            { txId: 'other-tx', freeeKey: key1, verdict: 'same' },
+          ],
+          mfExclusions: [],
+          mfExclusionDeletes: [],
+          freeeExclusions: [],
+        }),
+      )
+      .run();
+    await d1
+      .prepare(
+        "INSERT INTO reconciliation_actions(id,user_id,action,target_count,before_json,after_json,created_at) VALUES ('paired-action','default','same',2,?,?,datetime('now'))",
+      )
+      .bind(
+        JSON.stringify({
+          verdicts: [
+            { txId: 'paired-target', row: { freeeKey: key0 } },
+            { txId: 'unrelated-target', row: null },
+          ],
+          mfExclusions: [],
+          freeeExclusions: [],
+        }),
+        JSON.stringify({
+          verdicts: [
+            { txId: 'paired-target', freeeKey: key1, verdict: 'same' },
+            { txId: 'unrelated-target', freeeKey: null, verdict: 'different' },
+          ],
+          mfExclusions: [],
+          mfExclusionDeletes: [],
+          freeeExclusions: [],
+        }),
+      )
+      .run();
+    expect((await sourceDelete([run])).status).toBe(200);
+    expect(
+      (await d1.prepare('SELECT freee_key FROM freee_deal_exclusions').first<{ freee_key: string }>())
+        ?.freee_key,
+    ).toBe(key0);
+    expect(
+      (await d1.prepare('SELECT freee_key FROM duplicate_verdicts').first<{ freee_key: string }>())
+        ?.freee_key,
+    ).toBe(key0);
+    const op = await d1
+      .prepare("SELECT items_json,item_count FROM total_cashflow_operations WHERE id='mixed-op'")
+      .first<{ items_json: string; item_count: number }>();
+    expect(op?.item_count).toBe(1);
+    expect(JSON.parse(op!.items_json)).toEqual([
+      { freeeKey: key0, before: { freeeKey: key0, reason: 'keep' } },
+    ]);
+    const action = await d1
+      .prepare(
+        "SELECT before_json,after_json,target_count FROM reconciliation_actions WHERE id='mixed-action'",
+      )
+      .first<{ before_json: string; after_json: string; target_count: number }>();
+    const paired = await d1
+      .prepare(
+        "SELECT before_json,after_json,target_count FROM reconciliation_actions WHERE id='paired-action'",
+      )
+      .first<{ before_json: string; after_json: string; target_count: number }>();
+    expect(paired?.target_count).toBe(1);
+    expect(JSON.parse(paired!.before_json).verdicts).toEqual([{ txId: 'unrelated-target', row: null }]);
+    expect(JSON.parse(paired!.after_json).verdicts).toEqual([
+      { txId: 'unrelated-target', freeeKey: null, verdict: 'different' },
+    ]);
+    expect(action?.target_count).toBe(1);
+    expect(JSON.parse(action!.before_json).verdicts).toEqual([{ txId: 'other-tx', row: { freeeKey: key0 } }]);
+  });
+  it('計画後のwriter差し替えで全batchをロールバックし別CSVに触らない', async () => {
+    await importMf(JUNE_JULY, 'lease.csv');
+    const ids = [await sourceRun('lease.csv')];
+    const plan = await sourcePlan(ids);
+    const wrapped = failCombinedDeletionBatch(async () => {
+      await d1
+        .prepare("UPDATE import_writer_claims SET run_id='another-writer' WHERE user_id='default'")
+        .run();
+    });
+    const response = await app.request(
+      '/api/imports/runs/delete',
+      {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ ids, fingerprint: plan.fingerprint }),
+      },
+      env(wrapped.database),
+    );
+    expect(response.status).toBe(409);
+    expect(await txIds()).toHaveLength(3);
+  });
+  it('書込み予算超過は原本削除intentも正本も変更しない', async () => {
+    await importMf(JUNE_JULY, 'budget.csv');
+    const ids = [await sourceRun('budget.csv')];
+    const plan = await sourcePlan(ids);
+    const original = store.recomputePlanStatements;
+    const spy = vi
+      .spyOn(store, 'recomputePlanStatements')
+      .mockImplementation((...args) => [
+        ...original(...args),
+        ...Array.from({ length: 30 }, () => d1.prepare('SELECT 1')),
+      ]);
+    try {
+      expect(
+        (await jsonRequest('/imports/runs/delete', 'POST', { ids, fingerprint: plan.fingerprint })).status,
+      ).toBe(413);
+      expect(await txIds()).toHaveLength(3);
+      expect((await d1.prepare('SELECT count(*) AS n FROM r2_cleanup_jobs').first<{ n: number }>())?.n).toBe(
+        0,
+      );
+    } finally {
+      spy.mockRestore();
+    }
+  });
+});
+
+describe('CSV削除の資産控え', () => {
+  it('資産CSVの旧undoから残高が復活せず、別月と手入力負債を保持する', async () => {
+    await importMf(['日付,合計（円）,預金・現金（円）', '2026/06/30,100,100'].join('\n'), 'asset-delete.csv');
+    const id = await latestImportId();
+    const run = await sourceRun('asset-delete.csv');
+    const pre = (await (await jsonRequest(`/imports/${id}/undo/preflight`, 'POST')).json()) as {
+      fingerprint: string;
+    };
+    const removed = (await (
+      await jsonRequest(`/imports/${id}/undo`, 'POST', { fingerprint: pre.fingerprint })
+    ).json()) as { operationId: string };
+    await importMf(['日付,合計（円）,預金・現金（円）', '2026/07/31,200,200'].join('\n'), 'asset-keep.csv');
+    await d1
+      .prepare(
+        "INSERT INTO balance_entries(user_id,month,date,side,category,amount,source) VALUES ('default','2026-06','2026-06-30','liability','架空手入力負債',900,'manual')",
+      )
+      .run();
+    const before = await balanceRowCount();
+    expect((await sourceDelete([run])).status).toBe(200);
+    expect(
+      (
+        await d1
+          .prepare('SELECT count(*) AS n FROM import_deleted_rows WHERE operation_id=?')
+          .bind(removed.operationId)
+          .first<{ n: number }>()
+      )?.n,
+    ).toBe(0);
+    // 空になった控えのundoを実行しても対象CSVは復活しない。
+    const undone = await jsonRequest(`/data/undo/${removed.operationId}`, 'POST');
+    expect([200, 409, 410]).toContain(undone.status);
+    expect(await balanceRowCount()).toBe(before);
+  });
+});
+
+describe('CSV削除の複数原本', () => {
+  it('複数CSVと子runを一括削除し、正常時は全原本を一括削除する', async () => {
+    await importMf(mfCsv(['1,2026/06/10,-1100,架空費,架空内訳,0,架空A,child-a,架空口座']), 'child-a.csv');
+    const parent = await sourceRun('child-a.csv');
+    await importMf(mfCsv(['1,2026/07/10,-2200,架空費,架空内訳,0,架空B,child-b,架空口座']), 'child-b.csv');
+    const child = await sourceRun('child-b.csv');
+    await d1.prepare('UPDATE import_runs SET parent_run_id=? WHERE id=?').bind(parent, child).run();
+    const originalKeys = (
+      await d1
+        .prepare('SELECT DISTINCT r2_key FROM imports WHERE r2_key IS NOT NULL')
+        .all<{ r2_key: string }>()
+    ).results;
+    const response = await sourceDelete([parent]);
+    expect(response.status).toBe(200);
+    const result = (await response.json()) as {
+      originals: { deleted: number; pending: number; shared: number };
+      fileCount: number;
+    };
+    expect(result.fileCount).toBe(2);
+    for (const row of originalKeys) expect(await files.head(row.r2_key)).toBeNull();
+    expect(result.originals.deleted).toBe(2);
+    expect(result.originals.pending).toBe(0);
+    expect(await txIds()).toEqual([]);
+    expect((await d1.prepare('SELECT count(*) AS n FROM import_runs').first<{ n: number }>())?.n).toBe(0);
+    await runR2Cleanup(env());
+    expect((await d1.prepare('SELECT count(*) AS n FROM r2_cleanup_jobs').first<{ n: number }>())?.n).toBe(0);
+    expect((await jsonRequest('/auth/me')).status).toBe(200);
+  });
+});
+
+describe('CSV削除のD1サイズ境界', () => {
+  it('合計2MBを超える明細も1つのJSONセルへ集約せず確認・削除できる', async () => {
+    await importMf(JUNE_JULY, 'large-synthetic.csv');
+    const id = await latestImportId();
+    const run = await sourceRun('large-synthetic.csv');
+    await d1
+      .prepare(`WITH RECURSIVE sequence(n) AS (VALUES(1) UNION ALL SELECT n+1 FROM sequence WHERE n<2100)
+    INSERT INTO mf_transactions(user_id,tx_id,month,date,description,amount,import_id,is_target,is_transfer,identity_stable)
+    SELECT 'default','large-synthetic-'||n,'2026-06','2026-06-10',printf('%01000d',n),-1,?,1,0,1 FROM sequence`)
+      .bind(id)
+      .run();
+    expect(
+      (await d1
+        .prepare('SELECT sum(length(description)) AS bytes FROM mf_transactions')
+        .first<{ bytes: number }>())!.bytes,
+    ).toBeGreaterThan(2_000_000);
+    const response = await sourceDelete([run]);
+    expect(response.status).toBe(200);
+    expect(await txIds()).toEqual([]);
   });
 });
