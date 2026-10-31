@@ -30,6 +30,7 @@ import {
   opaqueAuditSourceKey,
   opaqueAuditTransactionKey,
 } from './audit-log.js';
+import { D1_INVOCATION_QUERY_LIMIT } from './d1-limits.js';
 import { JSON_ACTIVE_TARGET, invalidateJsonSnapshotStatement } from './import-active.js';
 import { type ParsedUnit, fingerprintCanonical } from './import-pipeline.js';
 import { LOAD_DATASET_QUERY_COUNT_WITH_CASH_SNAPSHOT, aggRowsFromDataset } from './store.js';
@@ -301,8 +302,6 @@ export function shrinkingMonths(
 export const IMPORT_CLAIM_TTL_MS = 15 * 60 * 1000;
 /** D1の1query 100KB上限に余白を取り、UTF-8 bytesでchunkする。 */
 export const D1_JSON_PAYLOAD_MAX_BYTES = 80 * 1024;
-/** Cloudflare Workers Freeの1 invocation上限。安全側に49 queriesまでを受理する。 */
-export const D1_FREE_QUERY_LIMIT = 50;
 /** prior claim SELECT + stale takeover時のclaim/unit/run 3-statement batch。 */
 export const IMPORT_CLAIM_WORST_CASE_QUERY_COUNT = 4;
 
@@ -323,7 +322,12 @@ export interface ImportQueryPlan {
 
 const sumPlan = (breakdown: ImportQueryPlan['breakdown']): ImportQueryPlan => {
   const total = Object.values(breakdown).reduce((sum: number, value) => sum + (value ?? 0), 0);
-  return { total, limit: D1_FREE_QUERY_LIMIT, accepted: total < D1_FREE_QUERY_LIMIT, breakdown };
+  return {
+    total,
+    limit: D1_INVOCATION_QUERY_LIMIT,
+    accepted: total < D1_INVOCATION_QUERY_LIMIT,
+    breakdown,
+  };
 };
 
 /**
@@ -682,7 +686,8 @@ export const settingsCashOverrideRow = (rule: CashOverrideRule): unknown[] => [
   rule.memo,
 ];
 
-const deleteJsonValues = (
+/** user_id の行のうち、column が values のどれかに一致する行を消す (json_each で束ね、D1_JSON_PAYLOAD_MAX_BYTES = 80KB ごとに分ける) */
+export const deleteJsonValues = (
   database: D1Database,
   table: string,
   userId: string,
@@ -1237,19 +1242,21 @@ export function prepareRestoreWriteSet(args: {
     canonicalEncode(settingsCashOverrideRows) !==
     canonicalEncode(existingCashOverrides.map(settingsCashOverrideRow));
   const existingStatMinMonths = args.existingStatMinMonths ?? 6;
-  // 名義・集計ルールは全データ復元では書かないので、両側に同じ値を置いて差分から外す
+  // 名義・集計ルール・対応表は全データ復元では書かないので、両側に同じ値を置いて差分から外す
   const settingsChangeLogRows = settingsChangeEntries(
     {
       normRules: [],
       ownerLabels: DEFAULT_OWNER_LABELS,
       statMinMonths: existingStatMinMonths,
       cashOverrides: existingCashOverrides,
+      taxAccountMap: [],
     },
     {
       normRules: [],
       ownerLabels: DEFAULT_OWNER_LABELS,
       statMinMonths: args.statMinMonths ?? 6,
       cashOverrides: nextCashOverrides,
+      taxAccountMap: [],
     },
   ).map((entry): SettingsChangeLogRow => [entry.target, entry.targetKey, entry.before, entry.after]);
   const rawTxs = canonicalMfTransactions(args.data.mfTx.filter((tx) => !isCashTxId(tx.id)));

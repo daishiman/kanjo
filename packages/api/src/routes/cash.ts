@@ -28,9 +28,10 @@ import { and, eq, isNotNull, isNull, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv } from '../auth.js';
+import { D1_INVOCATION_QUERY_LIMIT } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
-import { D1_FREE_QUERY_LIMIT, IMPORT_CLAIM_WORST_CASE_QUERY_COUNT } from '../import-lifecycle.js';
+import { IMPORT_CLAIM_WORST_CASE_QUERY_COUNT } from '../import-lifecycle.js';
 import {
   type Db,
   LOAD_DATASET_QUERY_COUNT_WITH_SPLITS,
@@ -106,8 +107,8 @@ export function planCashParentDeleteQueries(normalizedDealUpdateCount: number): 
     CASH_PARENT_DELETE_QUERY_LEDGER.aggregateReplacement;
   return {
     total,
-    limit: D1_FREE_QUERY_LIMIT,
-    accepted: total < D1_FREE_QUERY_LIMIT,
+    limit: D1_INVOCATION_QUERY_LIMIT,
+    accepted: total < D1_INVOCATION_QUERY_LIMIT,
   };
 }
 
@@ -127,7 +128,7 @@ export function planCashWriteQueries(normalizedDealUpdateCount: number): {
     CASH_WRITE_QUERY_LEDGER.finalMutationBase +
     (normalizedDealUpdateCount > 0 ? CASH_WRITE_QUERY_LEDGER.normalizedDealsBulk : 0) +
     CASH_WRITE_QUERY_LEDGER.aggregateReplacement;
-  return { total, limit: D1_FREE_QUERY_LIMIT, accepted: total < D1_FREE_QUERY_LIMIT };
+  return { total, limit: D1_INVOCATION_QUERY_LIMIT, accepted: total < D1_INVOCATION_QUERY_LIMIT };
 }
 
 const idParam = z.object({ id: z.coerce.number().int().positive() });

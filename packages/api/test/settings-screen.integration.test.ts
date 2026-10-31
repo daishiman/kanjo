@@ -8,12 +8,22 @@
  * 置換前は settings_norm_rules・settings_cash_overrides・settings_change_log (0054〜0056) も
  * 設定画面の経路も無く、どの要求も 404 になる。旧 PUT /api/settings は旧表にしか書かない。
  *
+ * 予約の値『カテゴリなし』の候補 (spec-classify-bulk-save BR-04・未決事項 6 の閉じ条件) は、
+ * 置換前の POST・PUT /api/category-options が名前を検査せず 201・200 で作ってしまうので落ちる。
+ * 設定ファイルの版 2 と勘定科目の対応表 (同 AC-17) は、置換前が版 1 を書き出し、版 2 を
+ * unsupported_settings_version で拒み、対応表を持たないので落ちる。
+ *
  * 実データを使わず、専用のインメモリ D1・R2 だけで検証する。
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { migratedNormRuleId } from '@kanjo/core';
+import {
+  DEFAULT_TAX_ACCOUNT_MAP,
+  RESERVED_CATEGORY_MESSAGE,
+  migratedNormRuleId,
+  sortTaxAccountMap,
+} from '@kanjo/core';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { TENANT_ID } from '../src/auth.js';
@@ -341,7 +351,7 @@ describe('AT-15 設定ファイルの書き出しと復元', () => {
     expect(exported.status).toBe(200);
     expect(exported.headers.get('content-disposition')).toMatch(/kanjo-settings-\d{4}-\d{2}-\d{2}\.json/);
     const file = await json(exported);
-    expect(file).toMatchObject({ format: 'kanjo-settings', version: 1, statMinMonths: 9 });
+    expect(file).toMatchObject({ format: 'kanjo-settings', version: 2, statMinMonths: 9 });
     const stateBefore = await screen();
 
     // 別の値へ変えてから復元する
@@ -420,7 +430,7 @@ describe('AT-15 設定ファイルの書き出しと復元', () => {
         'invalid_settings_file',
       ],
       [
-        { baseSavedAt: saved.savedAt, settings: { ...file, version: 2 } },
+        { baseSavedAt: saved.savedAt, settings: { ...file, version: 3 } },
         400,
         'unsupported_settings_version',
       ],
@@ -478,6 +488,74 @@ describe('AT-15 設定ファイルの書き出しと復元', () => {
     expect(await count('settings_norm_rules')).toBe(500);
     expect(batchSizes.length).toBeGreaterThan(0);
     expect(Math.max(...batchSizes)).toBeLessThanOrEqual(49);
+  });
+});
+
+describe('AC-17 設定ファイルの版 2 と勘定科目の対応表 (spec-classify-bulk-save)', () => {
+  const TAX_MAP_PATH = '/api/settings/tax-account-map';
+  const initialMap = () => sortTaxAccountMap(DEFAULT_TAX_ACCOUNT_MAP.map((r) => ({ ...r })));
+  const taxMap = async () =>
+    (await screen()).taxAccountMap.map(
+      ({ categoryBig, taxAccount }: { categoryBig: string; taxAccount: string }) => ({
+        categoryBig,
+        taxAccount,
+      }),
+    );
+  /** 初期の 5 行から 1 行を消し 1 行を足す。復元で戻ることを見分けられるようにする */
+  const changeMap = async () => {
+    expect(
+      (await send('POST', TAX_MAP_PATH, { categoryBig: '架空書籍', taxAccount: '新聞図書費' })).status,
+    ).toBe(200);
+    expect((await call(`${TAX_MAP_PATH}/${encodeURIComponent('通信費')}`, { method: 'DELETE' })).status).toBe(
+      200,
+    );
+    expect(await taxMap()).not.toEqual(initialMap());
+  };
+  const restore = async (settings: unknown) => {
+    const preview = await send('POST', '/api/settings/restore/preview', settings);
+    expect(preview.status).toBe(200);
+    const { revision } = await json(preview);
+    return send('POST', '/api/settings/restore', { baseSavedAt: revision, settings });
+  };
+
+  it('版 2 で対応表を書き出し、対応表を変えてから復元すると書き出した行へ戻る', async () => {
+    expect(await taxMap()).toEqual(initialMap());
+    const file = await json(await call('/api/settings/export'));
+    expect(file.version).toBe(2);
+    expect(file.taxAccountMap).toEqual(initialMap());
+
+    await changeMap();
+    const res = await restore(file);
+    expect(res.status).toBe(200);
+    expect(await taxMap()).toEqual(file.taxAccountMap);
+    const restored = (await changeLog()).filter(
+      (r) => r.origin === 'restore' && r.target === 'tax_account_map',
+    );
+    expect(restored.map((r) => r.target_key).sort()).toEqual(['架空書籍', '通信費'].sort());
+  });
+
+  it('版 1 のファイル (対応表を持たない) を復元すると、対応表は初期の 5 行になる', async () => {
+    const { taxAccountMap: _dropped, ...rest } = await json(await call('/api/settings/export'));
+    const v1 = { ...rest, version: 1 };
+    await changeMap();
+    const res = await restore(v1);
+    expect(res.status).toBe(200);
+    expect(await taxMap()).toEqual(initialMap());
+  });
+
+  it('対応表を持つ版 1 と版 3 は 400 で、対応表を変えない', async () => {
+    const file = await json(await call('/api/settings/export'));
+    const before = await taxMap();
+    const cases: Array<[unknown, string]> = [
+      [{ ...file, version: 1 }, 'invalid_settings_file'],
+      [{ ...file, version: 3 }, 'unsupported_settings_version'],
+    ];
+    for (const [settings, code] of cases) {
+      const res = await send('POST', '/api/settings/restore', { baseSavedAt: null, settings });
+      expect(res.status).toBe(400);
+      expect((await json(res)).error.code).toBe(code);
+    }
+    expect(await taxMap()).toEqual(before);
   });
 });
 
@@ -708,6 +786,49 @@ describe('BR-22 旧経路の書込みも新表と変更履歴へ写る', () => {
     expect(log.length).toBeGreaterThan(0);
     expect(log.every((r) => r.target === 'owner_label' && r.origin === 'screen')).toBe(true);
     expect(view.savedAt).toBe(log[log.length - 1].changed_at);
+  });
+});
+
+describe('BR-04 予約の値『カテゴリなし』の候補は作れない', () => {
+  const options = () =>
+    rows('SELECT scope, major, mid FROM category_options WHERE user_id=? ORDER BY major, mid', TENANT_ID);
+
+  it('候補の作成と名前の変更に予約の値を使うと 400 reserved_category で、何も書かない', async () => {
+    await database.prepare('DELETE FROM category_options').run();
+    const reserved = { code: 'reserved_category', message: RESERVED_CATEGORY_MESSAGE };
+    for (const body of [
+      { scope: 'per', major: 'カテゴリなし' },
+      { scope: 'per', major: ' カテゴリなし ' },
+      { scope: 'per', major: '架空食費', mid: 'カテゴリなし' },
+      { scope: 'biz', major: 'カテゴリなし' },
+      // 画面で見分けがつかない書き方 (半角カナ・ゼロ幅スペース・分解した濁点) も予約の値として断る
+      { scope: 'per', major: 'ｶﾃｺﾞﾘなし' },
+      { scope: 'per', major: 'カテゴリなし\u200B' },
+      { scope: 'biz', major: 'カテゴリなし'.normalize('NFD') },
+    ]) {
+      const res = await send('POST', '/api/category-options', body);
+      expect(res.status, JSON.stringify(body)).toBe(400);
+      expect((await json(res)).error).toEqual(reserved);
+    }
+    expect(await options()).toEqual([]);
+
+    const created = await send('POST', '/api/category-options', {
+      scope: 'per',
+      major: '架空食費',
+      mid: '架空外食',
+    });
+    expect(created.status).toBe(201);
+    const from = { scope: 'per', major: '架空食費', mid: '架空外食' };
+    for (const to of [
+      { major: 'カテゴリなし', mid: '' },
+      { major: '架空食費', mid: ' カテゴリなし' },
+      { major: 'ｶﾃｺﾞﾘなし', mid: '' },
+    ]) {
+      const res = await send('PUT', '/api/category-options', { from, to });
+      expect(res.status, JSON.stringify(to)).toBe(400);
+      expect((await json(res)).error).toEqual(reserved);
+    }
+    expect(await options()).toEqual([from]);
   });
 });
 

@@ -8,12 +8,15 @@
  *
  * 置換前の夜間バックアップは customMetadata を持たず、失敗の回を残さず、退避 (pre-restore/) を消さない。
  * /api/backups の比較・設定だけの復元の経路も無い。
+ * 勘定科目の対応表 (spec-classify-bulk-save AC-17) は、置換前のバックアップ本文が対応表を運ばず、
+ * 比較・復元も対応表を読まないので落ちる。
  *
  * 実データを使わず、専用のインメモリ D1・R2 だけで検証する。
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { DEFAULT_TAX_ACCOUNT_MAP, sortTaxAccountMap } from '@kanjo/core';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { TENANT_ID } from '../src/auth.js';
@@ -178,6 +181,8 @@ describe('AT-16 夜間バックアップ (scheduled)', () => {
       ownerLabelsSet: false,
       statMinMonths: 9,
       cashOverrides: 0,
+      // 版 2 の設定は対応表を持つ。migration 0059 の初期の 5 行 (spec-classify-bulk-save AC-17)
+      taxAccountMap: 5,
     });
 
     const list = await json(await call('/api/backups'));
@@ -329,6 +334,60 @@ describe('AT-16 バックアップとの比較と設定だけの復元', () => {
     expect(compare.diff.normRules.added.count).toBe(1);
     expect(compare.diff.cashOverrides.added.count).toBe(1);
     expect(compare.diff.statMinMonths).toBeNull();
+  });
+
+  describe('AC-17 勘定科目の対応表 (spec-classify-bulk-save)', () => {
+    const TAX_MAP_PATH = '/api/settings/tax-account-map';
+    const initialMap = () => sortTaxAccountMap(DEFAULT_TAX_ACCOUNT_MAP.map((r) => ({ ...r })));
+    const taxMap = async () =>
+      (await screen()).taxAccountMap.map(
+        ({ categoryBig, taxAccount }: { categoryBig: string; taxAccount: string }) => ({
+          categoryBig,
+          taxAccount,
+        }),
+      );
+    /** 初期の 5 行から 1 行を消し 1 行を足す */
+    const changeMap = async () => {
+      const added = await send('POST', TAX_MAP_PATH, { categoryBig: '架空書籍', taxAccount: '新聞図書費' });
+      expect(added.status).toBe(200);
+      const removed = await call(`${TAX_MAP_PATH}/${encodeURIComponent('通信費')}`, { method: 'DELETE' });
+      expect(removed.status).toBe(200);
+    };
+    const restoreFrom = async (date: string) => {
+      const preview = await json(await send('POST', `/api/backups/${date}/restore/preview`, {}));
+      expect(preview.valid).toBe(true);
+      const res = await send('POST', `/api/backups/${date}/restore`, { baseSavedAt: preview.revision });
+      expect(res.status).toBe(200);
+      return preview;
+    };
+
+    it('夜間バックアップは対応表を運び、変えた後に復元すると取った時の行へ戻る', async () => {
+      expect(await taxMap()).toEqual(initialMap());
+      await nightlyBackup({ DB: database, FILES: files }, NOW);
+      const body = JSON.parse(await (await files.get(`backups/${TODAY}.json`))!.text());
+      expect(
+        sortTaxAccountMap(body.taxAccountMap).map(({ categoryBig, taxAccount }) => ({
+          categoryBig,
+          taxAccount,
+        })),
+      ).toEqual(initialMap());
+
+      await changeMap();
+      const preview = await restoreFrom(TODAY);
+      expect(preview.diff.taxAccountMap.added.count).toBe(1);
+      expect(preview.diff.taxAccountMap.removed.count).toBe(1);
+      expect(await taxMap()).toEqual(initialMap());
+    });
+
+    it('対応表を持たない古い本文は、対応表を初期の 5 行として比べ、復元する', async () => {
+      await files.put('backups/2026-09-01.json', JSON.stringify({ normMap: { 旅費: '交通費' } }));
+      await changeMap();
+      const compare = await json(await call('/api/backups/2026-09-01/compare'));
+      expect(compare.diff.taxAccountMap.added.count).toBe(1);
+      expect(compare.diff.taxAccountMap.removed.count).toBe(1);
+      await restoreFrom('2026-09-01');
+      expect(await taxMap()).toEqual(initialMap());
+    });
   });
 
   it('無い日は 404、読めない本文は 422、日付の形が違えば 400。どれも何も変えない', async () => {

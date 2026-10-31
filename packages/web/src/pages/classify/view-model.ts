@@ -5,8 +5,30 @@
  * 通知文・件数文言・分割合計の文言をコンポーネントの中に散らすと、
  * 同じ意味の文が 2 通りに増えて、どちらが仕様どおりか分からなくなる。
  */
-import { confidenceTierText, matchesSuggestion } from '@kanjo/core';
-import type { BulkItemBody, ClassifyRow, ClassifyStatus, Cls, Owner } from '../../api.js';
+import {
+  type BulkDraft,
+  type BulkSaveSource,
+  type BulkSpec,
+  CLASSIFY_DEFAULT_PAGE_SIZE,
+  type Candidates,
+  type ClassifyPageSize,
+  type PaymentMethodOverride,
+  SELECTION_MAX,
+  confidenceTierText,
+  hasSuggestionValue,
+  isClassifyPageSize,
+  matchesSuggestion,
+  resolveBulkSaveItem,
+  rowSelectability,
+} from '@kanjo/core';
+import {
+  ApiError,
+  type BulkSaveBody,
+  type ClassifyRow,
+  type ClassifyStatus,
+  type Cls,
+  type Owner,
+} from '../../api.js';
 
 /** 件数の文言。3 桁区切り (例: 1,024件) */
 export const countText = (n: number): string => `${n.toLocaleString('ja-JP')}件`;
@@ -81,30 +103,49 @@ export interface EditInput {
   note: string | null;
 }
 
+const NO_CANDIDATES: Candidates = { biz: [], per: [] };
+
+/** 今の値。api の一括保存が core へ渡す形と同じにする (空の大・中も空のまま渡す) */
+const currentOf = (row: ClassifyRow) => ({
+  cls: row.cls,
+  big: row.big,
+  mid: row.mid,
+  owner: row.owner,
+  note: row.note,
+});
+
 /**
  * 編集入力の初期値 (7.6)。
  *
  * 未整理で提案がある明細は提案を初期値に置く。この画面の既定の道筋は
  * 「提案どおりに確定する」なので、そのまま保存を押せば完了になる状態から始める。
  * 確定済み・提案なしの明細は保存値をそのまま出す。
+ *
+ * 決め方は一括保存と同じ core の resolveBulkSaveItem に任せる。ここで書き直すと、
+ * 編集パネルの初期値と一括保存の内訳が別の規則で動き、同じ明細に別の値を出す。
  */
-/**
- * 提案があるか。api は提案なしを null で返すが、値の入っていない提案も提案として扱わない。
- * 「提案あり」の言い方をここ 1 か所に置かないと、初期値と予告で食い違う。
- */
-const hasSuggestion = (s: ClassifyRow['suggestion']): s is NonNullable<ClassifyRow['suggestion']> =>
-  s != null && !!(s.cls || s.big || s.mid || s.owner);
-
-export function inputFromRow(row: ClassifyRow): EditInput {
-  const s = row.suggestion;
-  const suggested = row.status === 'unsorted' && hasSuggestion(s);
+export function initialInput(row: ClassifyRow): EditInput {
+  const paymentMethod = row.edit?.paymentMethod ?? null;
+  const resolved = resolveBulkSaveItem({
+    bulk: null,
+    draft: null,
+    suggestion: row.suggestion,
+    current: currentOf(row),
+    status: row.status,
+    paymentMethod,
+    candidates: NO_CANDIDATES,
+  });
+  // 埋める値が無い (未整理・提案なし) か変わる値が無い (確定済み) ときは、今の値から始める
+  const v = resolved.ok ? resolved.item : { ...currentOf(row), paymentMethod };
+  // 組の無い明細に保存が入れる『カテゴリなし』は編集パネルでは選べない値なので、未選択から始める
+  const noCategory = resolved.ok && resolved.sources.big === 'no_category';
   return {
-    cls: suggested ? (s.cls ?? null) : (row.cls ?? null),
-    big: suggested ? s.big || null : row.big || null,
-    mid: suggested ? s.mid || null : row.mid || null,
-    owner: suggested ? (s.owner ?? null) : (row.owner ?? null),
-    paymentMethod: row.edit?.paymentMethod ?? null,
-    note: row.note ?? null,
+    cls: v.cls ?? null,
+    big: noCategory ? null : v.big || null,
+    mid: noCategory ? null : v.mid || null,
+    owner: v.owner ?? null,
+    paymentMethod: v.paymentMethod ?? null,
+    note: v.note ?? null,
   };
 }
 
@@ -126,7 +167,7 @@ export const sameInput = (a: EditInput, b: EditInput): boolean =>
  * 「完了になります」と言われた保存が手動変更になる。
  */
 export function outcomeOf(row: ClassifyRow, input: EditInput): ClassifyStatus {
-  if (!hasSuggestion(row.suggestion)) return 'manual';
+  if (!hasSuggestionValue(row.suggestion)) return 'manual';
   return matchesSuggestion(row.suggestion, input) ? 'done' : 'manual';
 }
 
@@ -135,7 +176,7 @@ export const outcomeText = (status: ClassifyStatus): string =>
 
 /** 保存ボタンを押せる条件 (7.6)。未整理は提案どおりの確定も押せる */
 export const canSave = (row: ClassifyRow, input: EditInput): boolean =>
-  !sameInput(inputFromRow(row), input) || row.status === 'unsorted';
+  !sameInput(initialInput(row), input) || row.status === 'unsorted';
 
 /** 履歴の 1 行。{日時} {由来} → {変更後}（信頼度 段階 n%） */
 export function historyText(h: {
@@ -203,6 +244,8 @@ export interface ClassifyFilters {
   q: string;
   sort: 'date_desc' | 'date_asc';
   page: number;
+  /** 表示件数 (FR-12)。25・50・100 のどれか */
+  limit: ClassifyPageSize;
 }
 
 /** 既定は未整理だけ。画面を開いた人が最初に片付ける対象がここに出る */
@@ -215,6 +258,7 @@ export const DEFAULT_FILTERS: ClassifyFilters = {
   q: '',
   sort: 'date_desc',
   page: 1,
+  limit: CLASSIFY_DEFAULT_PAGE_SIZE,
 };
 
 export const FILTER_STATUS_LABEL: Record<FilterStatus, string> = {
@@ -235,6 +279,7 @@ export function parseFilters(sp: URLSearchParams): ClassifyFilters {
   const status = raw.filter((v): v is FilterStatus => (STATUS_VALUES as string[]).includes(v));
   const method = sp.get('method') ?? '';
   const page = Number.parseInt(sp.get('page') ?? '1', 10);
+  const limit = Number(sp.get('limit'));
   return {
     status: status.length ? status : DEFAULT_FILTERS.status,
     category: sp.get('category') ?? '',
@@ -246,6 +291,8 @@ export function parseFilters(sp: URLSearchParams): ClassifyFilters {
     q: sp.get('q') ?? '',
     sort: sp.get('sort') === 'date_asc' ? 'date_asc' : 'date_desc',
     page: Number.isFinite(page) && page > 0 ? page : 1,
+    // 選択肢に無い値 (30 など) は既定へ直す。任意の件数を受けると、ページ数の計算が URL ごとに変わる
+    limit: isClassifyPageSize(limit) ? limit : CLASSIFY_DEFAULT_PAGE_SIZE,
   };
 }
 
@@ -260,16 +307,15 @@ export function filtersToParams(f: ClassifyFilters): Record<string, string> {
   if (f.q) out.q = f.q;
   if (f.sort !== DEFAULT_FILTERS.sort) out.sort = f.sort;
   if (f.page > 1) out.page = String(f.page);
+  if (f.limit !== DEFAULT_FILTERS.limit) out.limit = String(f.limit);
   return out;
 }
 
-/** 絞り込みが既定のままか (0 件のときに出す文言を選ぶ) */
+/** 絞り込みが既定のままか (0 件のときに出す文言を選ぶ)。ページと表示件数は絞り込みではない */
 export const isDefaultFilters = (f: ClassifyFilters): boolean =>
-  Object.keys(filtersToParams({ ...f, page: 1 })).length === 0;
+  Object.keys(filtersToParams({ ...f, page: 1, limit: CLASSIFY_DEFAULT_PAGE_SIZE })).length === 0;
 
 /* -------- 選択・編集対象の URL 契約 -------- */
-
-const MAX_URL_SELECTION = 50;
 
 /** 選択と開いている明細はURLを正本にし、再読込みと戻る/進むで復元する。 */
 export function parseSelectionParams(sp: URLSearchParams): {
@@ -283,7 +329,7 @@ export function parseSelectionParams(sp: URLSearchParams): {
         .map((value) => value.trim())
         .filter(Boolean),
     ),
-  ].slice(0, MAX_URL_SELECTION);
+  ].slice(0, SELECTION_MAX);
   const openTxKey = sp.get('tx')?.trim() || null;
   return { selected, openTxKey };
 }
@@ -293,36 +339,156 @@ export function selectionParams(
   openTxKey: string | null,
 ): Record<string, string> {
   const out: Record<string, string> = {};
-  const unique = [...new Set(selected.filter(Boolean))].slice(0, MAX_URL_SELECTION);
+  const unique = [...new Set(selected.filter(Boolean))].slice(0, SELECTION_MAX);
   if (unique.length) out.sel = unique.join(',');
   if (openTxKey) out.tx = openTxKey;
   return out;
 }
 
-/* -------- 一括保存の入力解決 -------- */
+/* -------- 一括保存 (spec-classify-bulk-save FR-02〜FR-05・FR-16) -------- */
 
-export type BulkItemResolution =
-  | { ok: true; item: BulkItemBody; source: 'draft' | 'suggestion' }
-  | { ok: false; message: string };
+/** 一括指定の欄。空文字は「指定しない」 */
+export interface BulkForm {
+  cls: '' | Cls;
+  big: string;
+  mid: string;
+  owner: '' | Owner;
+  paymentMethod: '' | PaymentMethodOverride;
+}
 
-/** 下書きを優先し、無ければ提案、どちらも無ければ通信前に失敗とする。 */
-export function resolveBulkItem(row: ClassifyRow, draft: EditInput | null): BulkItemResolution {
-  if (draft) return { ok: true, item: { txId: row.id, ...draft }, source: 'draft' };
-  const suggestion = row.suggestion;
-  if (suggestion && (suggestion.cls || suggestion.big || suggestion.mid || suggestion.owner)) {
-    return {
-      ok: true,
-      item: {
-        txId: row.id,
-        cls: suggestion.cls ?? null,
-        big: suggestion.big || null,
-        mid: suggestion.mid || null,
-        owner: suggestion.owner ?? null,
-        paymentMethod: row.edit?.paymentMethod ?? null,
-        note: row.note ?? null,
-      },
-      source: 'suggestion',
-    };
+export const EMPTY_BULK_FORM: BulkForm = { cls: '', big: '', mid: '', owner: '', paymentMethod: '' };
+
+/** 値のある欄だけを一括指定にする。サーバは null と空の欄を受けない (FR-02) */
+export function bulkSpecOf(form: BulkForm): BulkSpec {
+  const spec: BulkSpec = {};
+  if (form.cls) spec.cls = form.cls;
+  if (form.big) {
+    spec.big = form.big;
+    // 中だけの指定はサーバが 400 にする。大を空にした中は送らない
+    if (form.mid) spec.mid = form.mid;
   }
-  return { ok: false, message: '提案または保存済みの下書きがありません。' };
+  if (form.owner) spec.owner = form.owner;
+  if (form.paymentMethod) spec.paymentMethod = form.paymentMethod;
+  return spec;
+}
+
+/**
+ * 送る下書きを core が読む形へ。api の toDraft と同じ変換にする。
+ * 値の欄が 1 つも無い下書きは下書きでない (提案・今の値から埋める明細と同じに扱う)
+ */
+function coreDraftOf(d: Partial<EditInput>): BulkDraft | null {
+  if (!Object.values(d).some((v) => v !== undefined)) return null;
+  return {
+    cls: d.cls ?? null,
+    big: d.big,
+    mid: d.mid,
+    owner: d.owner ?? null,
+    paymentMethod: d.paymentMethod,
+    note: d.note,
+  };
+}
+
+/** 内訳に出す値の出どころ。欄ごとの出どころのうち、いちばん手前の層で 1 行を呼ぶ */
+export type BulkSaveLabel = '一括指定' | '下書き' | '提案' | '今の値';
+const LABEL_ORDER: readonly BulkSaveLabel[] = ['一括指定', '下書き', '提案', '今の値'];
+
+function labelOf(sources: Record<string, BulkSaveSource>): BulkSaveLabel {
+  const values = Object.values(sources);
+  if (values.includes('bulk')) return '一括指定';
+  if (values.includes('draft')) return '下書き';
+  if (values.includes('suggestion')) return '提案';
+  return '今の値';
+}
+
+export interface BulkSavePlan {
+  /** 送る明細 (選択の順)。外した明細は入れない */
+  items: BulkSaveBody['items'];
+  /** 出どころごとの件数。0 件の出どころは出さない */
+  groups: { label: BulkSaveLabel; count: number }[];
+  saveCount: number;
+  /** 区分だけの指定で、同じ区分の組が無く『カテゴリなし』で保存する件数 (AC-03) */
+  noCategoryCount: number;
+  /** 外す明細と、その理由 (BR-03)。失敗には数えない */
+  skipped: { row: ClassifyRow; reason: string }[];
+  /** 外す理由の種類 (出た順・重複なし) */
+  reasons: string[];
+}
+
+/**
+ * 保存前の内訳 (FR-03・FR-04)。値は api と同じ core の resolveBulkSaveItem で決める。
+ * 画面が別の規則で数えると、内訳で「保存します」と言った明細がサーバで外れる。
+ *
+ * rows は選択の順。送る本文の items もこの順になる。
+ */
+export function planBulkSave(
+  rows: readonly ClassifyRow[],
+  bulk: BulkSpec,
+  candidates: Candidates,
+  draftOf: (txId: string) => EditInput | null,
+): BulkSavePlan {
+  const items: BulkSaveBody['items'] = [];
+  const counts = new Map<BulkSaveLabel, number>();
+  const skipped: BulkSavePlan['skipped'] = [];
+  let noCategoryCount = 0;
+  for (const row of rows) {
+    const blocked = rowSelectability(row);
+    if (blocked) {
+      skipped.push({ row, reason: blocked });
+      continue;
+    }
+    const draft = draftOf(row.id);
+    const resolved = resolveBulkSaveItem({
+      bulk,
+      draft: draft ? coreDraftOf(draft) : null,
+      suggestion: row.suggestion,
+      current: currentOf(row),
+      status: row.status,
+      paymentMethod: row.edit?.paymentMethod ?? null,
+      candidates,
+    });
+    if (!resolved.ok) {
+      skipped.push({ row, reason: resolved.reason });
+      continue;
+    }
+    items.push({ txId: row.id, draft: draft ?? {} });
+    const label = labelOf(resolved.sources);
+    counts.set(label, (counts.get(label) ?? 0) + 1);
+    if (resolved.sources.big === 'no_category') noCategoryCount += 1;
+  }
+  return {
+    items,
+    groups: LABEL_ORDER.flatMap((label) => {
+      const count = counts.get(label) ?? 0;
+      return count ? [{ label, count }] : [];
+    }),
+    saveCount: items.length,
+    noCategoryCount,
+    skipped,
+    reasons: [...new Set(skipped.map((s) => s.reason))],
+  };
+}
+
+/** 通信の失敗・5xx の文言。書き込まれたか分からないので、失敗と決めつけない (FR-16) */
+export const UNCERTAIN_SAVE_MESSAGE =
+  '保存できたか確かめられませんでした。一覧を読み直しました。同じ内容で送り直しても二重には保存されません';
+
+export interface BulkRequestFailure {
+  message: string;
+  /** 『同じ内容で再試行』を出すか。送り直しても同じ答えになる失敗には出さない */
+  retry: boolean;
+  /** 一覧と選択の読み出しを読み直すか */
+  reload: boolean;
+}
+
+/**
+ * 要求全体の失敗の分け方 (FR-16・Error contract)。status から文言と再試行の有無を引く。
+ * 401 は既存のログイン切れの扱い (AUTH_EVENT) に任せるので null を返す。
+ */
+export function bulkRequestFailure(error: unknown): BulkRequestFailure | null {
+  if (!(error instanceof ApiError) || error.status >= 500) {
+    return { message: UNCERTAIN_SAVE_MESSAGE, retry: true, reload: true };
+  }
+  if (error.status === 401) return null;
+  // 409 は取込みか別の更新が終われば通る。400・403・413 は同じ本文では直らない
+  return { message: error.message, retry: error.status === 409, reload: false };
 }

@@ -17,8 +17,8 @@ template_id: "architecture"
 template_version: "1.0.0"
 confirmation_status: "confirmed"
 evaluation_status: "pass"
-confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/completeness-findings.json", "evaluated_digest": "c0921d456f4e06dc42879df45252b78dd5acec3ccf9b7dfccf3103e60f9f82cd"}
-source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/security.md", "source_version": "0.1.14", "source_digest": "c0921d456f4e06dc42879df45252b78dd5acec3ccf9b7dfccf3103e60f9f82cd", "imported_at": "2026-09-23T13:27:15Z"}
+confirmation_evidence: {"evaluator": "system-spec-harness:assign-system-spec-completeness-evaluator", "evidence_ref": "system-spec/archive/2026-09-25-guide-screen/completeness-findings.json", "evaluated_digest": "c0921d456f4e06dc42879df45252b78dd5acec3ccf9b7dfccf3103e60f9f82cd"}
+source_lineage: {"origin_kind": "system-spec-harness", "source_plugin": "system-spec-harness", "source_path": "system-spec/archive/2026-09-25-guide-screen/security.md", "source_version": "0.1.14", "source_digest": "c0921d456f4e06dc42879df45252b78dd5acec3ccf9b7dfccf3103e60f9f82cd", "imported_at": "2026-09-23T13:27:15Z"}
 created_at: "2026-09-23T13:27:15Z"
 updated_at: "2026-09-23T13:27:15Z"
 depends_on: ["spec-guide-screen"]

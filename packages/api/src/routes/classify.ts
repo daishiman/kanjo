@@ -7,17 +7,21 @@ import { zValidator } from '@hono/zod-validator';
  */
 import {
   type AppliedSplitLine,
+  CLASSIFY_DEFAULT_PAGE_SIZE,
   type Candidates,
   type Cls,
   DEFAULT_RULES,
   type Dataset,
   MAX_SPLIT_LINES,
   MIN_SPLIT_LINES,
+  type MfTx,
   OWNER_VALUES,
   PAYMENT_METHOD_VALUES,
+  RESERVED_CATEGORY_MESSAGE,
   type Rule,
   type RuleTargetRow,
   type RuleTargetSpec,
+  SELECTION_MAX,
   SPLIT_MEMO_MAX_LENGTH,
   STABLE_KEY_VERSION,
   type SplitTemplate,
@@ -26,6 +30,8 @@ import {
   applySplitTemplate,
   buildCandidates,
   categoryAllowed,
+  categoryAllowedOrKept,
+  categoryForTotals,
   categoryRejectReason,
   classificationProgress,
   classifyCounts,
@@ -33,8 +39,11 @@ import {
   classifySuggestion,
   countableMfTxs,
   isCashTxId,
+  isClassifyPageSize,
+  isNoCategory,
   matchesSuggestion,
   mfStableKey,
+  parseRowKey,
   parseSplitTemplate,
   payeeOf,
   paymentMethodFor,
@@ -60,9 +69,18 @@ import {
   saveEditQueries,
   splitHistoryEntries,
 } from '../classify-history.js';
-import { buildClassifyRow, buildRuleTargetRows, stripSortKeys } from '../classify-row.js';
+import {
+  buildClassifyRow,
+  buildRuleTargetRows,
+  classifyRowContext,
+  classifyRowKeyOf,
+  stripSortKeys,
+  suggestionContextFor,
+} from '../classify-row.js';
+import { D1_BATCH_STATEMENT_LIMIT } from '../d1-limits.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
+import { PRIVATE_NO_STORE, errorBody } from '../public-validation.js';
 import {
   D1BulkPayloadError,
   type Db,
@@ -86,16 +104,13 @@ type Ctx = { Bindings: AuthEnv; Variables: { userId: string } };
 export const classifyRoute = new Hono<Ctx>();
 const ownerSchema = z.enum(OWNER_VALUES);
 
-/** D1 batchのquery上限。集約置換も必ずこの中に含める。 */
-const CLASSIFY_BATCH_STATEMENTS = 50;
-
 type MutationPlan = { queries: DbBatchQuery[]; accounting: Dataset };
 
 /**
  * canonical変更後の集約を副作用なしで先に作り、同じbatchへ連結する。
  * aggregateReplacementQueries内のJSON payload上限もここでbatch実行前に検査される。
  */
-function planClassifyMutation(
+export function planClassifyMutation(
   db: Db,
   userId: string,
   canonical: Dataset,
@@ -110,10 +125,10 @@ function planClassifyMutation(
     throw error;
   }
   const planned = [...queries, ...aggregate];
-  return planned.length <= CLASSIFY_BATCH_STATEMENTS ? { queries: planned, accounting } : null;
+  return planned.length <= D1_BATCH_STATEMENT_LIMIT ? { queries: planned, accounting } : null;
 }
 
-const mutationTooLarge = {
+export const mutationTooLarge = {
   error: {
     code: 'too_many_classify_changes',
     message: '変更量が多すぎるため、対象を絞ってください',
@@ -149,9 +164,23 @@ export async function loadCandidates(
   );
 }
 
-const invalidCategory = (cls: 'biz' | 'per') => ({
-  error: { code: 'invalid_category', message: categoryRejectReason(cls) },
-});
+/**
+ * 行を組む材料を読み出す。一覧・選択の読み出し・一括保存が、この 1 つの関数で明細を引き直す
+ * (spec-classify-bulk-save の選択の読み出し / backend.md §上流指針)。
+ * 別々に読むと、選択一覧に出した行と保存で判定した行の提案・状態がずれる。
+ * 読み出しは loadDataset・vendor_memory・category_options・freee の勘定科目の 4 系統で、
+ * どれも bind するのは利用者 id だけなので、件数によらず 1 文の bound parameter は増えない。
+ */
+export async function loadClassifyRowSource(db: Db, userId: string) {
+  const [data, vendorMemories] = await Promise.all([loadDataset(db, userId), loadVendorMemories(db, userId)]);
+  const candidates = await loadCandidates(db, userId, data.mfTx);
+  return { data, vendorMemories, candidates, ctx: classifyRowContext(data, vendorMemories, candidates) };
+}
+
+const invalidCategory = (cls: 'biz' | 'per') => errorBody('invalid_category', categoryRejectReason(cls));
+
+/** 『カテゴリなし』を編集の値・候補の名前に入れたときの 400 (BR-04) */
+export const reservedCategory = errorBody('reserved_category', RESERVED_CATEGORY_MESSAGE);
 
 /**
  * 一覧の query。単月 (month) と期間 (from/to) の両方を受ける。
@@ -159,8 +188,6 @@ const invalidCategory = (cls: 'biz' | 'per') => ({
  * month しか渡さない既存の呼出し元は from=to=month として同じ結果になる。
  */
 const MAX_PERIOD_MONTHS = 36;
-/** 1 ページの行数。仕様が 50 で固定している */
-const PAGE_LIMIT = 50;
 const monthPattern = /^\d{4}-\d{2}$/;
 const statusValues = ['unsorted', 'review', 'manual', 'done'] as const;
 type StatusFilter = (typeof statusValues)[number];
@@ -192,12 +219,8 @@ const transactionsQuery = z.object({
   q: z.string().max(100).optional(),
   sort: z.enum(['date_desc', 'date_asc']).optional(),
   page: z.coerce.number().int().min(1).optional(),
-  // 50 だけを受ける。可変にすると KPI とページ番号の意味が呼出し側ごとにずれる (C5)
-  limit: z.coerce
-    .number()
-    .int()
-    .refine((v) => v === PAGE_LIMIT, { message: 'limit' })
-    .optional(),
+  // 表示件数 25・50・100 だけを受ける (FR-12)。KPI は期間の全件から数えるので、表示件数では動かない
+  limit: z.coerce.number().int().refine(isClassifyPageSize, { message: 'limit' }).optional(),
 });
 
 const invalidQuery = {
@@ -256,7 +279,7 @@ classifyRoute.get('/transactions', async (c) => {
   const parsed = transactionsQuery.safeParse(c.req.query());
   if (!parsed.success) return c.json(invalidQuery, 400);
   const query = parsed.data;
-  const [data, vendorMemories] = await Promise.all([loadDataset(db, userId), loadVendorMemories(db, userId)]);
+  const { data, candidates, ctx } = await loadClassifyRowSource(db, userId);
   const cls = query.cls ?? '';
   const owner = query.owner ?? '';
   const q = (query.q ?? '').toUpperCase();
@@ -265,6 +288,7 @@ classifyRoute.get('/transactions', async (c) => {
   const statusFilter = new Set<StatusFilter>(query.status);
   const sort = query.sort ?? 'date_desc';
   const page = query.page ?? 1;
+  const limit = query.limit ?? CLASSIFY_DEFAULT_PAGE_SIZE;
 
   // 仕分けの対象は収支集計に載る明細だけ。MFの振替・計算対象外はDBには残すが
   // 一覧にも summary にも入れない(入れると家計/事業の集計と合計が食い違う)
@@ -279,18 +303,10 @@ classifyRoute.get('/transactions', async (c) => {
   const txs = countable.filter((t) => inPeriod.has(t.m));
   /** 同期間に取り込まれたが集計対象外だった件数(振替・計算対象=0)。取込漏れとの取り違えを防ぐため件数だけ返す */
   const nonCountableCount = data.mfTx.filter((t) => inPeriod.has(t.m)).length - txs.length;
-  const candidates = await loadCandidates(db, userId, data.mfTx);
   const resolved = txs.map((t) => ({
     t,
     r: resolveTx(t, data.rules, data.edits, data.institutionOwners),
   }));
-  const ctx = {
-    rules: data.rules,
-    edits: data.edits,
-    institutionOwners: data.institutionOwners,
-    vendorMemories,
-    candidates,
-  };
   const rows = txs.map((t) => buildClassifyRow(t, ctx));
 
   // KPI は期間内の全件から数える。絞り込みで KPI まで動くと「残り何件か」が読めなくなる
@@ -305,7 +321,14 @@ classifyRoute.get('/transactions', async (c) => {
         if (r.owner !== owner) return false;
       } else if (owner === 'unset' && r.owner !== null) return false;
       if (manualOnly && r.status !== 'manual') return false;
-      if (query.category && r.big !== query.category) return false;
+      // 集計と同じ鍵でも当てる。『カテゴリなし』と空の大項目は集計で未分類に数えるので、
+      // 診断の「未分類明細」から開いた一覧 (category=未分類) に出さないと金額だけ見えて明細に辿り着けない
+      if (
+        query.category &&
+        r.big !== query.category &&
+        (categoryForTotals(r.big) || '未分類') !== query.category
+      )
+        return false;
       if (statusFilter.size > 0) {
         const hit =
           (statusFilter.has('review') && r.needsReview) || statusFilter.has(r.status as StatusFilter);
@@ -332,7 +355,7 @@ classifyRoute.get('/transactions', async (c) => {
     .map(stripSortKeys);
 
   const total = matched.length;
-  const pageRows = matched.slice((page - 1) * PAGE_LIMIT, page * PAGE_LIMIT);
+  const pageRows = matched.slice((page - 1) * limit, page * limit);
 
   const pick = (f: (x: { t: (typeof txs)[number]; r: ReturnType<typeof resolveTx> }) => boolean) =>
     sum(resolved.filter(f).map((x) => x.t.a));
@@ -379,22 +402,70 @@ classifyRoute.get('/transactions', async (c) => {
     month: m,
     period: { from: period[0] ?? null, to: m },
     summary,
-    /**
-     * 互換: 旧画面が読む項目名。ページングは掛けない。
-     *
-     * `rows` と同じ 50 件にすると、月を名指しして全件を読む旧クライアントが
-     * 51 件目以降を黙って失う。配列の型は変わらないので
-     * 型検査にも出ない。ページングは新しい画面が読む `rows` だけの約束にする。
-     */
-    transactions: matched,
+    // 絞り込み後の全件は返さない (FR-12)。表示外の選択の中身は選択の読み出しだけが返す
     rows: pageRows,
     total,
     page,
-    limit: PAGE_LIMIT,
+    limit,
     kpi,
     candidates,
     institutions,
   });
+});
+
+/* -------- 選択の読み出し (spec-classify-bulk-save FR-10) -------- */
+
+/** keys の件数と重複だけを見る。形の違う key は 400 にせず missing に入れる */
+const selectedKeysSchema = z
+  .array(z.string().min(1))
+  .min(1)
+  .max(SELECTION_MAX)
+  .refine((keys) => new Set(keys).size === keys.length, { message: 'duplicate' });
+const invalidSelection = errorBody('invalid_query', '選んだ明細の指定が正しくありません');
+
+/**
+ * query の keys を 1 件ずつに分ける。区切りのカンマで分けてから、1 件ずつ URL のデコードをする。
+ * 先にデコードすると、key の中のカンマ (%2C) と区切りのカンマを見分けられない。
+ * keys が無い・2 回以上あるときは null (要求全体の 400)。デコードできない key はそのまま返し、missing に入れる。
+ */
+function selectedKeysOf(url: string): string[] | null {
+  const pairs = new URL(url).search
+    .slice(1)
+    .split('&')
+    .filter((pair) => pair === 'keys' || pair.startsWith('keys='));
+  if (pairs.length !== 1) return null;
+  return (pairs[0] ?? '')
+    .slice('keys='.length)
+    .split(',')
+    .map((raw) => {
+      try {
+        return decodeURIComponent(raw);
+      } catch {
+        return raw;
+      }
+    });
+}
+
+classifyRoute.get('/transactions/selected', async (c) => {
+  const parsed = selectedKeysSchema.safeParse(selectedKeysOf(c.req.url));
+  if (!parsed.success) return c.json(invalidSelection, 400, PRIVATE_NO_STORE);
+  const keys = parsed.data;
+  const { data, ctx } = await loadClassifyRowSource(getDb(c.env.DB), c.get('userId'));
+
+  // 母集団は一覧と同じ集計対象の明細で、期間と絞り込みは掛けない (表示外の選択も引き直す)。
+  // 行の key は一覧と同じ関数で作って突き合わせるので、正常に分割した親・集計対象外の明細・
+  // 他の利用者の明細・種類の違う key は、どれも同じ「見つからない」になる (AC-25)
+  const wanted = new Set(keys.filter((key) => parseRowKey(key) !== null));
+  const found = new Map<string, MfTx>();
+  for (const t of countableMfTxs(data.mfTx)) {
+    const key = classifyRowKeyOf(t);
+    if (wanted.has(key)) found.set(key, t);
+  }
+  const rows = keys.flatMap((key) => {
+    const t = found.get(key);
+    return t ? [stripSortKeys(buildClassifyRow(t, ctx))] : [];
+  });
+  return c.json({ rows, missing: keys.filter((key) => !found.has(key)) }, 200, PRIVATE_NO_STORE);
 });
 
 /* -------- 手動編集(公私・大項目・中項目・名義) -------- */
@@ -477,6 +548,14 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
   if (!tx) return c.json({ error: { code: 'not_found', message: '明細が見つかりません' } }, 404);
   if (tx.splitProjection?.kind === 'split') return c.json(derivedMutationError, 409);
   const cur: TxEdit = data.edits[txId] ?? {};
+  // 保存前の解決。今の値 (取込値・ルール・上書きを解決した値) で、一覧の行と画面が送り返す値と同じ。
+  // 提案もここから作り、利用者が画面で見た提案と提案一致の判定の相手を揃える
+  const before = resolveTx(tx, data.rules, data.edits, data.institutionOwners);
+  // 『カテゴリなし』は一括保存だけが入れる予約の値。編集の値としては選べない (BR-04)。
+  // 今の値がそれなら、そのまま送り返す (メモだけ直す等) のは変更ではないので通す。
+  // 上書きの層 (cur) だけを見ると、取込値がそれの明細はメモも直せなくなる
+  if (b.big != null && isNoCategory(b.big) && !isNoCategory(before.big)) return c.json(reservedCategory, 400);
+  const cands = await loadCandidates(db, userId, data.mfTx);
   const incoming = resolveIncomingTx(tx, data.rules, data.institutionOwners, vendorMemories);
   const fallback = resolveIncomingTx(tx, data.rules, data.institutionOwners);
   const suppressMemory = b.reset && cur.origin === 'vendor_memory';
@@ -495,8 +574,8 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
       // 会計上あり得ない組み合わせのガード: 編集後の公私(手動 > ルール > 既定)に対する候補で判定する
       const probe = { ...data.edits, [txId]: { ...next, big: null, mid: null } };
       const effCls = resolveTx(tx, data.rules, probe, data.institutionOwners).cls;
-      const cands = await loadCandidates(db, userId, data.mfTx);
-      if (!categoryAllowed(cands, effCls, next.big ?? null, next.mid ?? null))
+      // 『カテゴリなし』は今の値を送り返すときだけ通る (新しく選ぶのは上の reserved_category が断る)
+      if (!categoryAllowedOrKept(cands, effCls, next.big ?? null, next.mid ?? null, before.big))
         return c.json(invalidCategory(effCls), 400);
     }
   }
@@ -511,7 +590,12 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
   // メモや支払方法だけの保存でフラグが動くと、完了/手動変更の意味が保存内容と無関係になる
   const isDecision =
     !b.reset && (b.cls !== undefined || b.big !== undefined || b.mid !== undefined || b.owner !== undefined);
-  const suggestion = classifySuggestion(tx, tx.c, data.rules, vendorMemories);
+  const suggestion = classifySuggestion(
+    tx,
+    before,
+    suggestionContextFor(data, vendorMemories, cands),
+    tx.c ?? '',
+  );
   let matched = false;
   if (isDecision) {
     const probe = { ...data.edits, [txId]: next };
@@ -550,15 +634,7 @@ classifyRoute.put('/transactions/:txId/edit', zValidator('json', editSchema), as
   const after = await loadDataset(db, userId);
   const afterTx = after.mfTx.find((t) => t.id === txId) ?? tx;
   const candidates = await loadCandidates(db, userId, after.mfTx);
-  const row = stripSortKeys(
-    buildClassifyRow(afterTx, {
-      rules: after.rules,
-      edits: after.edits,
-      institutionOwners: after.institutionOwners,
-      vendorMemories,
-      candidates,
-    }),
-  );
+  const row = stripSortKeys(buildClassifyRow(afterTx, classifyRowContext(after, vendorMemories, candidates)));
   return c.json({
     ok: true,
     txId,
@@ -1067,7 +1143,7 @@ classifyRoute.patch('/rules', zValidator('json', reorderSchema), async (c) => {
 /** プレビューの 1 ページ。件数だけは全件を数え、行は先頭のこれだけを返す */
 const RULE_PREVIEW_ROWS = 50;
 /** 1 回の batch に載せる文の上限。明細の境界でしか切らない */
-const RULE_BATCH_STATEMENTS = CLASSIFY_BATCH_STATEMENTS;
+const RULE_BATCH_STATEMENTS = D1_BATCH_STATEMENT_LIMIT;
 
 const CLS_TEXT: Record<Cls, string> = { biz: '事業', per: '家計' };
 
@@ -1162,13 +1238,7 @@ async function ruleScope(db: Db, userId: string, from: string, to: string) {
   if (period === null) return null;
   const inPeriod = new Set(period);
   const candidates = await loadCandidates(db, userId, data.mfTx);
-  const ctx = {
-    rules: data.rules,
-    edits: data.edits,
-    institutionOwners: data.institutionOwners,
-    vendorMemories,
-    candidates,
-  };
+  const ctx = classifyRowContext(data, vendorMemories, candidates);
   return {
     data,
     rows: buildRuleTargetRows(

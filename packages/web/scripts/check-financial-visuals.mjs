@@ -1574,6 +1574,129 @@ const improvementDetail = {
   diagnostics: null,
 };
 
+// 明細仕分け (/classify) の受け入れ幅 (spec-classify-bulk-save AC-22) を測る匿名明細。
+// 1 ページ 50 件に、長い取引先名・分割の内訳行 (選べない行)・設定が不正な親・要確認・提案なしを混ぜ、
+// 列が最も詰まる条件で 6 列の最小幅と 1 字ずつの折り返しを測る。51 件目以降は URL の選択だけが参照する
+const classifyPayees = [
+  '架空商店',
+  'カ）アノニマス・クラウドストレージ・サービス年額プラン更新',
+  '匿名交通',
+  'ミトウロク　ソフトウエア　ライセンス　ホシュ　ケイヤク',
+  '架空書店',
+  '匿名カフェ',
+];
+const classifyRow = (index) => {
+  const id = `cv-${String(index + 1).padStart(3, '0')}`;
+  const payee = classifyPayees[index % classifyPayees.length];
+  const splitLine = index === 6;
+  const splitParent = index === 9;
+  const noSuggestion = index % 11 === 10;
+  const status = index % 13 === 12 ? 'done' : index % 17 === 16 ? 'manual' : 'unsorted';
+  const needsReview = status === 'unsorted' && index % 7 === 3;
+  return {
+    id,
+    rowKey: splitLine ? `split:${id}-l1` : `mf:${id}`,
+    rowKind: splitLine ? 'split' : 'mf',
+    parentTxId: splitLine ? id : null,
+    lineId: splitLine ? `${id}-l1` : null,
+    splitSeq: splitLine ? 1 : null,
+    splitLineCount: splitLine ? 2 : null,
+    splitState: splitParent ? 'amount_conflict' : null,
+    capabilities: {
+      quickClass: !splitLine && !splitParent,
+      edit: true,
+      split: !splitLine,
+    },
+    idStable: true,
+    date: `2026-08-${String(28 - Math.floor(index / 3)).padStart(2, '0')}`,
+    description: index % 2 === 0 ? `${payee} 匿名の利用明細 ${index + 1}` : payee,
+    payee,
+    amount: -[1_280, 98_000, 640, 1_234_567, 3_300][index % 5],
+    institution: '架空銀行',
+    instSrc: '取込値',
+    csvInstitution: '架空銀行',
+    paymentMethod: 'account',
+    paymentMethodSource: '口座',
+    csvBig: '食費',
+    csvMid: '食料品',
+    big: '',
+    mid: '',
+    catSrc: '取込値',
+    cls: 'per',
+    src: '既定',
+    owner: null,
+    ownerSrc: '既定',
+    edited: false,
+    conflict: false,
+    origin: null,
+    originKey: null,
+    scopeMismatch: false,
+    edit: null,
+    suggestion: noSuggestion ? null : { cls: 'per', big: '食費', mid: '食料品', owner: null },
+    suggestionLabel: noSuggestion ? null : '食費 / 食料品',
+    confidence: noSuggestion ? null : needsReview ? 58 : 92,
+    basis: noSuggestion ? 'none' : 'mf_mid',
+    basisText: noSuggestion ? '提案の手がかりがありません。' : 'MF の中項目「食料品」から導きました。',
+    status,
+    needsReview,
+    reviewReasons: needsReview ? ['low_confidence'] : [],
+    note: null,
+  };
+};
+const classifyRows = Array.from({ length: 60 }, (_, index) => classifyRow(index));
+const classifyCandidates = {
+  biz: [
+    { name: '通信費', source: 'standard', mids: [] },
+    { name: '消耗品費', source: 'standard', mids: [] },
+  ],
+  per: [{ name: '食費', source: 'standard', mids: [{ name: '食料品', source: 'standard' }] }],
+};
+const classifyList = (requestUrl) => {
+  const limit = Number(requestUrl.searchParams.get('limit')) || 50;
+  const page = Number(requestUrl.searchParams.get('page')) || 1;
+  const expense = classifyRows.reduce((sum, row) => sum - row.amount, 0);
+  return {
+    months: ['2026-08'],
+    month: '2026-08',
+    period: { from: '2025-09', to: '2026-08' },
+    summary: {
+      month: '2026-08',
+      count: classifyRows.length,
+      totalIncome: 0,
+      bizIncome: 0,
+      personalIncome: 0,
+      totalExpense: expense,
+      bizExpense: 0,
+      personalExpense: expense,
+      incomeByOwner: { business: 0, spouse: 0, family: 0, unset: 0 },
+      progress: {
+        total: classifyRows.length,
+        bizCount: 0,
+        personalCount: classifyRows.length,
+        bySource: { 手動: 0, ルール: 0, 中項目: classifyRows.length, 既定: 0 },
+        reviewPending: 0,
+      },
+      editedCount: 0,
+      conflictCount: 0,
+      noInstitutionCount: 0,
+      nonCountableCount: 0,
+    },
+    rows: classifyRows.slice((page - 1) * limit, page * limit),
+    total: classifyRows.length,
+    page,
+    limit,
+    kpi: {
+      all: classifyRows.length,
+      unsorted: classifyRows.filter((row) => row.status === 'unsorted').length,
+      review: classifyRows.filter((row) => row.needsReview).length,
+      manual: classifyRows.filter((row) => row.status === 'manual').length,
+      done: classifyRows.filter((row) => row.status === 'done').length,
+    },
+    candidates: classifyCandidates,
+    institutions: ['架空銀行'],
+  };
+};
+
 const jsonBody = (value) => Buffer.from(JSON.stringify(value)).toString('base64');
 const responseFor = (url) => {
   const requestUrl = new URL(url);
@@ -1620,6 +1743,16 @@ const responseFor = (url) => {
   // 現金入力は担当者の表示名を読む。fixture に無いと proxy 先の API が Cookie 無しで 401 を返し、
   // 画面がログインへ切り替わる(描画の途中で切り替わるので、落ち方が実行ごとに変わる)
   if (path === '/api/settings/owner-labels') return { labels: {} };
+  // 明細仕分けは一覧のほか、別ページにある選択中の明細・保存したフィルタ・ルール・編集履歴を読む
+  if (path === '/api/transactions') return classifyList(requestUrl);
+  if (path === '/api/transactions/selected') {
+    const keys = (requestUrl.searchParams.get('keys') ?? '').split(',').filter(Boolean);
+    const found = classifyRows.filter((row) => keys.includes(row.rowKey));
+    return { rows: found, missing: keys.filter((key) => !found.some((row) => row.rowKey === key)) };
+  }
+  if (path === '/api/saved-filters') return { items: [] };
+  if (path === '/api/rules') return { rules: [] };
+  if (/^\/api\/transactions\/[^/]+\/history$/.test(path)) return { items: [] };
   if (path === '/api/improvements') return improvementList;
   if (path === `/api/improvements/${improvementDetail.request.id}`) return improvementDetail;
   return undefined;
@@ -2476,6 +2609,341 @@ try {
         failures.push(`${tag} Improvement で実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`);
       console.log(
         `${tag} Improvement 行=${metrics.rows} 本体=${metrics.pageWidth}/${metrics.viewportWidth}px 横並び=${metrics.sideBySide} 撮影パネル=${triggerVisible}`,
+      );
+    }
+  }
+  if (VISUAL_SCOPE === 'classify') {
+    // 明細仕分けの受け入れ幅 (spec-classify-bulk-save AC-22・FR-13)。1264px で編集パネルを開いても
+    // 6 列が最小幅を保ち、本体が横にはみ出さず、パネルを閉じると一覧が広がることを実ブラウザで測る。
+    // 開閉はマウスの実クリックで行い、pointer の種類 (CI の headless Chrome は pointer:none) に依らない
+    const classifyViewports = process.env.KANJO_VISUAL_VIEWPORTS
+      ? VIEWPORTS.filter(({ zoom }) => zoom === 1)
+      : viewportsByLabel(['390', '768', '1024', '1264', '1280']);
+    for (const required of [1264, 1280]) {
+      if (!classifyViewports.some(({ width }) => width === required))
+        failures.push(`Classify の受け入れ幅 ${required}px が検査対象に無い (AC-22)`);
+    }
+    // 列の最小幅は classify.css の表の min-width と固定列から決まる。1024〜1199px は固定列を詰めた帯
+    const minimumColumns = (width) =>
+      width >= 1024 && width <= 1199 ? [44, 80, 120, 84, 110, 68] : [44, 92, 120, 96, 120, 84];
+    const measureClassify = async () =>
+      JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          const box = (node) => {
+            const value = node?.getBoundingClientRect();
+            return value && value.width > 0 && value.height > 0 ? value : null;
+          };
+          // 文字の行数。見える文字の行ボックスの上端を 4px 以内でまとめて数える (1px の読み上げ用ラベルは数えない)
+          const lineCount = (nodes) => {
+            const tops = [];
+            for (const node of nodes) {
+              if (!node.textContent.trim()) continue;
+              const host = node.parentElement?.getBoundingClientRect();
+              if (!host || host.width <= 1 || host.height <= 1) continue;
+              const range = document.createRange();
+              range.selectNodeContents(node);
+              for (const rect of range.getClientRects()) if (rect.width > 1 && rect.height > 1) tops.push(rect.top);
+            }
+            tops.sort((a, b) => a - b);
+            let lines = 0;
+            let last = Number.NEGATIVE_INFINITY;
+            for (const top of tops) {
+              if (top - last > 4) lines += 1;
+              last = top;
+            }
+            return lines;
+          };
+          const textNodesIn = (element) => {
+            const nodes = [];
+            const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+            for (let node = walker.nextNode(); node; node = walker.nextNode()) nodes.push(node);
+            return nodes;
+          };
+          const viewportWidth = document.documentElement.clientWidth;
+          const viewportHeight = document.documentElement.clientHeight;
+          // メディアクエリが見る幅。clientWidth はスクロールバーのぶん狭く、帯の判定を誤る
+          const mediaWidth = window.innerWidth;
+          const table = document.querySelector('main table');
+          const scroller = document.querySelector('.classify-table-scroll');
+          const headers = [...(table?.querySelectorAll('thead th') ?? [])];
+          // 1 字ずつの折り返し: 8 字以上の文が、1 行あたり 4 字未満に割れているもの。
+          // 列の構成に依らず、表のセルの中で文字を直接持つ要素ごとに数える
+          const narrowTexts = [];
+          for (const cell of table?.querySelectorAll('tbody td') ?? []) {
+            for (const element of [cell, ...cell.querySelectorAll('*')]) {
+              const own = [...element.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE);
+              const text = own.map((node) => node.textContent).join('').trim();
+              if (text.length < 8) continue;
+              const lines = lineCount(own);
+              if (lines > 0 && text.length / lines < 4)
+                narrowTexts.push(text.slice(0, 16) + ' (' + text.length + '字/' + lines + '行・' + Math.round(box(element)?.width ?? 0) + 'px)');
+            }
+          }
+          const bar = document.querySelector('.classify-bulk-bar');
+          const barBox = box(bar);
+          const save = [...(bar?.querySelectorAll('button') ?? [])].find((button) => /件を保存$/.test(button.textContent.trim()));
+          const saveBox = box(save);
+          const saveHit = saveBox
+            ? document.elementFromPoint(saveBox.left + saveBox.width / 2, saveBox.top + saveBox.height / 2)
+            : null;
+          // バーの中で見えている操作のうち、中心に別の要素が重なって押せないもの
+          const coveredControls = [...(bar?.querySelectorAll('button, select') ?? [])]
+            .filter((control) => box(control))
+            .filter((control) => {
+              const value = box(control);
+              const x = value.left + value.width / 2;
+              const y = value.top + value.height / 2;
+              if (x < 0 || y < 0 || x > viewportWidth || y > viewportHeight) return true;
+              const hit = document.elementFromPoint(x, y);
+              return !(hit && (hit === control || control.contains(hit)));
+            })
+            .map((control) => (control.getAttribute('aria-label') || control.textContent || '').trim().slice(0, 16));
+          // 画面に固定された部品。640px 以下の下部タブと、どの幅でも出る「改善を送る」
+          const edges = (value) =>
+            value
+              ? { top: Math.round(value.top), bottom: Math.round(value.bottom), left: Math.round(value.left), right: Math.round(value.right) }
+              : null;
+          const tabbarBox = box(document.querySelector('nav.tabbar'));
+          const improveBox = box(document.querySelector('[aria-label="改善を送る"]'));
+          return {
+            viewportWidth,
+            viewportHeight,
+            mediaWidth,
+            pageWidth: document.documentElement.scrollWidth,
+            title: document.querySelector('main h1')?.textContent?.trim() ?? '',
+            hasOpen: Boolean(document.querySelector('.classify-body.has-open')),
+            editPanel: Boolean(box(document.querySelector('.classify-edit'))),
+            rows: table?.querySelectorAll('tbody tr').length ?? 0,
+            columns: headers.map((th) => Math.round((box(th)?.width ?? 0) * 10) / 10),
+            headerLines: headers.map((th) => lineCount(textNodesIn(th))),
+            headerTexts: headers.map((th) => th.textContent.trim()),
+            listWidth: Math.round(box(document.querySelector('.classify-main'))?.width ?? 0),
+            scrollerWidth: scroller?.clientWidth ?? 0,
+            tableWidth: Math.round(box(table)?.width ?? 0),
+            narrowTexts: narrowTexts.slice(0, 5),
+            bar: barBox
+              ? {
+                  left: Math.round(barBox.left),
+                  right: Math.round(barBox.right),
+                  top: Math.round(barBox.top),
+                  bottom: Math.round(barBox.bottom),
+                  height: Math.round(barBox.height),
+                }
+              : null,
+            tabbar: tabbarBox && getComputedStyle(document.querySelector('nav.tabbar')).position === 'fixed' ? edges(tabbarBox) : null,
+            improve: edges(improveBox),
+            coveredControls,
+            barCount: bar?.querySelector('.classify-bulk-count')?.textContent?.trim() ?? '',
+            saveHit: Boolean(saveHit && save && (saveHit === save || save.contains(saveHit))),
+            overflowing: [...document.querySelectorAll('main *')]
+              // 取引一覧は狭い幅では表の枠の中だけが横にスクロールする (FR-13)
+              .filter((node) => !node.closest('.classify-table-scroll, .scroll-x, .segment'))
+              .filter((node) => {
+                const value = box(node);
+                return value && (value.left < -1 || value.right > viewportWidth + 1);
+              })
+              .slice(0, 3)
+              .map((node) => (typeof node.className === 'string' && node.className ? node.className : node.tagName) + '「' + (node.getAttribute('aria-label') ?? node.textContent ?? '').trim().slice(0, 20) + '」' + Math.round(box(node).left) + '-' + Math.round(box(node).right)),
+          };
+        })())`),
+      );
+    // キーボードで前へ進む利用者をなぞる。先頭から絞り込み・一覧 (見出し・行・ページ送り)・編集パネルの操作へ順にフォーカスを移し、
+    // ブラウザが見える所まで送った後でも中心が別の要素 (固定の一括バー・ヘッダー) の裏なら、移った先が見えない (WCAG 2.4.11)。
+    // 貼り付いた編集パネルはページを送っても動かないので、裏に入った操作はスクロールでは出てこない。
+    const measureClassifyFocus = async () =>
+      JSON.parse(
+        await evaluate(`JSON.stringify((() => {
+          window.scrollTo(0, 0);
+          const viewportWidth = document.documentElement.clientWidth;
+          const viewportHeight = document.documentElement.clientHeight;
+          const controls = [...document.querySelectorAll('.classify-filters, .classify-main, .classify-side')]
+            .flatMap((root) => [...root.querySelectorAll('button, select, textarea, input, a[href]')])
+            .filter((control) => !control.disabled && control.getAttribute('tabindex') !== '-1')
+            .filter((control) => {
+              const value = control.getBoundingClientRect();
+              return value.width > 4 && value.height > 4;
+            });
+          const nameOf = (node) =>
+            (node.getAttribute('aria-label') || node.textContent || node.tagName).trim().slice(0, 14);
+          const coverOf = (hit) => {
+            if (!hit) return '画面外';
+            const named = hit.closest('[aria-label]');
+            if (named) return named.getAttribute('aria-label').slice(0, 14);
+            return typeof hit.className === 'string' && hit.className ? hit.className.slice(0, 24) : hit.tagName;
+          };
+          const blocked = [];
+          for (const control of controls) {
+            control.focus();
+            const value = control.getBoundingClientRect();
+            const x = value.left + value.width / 2;
+            const y = value.top + value.height / 2;
+            const inside = x >= 0 && y >= 0 && x <= viewportWidth && y <= viewportHeight;
+            const hit = inside ? document.elementFromPoint(x, y) : null;
+            if (!(hit && (hit === control || control.contains(hit))))
+              blocked.push(nameOf(control) + '←' + coverOf(hit));
+          }
+          document.activeElement?.blur();
+          window.scrollTo(0, 0);
+          return { checked: controls.length, blocked };
+        })())`),
+      );
+    const checkClassifyFocus = (tag, state, focus) => {
+      if (focus.checked === 0)
+        failures.push(`${tag} Classify (${state}) でフォーカスを移す操作が見つからない`);
+      if (focus.blocked.length)
+        failures.push(
+          `${tag} Classify (${state}) でキーボードで移った先が覆われて見えない (${focus.blocked.length}/${focus.checked}件): ${focus.blocked.slice(0, 6).join(', ')}`,
+        );
+    };
+    const checkClassify = (tag, state, metrics) => {
+      const where = `${tag} Classify (${state})`;
+      if (metrics.title !== '明細仕分け')
+        failures.push(`${where} のタイトルが「明細仕分け」ではない: ${metrics.title}`);
+      if (metrics.pageWidth > metrics.viewportWidth + 1)
+        failures.push(`${where} の本体が横にはみ出す(${metrics.pageWidth}/${metrics.viewportWidth}px)`);
+      if (metrics.overflowing.length)
+        failures.push(`${where} の要素が画面の外へ出る: ${metrics.overflowing.join(', ')}`);
+      const minimum = minimumColumns(metrics.mediaWidth);
+      if (metrics.columns.length !== minimum.length)
+        failures.push(`${where} の列が ${minimum.length} 列ではない: ${metrics.headerTexts.join(' / ')}`);
+      const thin = metrics.columns
+        .map((width, index) => ({ width, index, minimum: minimum[index] ?? 0 }))
+        .filter(({ width, minimum: least }) => width + 1 < least);
+      if (thin.length)
+        failures.push(
+          `${where} の列が最小幅に届かない: ${thin.map(({ index, width, minimum: least }) => `${index + 1}列目 ${width}/${least}px`).join(', ')}`,
+        );
+      if (metrics.narrowTexts.length)
+        failures.push(`${where} のセルの文が 1 字ずつ折り返す: ${metrics.narrowTexts.join(', ')}`);
+      const wrapped = metrics.headerLines
+        .map((lines, index) => ({ lines, text: metrics.headerTexts[index] }))
+        .filter(({ lines }) => lines > 1);
+      if (wrapped.length)
+        failures.push(
+          `${where} の見出しが折り返す: ${wrapped.map(({ text, lines }) => `${text} ${lines}行`).join(', ')}`,
+        );
+      if (!metrics.bar) failures.push(`${where} の一括操作バーが描画されない`);
+      else if (
+        metrics.bar.left < -1 ||
+        metrics.bar.right > metrics.viewportWidth + 1 ||
+        metrics.bar.bottom > metrics.viewportHeight + 1
+      )
+        failures.push(`${where} の一括操作バーが画面の外へ出る: ${JSON.stringify(metrics.bar)}`);
+      else if (!metrics.saveHit) failures.push(`${where} の一括保存ボタンが他の要素に覆われて押せない`);
+      if (metrics.bar) {
+        // 画面に固定された部品とバーが 1px を超えて重なれば、その下の操作や内訳が隠れる
+        const overlaps = (a, b) =>
+          Boolean(a && b) &&
+          a.left < b.right - 1 &&
+          b.left < a.right - 1 &&
+          a.top < b.bottom - 1 &&
+          b.top < a.bottom - 1;
+        if (overlaps(metrics.bar, metrics.tabbar))
+          failures.push(
+            `${where} の一括操作バーが下部タブに重なる: バー ${metrics.bar.top}-${metrics.bar.bottom}px / タブ ${metrics.tabbar.top}-${metrics.tabbar.bottom}px`,
+          );
+        if (overlaps(metrics.bar, metrics.improve))
+          failures.push(
+            `${where} の一括操作バーが「改善を送る」に重なる: バー ${JSON.stringify(metrics.bar)} / 改善 ${JSON.stringify(metrics.improve)}`,
+          );
+        if (metrics.coveredControls.length)
+          failures.push(
+            `${where} の一括操作バーの操作が覆われて押せない: ${metrics.coveredControls.join(', ')}`,
+          );
+        // 選択の明細一覧と一括指定欄を閉じた状態で、一覧の行を押せる高さを残す
+        if (metrics.bar.height > metrics.viewportHeight * 0.35)
+          failures.push(
+            `${where} の一括操作バーが画面の高さの 35% を超える: ${metrics.bar.height}/${metrics.viewportHeight}px`,
+          );
+      }
+      if (metrics.bar && metrics.barCount !== '3 件選択中')
+        failures.push(`${where} の選択件数が URL の 3 件と一致しない: ${metrics.barCount}`);
+    };
+    const captureClassify = async (name) => {
+      await evaluate(
+        'window.scrollTo(0, 0), new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))',
+      );
+      const screenshot = await send('Page.captureScreenshot', { format: 'png', fromSurface: true });
+      writeFileSync(join(OUTPUT_DIR, `classify-${name}.png`), Buffer.from(screenshot.data, 'base64'));
+    };
+    for (const { width, height } of classifyViewports) {
+      const tag = `${width}px`;
+      await send('Emulation.setDeviceMetricsOverride', {
+        width,
+        height,
+        deviceScaleFactor: 1,
+        mobile: width < 640,
+      });
+      await send('Emulation.setPageScaleFactor', { pageScaleFactor: 1 });
+      runtimeProblems.length = 0;
+      // cv-055 は 2 ページ目にあるので、別ページの選択を読む経路 (/transactions/selected) も通る
+      await send('Page.navigate', { url: `${BASE_URL}/classify?sel=mf:cv-001,mf:cv-002,mf:cv-055` });
+      await waitFor(
+        "document.querySelectorAll('main table tbody tr').length > 1 && Boolean(document.querySelector('.classify-body')) && !document.querySelector('.classify-body.has-open')",
+        `${tag} Classify`,
+      );
+      try {
+        await waitFor(
+          "document.querySelector('.classify-bulk-count')?.textContent?.trim() === '3 件選択中'",
+          `${tag} Classify 選択の読み込み`,
+        );
+      } catch {
+        // 件数の不一致は checkClassify が理由付きで記録する
+      }
+      const closed = await measureClassify();
+      checkClassify(tag, '閉じた状態', closed);
+      await captureClassify(`${tag}-closed`);
+      const closedFocus = await measureClassifyFocus();
+      checkClassifyFocus(tag, '閉じた状態', closedFocus);
+
+      await mouseClick(
+        'main table tbody tr:first-child td:not(.selection-cell) button',
+        `${tag} Classify 明細を開く`,
+      );
+      let open = null;
+      let openFocus = null;
+      try {
+        await waitFor(
+          "Boolean(document.querySelector('.classify-body.has-open')) && Boolean(document.querySelector('.classify-edit'))",
+          `${tag} Classify 編集パネル`,
+        );
+        open = await measureClassify();
+        checkClassify(tag, '開いた状態', open);
+        await captureClassify(`${tag}-open`);
+        openFocus = await measureClassifyFocus();
+        checkClassifyFocus(tag, '開いた状態', openFocus);
+      } catch (error) {
+        failures.push(`${tag} Classify の編集パネルが開かない: ${error.message.slice(0, 200)}`);
+      }
+
+      let reclosed = null;
+      if (open) {
+        await mouseClick(
+          '.classify-edit-head button[aria-label="編集を閉じる"]',
+          `${tag} Classify 編集を閉じる`,
+        );
+        try {
+          await waitFor("!document.querySelector('.classify-body.has-open')", `${tag} Classify 編集を閉じる`);
+          reclosed = await measureClassify();
+          checkClassify(tag, '閉じ直した状態', reclosed);
+        } catch (error) {
+          failures.push(`${tag} Classify の編集パネルが閉じない: ${error.message.slice(0, 200)}`);
+        }
+      }
+      // 常設の 3 段組 (1024px 以上) だけ、パネルの開閉で一覧の幅が変わる。積む幅では同じ幅のまま
+      if (width >= 1024 && open && !(closed.listWidth > open.listWidth))
+        failures.push(
+          `${tag} Classify で編集パネルを閉じても一覧が広がらない(閉=${closed.listWidth} 開=${open.listWidth}px)`,
+        );
+      if (reclosed && Math.abs(reclosed.listWidth - closed.listWidth) > 1)
+        failures.push(
+          `${tag} Classify でパネルを閉じ直した一覧の幅が元に戻らない(${closed.listWidth}→${reclosed.listWidth}px)`,
+        );
+      if (runtimeProblems.length)
+        failures.push(`${tag} Classify で実行時エラー: ${runtimeProblems.slice(0, 3).join(' / ')}`);
+      const columnsText = (metrics) => (metrics ? metrics.columns.join('/') : '-');
+      console.log(
+        `${tag} Classify 行=${closed.rows} 本体=${closed.pageWidth}/${closed.viewportWidth}px 一覧 閉=${closed.listWidth} 開=${open?.listWidth ?? '-'}px 表=${closed.tableWidth}/${closed.scrollerWidth}px 列 閉=${columnsText(closed)} 開=${columnsText(open)} バー=${closed.bar?.height ?? '-'}/${closed.viewportHeight}px フォーカス 閉=${closedFocus.checked - closedFocus.blocked.length}/${closedFocus.checked} 開=${openFocus ? `${openFocus.checked - openFocus.blocked.length}/${openFocus.checked}` : '-'}`,
       );
     }
   }

@@ -1,7 +1,8 @@
 /**
  * 設定画面 (spec-settings-screen §API契約)。
  *
- * 集計ルール・名義・統計の最低月数・現金上書きの 4 種を 1 画面で保存・復元する。
+ * 集計ルール・名義・統計の最低月数・現金上書きの 4 種を 1 画面で保存し、勘定科目の対応表を加えた 5 種を復元する。
+ * 対応表の 1 行ずつの読み出し・追加・削除は routes/tax-account-map.ts が担う (spec-classify-bulk-save FR-17)。
  * 値の規則・差分・変更履歴の中身は core (settings-screen / settings-json) が決め、ここは
  * D1 の読み書き・revision の照合・R2 への退避だけを担う。route で値を計算し直さない。
  */
@@ -19,6 +20,8 @@ import {
   type SettingsState,
   type StoredCashOverride,
   type StoredNormRule,
+  type TaxAccountMapRow,
+  compareTaxAccountMapRows,
   diffSettings,
   exportSettings,
   migratedNormRuleId,
@@ -84,6 +87,17 @@ export interface SettingsSnapshot {
   revision: string | null;
   normRules: StoredNormRule[];
   cashOverrides: StoredCashOverride[];
+  /** 0059: 勘定科目の対応表。行ごとの作成・更新時刻を保ったまま置き換えるために持つ */
+  taxAccountMap: StoredTaxAccountMapRow[];
+}
+
+type StoredTaxAccountMapRow = TaxAccountMapRow & { createdAt: string; updatedAt: string };
+
+interface TaxAccountMapDbRow {
+  category_big: string;
+  tax_account: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface NormRuleRow {
@@ -130,9 +144,9 @@ const changeLogFromRow = (r: ChangeLogRow): SettingsChangeLogRow => ({
   origin: r.origin,
 });
 
-/** 設定 4 種と変更履歴の最新行を D1 の batch 1 回で読む (読む間に保存が挟まらない) */
+/** 設定 5 種と変更履歴の最新行を D1 の batch 1 回で読む (読む間に保存が挟まらない) */
 export async function loadSettingsSnapshot(database: D1Database, userId: string): Promise<SettingsSnapshot> {
-  const [rules, overrides, labels, stats, changes] = await database.batch<unknown>([
+  const [rules, overrides, labels, stats, changes, taxMap] = await database.batch<unknown>([
     database
       .prepare(
         `SELECT rule_id, kind, raw, norm, sort_order, enabled, updated_at, updated_by
@@ -157,6 +171,11 @@ export async function loadSettingsSnapshot(database: D1Database, userId: string)
           WHERE l.user_id=?`,
       )
       .bind(userId, userId),
+    database
+      .prepare(
+        'SELECT category_big, tax_account, created_at, updated_at FROM tax_account_map WHERE user_id=? ORDER BY category_big',
+      )
+      .bind(userId),
   ]);
 
   // 並び順は 1 始まりの連番へ詰める (store の loadSettingsRuleRows と同じ)
@@ -190,15 +209,31 @@ export async function loadSettingsSnapshot(database: D1Database, userId: string)
   const labelRows = labels.results as Array<{ owner: OwnerKey; label: string }>;
   const statRow = (stats.results as Array<{ stat_min_months: number }>)[0];
   const latestChanges = (changes.results as ChangeLogRow[]).map(changeLogFromRow);
+  const taxAccountMap: StoredTaxAccountMapRow[] = (taxMap.results as TaxAccountMapDbRow[])
+    .map((r) => ({
+      categoryBig: r.category_big,
+      taxAccount: r.tax_account,
+      createdAt: r.created_at,
+      updatedAt: r.updated_at,
+    }))
+    .sort(compareTaxAccountMapRows);
 
   const view = settingsScreen({
     normRules,
     cashOverrides,
+    taxAccountMap,
     ownerLabels: labelRows.length ? Object.fromEntries(labelRows.map((r) => [r.owner, r.label])) : null,
     statMinMonths: statRow?.stat_min_months ?? null,
     latestChanges,
   });
-  return { view, state: settingsStateOf(view), revision: view.savedAt, normRules, cashOverrides };
+  return {
+    view,
+    state: settingsStateOf(view),
+    revision: view.savedAt,
+    normRules,
+    cashOverrides,
+    taxAccountMap,
+  };
 }
 
 /* -------- 書き込み -------- */
@@ -297,6 +332,30 @@ export function settingsWriteStatements(
            ON CONFLICT(user_id) DO UPDATE SET stat_min_months=excluded.stat_min_months, updated_at=excluded.updated_at`,
         )
         .bind(userId, next.statMinMonths, meta.savedAt),
+    );
+  }
+
+  // 0059: 対応表は大項目が鍵。変わった行だけ updated_at を今回の値にし、作成時刻は保存済みの値を保つ
+  const taxChanged = changedKeys(entries, 'tax_account_map');
+  if (taxChanged.size) {
+    const stored = new Map(snapshot.taxAccountMap.map((r) => [r.categoryBig, r]));
+    statements.push(database.prepare('DELETE FROM tax_account_map WHERE user_id=?').bind(userId));
+    statements.push(
+      ...insertJsonRows(
+        database,
+        'tax_account_map',
+        ['category_big', 'tax_account', 'created_at', 'updated_at'],
+        next.taxAccountMap.map((r) => {
+          const keep = stored.get(r.categoryBig);
+          return [
+            r.categoryBig,
+            r.taxAccount,
+            keep?.createdAt ?? meta.savedAt,
+            taxChanged.has(r.categoryBig) ? meta.savedAt : (keep?.updatedAt ?? meta.savedAt),
+          ];
+        }),
+        user,
+      ),
     );
   }
 
@@ -425,6 +484,8 @@ export function legacySettingsTarget(current: SettingsState, patch: LegacySettin
     ownerLabels: patch.ownerLabels ? { ...patch.ownerLabels } : current.ownerLabels,
     statMinMonths: patch.statMinMonths ?? current.statMinMonths,
     cashOverrides,
+    // 旧経路は対応表を持たない。今の値を保つ (差分に出さない)
+    taxAccountMap: current.taxAccountMap,
   };
 }
 

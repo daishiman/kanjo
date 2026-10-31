@@ -4,6 +4,8 @@ export * from './stats.js';
 export * from './csv.js';
 export * from './normalize.js';
 export * from './classify.js';
+export * from './no-category.js';
+export * from './classify-bulk.js';
 export * from './three-way.js';
 export * from './identity.js';
 export * from './deletion.js';

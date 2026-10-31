@@ -1,7 +1,7 @@
 /**
  * 節ナビ (spec-settings-screen §7.1・§7.2)。
  *
- * 8 節へのページ内リンク。いま読んでいる節を IntersectionObserver で追い、aria-current で示す。
+ * 9 節へのページ内リンク。いま読んでいる節を IntersectionObserver で追い、aria-current で示す。
  * リンクは同じ画面の中の移動なので、離脱確認の対象から外す (data-settings-internal)。
  */
 import { useEffect, useState } from 'react';

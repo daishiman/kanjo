@@ -3,21 +3,10 @@ status: confirmed
 category: database
 aggregate: 確定
 spec_cells: [database.web, database.mobile, database.tablet, database.desktop-windows, database.desktop-linux, database.desktop-macos]
-serves_goals: [G1, G2, G4]
+serves_goals: [G1, G3, G5]
 ---
 
 # データベース (database)
-
-質疑録・承認記録は当時の文面を保持する。現行の数値契約は [specの確定節](../specs/spec-subscriptions-merge.md#推定月額の契約確定) を参照する。
-
-## 現行契約への入口
-
-本章の質疑・承認・出典は収集時の凍結記録として保持する。過去の回答の具体値と現行契約が異なる場合は [spec-subscriptions-merge](../specs/spec-subscriptions-merge.md) の「確定した実装契約」を適用する。過去の記録を現行契約の別正本にはしない。
-
-列・型・制約・保持と復元の契約は spec のデータモデルを参照する。復元の参照更新は統合元ごとの相関サブクエリで、revisionはrestoreTouchesSubscriptionsが真のときだけ進める。
-
-推定月額は統合後の明細から再計算し、各月の実支払額を保存する。2026-10-01の完了指示を受け、既存計算規則を採用して現行specへ反映した。統合元完全一致保持と科目互換の共通化はcoreの現行コードを確認してspecへ反映した。API最終完了報告に合わせ、kind/commandのreplay照合、leaseを取得しないGET前後stamp検査、サブスクJSON復元だけのundo barrier、optional保存metadataの往復をspecへ反映した。一般settings restoreはundoを阻害しない。現行契約・互換性・検証結果はspecとdocsの検証索引を参照する。ローカル全体suiteの結果は検証レポートを参照。CIは未確認。
-
 
 - カテゴリ集約状態: **確定**
 - 章確定マーカー: `status: confirmed`
@@ -26,108 +15,12 @@ serves_goals: [G1, G2, G4]
 
 | プラットフォーム | 状態 | 根拠 |
 |---|---|---|
-| Web (web) | 確定 | 確定質疑: qa-subsmerge-actor-record-001。裏付け質疑 (`qa_refs`): `qa-subsmerge-database-web-evidence-001`, `qa-subsmerge-database-web-003`, `qa-subsmerge-retention-001`, `qa-subsmerge-decision-005`, `qa-subsmerge-presented-options-007`, `qa-subsmerge-decision-001`, `qa-subsmerge-presented-options-001`, `qa-subsmerge-decision-004`, `qa-subsmerge-presented-options-005`, `qa-subsmerge-auth-web-evidence-002`, `qa-subsmerge-maintenance-ops-web-evidence-002` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G2, G4 |
-| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では端末内にベンダー登録・統合関係・操作履歴を保存し、オフラインで積んだ操作をサーバーの revision と突き合わせて衝突を解く同期方式を決める必要があった。対象を web のみとする利用者決定 (qa-subsmerge-target-platforms-002) によりその検討は発生しない。 |
-| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database では端末内にベンダー登録・統合関係・操作履歴を保存し、オフラインで積んだ操作をサーバーの revision と突き合わせて衝突を解く同期方式を決める必要があった。対象を web のみとする利用者決定 (qa-subsmerge-target-platforms-002) によりその検討は発生しない。 |
-| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database では端末内にベンダー登録・統合関係・操作履歴を保存し、オフラインで積んだ操作をサーバーの revision と突き合わせて衝突を解く同期方式を決める必要があった。対象を web のみとする利用者決定 (qa-subsmerge-target-platforms-002) によりその検討は発生しない。 |
-| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内にベンダー登録・統合関係・操作履歴を保存し、オフラインで積んだ操作をサーバーの revision と突き合わせて衝突を解く同期方式を決める必要があった。対象を web のみとする利用者決定 (qa-subsmerge-target-platforms-002) によりその検討は発生しない。 |
-| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内にベンダー登録・統合関係・操作履歴を保存し、オフラインで積んだ操作をサーバーの revision と突き合わせて衝突を解く同期方式を決める必要があった。対象を web のみとする利用者決定 (qa-subsmerge-target-platforms-002) によりその検討は発生しない。 |
-
-## 対象外の承認範囲
-
-> 本章の対象外セルが引用している承認の実体。状態表の「承認: <id>」だけでは、その承認が何をどこまで認めたものかを章から辿れない。
-
-### 承認: `appr-platforms-subsmerge-002`
-
-対象 platform を 1 論点の独立した問い (qa-subsmerge-target-platforms-002) で聞き直し、利用者が「web のみ (Recommended)」を選択した。mobile / tablet / desktop-windows / desktop-linux / desktop-macos の 5 platform × 8 カテゴリ = 40 セルを対象外とすることの一括承認。回答の記録時刻 2026-09-30T12:01:17Z。basis=user-decision。
-
-#### この承認を名指ししている質疑: `qa-subsmerge-foundation-shown-002`
-
-**問**
-
-qa-subsmerge-foundation-002 の再承認で、利用者へ提示した U1〜U9 の全文と A・B の変更点は何か (逐語)。
-
-**答**
-
-Q1 と Q2 の回答は記録済みです。foundation の再承認をお願いします。以下は `spec-state.json` に書き込む予定の文面そのものです（案の JSON の sha256 は `969f2ee2…`）。前回の承認（`appr-foundation-subsmerge-001`、07:57Z）から変わった点は次の 2 種類です。
-
-**A. 承認後にアシスタントが書き足していた具体（未承認だったもの）**
-- U6 の「運用者」
-- O2 の「最終の集計が最後に完了した操作の状態と一致」
-- O4 の「404・409」
-- I8
-- U7 の対象外 2 項目（未照合明細の算入、Web 以外の専用アプリ）
-
-**B. 今回の修正**
-- **共有テナントの事実を反映**: 現物では、ログインできる利用者（admin と member）の全員が、同じ共有テナントの業務データを扱います。これに合わせて G4、O2、O4、U6、I8 を直しました。
-  - 「本人のデータだけ」は「共有テナントのデータだけ」に変わります。
-  - 同時操作は別の利用者からも起こりえます。
-- **U5**: 「連続・同時の操作が**原因で**…(5xx) が出ない」に絞りました。本当のサーバー障害まで禁じる意味に読めないようにするためです。
-- **U2**: 本番のホスト名を外し、出典として `qa-subsmerge-request-origin-001` を付けました。
-- **U8**: 参照先を、今回の回答の id（`qa-subsmerge-target-platforms-002`、`qa-subsmerge-decision-004`）に付け替えました。
-
----
-
-**U1 本質的目的**
-サブスクの名寄せ (統合) を一度決めたら、その結果がサブスク画面の一覧・KPI・月次推移・年換算の比較・詳細パネルと、他画面のサブスク集計まで、1つの正本から一貫して反映されるようにし、利用者が固定費を正しい単位で見直せる状態にする。あわせて、統合・登録・変更・見直し判断を続けて・同時に行っても操作が失われたり失敗で止まったりせず、どの操作が待機中・処理中・完了・失敗かを利用者が把握できるようにする。(5 Whys: 統合しても行が消えない → 同じサービスが複数行に分かれて合計と見直し候補が二重に見える → 統合結果が行の構成と他画面の集計に同じ経路で届いていない → 固定費の実額と見直し判断を信頼できる数字で行えない)
-
-**U2 背景**
-本番の /subscriptions?vendor=aquavoice で統合を行っても一覧から行が消えないと利用者が報告した (qa-subsmerge-request-origin-001)。観測事実: (1) 登録済みの行を開いて統合すると統合先が開いている行そのもの (Subscriptions.tsx の mergeTargetId) になり、API は結合後の別名が前と同じなら何もせず返す (routes/subs.ts の aliases POST)。登録済みの行を別の行へまとめる手段が画面に無い。(2) デザイン 09-subscriptions は一覧に行チェックを持つが、実装の一覧には行チェックが無い。(3) 他画面の subs:* 集計 (monthly_agg) は freee 仕訳だけから別経路 (dataset.ts) で作られ、照合順序と対象科目の絞り方がサブスク画面と食い違う。(4) 書込みと再集計 (recomputeFromDeals) は別の batch で一体でなく、再集計が失敗した後の再試行は早期 return で集計が古いまま残る。(5) 「サーバー側で処理に失敗しました」は 5xx でだけ出る文言で、書込みの取り合い (canonical_write_busy) は 409 の別文言になる。サブスクの書込みには revision・冪等キー・操作履歴が無く、PUT は画面が持つ古い値で丸ごと上書きする。一方、照合 (reconciliation_actions)・総収支 (total_cashflow_operations)・設定 (settings_change_log) には条件付き書込み・409・取り消しの前例がある。
-
-**U3 ゴール**
-- G1: 統合した取引名・ベンダーは統合先の1行にまとまり、統合元の行は一覧から消え、KPI・月次推移・年換算の比較・詳細パネル・他画面のサブスク集計が同じ名寄せ結果を示す。
-- G2: 統合・登録・変更・見直し判断を連続・同時に行っても、操作が失われたり「サーバー側で処理に失敗しました」で止まったりせず、各操作の状態 (待機中・処理中・完了・失敗と再試行) を利用者が把握できる。
-- G3: サブスク画面が添付画像 (デザイン 09-subscriptions) の構成と操作どおりになる (一覧の行チェックと全選択、選択バーからの複数件統合、詳細パネル 概要/取引履歴/関連データ、マッチした生の取引名、検出理由、年換算の比較、カバー率)。
-- G4: 統合と操作の管理が安全である (ログインした利用者だけが、全利用者で共通の共有テナントのデータだけを変更できる、統合を取り消して統合前へ戻せる、古い画面からの上書きを防ぐ、操作の記録に実データを外部へ出さない)。
-
-**U4 目標**
-- O1: 統合後の再取得で、統合元の正規化名を持つ行が一覧に0件、統合先の月額が同一期間の統合前の両者の和と一致し、他画面の subs:* 集計の名寄せ (どのサブスクに属するか) がサブスク画面と一致する。（測り方: core の契約テストと api の統合テストで、統合元の行0件・金額の和の一致・両経路の名寄せ一致を検査して緑／資する: G1）
-- O2: 同じテナントへ統合を5件連続・2件同時に送っても (同じ利用者の別タブからと、別の利用者からの両方)、全操作が完了か明示的な 409 (再読込の案内) で終わり、500 が0件、最終の集計が最後に完了した操作の状態と一致する。（測り方: api の統合テストで連続送信と同時送信を再現し、ステータスと集計を検査して緑／資する: G2）
-- O3: 画像の要素 (行チェック、全選択、選択バー、統合先の選択、操作状態の表示、取り消し) の DOM テストが全件緑。（測り方: web の subscriptions-screen DOM テストで要素と操作を検査して緑／資する: G3）
-- O4: 他テナントのベンダー id への操作は 404、統合の取り消しで統合前と同じ一覧に戻る、古い revision からの更新は 409。（測り方: api の統合テストで所有者・取り消し・revision 競合を検査して緑／資する: G4）
-
-**U5 成功基準**
-- 本番相当のデータで aquavoice 型のケース (登録済みの行を別の行へ統合) を行うと、統合元の行が一覧から消え、KPI と他画面のサブスク集計が同じ名寄せ結果を示す。
-- 連続・同時の操作が原因で「サーバー側で処理に失敗しました」(5xx) が出ない。取り合いは原因と次の行動が分かる文言で示され、再試行で必ず最新の状態へ収束する。
-- pnpm verify:full と CI が緑である。
-
-**U6 利用者**
-- 利用者 (admin と member。全員が同じ共有テナントの業務データを扱い、個人事業と家計の収支を管理する): 月次の見直しで、同じサービスが別名で複数行に並ぶ状況で、1つにまとめて固定費の実額と見直し候補を正しく判断したい (JTBD)。
-- 運用者 (admin。利用者と同じ人物のこともある): 操作が失敗したときに、どの操作が何の理由で止まったかを画面と記録から辿り、再試行で収束させたい。
-
-**U7 範囲**
-- 対象:
-  - 統合の意味の是正: 登録済みの行を別の行へ統合でき、統合元の登録・別名・見直し判断を統合先へ吸収し、統合元の行を一覧から消す
-  - 一覧の行チェックと全選択、詳細パネルの取引名チェック、選択バーで統合先 (代表) を選ぶ複数件統合
-  - 統合の取り消し (統合前へ戻す) と操作履歴
-  - 名寄せ (どのサブスクに属するか) を全画面で1つの照合関数から導く。金額の母集団は各画面の定義を保ち、差は注記する
-  - サブスクの書込みの並行制御: 操作の記録・冪等キー・revision による 409・書込みと再集計の原子化、画面の待ち行列と操作状態の表示
-  - 画像との差分の UI 反映と、それに伴う API・D1 migration (0058 以降)・テスト・文書
-- 対象外:
-  - 他画面 (概要・総収支・推移など) の画面デザインの作り直し (名寄せの共通化による集計の一致だけを行う)
-  - freee / マネーフォワードの取込方式の変更
-  - 他画面の合計へのカード・銀行の未照合明細の算入 (利用者決定 qa-subsmerge-decision-002 により母集団は各画面の定義を保つ)
-  - AI による自動統合 (候補の提示と検出理由は出すが、統合の確定は利用者の操作だけで行う)
-  - Web 以外の専用アプリ (mobile / tablet / desktop)
-
-**U8 制約**
-- 対象 platform は web のみ (利用者決定 qa-subsmerge-target-platforms-002、承認 appr-platforms-subsmerge-002)。
-- 既存の Cloudflare Workers + D1 + R2 の範囲で作り、新しい有料サービスや Durable Objects を前提にしない (利用者決定 qa-subsmerge-decision-004、decision-subsmerge-003)。
-- public リポジトリであり、実データ (data/、freee/MF エクスポート、口座明細) をコミットしない。テストとサンプルは匿名化済みの samples だけを使う。
-- 色・文字・余白は docs/design-system.md と design-tokens に従い、web に色の hex を直書きしない。
-- D1 migration は追加のみ。破壊的 migration は PR 上で承認 (migration-approvals.json) する。
-
-**U9 具体的意図**
-- I1: 登録済みの行でも統合先を選べるようにし、統合元の取引名と別名を統合先の別名へ移し、統合元の登録と見直し判断を統合先へ吸収する。（資する: G1）
-- I2: 一覧の行チェックと全選択で複数行を選び、選択バーから代表 (統合先) を決めて統合する。詳細パネルの取引名チェックとも同じ選択バーを使う。（資する: G1, G3）
-- I3: 他画面のサブスク集計 (monthly_agg の subs:*) を、サブスク画面と同じ照合関数 (名前・別名・統合・対象科目) で導く。（資する: G1）
-- I4: サブスクの書込みを操作として D1 に記録し (冪等キー・期待 revision)、書込みと再集計を同じ原子単位で適用する。古い revision からの更新は 409 で止める。（資する: G2, G4）
-- I5: 画面は連続操作を待ち行列に積んで1件ずつ送り、処理中・完了・失敗 (再試行) を操作状態として表示する。失敗の文言は原因と次の行動を示す。（資する: G2, G3）
-- I6: 統合の取り消しで統合前の登録・別名・判断を復元し、操作履歴から直近の統合を辿れるようにする。（資する: G4, G1）
-- I7: 画像との差分 (行チェック、全選択、選択バーの統合先選択、操作状態) を design tokens に沿って反映する。（資する: G3）
-- I8: 全ての書込み API で業務データの所有者 (user_id = 共有テナント id) を検査し、入力を検証し、操作記録には取引名など業務上必要な最小限だけを保存する。（資する: G4）
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: 本セッションの会話記録 (transcript jsonl) のアシスタント発言 (記録時刻 2026-09-30T12:05:36.244Z) の text block を script で逐語抽出した (5162 文字、sha256 12981ccf65c593ddab89ead8c9939317ac0eee979c90bbe8ca0bd07e48422752)。本番 URL のホスト名と URL は含まれていないことを確かめた。answered_at はこの発言の記録時刻 (提示の時刻) で、利用者の承認 (qa-subsmerge-foundation-002、12:05:58Z) より前。qa-subsmerge-foundation-002 と appr-foundation-subsmerge-002 は書き換えず、何を見せて承認を得たかの証跡を本 entry で補う。 / 回答時刻: 2026-09-30T12:05:36Z)
+| Web (web) | 確定 | 確定質疑: qa-classify-bulk-decision-070。裏付け質疑 (`qa_refs`): `qa-classify-bulk-database-web-003`, `qa-classify-bulk-database-web-001`, `qa-classify-bulk-database-web-evidence-001`, `qa-classify-bulk-decision-005`, `qa-classify-bulk-database-web-002`, `qa-classify-bulk-decision-013`, `qa-classify-bulk-decision-033`, `qa-classify-bulk-delegated-001`, `qa-classify-bulk-decision-036`, `qa-classify-bulk-delegated-004`, `qa-classify-bulk-decision-045`, `qa-classify-bulk-decision-049` — 本章の「確定内容 (質疑録)」へ接地根拠として併記。資するゴール: G1, G3, G5 |
+| モバイル (mobile) | 対象外 | 理由: スマートフォン向け専用アプリを提供していたなら、database では端末内に明細・下書き・選択を持つローカル保存と、オフラインで確定した仕分けをサーバへ戻す同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
+| タブレット (tablet) | 対象外 | 理由: タブレット向け専用アプリを提供していたなら、database では端末内に明細・下書き・選択を持つローカル保存と、オフラインで確定した仕分けをサーバへ戻す同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
+| デスクトップ (Windows) (desktop-windows) | 対象外 | 理由: Windows 向けデスクトップアプリを提供していたなら、database では端末内に明細・下書き・選択を持つローカル保存と、オフラインで確定した仕分けをサーバへ戻す同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
+| デスクトップ (Linux) (desktop-linux) | 対象外 | 理由: Linux 向けデスクトップアプリを提供していたなら、database では端末内に明細・下書き・選択を持つローカル保存と、オフラインで確定した仕分けをサーバへ戻す同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
+| デスクトップ (macOS) (desktop-macos) | 対象外 | 理由: macOS 向けデスクトップアプリを提供していたなら、database では端末内に明細・下書き・選択を持つローカル保存と、オフラインで確定した仕分けをサーバへ戻す同期の設計を決める必要があった。対象を web のみとする利用者決定 (qa-classify-bulk-decision-067) によりその検討は発生しない。 |
 
 ## 上流指針 (doctrine anchors)
 
@@ -135,8 +28,8 @@ Q1 と Q2 の回答は記録済みです。foundation の再承認をお願い�
 
 | 設計 concern | 上流の正本 (authority) | 導く範囲 | 出典 | 最終確認 | 本章の確定セルへの反映 |
 |---|---|---|---|---|---|
-| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | D1 への読み書きを api の store 層に閉じ、core は merged_into_id を含む SubVendor の配列だけを受け取る形へ反映した。統合関係の解決 (連鎖と循環) は core が行い、store は sub_vendors・subscription_operations・subscription_revisions の 3 表を 1 つの batch で書くだけにする。 |
-| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 書込みとサブスク範囲の集計の置き換えを 1 つの D1 batch にまとめ、集計だけが古いまま残る部分失敗を無くす形へ反映した。UNIQUE (user_id, actor_user_id, idempotency_key) で同じ利用者の再送を 1 回の適用に畳み、UNIQUE (user_id, base_revision) で同じ revision からの 2 つ目の書込みを、別の利用者からのものも含めて制約違反として落とす。期限を過ぎた行の掃除も同じ batch に入れ、夜間の予算を使わない。 |
+| data-access | Robert C. Martin — Clean Architecture | 永続化を境界の外側へ追い出し interface adapter で隔離する | Clean Architecture — gateways/repositories boundary | 2026-07-12 | 一括保存の書き込み先を既存の tx_edits と tx_history に限り、既存の表に列を足さない形へ反映した。編集の値は個別編集と同じ applyManualEditWithBase で組み、書き込みは明細ごとの文を json_each で束ねる一括版の関数を store と履歴の側に置く (qa-classify-bulk-decision-033・qa-classify-bulk-delegated-001)。足す読み取りは、選択の読み出しで userId と txId の組で明細を引くものと、利用者ごとの勘定科目の対応表を引くものである。足す表は勘定科目の対応表の 1 つで、読み出し・追加・削除はどれも userId を条件に含める。 |
+| reliability | Google SRE | SLO/エラーバジェット・冗長性・スケーリング・監視の上流指針 | https://sre.google/books/ | 2026-07-12 | 一括保存の編集と履歴を json_each で束ねて 1 回の D1 batch で書き、batch がトランザクションとして全体を巻き戻すので、失敗したら保存対象の全件を write_failed として返す形へ反映した (qa-classify-bulk-decision-057)。書き込みの文の数が明細数で増えないので、100 件の保存でも途中まで保存された状態が残らない。勘定科目の対応表の migration は 2 本で、表を作って既存の利用者に初期の 5 行を入れるものと、設定の変更履歴の種類の制約を表の作り直しで改めるものである。後者は破壊的な migration なので、既存の承認の仕組みに従い PR で承認してから本番へ当てる (C2)。 |
 
 ## 確定内容 (質疑録)
 
@@ -144,373 +37,232 @@ Q1 と Q2 の回答は記録済みです。foundation の再承認をお願い�
 
 ### Web (web)
 
-- 資するゴール: G1, G2, G4
+- 資するゴール: G1, G3, G5
 
-#### 主たる接地根拠: `qa-subsmerge-actor-record-001`
+#### 主たる接地根拠: `qa-classify-bulk-decision-070`
 
 **問**
 
-(b) 統合と取り消しを「誰が行ったか」を記録しますか？
+要件の土台のうち、取込直後の提案と勘定科目の対応表を書いた 9 項目 (G2・O3・S2・I4・I8・範囲に含む 6・11・C2・C4) を、『承認する』の preview の今の文面で承認しますか。要件の土台 (U1〜U9) の文面は、以前の承認の後に続いた決定で書き換わっていて、今の全文を逐語で示して承認を得た記録がありません。以前の問 (decision-060) の (b)『要件の土台 U1〜U9 の全文を逐語で示し、承認し直す』に当たります。土台を 6 つに分け、この回と次の回で 3 つずつ伺います。今の全文は『承認する』の preview に、改める項目と変えない項目に分けて置きます。文中の括弧内の id は、その文面のもとになった決定です。9 項目とも、以前の承認 (decision-016) の後の決定で文面が変わり、そのうち I8 と範囲に含む 11 は新しく足す項目です。主な変化: 事業の明細にも、勘定科目の対応表で大項目から引いた勘定科目を、由来『MF の分類 (対応表)』で提案する (decision-040・049〜052)。勘定科目の対応表に行の無い大項目と、MF の大項目が空か『未分類』の明細には付けない (decision-050・039)。集計ルールが当たる個人の明細は、ルールを当てた後の値を提案する (decision-028)。勘定科目の対応表の表を migration で 1 つ足し、API・設定画面・設定の変更履歴・設定の JSON (版 2)・バックアップに加える。変更履歴の種類の制約の作り直しは破壊的な migration なので、PR で承認する (I8・範囲に含む 11・C2)。C2 は『表と列は足さない』から『表の追加は勘定科目の対応表の 1 つに限り、既存の表に列は足さない』に変わります。以前の問 (decision-016) は、『承認しない』にだけ結果を書いていて選択肢の書き方が片寄っていたので、各選択肢に利点と不利な点を書いて問い直します。承認すると、この問の記録を、仕様の database と infrastructure の章の主な根拠にします。今の 2 つの章の主な根拠は、migration を足さないとした以前の回答で、この点が今の文面と食い違っています。
 
 **答**
 
-操作表に残す (Recommended)（選択肢の説明: 0058 で新しく作る操作表に actor_user_id NOT NULL を持たせ、同じ batch で書きます（0046 と同じ作りで、既存の表を変えない migration です）。注意: 利用者を削除しても id は残るので、表示は「削除された利用者」にします。）
+承認する。preview の項目を、今の文面のまま要件の土台として承認する。利点: 土台と仕様の各章が同じ文面に揃い、承認の記録から今の文面を辿れる。不利な点: preview は約 4200 字あり、読み落とした細部も、この文面のまま計画と実装へ渡る。 回答に自由記述は付いていない。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「土台・提案と対応表」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-024)。利用者はこの問で「承認する」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T09:12:13.849Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-016 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T09:12:14Z)
+
+#### 裏付け質疑: `qa-classify-bulk-database-web-003`
+
+**問**
+
+完成度評価 loop 3 の指摘 (履歴の粒度が実装と食い違う) を受けて、一括保存の編集と履歴を D1 へどう書き、履歴を何の単位で残すか。
+
+**答**
+
+明細の編集 (tx_edits) と変更履歴 (tx_history) を json_each で束ね、1 回の D1 batch (トランザクション) で書く。失敗したら保存対象の全件を巻き戻し、全件を write_failed とする。履歴は、保存した明細の値が変わった項目ごとに 1 行 (source=bulk、同じ要求の行は同じ op_id) を残し、値が変わらない明細は履歴を書かない。表・列・migration は足さず、下書きはブラウザに置く。
 
 > **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
 > 本文中の記述と食い違う場合は、訂正側が正である。
 >
-> - `2026-09-30T14:09:17Z` — 本 entry の答にある選択肢の説明『利用者を削除しても id は残るので、表示は「削除された利用者」にします』は、利用者を削除する経路があると読める書き方だった。実際には API と migrations に users の行を消す SQL は無く、利用者は status='suspended' で停止する (qa-subsmerge-maintenance-ops-web-evidence-002)。操作表に actor_user_id を外部キーなしで残すという選択の中身はこの前提に依らない。停止中の利用者も email で示し、「削除された利用者」の表示は、手作業の運用などで users に行が見つからない例外時だけに使う。同じ訂正は qa-subsmerge-presented-options-006 に 2026-09-30T13:35:08Z で付いている。利用者の回答そのもの (逐語) は正しく記録されている。
+> - `2026-09-30T12:33:49Z` — provenance の『U1〜U9 の全文』は、保存値の逐語ではなく全項目を言い換えた提示を指す (提示と回答の逐語は qa-classify-bulk-presented-options-003)。『提示 (2026-09-30T11:52:04.835Z)』は表示の前に測った下限で、本文の表示は 2026-09-30T11:52:47.000Z、問の提示は 2026-09-30T11:52:50.231Z。『受領 2026-09-30T12:01:11.715Z』は受領の後に測った値で、回答の受領は 2026-09-30T12:01:05.458Z (いずれもセッション記録)。answered_at 12:01:12Z は承認時刻の上界として引き続き成り立つ。
+> - `2026-09-30T21:16:05Z` — question と provenance が受ける土台の承認 appr-foundation-classify-bulk-003 (提示の逐語は qa-classify-bulk-presented-options-003) は、appr-foundation-classify-bulk-004 (提示の逐語は qa-classify-bulk-presented-options-007) で改められた。本 entry の保存方式 (json_each で束ねた 1 回の D1 batch、失敗したら保存対象の全件を write_failed、値が変わった項目ごとの履歴、表・列・migration を足さない) は変わらない。
+> - `2026-10-01T00:36:07Z` — 本 qa を主根拠とする database×web のセルを reopen して同じ主根拠で確定し直し、qa_refs から qa-classify-bulk-presented-options-003 を外し、qa-classify-bulk-decision-013 を加えた (qa_refs の並びを揃えるための操作で、本 qa の内容は変えない)。
+> - `2026-10-01T09:47:30Z` — answer の『表・列・migration は足さず』は、qa-classify-bulk-decision-049 で改まった。勘定科目の対応表を利用者ごとの新しい表として 1 つ足し、migration で作る。初期の 5 行は、既存の利用者には migration で、新しい利用者には作成時に入れる (qa-classify-bulk-decision-050)。設定の変更履歴の種類の制約は表の作り直しで改め、これは破壊的な migration なので、既存の承認の仕組みに従い PR で承認する。設定の JSON (kanjo-settings) とバックアップ・復元に勘定科目の対応表を加え、設定の JSON の版を 2 に上げる。既存の表に列は足さない。『カテゴリなし』は明細の編集 (tx_edits) の大項目の欄に予約の値で持ち、列を足さない (qa-classify-bulk-decision-045)。一括保存の書き方 (json_each で束ねた 1 回の D1 batch、失敗したら保存対象の全件を write_failed、値が変わった項目ごとの履歴、値が変わらない明細は履歴を書かない) と、下書きをブラウザに置くことは変わらない。batch が失敗したときに要求を 2xx で返すことは qa-classify-bulk-decision-057 で利用者が決めた。
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion (記録時刻 2026-09-30T12:58:28.555Z、提示の全文と選択肢の説明は qa-subsmerge-presented-options-006) で注意点付きの選択肢から選んだ回答。回答は 2026-09-30T13:05:44.372Z の tool_result に逐語で『"(b) 統合と取り消しを「誰が行ったか」を記録しますか？"="操作表に残す (Recommended)"』と記録されている。answered_at は回答の記録時刻で、利用者が選んだ時刻の上界 (提示 12:58:28Z より後)。reopen (12:54:40Z) より後に取り直した回答。 / 回答時刻: 2026-09-30T13:05:44Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion で U1〜U9 の全文 (G5・S5・O6 の履歴と O2 の文面を訂正済み) と『3 章の確定内容』を 1 回で提示し (2026-09-30T11:52:04.835Z)、その database 行 (編集と履歴を json_each で束ね 1 回の batch で書く・失敗は全件巻き戻して write_failed・履歴は値が変わった項目ごとに 1 行で値が変わらない明細は書かない・表と列と migration は足さない) と U8 C2 (下書きはブラウザに置く) を、利用者が『この内容で承認』で承認した (受領 2026-09-30T12:01:11.715Z)。answered_at は受領時刻を秒へ切り上げた値で、承認時刻の上界である。qa-classify-bulk-database-web-001 の『成功した明細ごとに履歴を 1 件ずつ』を置き換え、qa-classify-bulk-database-web-002 の書き込み方式を引き継ぐ。 / 回答時刻: 2026-09-30T12:01:12Z)
 
-#### 裏付け質疑: `qa-subsmerge-database-web-evidence-001`
-
-**問**
-
-database 章の裏付けとして、サブスクの統合と書込みに関わる現行の表と書込み経路について何を観測したか。
-
-**答**
-
-sub_vendors は migrations/0005 で id INTEGER PK・user_id TEXT・name・aliases (JSON 文字列)・sort_order・created_at・UNIQUE(user_id,name) を持ち、統合関係・revision・操作履歴を表す列は無い。統合は packages/api/src/routes/subs.ts:208 の POST /sub-vendors/:id/aliases が統合先の aliases 列を書き換えるだけで、:220 で結合後の別名が前と同じなら何も書かずに返す。書込みは db.batch で aliases 更新と JSON snapshot 無効化を行ったあと、:228 で別に recomputeFromDeals (store.ts:2070) を呼び、monthly_agg の subs:<vendor> と subs_other (store.ts:2114) を全件再計算して別の batch で置き換える。取り消し・条件付き書込みの前例は total_cashflow_operations (migrations/0042: id TEXT PK, items_json に操作前の値, undoes_id, undone_at。行は消さない)・reconciliation_actions (0041)・settings_change_log (0056) にある。最新の migration は migrations/0057_improvement_request_screen.sql で、packages/api/src/schema-guard.ts:4 の EXPECTED_D1_MIGRATION が同じ名前を指す。json_each(?) で JSON 配列を 1 文に束ねる前例が import-lifecycle.ts:171 と improvement-orphan-sweep.ts:102 にある。
-
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-30T08:06:00Z)
-
-#### 裏付け質疑: `qa-subsmerge-database-web-003`
+#### 裏付け質疑: `qa-classify-bulk-database-web-001`
 
 **問**
 
-共有テナントと利用者決定 (qa-subsmerge-undo-scope-001・actor-record-001・decision-005・retention-001) の下で、統合関係・操作の記録・revision・保持期間を D1 にどう持つか (利用者が決めていない具体値)。
+一括保存と選択の読み出しで、どのデータをどこに持つか。
 
 **答**
 
-migrations/0058_subscription_merge_operations.sql を追加だけで足す (ALTER TABLE ADD COLUMN・CREATE TABLE・CREATE INDEX のみ)。(1) sub_vendors に merged_into_id INTEGER NULL を足す。統合先の sub_vendors.id を指し (同じ user_id の行だけ)、NULL は統合されていない行。(2) subscription_operations (id TEXT PRIMARY KEY, user_id TEXT NOT NULL — 共有テナントのキー TENANT_ID, actor_user_id TEXT NOT NULL — 操作した利用者の users.id。外部キーは付けない (0046 liability_audit_log と同じ。users の行が無くなっても記録を残す), idempotency_key TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('merge','unmerge','vendor_create','vendor_update','vendor_delete','review','review_decision','exclusion')), target_vendor_id INTEGER, payload_json TEXT NULL, before_json TEXT NULL, base_revision INTEGER NOT NULL, undoes_id TEXT, undone_at TEXT, created_at TEXT NOT NULL, UNIQUE (user_id, actor_user_id, idempotency_key), UNIQUE (user_id, base_revision)) と INDEX (user_id, created_at)。(3) subscription_revisions (user_id TEXT PRIMARY KEY, revision INTEGER NOT NULL, updated_at TEXT NOT NULL)。revision は共有テナントに 1 本だけ持ち、別の利用者の同時の操作も同じ revision で検出する。成功した操作ごとに 1 つ進め、UNIQUE (user_id, base_revision) が同じ revision からの 2 つ目の書込みを制約違反で落とす。before_json は操作前の統合元・統合先の name・aliases・merged_into_id・見直し判断だけで、取引の金額・日付・口座は持たない。取り消しは元の行の undone_at を埋めて kind='unmerge' の行を actor_user_id 付きで足す (0042 total_cashflow_operations の前例)。保持 (qa-subsmerge-retention-001): created_at から 30 日を過ぎた行は payload_json と before_json を NULL にし (取り消せなくなる)、400 日を過ぎた行を削除する。夜間保守の D1 query 予算は 49/49 で埋まっているため (scheduled-maintenance-budget.ts:21)、掃除は新しい書込みの batch に UPDATE … WHERE id IN (SELECT id … LIMIT 50) と DELETE … WHERE id IN (SELECT id … LIMIT 50) の 2 文を足して行う (UPDATE/DELETE の直接の LIMIT は SQLite の compile option に依存するので使わない)。payload_json を NULL にした後で同じ Idempotency-Key が再送されたら、最初の結果と本文を照合できないので 422 idempotency_key_expired にする。schema-guard.ts の EXPECTED_D1_MIGRATION を 0058 へ進める。monthly_agg の subs:<vendor> と subs_other は統合先の名前でだけ書く。
-
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 利用者決定 qa-subsmerge-undo-scope-001・actor-record-001・decision-005・retention-001 と再承認 appr-foundation-subsmerge-002 (G4: 全利用者で共通の共有テナントのデータだけを変更できる) を満たすための具体値としてエージェントが推定した設計。旧 G4 の承認 appr-foundation-subsmerge-001 を出所とする qa-subsmerge-database-web-002 を置き換える。利用者は表名・列名・制約の形・掃除の件数を決めていない。answered_at は本 entry の記録直前に実測した記録時刻。 / 回答時刻: 2026-09-30T13:35:08Z)
-
-#### 裏付け質疑: `qa-subsmerge-retention-001`
-
-**問**
-
-(d) 操作の記録と、取り消し用データの保持期間はどうしますか？
-
-**答**
-
-取消30日・記録400日 (Recommended)（選択肢の説明: 既存の期間（削除の取り消しは 30 日、監査ログの見出しは 400 日）にそろえます。30 日を過ぎたら、変更前の内容を消して見出しだけ残します。注意: 夜間の予算は 49/49 で使い切っているため、期限切れの行は新しい操作の batch のついでに消します。）
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion (記録時刻 2026-09-30T12:58:28.555Z、提示の全文と選択肢の説明は qa-subsmerge-presented-options-006) で注意点付きの選択肢から選んだ回答。回答は 2026-09-30T13:05:44.372Z の tool_result に逐語で『"(d) 操作の記録と、取り消し用データの保持期間はどうしますか？"="取消30日・記録400日 (Recommended)"』と記録されている。answered_at は回答の記録時刻で、利用者が選んだ時刻の上界 (提示 12:58:28Z より後)。reopen (12:54:40Z) より後に取り直した回答。 / 回答時刻: 2026-09-30T13:05:44Z)
-
-#### 裏付け質疑: `qa-subsmerge-decision-005`
-
-**問**
-
-(c) 同時処理の仕組み（decision-subsmerge-003）は、推奨の「操作ログで順次処理」で確定してよいですか？
-
-**答**
-
-操作ログで順次処理 (Recommended)（選択肢の説明: 既存の Workers と D1 だけで実現します。同時の 2 件目は 409 になり、画面が自動で再試行します。注意: 待たせて並べるのではありません。再試行の上限を超えたときだけ失敗を表示します。）
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者が AskUserQuestion (記録時刻 2026-09-30T12:58:28.555Z、提示の全文と選択肢の説明は qa-subsmerge-presented-options-006) で注意点付きの選択肢から選んだ回答。回答は 2026-09-30T13:05:44.372Z の tool_result に逐語で『"(c) 同時処理の仕組み（decision-subsmerge-003）は、推奨の「操作ログで順次処理」で確定してよいですか？"="操作ログで順次処理 (Recommended)"』と記録されている。answered_at は回答の記録時刻で、利用者が選んだ時刻の上界 (提示 12:58:28Z より後)。reopen (12:54:40Z) より後に取り直した回答。 / 回答時刻: 2026-09-30T13:05:44Z)
-
-#### 裏付け質疑: `qa-subsmerge-presented-options-007`
-
-**問**
-
-取り消しの範囲・操作者の記録・同時処理の仕組み (decision-subsmerge-003) の再確認・保持期間について、利用者へ提示した本文と選択肢 (各選択肢の説明を含む) は何か (逐語)。
-
-**答**
-
-~~~text
-[提示本文 2026-09-30T12:58:16.401Z]
-質問の準備ができました。その過程で、保持期間 (d) の決め方に関わる新しい事実が 1 つ見つかりました。
-
-- 夜間の掃除（`scheduledMaintenance`）で使える D1 の問い合わせ予算は、49 本の上限をすでに使い切っています（`packages/api/src/scheduled-maintenance-budget.ts:13-21`）。
-- 夜間の掃除に新しい処理を足すには、既存の枠を削る必要があります。
-- データ取込画面はこの制約を避けるため、期限切れの行を夜間ではなく、その要求のついでに消しています（`packages/api/src/routes/imports.ts:2905`）。
-
-以下、R5 の順で全文を示します。
-
----
-
-## 1. 決まっていないこと（4 つ）
-
-- **(a)** 統合を誰が取り消せるか
-- **(b)** 統合と取り消しを誰が行ったかを記録するか
-- **(c)** 同時処理の仕組み（decision-subsmerge-003）の再確認
-- **(d)** 操作の記録と、取り消し用データの保持期間
-
-**前提（コードで確かめた事実）**
-- ログインできる利用者（admin と member）は、全員が同じ共有テナント（`TENANT_ID='default'`）のデータを扱います。
-  - `c.get('userId')` は全員で同じ値です。
-  - 操作した人は `c.get('actor').id` で分かります（`auth.ts:36`、`:257-258`、`:276-277`）。
-- 既存の取り消し 2 つ（データ削除の取り消しと、総収支の操作の取り消し）は、テナントで絞り込んでいます。操作した人では絞っていません。
-- 保持期間は次のとおりです。
-  - 削除の取り消しは 30 日。
-  - audit_log は、見出しが 400 日、詳細が 90 日。
-- audit_log の action は CHECK 制約で列挙されています。種類を増やすには表を作り直す必要があり、破壊的な migration になります。
-  - そのため 0046 では別の表を作り、`actor_user_id TEXT NOT NULL` を持たせています。
-  - 0042 の操作表には、操作者の列がありません。
-- 次の migration 番号は 0058 です。
-
-**影響する範囲**: web の 8 カテゴリ（auth、security、maintenance-ops、database、backend、frontend、infrastructure、ui-ux）です。12:54:40Z に reopen 済みで、今回の回答をもとに作り直します。
-
-## 2. 比較の観点
-
-G1〜G4 への適合 / TCO（利用料、構築、運用、撤退）/ security / operations / lock-in
-
-## 3. 3 案の比較（(c) 同時処理の仕組み）
-
-| 観点 | 操作ログで順次処理 | DO（共有テナントに 1 つ） | 画面側で 1 件ずつ送るだけ |
-|---|---|---|---|
-| 目標への適合 | G1〜G4 を全て満たします。同時の 2 件目は 409 になり、画面が自動で再試行します | G2 には最も強く、同時の要求を拒否せずに待たせて順に処理できます。ただし、DO から D1 への書込み中は input gate が効かないため、待ち行列を自前で作る必要があります | G1 と G4 は満たしません。G2 も、同じ画面での連打にしか効きません |
-| TCO | 利用料は 0 です。migration と、書込みを 1 回の `batch()` にまとめる作業が要ります | Workers Free なら 0 です（Paid では、公式の計算例が最低 $5/月を加えています）。構成要素、テスト環境、状態の二重管理が増えます | 最小です。ただし障害の調査と手当ての手間が残ります |
-| security | テナント境界、revision の照合、操作の記録を D1 の 1 か所で扱えます | 同じことを DO と D1 の 2 か所で扱います | 古い画面や別の利用者からの上書きを防げません |
-| operations | 見張るのは lease の TTL と、操作表の保持だけです | DO と D1 の整合、1 つの DO への集中を監視する必要があります | 見張るものは少ないですが、ずれが残ります |
-| lock-in | 低（SQLite 互換です） | 中〜高（Cloudflare 固有の API です） | 低 |
-
-## 4. AI の推奨
-
-- **(c)** 操作ログで順次処理
-- **(a)** 同じテナントの全利用者が取り消せる
-- **(b)** 操作表に `actor_user_id` を残す
-- **(d)** 取り消し用データは 30 日、記録は 400 日。期限切れの行は、新しい操作を書く `batch()` のついでに消す
-
-## 5. 推奨の理由
-
-- **(c)**: 既存の Workers と D1 だけで G1〜G4 を満たせます。利用料は 0 で、構成要素も増えず、撤退も簡単です。
-  - 同時操作は、別の利用者、別のタブ、連打のどれからも起こり得ます。待たせて順に並べる点では DO 案が上です。
-  - それでも、2 件目を 409 にして画面が自動で再試行すれば、利用者には失敗として見えず、「500 が 0 件」を満たせます。
-- **(a)**: 既存の取り消し 2 つと同じ範囲にそろいます。全員が同じデータを共有しているため、「本人だけ」にすると、本人がいないときに誰も直せません。
-- **(b)**: 0058 で新しく作る表に列を足すだけなので、既存の表を変えない migration で済みます。0046 と同じ作りです。(a) で他の人の操作も取り消せるようにするなら、誰が操作したかを後から追える必要があります。
-- **(d)**: 既存の保持期間（取り消しは 30 日、見出しは 400 日）にそろいます。夜間の予算は使い切っているため、データ取込画面と同じく要求のついでに消します。
-
-## 6. 注意点
-
-1. 同時の 2 件目は待たされず、409 になって自動で再試行されます。再試行の上限を超えたときだけ、失敗と再試行ボタンを表示します。
-2. D1 で transaction にまとめられるのは、1 回の `batch()` に並べた文だけです。revision の照合は、その `batch()` の中の条件付き書込みで行います。
-3. 途中で Worker が止まると、lease が TTL まで残ります。その間、次の操作は待たされます。
-4. D1 Free には rows written 100,000/day の上限があります。再集計で書き換える行は、統合に関わる範囲に絞ります。
-5. D1 が overloaded を返したときは、500 ではなく「再試行できる失敗」として返します。
-6. 同時操作が常態になり 409 が目立つようになったら、DO 案への切り替えを検討し直します。
-7. **(a)** 他の人の統合も取り消せるため、誰の操作かを画面に表示する必要があります。
-8. **(b)** 利用者が削除された後も id は残ります（0046 と同じく外部キーは付けません）。表示は「削除された利用者」とします。
-9. **(d)** 取り消しの期限は、API 側でも作成日時を見て判定します。掃除の遅れで古い操作が戻せてしまうことはありません。
-
-## 7. 信頼度: medium
-
-同時操作の頻度と、409 の再試行がどれくらい起きるかは、まだ測っていません。実装後に測る必要があります。
-
-## 8. 確認日時と出典（公式、2026-09-30 UTC）
-
-- D1 の `batch()`（auto-commit、1 回の batch だけが transaction）: https://developers.cloudflare.com/d1/worker-api/d1-database/ — 12:42:26Z
-- D1 の制限（single-threaded、満杯になると overloaded）: https://developers.cloudflare.com/d1/platform/limits/ — 12:44:55Z
-- D1 の料金: https://developers.cloudflare.com/d1/platform/pricing/ — 12:39:30Z
-- DO の料金: https://developers.cloudflare.com/durable-objects/platform/pricing/ — 12:44:55Z
-- DO の概念: https://developers.cloudflare.com/durable-objects/concepts/what-are-durable-objects/ — 12:39:30Z
-- DO の規則（input gate、`blockConcurrencyWhile`、bottleneck）: https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/ — 12:47:12Z
-- Idempotency-Key（draft-07）: https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-idempotency-key-header-07 — 08:14:02Z
-- TanStack Query の mutations: https://tanstack.com/query/latest/docs/framework/react/guides/mutations — 08:11:36Z
-
-## 9. 確認のお願い
-
-推奨をそのまま採用しても、別の案を選んでも構いません。「追加で比較してほしい」「保留したい」といった答えもできます（Other に書いてください）。
-
-[AskUserQuestion の入力 2026-09-30T12:58:28.555Z]
-[
-  {
-    "question": "(a) サブスクの統合を、誰が取り消せるようにしますか？",
-    "header": "取消の範囲",
-    "multiSelect": false,
-    "options": [
-      {
-        "label": "テナントの全利用者 (Recommended)",
-        "description": "admin も member も、誰の統合でも取り消せます。既存の取り消し 2 つと同じ範囲です。注意: 他の人の作業を戻せてしまうため、画面に操作者を表示する必要があります（(b) で記録を残すことが前提）。"
-      },
-      {
-        "label": "操作した本人だけ",
-        "description": "他の人の作業を誤って戻す事故が起きません。注意: 既存の取り消しと挙動が変わります。本人がいないときは誰も直せません。操作者の記録が必須です。"
-      },
-      {
-        "label": "本人と admin",
-        "description": "member は自分の統合だけ、admin は全員の統合を取り消せます。注意: 権限の分かれ目が増えるので、検査と画面の出し分けも増えます。"
-      },
-      {
-        "label": "admin だけ",
-        "description": "取り消しを admin に限ります。注意: member は自分の誤操作を自分で直せません。"
-      }
-    ]
-  },
-  {
-    "question": "(b) 統合と取り消しを「誰が行ったか」を記録しますか？",
-    "header": "操作者",
-    "multiSelect": false,
-    "options": [
-      {
-        "label": "操作表に残す (Recommended)",
-        "description": "0058 で新しく作る操作表に actor_user_id NOT NULL を持たせ、同じ batch で書きます（0046 と同じ作りで、既存の表を変えない migration です）。注意: 利用者を削除しても id は残るので、表示は「削除された利用者」にします。"
-      },
-      {
-        "label": "audit_log にも書く",
-        "description": "監査ログの画面でも統合が見えるようになります。注意: audit_log の action の CHECK を広げるため、表を作り直す破壊的な migration になります。migration-approvals.json に sha256 を足して、PR で承認を得る必要があります。"
-      },
-      {
-        "label": "残さない",
-        "description": "変更が最も少なくて済みます。注意: 全利用者が取り消せる場合、誰の操作を誰が戻したのかが後から分かりません。"
-      }
-    ]
-  },
-  {
-    "question": "(c) 同時処理の仕組み（decision-subsmerge-003）は、推奨の「操作ログで順次処理」で確定してよいですか？",
-    "header": "同時処理",
-    "multiSelect": false,
-    "options": [
-      {
-        "label": "操作ログで順次処理 (Recommended)",
-        "description": "既存の Workers と D1 だけで実現します。同時の 2 件目は 409 になり、画面が自動で再試行します。注意: 待たせて並べるのではありません。再試行の上限を超えたときだけ失敗を表示します。"
-      },
-      {
-        "label": "DO（テナントに 1 つ）",
-        "description": "同時の操作を拒否せず、待たせて順に処理します。注意: DO から D1 への書込み中は input gate が効かないため、待ち行列を自前で作る必要があります。構成要素が増え、lock-in は中〜高です。"
-      },
-      {
-        "label": "画面側で 1 件ずつ送るだけ",
-        "description": "変更は最小です。注意: 統合元が一覧に残る問題（G1）と、取り消し（G4）は解決しません。別の利用者やタブからの同時操作も防げません。"
-      }
-    ]
-  },
-  {
-    "question": "(d) 操作の記録と、取り消し用データの保持期間はどうしますか？",
-    "header": "保持期間",
-    "multiSelect": false,
-    "options": [
-      {
-        "label": "取消30日・記録400日 (Recommended)",
-        "description": "既存の期間（削除の取り消しは 30 日、監査ログの見出しは 400 日）にそろえます。30 日を過ぎたら、変更前の内容を消して見出しだけ残します。注意: 夜間の予算は 49/49 で使い切っているため、期限切れの行は新しい操作の batch のついでに消します。"
-      },
-      {
-        "label": "両方 400 日",
-        "description": "400 日前の統合まで取り消せます。注意: 変更前の内容（name と aliases）を長く持ち続けます。時間が経つほど、戻したときに今の状態と食い違いやすくなります。"
-      },
-      {
-        "label": "消さない",
-        "description": "掃除の仕組みが要りません。注意: 表が際限なく増えます（D1 Free の保存容量は 5 GB）。ずっと昔の状態へ戻す操作まで許すことになります。"
-      }
-    ]
-  }
-]
-~~~
+DB の表と列は足さない (migration なし)。明細の手動編集は既存の tx_edits、変更履歴は既存の tx_history に書き、一括保存で成功した明細ごとに履歴 (source=bulk) を 1 件ずつ残す。下書きは既存どおりブラウザに置き、保存の要求に入れて送る。提案の最後の由来『MF の分類』は取込済みの明細が持つ大項目・中項目から算出し、新しい表には持たない。
 
 > **訂正あり** — 直上の答は凍結された記録であり、後から次の訂正が入っている。
 > 本文中の記述と食い違う場合は、訂正側が正である。
 >
-> - `2026-09-30T14:09:17Z` — 本 entry の答にある選択肢の説明『利用者を削除しても id は残るので、表示は「削除された利用者」にします』は、利用者を削除する経路があると読める書き方だった。実際には API と migrations に users の行を消す SQL は無く、利用者は status='suspended' で停止する (qa-subsmerge-maintenance-ops-web-evidence-002)。操作表に actor_user_id を外部キーなしで残すという選択の中身はこの前提に依らない。停止中の利用者も email で示し、「削除された利用者」の表示は、手作業の運用などで users に行が見つからない例外時だけに使う。同じ訂正は qa-subsmerge-presented-options-006 に 2026-09-30T13:35:08Z で付いている。利用者の回答そのもの (逐語) は正しく記録されている。
+> - `2026-09-30T12:33:49Z` — 置き換え済み (superseded_by: qa-classify-bulk-database-web-003)。主の qa_ref は -003 で、本記録は裏付けとして残す。この回答の『成功した明細ごとに履歴 (source=bulk) を 1 件ずつ』は、appr-foundation-classify-bulk-003 で『保存した明細の値が変わった項目ごとに 1 行 (同じ要求の行は同じ op_id)。値が変わらない明細は履歴を書かない』に訂正された。
+> - `2026-09-30T13:43:42Z` — provenance の後半『利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた』は、8 カテゴリの -001 に同じ文を付けたもので、本カテゴリには当てはまらない。qa-classify-bulk-database-web-003 は実在するが、basis は user-decision (appr-foundation-classify-bulk-003 の承認) で、agent の推定を分けた記録ではない。本カテゴリに agent-inference の qa は無い。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: qa-subsmerge-presented-options-006 の答と同じ逐語 (sha256 2954aeb07dc594fb46a634a701bd6b17b690f7a3cab6dddc0d622936821c5f10、7217 文字) を、~~~text の囲みに入れて記録し直したもの。囲みの内側は qa-subsmerge-presented-options-006 の答と 1 文字も違わない。提示本文の Markdown 見出し (## 1.〜## 9.) が章の見出しと混ざらないようにするための記録の書式の差し替えで、提示した内容・利用者の回答・判断の中身は変わらない。answered_at は qa-subsmerge-presented-options-006 と同じく利用者の回答の記録時刻 (2026-09-30T13:05:44.372Z) で、提示はそれより前。 / 回答時刻: 2026-09-30T13:05:44Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: 利用者承認 (appr-foundation-classify-bulk-001) と決定 qa-classify-bulk-decision-001〜004 の範囲に収まる確定内容。利用者が決めていない具体値は除き、同カテゴリの -003 (agent-inference) に分けた。 / 回答時刻: 2026-09-30T07:53:11Z)
 
-#### 裏付け質疑: `qa-subsmerge-decision-001`
-
-**問**
-
-統合の操作形はどれにしますか？（登録済みの行を別の行へまとめる手段が今は無いのが「消えない」原因の中心です）
-
-**答**
-
-行チェック+詳細の両方 (Recommended) — 画像どおり一覧に行チェックを付け、詳細パネルの取引名チェックと合わせて選択バーで統合先(代表)を選んで統合。統合元の登録・別名・見直し判断は統合先へ吸収され、統合元の行は一覧から消える。取り消しで統合前に戻せる。
-
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 選択肢提示あり (行チェック+詳細の両方 / 詳細パネルからのみ) / 回答時刻: 2026-09-30T07:57:23Z)
-
-#### 裏付け質疑: `qa-subsmerge-presented-options-001`
+#### 裏付け質疑: `qa-classify-bulk-database-web-evidence-001`
 
 **問**
 
-qa-subsmerge-decision-001 の決定で、AskUserQuestion により利用者へ提示した問いと選択肢の逐語は何か。
+database 章の裏付けとして、現行実装について何を観測したか。
 
 **答**
 
-問い『統合の操作形はどれにしますか？（登録済みの行を別の行へまとめる手段が今は無いのが「消えない」原因の中心です）』。提示した選択肢 (提示順・逐語): 【1】行チェック+詳細の両方 (Recommended) — 画像どおり一覧に行チェックを付け、詳細パネルの取引名チェックと合わせて選択バーで統合先(代表)を選んで統合。統合元の登録・別名・見直し判断は統合先へ吸収され、統合元の行は一覧から消える。取り消しで統合前に戻せる。 / 【2】詳細パネルからのみ — 開いている行を別の行へ統合する選択欄を登録済みの行にも出す。一覧の行チェックは付けない(画像との差は残る)。統合元は消え、取り消し可能。。推奨ラベル: 行チェック+詳細の両方 (Recommended)。利用者の選択: 『行チェック+詳細の両方 (Recommended)』(推奨案を選択)。自由記述 (Other) 欄は常に選べる状態で提示した。
+明細の手動編集は tx_edits 表 (packages/api/src/db/schema.ts:105)、項目ごとの変更履歴は tx_history 表 (schema.ts:1111-1126) にあり、tx_history.source の enum に 'bulk' が既にある (schema.ts:1121-1122)。一括保存は成功した明細ごとに saveEditQueries(... source: 'bulk') で履歴を書く (packages/api/src/routes/classify-bulk.ts:163-169)。下書きは端末の localStorage だけに置き、冒頭の注記は『サーバへは送らない』と書いている (packages/web/src/pages/classify/draft.ts:4, 24)。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: 本セッションの会話記録 (transcript jsonl) の AskUserQuestion 呼出し (提示時刻 2026-09-30T07:51:22.282Z、回答の記録時刻 2026-09-30T07:57:06.292Z) から逐語で復元した観測。選択は qa-subsmerge-decision-001 の既存記録と一致する。本 entry は既存の決定記録を変えず、提示の中立性を後から検算できるよう選択肢の文言を補う。 / 回答時刻: 2026-09-30T08:06:00Z)
+- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: リポジトリの現物 (ファイルと行) を読んで記録した観測。answered_at は観測後に実測した時刻。 / 回答時刻: 2026-09-30T07:53:11Z)
 
-#### 裏付け質疑: `qa-subsmerge-decision-004`
+#### 裏付け質疑: `qa-classify-bulk-decision-005` — 旧版（置き換え先: `qa-classify-bulk-decision-033`）
+
+> **旧版** — この問答は `qa-classify-bulk-decision-033` で置き換えられた (`2026-10-01T01:43:48Z`)。
+> 下の問・答は凍結された記録の逐語で、現行の接地根拠ではない。現行の問答は置き換え先を参照すること。
+> - 置き換えの理由: 旧い問は選択肢に推奨の印があった (N1 の違反)。同じ論点を、印を外し、各選択肢の利点と不利な点を対称に書き、保留の道を残して問い直した。提示の逐語は qa-classify-bulk-presented-options-014。利用者は選択肢を選ばず、無料枠の範囲で最善の慣行を選ぶよう agent に委ねた。agent の選定は qa-classify-bulk-delegated-001 に記録した。
 
 **問**
 
-統合・登録・変更・見直し判断を連続・同時に行ったときの書込みを、どの仕組みで管理しますか？（3案とも Cloudflare の利用料は追加0円。差は構築・運用・撤退の手間と、同時操作の扱いです）
+```text
+一括保存の 1 要求が、Cloudflare 無料プランの「1 起動あたり合計 50 クエリ」を超えます（50 件で 200 本超）。どう解きますか？
+```
 
 **答**
 
-操作ログで順次処理 (Recommended) — 既存の Workers+D1 だけで作る。書込み・操作の記録・再集計を1回の transaction にまとめ、冪等キーと revision で古い画面からの上書きを 409 にする。注意点: 同時の2件目は待たされず 409 になり、画面の自動再試行で順に通す。途中で止まると lease が TTL まで残る。D1 Free の書込み上限（100,000行/日）に注意。
+```text
+書き込みを束ねる (推奨)。明細ごとの編集・履歴の書き込みを json_each で 1 文ずつに束ねる (前例: 集計の置き換え aggregateReplacementQueries)。1 要求は明細数によらず約 25 本で、50 件も 100 件も 1 回で保存でき、上限と無料プランはそのまま。書き込みは 1 つの batch になるため、失敗すると保存対象の全件が write_failed になり、明細ごとの部分成功は無くなる。store と履歴の書き込み関数を変える。
+```
 
-- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion (提示 2026-09-30T11:29:14.419Z、回答の記録 2026-09-30T12:01:17.699Z) / 選択肢提示あり (操作ログで順次処理 (Recommended) / Durable Objects で直列化 / 画面側で1件ずつ送るだけ)。R5 record decision-subsmerge-003 (公式一次情報 cloudflare-d1-batch / cloudflare-d1-pricing / cloudflare-d1-limits / cloudflare-do-pricing / cloudflare-do-concept / tanstack-query-mutation-scopes と 5 軸の比較・推奨の注意点付き) を提示の根拠とした。逐語は qa-subsmerge-presented-options-005。選択は qa-subsmerge-decision-003 と同じで、結論は変わらない。 / 回答時刻: 2026-09-30T12:01:17Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 2 問を 1 回で提示し、各問の先頭に推奨案を置いた (提示の逐語は qa-classify-bulk-presented-options-002)。利用者はこの問で「書き込みを束ねる (推奨)」を選択。answered_at は回答受領時刻 (2026-09-30T11:03:43.026Z) を秒へ切り上げた値で、選択時刻の上界である。完成度評価 1 周目の指摘 (1 起動あたりの D1 クエリ上限を batch 単位と取り違えていた) を受けて問い直した。 / 回答時刻: 2026-09-30T11:03:44Z)
 
-#### 裏付け質疑: `qa-subsmerge-presented-options-005`
+#### 裏付け質疑: `qa-classify-bulk-database-web-002`
 
 **問**
 
-qa-subsmerge-target-platforms-002 と qa-subsmerge-decision-004 の決定で、AskUserQuestion により利用者へ提示した問いと選択肢の逐語は何か。
+決定 qa-classify-bulk-decision-005 (書き込みを束ねる) を受けて、一括保存の編集と履歴を D1 へどう書き、失敗したら何を巻き戻すか。
 
 **答**
 
-1 回の提示に独立した 2 問を並べた。問 1『今回の変更（サブスク統合の修正・同時操作の管理・サブスク画面）が対象とする platform はどれですか？（既存システムは Cloudflare Workers 上の web アプリ1本で、スマートフォンからもブラウザで使う作りです）』。選択肢 (提示順・逐語): 【1】web のみ (Recommended) — ブラウザの web アプリだけを対象にする。mobile/tablet/desktop の専用アプリは今回作らない（スマホ・タブレットのブラウザ表示は web に含む）。 / 【2】web + mobile アプリ — web に加えて、iOS/Android の専用アプリも今回の対象にする。 / 【3】web + desktop アプリ — web に加えて、Windows/macOS/Linux の専用アプリも今回の対象にする。。 問 2『統合・登録・変更・見直し判断を連続・同時に行ったときの書込みを、どの仕組みで管理しますか？（3案とも Cloudflare の利用料は追加0円。差は構築・運用・撤退の手間と、同時操作の扱いです）』。選択肢 (提示順・逐語): 【1】操作ログで順次処理 (Recommended) — 既存の Workers+D1 だけで作る。書込み・操作の記録・再集計を1回の transaction にまとめ、冪等キーと revision で古い画面からの上書きを 409 にする。注意点: 同時の2件目は待たされず 409 になり、画面の自動再試行で順に通す。途中で止まると lease が TTL まで残る。D1 Free の書込み上限（100,000行/日）に注意。 / 【2】Durable Objects で直列化 — 利用者ごとの Durable Object（Free でも SQLite backend で可）が single-threaded で書込みを1本に並べ、同時の2件目も拒否せずに待たせて順に処理する。構成要素（class・binding・migration・テスト環境）が増え、D1 との整合を別に設計する。Cloudflare 固有 API への依存が増える。 / 【3】画面側で1件ずつ送るだけ — 画面の送信を直列にするだけで変更は最小。別タブ・別端末からの同時操作は防げず、書込みと再集計が別処理のままなので、統合元が一覧に残る問題と再集計の失敗は解決しない。。 両問とも推奨ラベルは第 1 選択肢で、自由記述 (Other) 欄は常に選べる状態で提示した。 利用者の選択: 問 1『web のみ (Recommended)』、問 2『操作ログで順次処理 (Recommended)』。
+明細の編集 (tx_edits) と変更履歴 (tx_history) の書き込みを json_each で束ね、1 回の D1 batch (トランザクション) で書く。失敗したら保存対象の全件を巻き戻し、全件を write_failed とする。表・列・migration は足さない (qa-classify-bulk-database-web-001 のとおり)。
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: 本セッションの会話記録 (transcript jsonl) の AskUserQuestion 呼出しの入力 (提示時刻 2026-09-30T11:29:14.419Z、回答の記録時刻 2026-09-30T12:01:17.699Z) から script で逐語抽出した。提示の中立性を後から検算できるよう、選択肢の説明文 (推奨案の注意点を含む) を補う。 / 回答時刻: 2026-09-30T12:01:17Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion で要件定義の訂正差分を提示し (2026-09-30T11:15:06.659Z)、その『3 章の確定内容』の database 行 (編集と履歴を json_each で束ね、1 回の batch (トランザクション) で書く。失敗は全件巻き戻す) を、利用者が『この内容で承認 (推奨)』で承認した (受領 2026-09-30T11:22:17.468Z)。answered_at は受領時刻を秒へ切り上げた値で、承認時刻の上界である。 / 回答時刻: 2026-09-30T11:22:18Z)
 
-#### 裏付け質疑: `qa-subsmerge-auth-web-evidence-002`
+#### 裏付け質疑: `qa-classify-bulk-decision-013` — 旧版（置き換え先: `qa-classify-bulk-decision-036`）
+
+> **旧版** — この問答は `qa-classify-bulk-decision-036` で置き換えられた (`2026-10-01T01:43:48Z`)。
+> 下の問・答は凍結された記録の逐語で、現行の接地根拠ではない。現行の問答は置き換え先を参照すること。
+> - 置き換えの理由: 旧い問は選択肢に推奨の印があった (N1 の違反)。同じ論点を、印を外し、各選択肢の利点と不利な点を対称に書き、保留の道を残して問い直した。提示の逐語は qa-classify-bulk-presented-options-014。利用者は選択肢を選ばず、無料枠の範囲で最善の慣行を選ぶよう agent に委ねた。agent の選定は qa-classify-bulk-delegated-004 に記録した。
 
 **問**
 
-共有テナントの前提で、既存コードは業務データのキーと『誰が操作したか』をどう持ち分け、既存の取り消しと記録は誰の範囲で絞り、どれだけ保持しているか (観測)。
+```text
+一括保存で確定済みの明細を選んだとき、一括指定で指定しなかった項目（区分・カテゴリ・所有者）は、どの値で保存しますか？
+```
 
 **答**
 
-(1) packages/api/src/auth.ts:36 は `export const TENANT_ID = 'default'` を業務データのテナントキーとし、:34 のコメントは『「誰が操作したか」は actor として別に持ち、audit_log.actor_user_id へ書く』とする。認証後のミドルウェアは全利用者について c.set('userId', TENANT_ID) と c.set('actor', actorOf(user)) を行う (:257-258、:276-277)。SessionActor は id・email・role (admin | member)・mustChangePassword を持ち、admin だけに絞る検査 (:311-312 の role !== 'admin') もある。つまり c.get('userId') は全利用者で同じ定数で利用者を特定せず、操作した利用者は c.get('actor').id で分かる。 (2) 既存の取り消しは、routes/deletions.ts の POST /api/data/undo/:operationId と routes/total-cashflow-operations.ts:149 の undoOperation(db, userId, operationId) のどちらも、テナントキー (userId) で絞り、操作した利用者では絞らない。 (3) 保持: 取り消し用の退避は deletion-lifecycle.ts:42 の DELETION_UNDO_RETENTION_DAYS = 30 日。audit_log は audit-log.ts:351-352 で見出し 400 日・詳細 90 日。 (4) 操作者の記録: audit_log.actor_user_id は nullable (schema.ts:985)。audit_log の action は migrations/0033・0034・0039 の CHECK (action IN (...)) で列挙されており、action を増やすと表の作り直し (破壊的な migration) が要る (schema.ts:686 のコメント)。そのため migrations/0046_liability_status.sql は liability_audit_log を別表にして actor_user_id を NOT NULL で持ち、routes/balances.ts:147-156 は同じ db.batch で actor を書く。0042 の total_cashflow_operations には actor の列が無い。最新の migration は 0057 (次の番号は 0058)。
+```text
+今の値を保つ。下書きがあれば下書き、無ければ今の値のまま保存する。提案は未整理の明細にだけ使う。手で決めた値は提案に置き換わらない。
+```
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: 本セッション中 (本 entry の記録直前まで) に、リポジトリの現物 (packages/api/src/auth.ts、audit-log.ts、deletion-lifecycle.ts、schema.ts、routes/deletions.ts、routes/total-cashflow-operations.ts、routes/balances.ts、migrations/0033・0034・0039・0042・0046) を grep と Read で確かめた観測。qa-subsmerge-auth-web-evidence-001 の『c.get('userId') (認証済みセッション由来)』に欠けていた、userId が定数の TENANT_ID で操作者は actor として別に持つという事実を補う。evidence-001 は書き換えない。answered_at は本 entry の記録直前に実測した記録時刻で、観測の時刻の上界。 / 回答時刻: 2026-09-30T12:52:57Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 2 問を 1 回で提示し、各問の先頭に推奨案を置いた (提示の逐語は qa-classify-bulk-presented-options-006)。利用者はこの問で「今の値を保つ (推奨)」を選択。answered_at は回答受領時刻 (2026-09-30T14:28:31.486Z) を秒へ切り上げた値で、選択時刻の上界である。この決定から導く値の解決の順は、agent の推定として qa-classify-bulk-backend-web-009 (1) に分けて記録した。 / 回答時刻: 2026-09-30T14:28:32Z)
 
-#### 裏付け質疑: `qa-subsmerge-maintenance-ops-web-evidence-002`
+#### 裏付け質疑: `qa-classify-bulk-decision-033`
 
 **問**
 
-保持期間と操作者の記録を決めるために、既存コードの取り消しの結果の分け方・夜間保守の D1 予算・要求のついでの掃除・利用者の表と操作者の列・migration の番号はどうなっているか (観測)。
+一括保存の 1 要求が、Cloudflare 無料プランの「1 回の起動で D1 へ出すクエリは合計 50 本まで」を超えます (今の書き方では 50 件で 200 本を超えます)。どう解きますか。以前の問では選択肢に推奨の印が付いていたので、印を外して問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。4 案のどれも選ばずに保留するときは、『その他』にその旨を書いてください。
 
 **答**
 
-(1) 既存の取り消しの結果の分け方: packages/api/src/routes/deletions.ts:324 は操作が無ければ 404 not_found、:326 は取り消し済みなら 409 already_undone、:327-336 は期限切れを 410 undo_expired で返し、:327 のコメントは『期限切れは「無い」ではなく「もう戻せない」。404 と区別して 410 を返す』とする。 (2) 夜間保守の D1 query 予算: packages/api/src/scheduled-maintenance-budget.ts:13 は SCHEDULED_D1_QUERY_LIMIT = 50、:21 は SCHEDULED_D1_QUERY_PLAN_MAX = 49 で、:24-31 に 8 つの job (nightly_backup・r2_cleanup・password_login_rate_limit_cleanup・improvement_retention・deletion_undo_retention・audit_header_retention・audit_detail_retention・cash_soft_delete_purge) を並べ、:17 のコメントは『新規 job は既存枠を再配分しない限り追加できない』とする。 (3) 要求のついでの掃除: packages/api/src/routes/imports.ts:2905-2910 のコメントは『期限切れの検査と古い時間枠は、夜間保守ではなくこの要求のついでに消す。夜間の D1 query 予算 (1 invocation 50 本) は既存 8 job で埋まっており…』とし、:2912 で purgeExpiredImportRows を呼び、失敗は :2917 の job 'import_expired_rows_purge' としてログに残すだけで要求は落とさない。 (4) 利用者と操作者の列: migrations/0039_account_login.sql:7 の users は id・email (NOT NULL UNIQUE、小文字)・password_hash・role (admin | member)・status (active | suspended) などを持ち、表示名の列は無い。users の行を消す SQL (DELETE FROM users) は packages/api/src と migrations に 0 件で、scripts/seed-admin.test.mjs:22 は初期 admin の生成 SQL に DELETE FROM users が含まれないことを検査している。利用者は routes/admin-users.ts の status 更新 (:110 の action 'admin_user_suspend') で停止する。migrations/0046_liability_status.sql:19 の liability_audit_log.actor_user_id は TEXT NOT NULL で、外部キー (REFERENCES) は付いていない。 (5) migration の番号: migrations/ の最新は 0057_improvement_request_screen.sql で、次の番号は 0058。
+自由記述で回答 (4 つの選択肢のどれも選んでいない):『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』
 
-- (根拠の性質: コード・設定・公式文書で検証できる観測事実 / 出所: 本セッション中 (本 entry の記録直前まで) に、リポジトリの現物 (packages/api/src/routes/deletions.ts、scheduled-maintenance-budget.ts、routes/imports.ts、routes/admin-users.ts、scripts/seed-admin.test.mjs、migrations/0039_account_login.sql・0046_liability_status.sql と migrations/ の一覧) を grep と sed で確かめた観測。answered_at は本 entry の記録直前に実測した記録時刻で、観測の時刻の上界。 / 回答時刻: 2026-09-30T13:35:08Z)
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「クエリの上限」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-014)。利用者はこの問で選択肢を選ばず、自由記述を回答した。answered_at は回答受領時刻 (2026-10-01T01:36:46.980Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-005 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T01:36:47Z)
+
+#### 裏付け質疑: `qa-classify-bulk-delegated-001`
+
+**問**
+
+qa-classify-bulk-decision-033 で利用者が選定を委ねた問「クエリの上限」について、agent はどの案を選んだか。
+
+**答**
+
+選んだ案: (1) 書き込みを束ねる — 明細ごとの編集・履歴の書き込みを json_each で 1 文ずつに束ねる (前例: 集計の置き換え aggregateReplacementQueries)。1 要求は明細数によらず約 25 本になる。利点: 50 件も 100 件も 1 回で保存でき、上限と無料プランはそのまま。不利な点: 書き込みが 1 つの batch になるため、失敗すると保存対象の全件が write_failed になり、明細ごとの部分成功は無くなる。store と履歴の書き込み関数を変える。 無料枠の条件から外れた案: (4)『Workers Paid にする』は月額の固定費がかかり、無料枠で動かすという条件から外れる。 選んだ理由: (2)『画面から小分けに順送り』は無料枠で動くが、途中で止まると一部だけ保存され、50 件で 10〜17 往復かかる。(3)『サーバの上限を下げる』は範囲外にした一括保存の上限の変更に当たり、50 件を一度に保存できない。(1) は、D1 の batch が 1 つのトランザクションとして実行されるため、全件が保存されるか全件が保存されないかのどちらかになり、途中まで書かれた状態が残らない。集計の置き換え (aggregateReplacementQueries) と同じ書き方で、1 要求のクエリは明細数によらず約 25 本となり、無料プランの上限 50 本に収まる。 これは利用者の委任 (qa-classify-bulk-decision-033) を受けた agent の選定で、利用者が選択肢から選んだ案ではない。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 利用者は qa-classify-bulk-decision-033 で、選択肢を選ばずに『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』と回答した。agent はこの委任を受けて、qa-classify-bulk-presented-options-014 の問1 の選択肢から選んだ。前回の選択と同じ案である (qa-classify-bulk-decision-005)。 / 回答時刻: 2026-10-01T01:43:48Z)
+
+#### 裏付け質疑: `qa-classify-bulk-decision-036`
+
+**問**
+
+一括保存で確定済みの明細を選んだとき、一括指定で指定しなかった項目 (区分・カテゴリ・所有者) は、どの値で保存しますか。以前の問では選択肢に推奨の印が付いていたので、印を外して問い直します。以前と違う案を選ぶと、仕様の該当箇所を改めます。一覧では、確定済みの明細にも提案が付きます。
+
+**答**
+
+自由記述で回答 (3 つの選択肢のどれも選んでいない):『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「確定済みの値」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-014)。利用者はこの問で選択肢を選ばず、自由記述を回答した。answered_at は回答受領時刻 (2026-10-01T01:36:46.980Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-013 と同じ論点を問い直したもの。 / 回答時刻: 2026-10-01T01:36:47Z)
+
+#### 裏付け質疑: `qa-classify-bulk-delegated-004`
+
+**問**
+
+qa-classify-bulk-decision-036 で利用者が選定を委ねた問「確定済みの値」について、agent はどの案を選んだか。
+
+**答**
+
+選んだ案: (1) 今の値を保つ — 下書きがあれば下書き、無ければ今の値のまま保存する。提案は未整理の明細にだけ使う。利点: 手で決めた値が提案に置き換わらない。不利な点: 確定済みの明細を提案に揃えたいときは、一括指定か下書きで値を入れる。 無料枠の条件から外れた案: 無い (どの案も無料枠で動く)。 選んだ理由: 利用者が手で決めた値を、自動の提案で黙って上書きしない。確定済みの明細を提案に揃えたいときは、一括指定で明示できる。(2) は手で決めた値が提案で置き換わり、気づかないまま確定済みの分類が変わりうる。 これは利用者の委任 (qa-classify-bulk-decision-036) を受けた agent の選定で、利用者が選択肢から選んだ案ではない。
+
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 出所: 利用者は qa-classify-bulk-decision-036 で、選択肢を選ばずに『無料枠でできる上で、ベストプラクティスな内容を選定して進めてください。』と回答した。agent はこの委任を受けて、qa-classify-bulk-presented-options-014 の問4 の選択肢から選んだ。前回の選択と同じ案である (qa-classify-bulk-decision-013)。 / 回答時刻: 2026-10-01T01:43:48Z)
+
+#### 裏付け質疑: `qa-classify-bulk-decision-045`
+
+**問**
+
+問い直しの第 2 回で『カテゴリなしを新設する』を選んだので、その細部を決めます。今、カテゴリが空の編集は『指定なし』として扱われ、保存すると取込値か集計ルールの値に戻るので、『カテゴリなし』を値として残す手段がありません。土台の C2 は『DB の表と列は足さない (migration なし)』と定めています。『カテゴリなし』をどう持ちますか。
+
+**答**
+
+予約の値で持つ。明細の編集の大項目の欄に、『カテゴリなし』を表す予約の値を保存する。表と列は足さない。利点: migration が要らず、C2 をそのまま保てる。バックアップの形式も変わらない。不利な点: カテゴリを名前として扱う箇所 (候補の検査・集計・履歴・バックアップ・総収支) のすべてで、予約の値を別に扱う処理が要る。予約の値と同じ名前のカテゴリは作れない。 回答に自由記述は付いていない。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「なしの持ち方」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-017)。利用者はこの問で「予約の値で持つ」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T03:58:11.560Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-037 の回答を受けて続けて問うた新しい論点。 / 回答時刻: 2026-10-01T03:58:12Z)
+
+#### 裏付け質疑: `qa-classify-bulk-decision-049`
+
+**問**
+
+問い直しの第 2 回で『対応表を作って事業にも付ける』を選んだので、MF の大項目から freee の勘定科目への対応表の細部を決めます。対応表をどこに持ちますか。土台の C2 は『DB の表と列は足さない (migration なし)』と定めています。既存の設定の表 (集計ルール) は、種類を 2 つ (勘定科目・取引先) に限る制約があり、種類を足すには表の作り直し (破壊的な migration) が要ります。
+
+**答**
+
+DB の表にして画面で編集。新しい表を足し、設定画面で行を足し引きできるようにする。利点: 利用者が自分の分類に合わせて、画面から直せる。不利な点: migration と C2 の改訂が要る。設定の変更履歴の種類の制約も作り直し (破壊的な migration で、PR での承認が要る)、バックアップと復元の形式も変わる。 回答に自由記述は付いていない。
+
+- (根拠の性質: 利用者が代替案を見たうえで明示選択した決定 / 出所: AskUserQuestion / 4 問のうち「対応表の置場」の問を提示し、推奨の印は付けていない (提示の逐語は qa-classify-bulk-presented-options-018)。利用者はこの問で「DB の表にして画面で編集」を選択し、自由記述は付けていない。answered_at は回答受領時刻 (2026-10-01T06:52:48.811Z) を秒へ切り上げた値で、回答時刻の上界である。qa-classify-bulk-decision-040・qa-classify-bulk-decision-042 の回答を受けて続けて問うた新しい論点。 / 回答時刻: 2026-10-01T06:52:49Z)
 
 ## To-Be / Delta
 
-> 本章の**目標の射影**。具体的な現行契約とACは spec-subscriptions-merge を正とする。上位概念 (要件定義書 U3 ゴール / U4 目標 / U9 具体的やりたいこと) を本章の serves_goals で絞り込んだ射影であり、設計知識 card (非規範の参考資料) とは役割が異なる。As-Is (現行実装の姿) は spec-state.json の管轄外のため本節では断定せず、到達点と、その到達を判定する観測点だけを規範として置く。
+> 本章の**規範**。上位概念 (要件定義書 U3 ゴール / U4 目標 / U9 具体的やりたいこと) を本章の serves_goals で絞り込んだ射影であり、設計知識 card (非規範の参考資料) とは役割が異なる。As-Is (現行実装の姿) は spec-state.json の管轄外のため本節では断定せず、到達点と、その到達を判定する観測点だけを規範として置く。
 
 ### 到達すべき状態 (To-Be)
 
-- **G1**: 統合した取引名・ベンダーは統合先の1行にまとまり、統合元の行は一覧から消え、KPI・月次推移・年換算の比較・詳細パネル・他画面のサブスク集計が同じ名寄せ結果を示す。
-- **G2**: 統合・登録・変更・見直し判断を連続・同時に行っても、操作が失われたり「サーバー側で処理に失敗しました」で止まったりせず、各操作の状態 (待機中・処理中・完了・失敗と再試行) を利用者が把握できる。
-- **G4**: 統合と操作の管理が安全である (ログインした利用者だけが、全利用者で共通の共有テナントのデータだけを変更できる、統合を取り消して統合前へ戻せる、古い画面からの上書きを防ぐ、操作の記録に実データを外部へ出さない)。
+- **G1**: 一括保存を、提案が無くても使えるようにする。一括バーに区分・カテゴリ (大/中)・所有者・支払い方法の一括指定欄を置く (qa-classify-bulk-decision-041)。指定した項目は選択した全件に当てる。指定しない項目は、未整理の明細では各行の下書き→提案の順、確定済みの明細では下書き→今の値の順で埋め、手で決めた値を提案で置き換えない (qa-classify-bulk-decision-036・qa-classify-bulk-delegated-004)。区分とカテゴリは 1 組で決める。カテゴリ (大) を指定したらカテゴリ (中) も一括指定の値 (指定が無ければ空) にし、区分だけを指定したときは、埋める値のうち区分が同じものからカテゴリの組を取る (qa-classify-bulk-decision-035・qa-classify-bulk-delegated-003)。区分に合うカテゴリの組が、埋める値 (下書き・提案・今の値) のどこにも無い明細は、カテゴリを『カテゴリなし』にして保存する (qa-classify-bulk-decision-037・qa-classify-bulk-decision-048)。『カテゴリなし』は予約の値で持ち (qa-classify-bulk-decision-045)、集計では未分類と同じに数え (qa-classify-bulk-decision-046)、分類の状態は手動とする (qa-classify-bulk-decision-047)。一括指定の欄と編集パネルでは選べない (qa-classify-bulk-decision-048)。保存の前に、何件をどの値の出所で保存し、そのうち何件を『カテゴリなし』で保存するか、何件をどの理由で外すか (埋める値が無い行、確定済みで変わる値が無い行) を示し、外した行は失敗に数えない。再試行は書き込みの失敗 (write_failed) を返した明細にだけ出し、押せば必ずその明細だけを送り直す (qa-classify-bulk-decision-018)。書き込みの batch が失敗したときは、保存対象の全件が write_failed になる (qa-classify-bulk-decision-057)。見つからない・値が不正・分割がある明細には、再試行の代わりに理由を出す。要求全体が失敗したときは、選択を残し、文言を role=alert で出す。通信の失敗と 5xx は、書き込まれたかどうかが分からないので一覧と選択の読み出しを読み直し、『保存できたか確かめられませんでした。一覧を読み直しました。同じ内容で送り直しても二重には保存されません』と出す (qa-classify-bulk-decision-054)。409 (取込みか別の更新が進行中) はサーバの文言を出す (qa-classify-bulk-decision-056)。通信の失敗・5xx・409 の後には『同じ内容で再試行』を出し、押すと直前の要求の本文をそのまま送る (qa-classify-bulk-decision-054・qa-classify-bulk-decision-056)。一括保存は同じ要求を送り直しても最終の状態が変わらないので、二重には保存されない。自動では送り直さない。400・403・413 は送り直しても結果が変わらないので、再試行を出さずにサーバの文言を出す (qa-classify-bulk-decision-055)。
+- **G3**: 選択を表示に左右されないものにする。選択 (URL の sel に行の key で持つ、最大 50 件) は絞り込み・ページ・並べ替え・期間を変えても保ち、一括バーの選択一覧は表示外の選択も含めて全件を出す (qa-classify-bulk-decision-043)。分割の内訳行は選べず、チェックの代わりに理由を示す (qa-classify-bulk-decision-034・qa-classify-bulk-delegated-002)。分割の設定が不正な明細の行も選べず、理由『分割の設定を直してから保存してください』を示す (qa-classify-bulk-decision-038)。見出しの全選択は表示中の先頭から 50 件までで止め、止めたことを選択の件数の横に示す (qa-classify-bulk-decision-053)。保存はサーバが選択した明細を引き直し、G1 の順で値を解決する。一覧の応答から絞り込み後の全件を外し、選択の中身は行の key を受ける専用の API で読む (qa-classify-bulk-decision-043・qa-classify-bulk-decision-034・qa-classify-bulk-delegated-002)。
+- **G5**: 保存の経路を安全に保つ。選択の読み出し・一括保存・勘定科目の対応表の読み書きは、認証済みの利用者自身の行だけを扱い、他の利用者の行の key・txId・勘定科目の対応表の行は、存在を明かさず『見つからない』として扱う。入力は zod で検証する。選択は 50 件・一括は 100 件までとし、選択の key と一括の txId の重複は 400 にする。一括指定の値は既存の編集と同じ制約とし、『カテゴリなし』の予約の値は一括指定と編集の値としては 400 にする (qa-classify-bulk-decision-048)。予約の値と同じ名前のカテゴリの候補は作れない (qa-classify-bulk-decision-045)。勘定科目の対応表は、同じ大項目の 2 行目と、勘定科目の一覧に無い対応先を 400 にする。一括保存の本文は 256KB までとして超えたら 413 を返し、変更はフェンスを通し、保存した明細の値が変わった項目ごとに履歴 (一括保存) を 1 行ずつ残す (値が変わらない明細は履歴を書かない)。勘定科目の対応表の変更は、設定の変更履歴に残す (qa-classify-bulk-decision-049)。
 
 ### 受入条件 (Delta の判定点)
 
 | 目標 | 到達点 | 達成の観測点 (measure) |
 |---|---|---|
-| O1 | 統合後の再取得で、統合元の正規化名を持つ行が一覧に0件、統合先の推定月額を統合後の明細から再計算し、同一期間の各月の実支払額を保存し、他画面の subs:* 集計の名寄せ (どのサブスクに属するか) がサブスク画面と一致する。 | core の契約テストと api の統合テストで、統合元の行0件・各月の実支払額の保存・再推定の期待値・両経路の名寄せ一致を検査して緑 |
-| O2 | 同じテナントへ統合を5件連続・2件同時に送っても (同じ利用者の別タブからと、別の利用者からの両方)、全操作が完了か明示的な 409 (再読込の案内) で終わり、500 が0件、最終の集計が最後に完了した操作の状態と一致する。 | api の統合テストで連続送信と同時送信を再現し、ステータスと集計を検査して緑 |
-| O4 | 他テナントのベンダー id への操作は 404、統合の取り消しで統合前と同じ一覧に戻る、古い revision からの更新は 409。 | api の統合テストで所有者・取り消し・revision 競合を検査して緑 |
+| O1 | 提案の無い明細を一括指定で保存できる。 | DOM テストで、提案なしの 3 件を選び区分とカテゴリを指定して保存すると、要求に 3 件が入り、通知『選択した3件を保存しました。』が出る。core の単体テストで、指定しない項目が、未整理の明細では下書き→提案、確定済みの明細では下書き→今の値の順で埋まること、区分だけを指定したときは区分が同じ値からカテゴリの組を取り、組が無い明細は『カテゴリなし』で保存の対象に入って保存前の内訳にその件数が出ることを固定する。埋める値が無い行と、確定済みで変わる値が無い行は要求に入らず、保存前の内訳に外す件数と理由が出て、失敗に数えない。core の単体テストで、『カテゴリなし』の明細が、家計の集計と総収支の内訳では未分類に入り、説明可能率では説明できない側に数えられ、分類の状態が手動になることを固定し、いずれも通る。 |
+| O2 | 失敗の種類ごとに、再試行の有無と理由が正しく出る。 | DOM テストで、保存前に外した行と、見つからない・値が不正・分割がある明細に再試行が出ないこと、書き込みの失敗 (write_failed) を返した 1 件の再試行でその 1 件だけが送られることを確かめる。要求全体の失敗について、通信の失敗と 5xx の後に一覧と選択の読み出しが読み直されて選択が残り、role=alert の文言が出て、『同じ内容で再試行』が直前の要求の本文をそのまま送ること、409 の後にもサーバの文言と同じボタンが出ること、400・403・413 の後にはサーバの文言が出て選択が残り、再試行が出ないことを確かめ、いずれも通る。 |
+| O4 | 選択がページと絞り込みをまたいで保たれ、サーバが値を解決する。 | DOM テストで、1 ページ目で 2 件・2 ページ目で 1 件を選び、絞り込みを変えても選択一覧に 3 件が出て、保存要求に 3 件が入る。内訳行と分割の設定が不正な行にはチェックが無く理由が出ること、表示 100 件で見出しの全選択を押すと 50 件で止まり、止めたことが件数の横に出ることを確かめる。API テストで、表示中の絞り込みに無い明細も、選択の読み出し (行の key) と一括保存 (txId) でサーバが引き直せ、一覧の応答に絞り込み後の全件が含まれないことを確かめ、いずれも通る。 |
+| O6 | 保存の経路が認可と入力検証を通る。 | API テストで、未認証 401、フェンス拒否 403、選択 51 件・選択の key の重複・一括 101 件・一括の txId の重複が 400、『カテゴリなし』の予約の値を一括指定か編集の値として送ると 400、予約の値と同じ名前のカテゴリの候補の作成が 400、一括保存の本文が 256KB を超えると 413 payload_too_large、他の利用者の行の key と txId が見つからない扱い (存在を明かさない)、保存した明細の値が変わった項目ごとに履歴 source=bulk が 1 行ずつ残り、値が変わらない明細には履歴が残らないことを確かめる。勘定科目の対応表の API で、未認証 401、同じ大項目の 2 行目と一覧に無い対応先が 400、他の利用者の行が見つからない扱いになることを確かめ、いずれも通る。 |
+| O7 | 既存の品質ゲートを緑のまま保つ。 | pnpm lint・typecheck・test・skills:test・初期 JS 予算・verify:full が全て exit 0。 |
+| O8 | 一括保存が無料枠の 1 起動の上限に収まる。 | API テストで D1 へのクエリを数え、50 件・100 件の保存がどちらも 49 本以内であること、書き込みの batch が失敗すると要求が 2xx で返って保存対象の全件が write_failed になることを確かめる。書き込む前に、1 回の batch の文が 50 本を超えるか、束ねた JSON が 2MB を超えると分かった要求は、413 too_many_classify_changes を返して明細ごとの結果を持たず、write_failed にならないことを確かめ、いずれも通る。 |
+| O9 | 同じ要求を送り直しても二重に保存されない。 | API テストで、同じ一括保存の要求を 2 回送ると、2 回とも全件が ok で saved と各明細の status が同じであり、明細の値 (更新時刻を除く) と月次集計が 1 回目の後と同じで、履歴の行数が増えないことを確かめ、通る。 |
 
 ### 本章がかなえる具体的やりたいこと (U9)
 
-- **I1**: 登録済みの行でも統合先を選べるようにし、統合元の取引名と別名を統合先の別名へ移し、統合元の登録と見直し判断を統合先へ吸収する。
-- **I2**: 一覧の行チェックと全選択で複数行を選び、選択バーから代表 (統合先) を決めて統合する。詳細パネルの取引名チェックとも同じ選択バーを使う。
-- **I3**: 他画面のサブスク集計 (monthly_agg の subs:*) を、サブスク画面と同じ照合関数 (名前・別名・統合・対象科目) で導く。
-- **I4**: サブスクの書込みを操作として D1 に記録し (冪等キー・期待 revision)、書込みと再集計を同じ原子単位で適用する。古い revision からの更新は 409 で止める。
-- **I5**: 画面は連続操作を待ち行列に積んで1件ずつ送り、処理中・完了・失敗 (再試行) を操作状態として表示する。失敗の文言は原因と次の行動を示す。
-- **I6**: 統合の取り消しで統合前の登録・別名・判断を復元し、操作履歴から直近の統合を辿れるようにする。
-- **I8**: 全ての書込み API で業務データの所有者 (user_id = 共有テナント id) を検査し、入力を検証し、操作記録には取引名など業務上必要な最小限だけを保存する。
+- **I1**: 一括操作バーに一括指定欄 (区分・カテゴリ大/中・所有者・支払い方法) を足し、保存の前に内訳 (保存する件数と値の出所、そのうち『カテゴリなし』で保存する件数、外す件数と理由) を出す。
+- **I2**: POST /api/transactions/bulk を拡張し、一括指定と各明細の下書きを受け取る。サーバは明細を引き直し、core の解決関数で、未整理の明細は 一括指定→下書き→提案、確定済みの明細は 一括指定→下書き→今の値 の順に値を決める。区分に合うカテゴリの組がどこにも無い明細は、明細の編集の大項目の欄に『カテゴリなし』の予約の値を入れて保存する (『カテゴリなし』のための表と列は足さない。qa-classify-bulk-decision-045)。予約の値は core の 1 か所で定め、一括指定と編集の値としては受け付けない (qa-classify-bulk-decision-048)。値を決められない明細と、区分とカテゴリの組が候補に合わない明細は、明細単位の失敗として返す (画面は保存前に外すので、通常は届かない)。書き込みは json_each で束ねた 1 回の batch で行い (qa-classify-bulk-delegated-001)、batch が失敗したら要求を 2xx で返して保存対象の全件を write_failed にする (qa-classify-bulk-decision-057)。同じ要求を送り直しても、明細の値 (更新時刻を除く)・提案との一致 (done か manual か)・月次集計・履歴は 1 回目の後と変わらない。書き込む前に予算 (1 回の batch の文 50 本・束ねた JSON 2MB) を超えると分かった要求は、明細ごとの結果を持たない 413 で返す。
+- **I3**: 選択中の行の key (最大 50 件、利用者ごとに分離) を受けて、表示外の明細も含めて一覧の行の形で返す読み出し API を追加し、一覧の応答から絞り込み後の全件を外す。
+- **I5**: 選択を URL の sel に行の key で持ち、絞り込み・ページ・並べ替え・期間の変更で消さない。一括バーの選択一覧は I3 の API から全件を出す。内訳行と分割の設定が不正な行は選べず理由を出し、見出しの全選択は表示中の先頭から 50 件で止めて知らせる。
+- **I7**: 再試行を、書き込みの失敗 (results の ok=false かつ code=write_failed) を返した明細にだけ出し、押すとその txId だけを送る。ほかの失敗には理由を出す。要求全体の失敗は、ApiError の status を 1 つの関数で分け、文言と再試行の有無をそこから引く。通信の失敗と 5xx は一覧を読み直し、通信の失敗・5xx・409 には直前の要求の本文をそのまま送る『同じ内容で再試行』を出し、400・403・413 にはサーバの文言を出す。401 は既存のログイン切れの扱いに従う。
+- **I8**: 勘定科目の対応表の表を migration で足し、既存の利用者に初期の 5 行を入れ、新しい利用者の作成時にも入れる。読み出し・追加・削除の API と設定画面の編集を足し、変更を設定の変更履歴に残す (変更履歴の種類の制約は表の作り直しで改め、PR で承認する)。設定の JSON (kanjo-settings) とバックアップ・復元に勘定科目の対応表を加える。
+- **I9**: 『カテゴリなし』の予約の値を core の 1 か所で定め、家計の集計・総収支の内訳・説明可能率・分類の状態・候補の検査・履歴・バックアップで、予約の値を未分類と同じ扱いに通す。予約の値と同じ名前のカテゴリの候補は作れなくする。
 
 ### 本章に効く確定意思決定
 
-- **decision-subsmerge-003**: 統合・登録・変更・見直し判断を連続・同時に行ったときの書込みを、どの仕組みで管理するか (「サーバー側で処理に失敗しました」で止まらないようにする)
-  - 採択: 操作ログで順次処理 (既存の Workers + D1 だけ) (`d1-operation-log`)
-  - 目的適合: G1: 書込みと再集計を 1 回の db.batch (transaction) にまとめ、統合元の行が一覧に残らない。G2: 冪等キーで重複送信を最初の結果に畳み、revision の照合で古い画面からの上書きと、別の利用者・別タブとの同時操作の 2 件目を 409 にして、500 を出さない。画面は連続操作を待ち行列に積んで順に送り、409 は自動で読み直して再試行する。G4: 操作の記録から取り消せる。
+- **decision-005-d1-query-budget**: 一括保存の 1 要求が、Cloudflare 無料プランの「1 起動あたり合計 50 クエリ」を超えます（50 件で 200 本超）。どう解きますか？
+  - 採択: 書き込みを束ねる (`bundle-writes`)
+  - 目的適合: 明細ごとの編集と履歴を json_each で 1 文ずつに束ね、1 要求は明細数によらず約 25 本になる。選択 50 件も一括 100 件も 1 回で保存でき (G1・G5)、上限と無料プランはそのまま (C4)。
+  - 採択の接地根拠: `qa-classify-bulk-decision-033`
 
 ## 適用された設計知識
 
@@ -518,9 +270,9 @@ qa-subsmerge-target-platforms-002 と qa-subsmerge-decision-004 の決定で、A
 
 ### 本章での適用
 
-DDD card の集約とユビキタス言語を、統合の記録の置き場所に当てた。共有テナント (全利用者で共通の TENANT_ID) のサブスク定義 (sub_vendors の全行と見直し判断) を 1 つの集約とみなし、その一貫性を subscription_revisions の revision 1 本で守るので、別の利用者どうしの同時の操作も同じ revision で検出できる。統合は行の削除ではなく merged_into_id による統合先への参照として表すので、取り消しは参照を外すだけで統合前へ戻る。「統合先 (代表)」「統合元」「取り消し」「操作者」の語は、表の列名 (merged_into_id・undoes_id・actor_user_id)・API・画面の文言で同じ意味に揃える (qa-subsmerge-actor-record-001・retention-001)。
+DDD card の『永続化するのはドメインの状態であって画面の都合ではない』を、一括保存の書き込み先と勘定科目の対応表に適用した。一括指定欄の値・保存前の内訳・選択は画面と要求の都合なので D1 に持たず、保存の結果として残るのは既存の tx_edits の編集と、保存した明細の値が変わった項目ごとの tx_history の行 (source=bulk は既存の enum。同じ要求の行は同じ op_id) だけにする。値が変わらない明細はドメインの状態が動いていないので、履歴を書かない。『カテゴリなし』は、カテゴリが無いという明細の状態として tx_edits の大項目の欄に予約の値で持ち、表と列を足さない (qa-classify-bulk-decision-045)。提案は保存せず、取込済みの MF の大項目・中項目と既存の集計ルールと勘定科目の対応表から毎回 core で導く。一方、MF の大項目をどの勘定科目へ対応づけるかは利用者が決めて持ち続ける状態なので、勘定科目の対応表として表を 1 つだけ足し (利用者ごと、同じ大項目は 1 行)、変更を設定の変更履歴に残す (qa-classify-bulk-decision-049)。既存の表に列は足さない。
 
-- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-09-30T13:35:13Z)
+- (根拠の性質: アシスタントの推定 (利用者確認も検証可能な出典も経ていない) / 記録時刻: 2026-10-01T10:34:37Z)
 
 ### Domain-Driven Design — deep knowledge card
 
@@ -567,4 +319,5 @@ businessの重要なruleと用語をmodel/code/会話で一致させ、複雑性
 
 | 対象 | バージョン | 公式発行元 | 出典URL | 取得 | 最新確認 |
 |---|---|---|---|---|---|
-| cloudflare-d1-batch | 2026-06-22 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/worker-api/d1-database/ | 2026-09-30T12:42:26Z | 2026-09-30T12:42:26Z |
+| cloudflare-d1-batch | 2026-06-22 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/worker-api/d1-database/ | 2026-09-30T11:31:00Z | 2026-09-30T11:31:00Z |
+| cloudflare-d1-json | 2026-04-21 | Cloudflare (developers.cloudflare.com) | https://developers.cloudflare.com/d1/sql-api/query-json/ | 2026-09-30T12:07:03Z | 2026-09-30T12:07:03Z |

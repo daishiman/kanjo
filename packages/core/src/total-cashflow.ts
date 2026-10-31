@@ -20,6 +20,7 @@
 import { isCashTxId } from './cash.js';
 import { type ResolvedTx, resolveTx } from './classify.js';
 import { freeeDealKeys, mfStableKey } from './identity.js';
+import { categoryForTotals } from './no-category.js';
 import {
   type PeriodRange,
   applyPeriod,
@@ -786,7 +787,7 @@ function ledgerFrom(
       month: tx.m,
       side: resolved.cls === 'biz' ? 'business' : 'household',
       io: tx.a < 0 ? 'expense' : 'income',
-      category: resolved.big || tx.big || 'その他',
+      category: categoryForTotals(resolved.big) || tx.big || 'その他',
       payee: tx.c,
       amount: Math.abs(tx.a),
       origin: 'mf',

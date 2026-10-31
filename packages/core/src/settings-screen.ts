@@ -30,6 +30,12 @@ import {
   validateOwnerLabels,
 } from './owner-labels.js';
 import { DEFAULT_STAT_MIN_MONTHS, STAT_MIN_MONTHS_MAX, STAT_MIN_MONTHS_MIN } from './stats.js';
+import {
+  TAX_ACCOUNT_MAP_ROWS_MAX,
+  type TaxAccountMapRow,
+  sortTaxAccountMap,
+  taxAccountMapRowIssue,
+} from './tax-accounts.js';
 import type { OwnerKey } from './types.js';
 
 /* -------- 型 -------- */
@@ -39,6 +45,8 @@ export interface SettingsState {
   ownerLabels: OwnerLabels;
   statMinMonths: number;
   cashOverrides: CashOverrideRule[];
+  /** MF の大項目 → 勘定科目の対応表。大項目のコード単位順 (spec-classify-bulk-save FR-17) */
+  taxAccountMap: TaxAccountMapRow[];
 }
 
 export interface DiffItem {
@@ -60,6 +68,8 @@ export interface SettingsDiff {
   ownerLabels: { changed: Array<{ owner: OwnerKey; before: string; after: string }> };
   statMinMonths: { before: number; after: number } | null;
   cashOverrides: { added: DiffBucket; changed: DiffBucket; removed: DiffBucket };
+  /** 大項目で突き合わせる。行の並びは値ではないので『並べ替え』は無い */
+  taxAccountMap: { added: DiffBucket; changed: DiffBucket; removed: DiffBucket };
   /** 変更項目の合計。保存時に追記する変更履歴の行数と同じ(BR-19) */
   total: number;
 }
@@ -69,6 +79,7 @@ export interface SettingsSummary {
   ownerLabelsSet: boolean;
   statMinMonths: number;
   cashOverrides: number;
+  taxAccountMap: number;
 }
 
 export const DIFF_ITEMS_MAX = 50;
@@ -112,6 +123,7 @@ export interface SettingsInput {
   ownerLabels?: Record<OwnerKey, string>;
   statMinMonths?: number;
   cashOverrides?: CashOverrideInput[];
+  taxAccountMap?: TaxAccountMapRow[];
 }
 
 export type SettingsFieldError =
@@ -127,7 +139,11 @@ export type SettingsFieldError =
   | 'invalid_scope'
   | 'invalid_month'
   | 'duplicate'
-  | 'owner_label';
+  | 'owner_label'
+  /** 『カテゴリなし』は予約の値なので対応表の大項目にできない */
+  | 'reserved'
+  /** 勘定科目の一覧 (TAX_ACCOUNTS) に無い */
+  | 'not_in_list';
 
 export type SettingsValidation =
   | { ok: true; value: Partial<SettingsState> }
@@ -266,6 +282,35 @@ export function validateSettingsInput(input: SettingsInput): SettingsValidation 
     }
   }
 
+  if (input.taxAccountMap !== undefined) {
+    const rows = input.taxAccountMap;
+    if (!Array.isArray(rows)) fields.taxAccountMap = 'invalid_type';
+    else if (rows.length > TAX_ACCOUNT_MAP_ROWS_MAX) fields.taxAccountMap = 'too_many';
+    else {
+      // 重複は空白を除いた大項目で見る。行ごとの検査 (型・予約の値・科目) は route と同じ 1 関数に任せる
+      const seen = new Set<string>();
+      const out: TaxAccountMapRow[] = [];
+      rows.forEach((r, i) => {
+        const at = `taxAccountMap.${i}`;
+        if (typeof r !== 'object' || r === null) {
+          fields[at] = 'invalid_type';
+          return;
+        }
+        const issue = taxAccountMapRowIssue(r);
+        if (issue?.categoryBig) fields[`${at}.categoryBig`] = issue.categoryBig;
+        if (issue?.taxAccount) fields[`${at}.taxAccount`] = issue.taxAccount;
+        if (typeof r.categoryBig !== 'string' || typeof r.taxAccount !== 'string') return;
+        const categoryBig = r.categoryBig.trim();
+        if (!issue?.categoryBig) {
+          if (seen.has(categoryBig)) fields[`${at}.categoryBig`] = 'duplicate';
+          seen.add(categoryBig);
+        }
+        out.push({ categoryBig, taxAccount: r.taxAccount });
+      });
+      value.taxAccountMap = sortTaxAccountMap(out);
+    }
+  }
+
   return Object.keys(fields).length > 0 ? { ok: false, fields } : { ok: true, value };
 }
 
@@ -362,6 +407,26 @@ function pairCashOverrides(current: readonly CashOverrideRule[], next: readonly 
 const cashFieldsEqual = (a: CashOverrideRule, b: CashOverrideRule): boolean =>
   a.amount === b.amount && a.memo === b.memo;
 
+const taxMapValue = (r: TaxAccountMapRow) => ({ categoryBig: r.categoryBig, taxAccount: r.taxAccount });
+
+/**
+ * 対応表の突き合わせ。大項目が行の鍵 (D1 の主キー (user_id, category_big) と同じ)。
+ * 戻り値の各列はコード単位順なので、差分・変更履歴・未保存件数の並びが入力の並びに左右されない。
+ */
+function pairTaxAccountMap(current: readonly TaxAccountMapRow[], next: readonly TaxAccountMapRow[]) {
+  const byBig = new Map(current.map((r) => [r.categoryBig, r]));
+  const nextBigs = new Set(next.map((r) => r.categoryBig));
+  const pairs: Array<[TaxAccountMapRow, TaxAccountMapRow]> = [];
+  const added: TaxAccountMapRow[] = [];
+  for (const r of sortTaxAccountMap(next)) {
+    const cur = byBig.get(r.categoryBig);
+    if (cur) pairs.push([cur, r]);
+    else added.push(r);
+  }
+  const removed = sortTaxAccountMap(current.filter((r) => !nextBigs.has(r.categoryBig)));
+  return { pairs, added, removed };
+}
+
 /**
  * 現在の設定と次の設定の差分(差分プレビュー・比較・保存の変更履歴)。
  * 行単位で数える。フィールドも並び順も変わった行は『変更』に 1 回だけ数える。
@@ -372,6 +437,7 @@ export function diffSettings(current: SettingsState, next: SettingsState): Setti
     ownerLabels: { changed: [] },
     statMinMonths: null,
     cashOverrides: { added: bucket(), changed: bucket(), removed: bucket() },
+    taxAccountMap: { added: bucket(), changed: bucket(), removed: bucket() },
     total: 0,
   };
 
@@ -417,6 +483,18 @@ export function diffSettings(current: SettingsState, next: SettingsState): Setti
   for (const r of co.removed)
     push(diff.cashOverrides.removed, { key: cashOverrideKey(r), kind: r.kind, before: cashValue(r) });
 
+  const tm = pairTaxAccountMap(current.taxAccountMap, next.taxAccountMap);
+  for (const r of tm.added) push(diff.taxAccountMap.added, { key: r.categoryBig, after: taxMapValue(r) });
+  for (const [cur, nxt] of tm.pairs)
+    if (cur.taxAccount !== nxt.taxAccount)
+      push(diff.taxAccountMap.changed, {
+        key: nxt.categoryBig,
+        before: taxMapValue(cur),
+        after: taxMapValue(nxt),
+      });
+  for (const r of tm.removed)
+    push(diff.taxAccountMap.removed, { key: r.categoryBig, before: taxMapValue(r) });
+
   diff.total =
     diff.normRules.added.count +
     diff.normRules.changed.count +
@@ -426,7 +504,10 @@ export function diffSettings(current: SettingsState, next: SettingsState): Setti
     (diff.statMinMonths ? 1 : 0) +
     diff.cashOverrides.added.count +
     diff.cashOverrides.changed.count +
-    diff.cashOverrides.removed.count;
+    diff.cashOverrides.removed.count +
+    diff.taxAccountMap.added.count +
+    diff.taxAccountMap.changed.count +
+    diff.taxAccountMap.removed.count;
   return diff;
 }
 
@@ -474,6 +555,8 @@ export function settingsWriteState(current: SettingsState, next: SettingsState):
     ownerLabels: { ...next.ownerLabels },
     statMinMonths: next.statMinMonths,
     cashOverrides,
+    // 大項目が鍵なので引き継ぐ id は無い。並びだけ D1 の ORDER BY と揃える
+    taxAccountMap: sortTaxAccountMap(next.taxAccountMap),
   };
 }
 
@@ -531,6 +614,30 @@ export function settingsChangeEntries(current: SettingsState, next: SettingsStat
       });
   for (const r of co.removed)
     out.push({ target: 'cash_override', targetKey: r.overrideId, before: json(cashValue(r)), after: null });
+
+  const tm = pairTaxAccountMap(current.taxAccountMap, next.taxAccountMap);
+  for (const r of tm.added)
+    out.push({
+      target: 'tax_account_map',
+      targetKey: r.categoryBig,
+      before: null,
+      after: json(taxMapValue(r)),
+    });
+  for (const [cur, nxt] of tm.pairs)
+    if (cur.taxAccount !== nxt.taxAccount)
+      out.push({
+        target: 'tax_account_map',
+        targetKey: nxt.categoryBig,
+        before: json(taxMapValue(cur)),
+        after: json(taxMapValue(nxt)),
+      });
+  for (const r of tm.removed)
+    out.push({
+      target: 'tax_account_map',
+      targetKey: r.categoryBig,
+      before: json(taxMapValue(r)),
+      after: null,
+    });
   return out;
 }
 
@@ -580,6 +687,11 @@ export function countSettingsChanges(saved: SettingsState, draft: SettingsState)
     if (cur.memo !== r.memo) n += 1;
   }
   n += saved.cashOverrides.filter((r) => !draftCashIds.has(r.overrideId)).length;
+
+  // 対応表の行は科目 1 欄だけが値。大項目を変えた行は『削除+追加』として 2 項目になる
+  const tm = pairTaxAccountMap(saved.taxAccountMap, draft.taxAccountMap);
+  n += tm.added.length + tm.removed.length;
+  n += tm.pairs.filter(([cur, nxt]) => cur.taxAccount !== nxt.taxAccount).length;
   return n;
 }
 
@@ -591,12 +703,18 @@ export function summarizeSettings(state: SettingsState, ownerLabelsSaved: boolea
     ownerLabelsSet: ownerLabelsSaved,
     statMinMonths: state.statMinMonths,
     cashOverrides: state.cashOverrides.length,
+    taxAccountMap: state.taxAccountMap.length,
   };
 }
 
 /* -------- 画面の値(GET /api/settings/screen) -------- */
 
-export type SettingsChangeTarget = 'norm_rule' | 'owner_label' | 'stat_min_months' | 'cash_override';
+export type SettingsChangeTarget =
+  | 'norm_rule'
+  | 'owner_label'
+  | 'stat_min_months'
+  | 'cash_override'
+  | 'tax_account_map';
 export type SettingsChangeOrigin = 'screen' | 'restore' | 'migration';
 
 /** 変更履歴 1 行(settings_change_log) */
@@ -626,6 +744,8 @@ export interface StoredCashOverride extends CashOverrideRule {
 export interface SettingsScreenInput {
   normRules: readonly StoredNormRule[];
   cashOverrides: readonly StoredCashOverride[];
+  /** tax_account_map の保存値 (並びは問わない) */
+  taxAccountMap: readonly TaxAccountMapRow[];
   /** owner_labels の保存値。1 行も無ければ null */
   ownerLabels: Partial<Record<OwnerKey, string>> | null;
   /** analysis_settings の保存値。無ければ null */
@@ -654,6 +774,8 @@ export interface SettingsScreenView {
   statMinMonths: number;
   statMinMonthsRange: { min: number; max: number; default: number };
   cashOverrides: SettingsScreenCashOverride[];
+  /** 大項目のコード単位順 */
+  taxAccountMap: TaxAccountMapRow[];
   impacts: { account: string[]; vendor: string[] };
   limits: { normRules: number; text: number; memo: number };
 }
@@ -722,14 +844,18 @@ export function settingsScreen(input: SettingsScreenInput): SettingsScreenView {
         updatedBy: settingsActorLabel(log?.changedBy ?? r.updatedBy),
       };
     }),
+    taxAccountMap: sortTaxAccountMap(input.taxAccountMap),
     impacts: { account: [...SETTINGS_IMPACTS.account], vendor: [...SETTINGS_IMPACTS.vendor] },
     limits: { normRules: NORM_RULES_MAX, text: NORM_RULE_TEXT_MAX, memo: CASH_OVERRIDE_MEMO_MAX },
   };
 }
 
-/** 画面の値 → 設定 4 種(差分・未保存件数・書き出しの入力) */
+/** 画面の値 → 設定 5 種(差分・未保存件数・書き出しの入力) */
 export function settingsStateOf(
-  view: Pick<SettingsScreenView, 'normRules' | 'ownerLabels' | 'statMinMonths' | 'cashOverrides'>,
+  view: Pick<
+    SettingsScreenView,
+    'normRules' | 'ownerLabels' | 'statMinMonths' | 'cashOverrides' | 'taxAccountMap'
+  >,
 ): SettingsState {
   return {
     normRules: view.normRules.map(({ ruleId, kind, raw, norm, order, enabled }) => ({
@@ -750,13 +876,18 @@ export function settingsStateOf(
       month,
       memo,
     })),
+    taxAccountMap: sortTaxAccountMap(view.taxAccountMap),
   };
 }
 
-/** 設定が 1 つも保存されていない状態(空状態の判定・既定値) */
+/**
+ * 設定が 1 つも保存されていない状態(空状態の判定・既定値)。
+ * 対応表も空。初期の 5 行は migration 0059 と版 1 の JSON の移行が入れるもので、『保存なし』の意味ではない。
+ */
 export const EMPTY_SETTINGS_STATE: Readonly<SettingsState> = Object.freeze({
   normRules: [],
   ownerLabels: { ...DEFAULT_OWNER_LABELS },
   statMinMonths: DEFAULT_STAT_MIN_MONTHS,
   cashOverrides: [],
+  taxAccountMap: [],
 });

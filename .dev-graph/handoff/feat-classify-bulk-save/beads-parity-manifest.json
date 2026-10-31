@@ -1,0 +1,113 @@
+{
+ "feature_id": "feat-classify-bulk-save",
+ "nodes": [
+  {
+   "graph_node_id": "feat-classify-bulk-save",
+   "bd_issue_id": "kanjo-616",
+   "graph_status": "active",
+   "depends_on": []
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P01",
+   "bd_issue_id": "kanjo-616.1",
+   "graph_status": "active",
+   "depends_on": []
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P02",
+   "bd_issue_id": "kanjo-616.2",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.1"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P03",
+   "bd_issue_id": "kanjo-616.3",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.2"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P04",
+   "bd_issue_id": "kanjo-616.4",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.3"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P05",
+   "bd_issue_id": "kanjo-616.5",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.4"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P06",
+   "bd_issue_id": "kanjo-616.6",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.5"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P07",
+   "bd_issue_id": "kanjo-616.7",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.6"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P08",
+   "bd_issue_id": "kanjo-616.8",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.7"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P09",
+   "bd_issue_id": "kanjo-616.9",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.8"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P10",
+   "bd_issue_id": "kanjo-616.10",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.9"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P11",
+   "bd_issue_id": "kanjo-616.11",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.10"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P12",
+   "bd_issue_id": "kanjo-616.12",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.11"
+   ]
+  },
+  {
+   "graph_node_id": "SYS-CLASSIFY-BULK-P13",
+   "bd_issue_id": "kanjo-616.13",
+   "graph_status": "active",
+   "depends_on": [
+    "kanjo-616.12"
+   ]
+  }
+ ]
+}

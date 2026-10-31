@@ -24,6 +24,7 @@ const diffOf = (rules: number): SettingsDiff => ({
   ownerLabels: { changed: [] },
   statMinMonths: null,
   cashOverrides: { added: bucket(0), changed: bucket(0), removed: bucket(0) },
+  taxAccountMap: { added: bucket(0), changed: bucket(0), removed: bucket(0) },
   total: rules,
 });
 

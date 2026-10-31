@@ -1,16 +1,16 @@
 {
-  "renderer": "render-graph-html.py (dev-graph 0.1.11)",
-  "rendered_at": "2026-09-30T15:52:53Z",
+  "renderer": "render-graph-html.py",
+  "rendered_at": "2026-10-01T15:55:35Z",
   "scope": "all nodes",
   "graph_revision": 4,
   "input": ".dev-graph/state/graph.json",
-  "input_sha256": "16a81bf8b7be288c2da224970cae7b60a3ffac7bb942380ed7fdd6404f793335",
+  "input_sha256": "e922052e670a56356459b056d591235a649c207e88ee908cd2dfc2b4bc845261",
   "output": ".dev-graph/render/index.html",
-  "output_sha256": "a08249b1d30fb44ebdf97ddb50894d611c20e79729a7562d4cc674e48fbbae95",
+  "output_sha256": "065d0e712b71c4da2cb6b333831be02b41a104cbdef0ae08a9ba7d3f05c5c4f1",
   "nodes": 23,
   "edges": 21,
   "feature_progress": {
-    "feat-subscriptions-merge": {
+    "feat-classify-bulk-save": {
       "done": 0,
       "total": 13
     }
@@ -19,9 +19,9 @@
   "svg": 1,
   "inline_scripts": 2,
   "registration_receipt": {
-    "path": ".dev-graph/plans/feature-package-feat-subscriptions-merge/dev-graph-registration-receipt.json",
+    "path": ".dev-graph/plans/feature-package-feat-classify-bulk-save/dev-graph-registration-receipt.json",
     "expected_count": 13,
     "applied_count": 13,
-    "source_digest": "sha256:c7490d24a113ff369d24716501692dc5364f49a8b5d6aa7179e368a49d1a36d8"
+    "source_digest": "sha256:601543e1e9b218f5bfd0154e5e887113b4621fa8bd5dac9543062d77e1bde286"
   }
 }

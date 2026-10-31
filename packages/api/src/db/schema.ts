@@ -235,6 +235,22 @@ export const ownerLabels = sqliteTable(
   (t) => [primaryKey({ columns: [t.userId, t.owner] })],
 );
 
+/**
+ * 0059: MF の大項目 → 勘定科目の対応表 (spec-classify-bulk-save FR-17)。事業の明細の提案が読む。
+ * 読み書きは routes/tax-account-map.ts と設定だけの復元。全データ復元 (import-lifecycle) は書かない。
+ */
+export const taxAccountMap = sqliteTable(
+  'tax_account_map',
+  {
+    userId: text('user_id').notNull(),
+    categoryBig: text('category_big').notNull(),
+    taxAccount: text('tax_account').notNull(),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.categoryBig] })],
+);
+
 /** 大項目/中項目の追加候補 */
 export const categoryOptions = sqliteTable('category_options', {
   userId: text('user_id').notNull(),
@@ -464,7 +480,7 @@ export const settingsChangeLog = sqliteTable(
     userId: text('user_id').notNull(),
     seq: integer('seq').notNull(),
     target: text('target', {
-      enum: ['norm_rule', 'owner_label', 'stat_min_months', 'cash_override'],
+      enum: ['norm_rule', 'owner_label', 'stat_min_months', 'cash_override', 'tax_account_map'],
     }).notNull(),
     targetKey: text('target_key').notNull(),
     before: text('before'),

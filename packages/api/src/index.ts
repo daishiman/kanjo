@@ -39,6 +39,7 @@ import { savedFiltersRoute } from './routes/saved-filters.js';
 import { settingsScreenRoute } from './routes/settings-screen.js';
 import { settingsRoute } from './routes/settings.js';
 import { subsRoute } from './routes/subs.js';
+import { taxAccountMapRoute } from './routes/tax-account-map.js';
 import { totalCashflowRoute } from './routes/total-cashflow.js';
 import { tradeoffRoute } from './routes/tradeoff.js';
 import { vendorMemoryRoute } from './routes/vendor-memory.js';
@@ -131,6 +132,7 @@ app.route('/api', classifyBulkRoute);
 app.route('/api', savedFiltersRoute);
 app.route('/api', vendorMemoryRoute);
 app.route('/api', settingsScreenRoute);
+app.route('/api', taxAccountMapRoute);
 app.route('/api', settingsRoute);
 app.route('/api', backupsRoute);
 app.route('/api', budgetPlansRoute);
@@ -156,7 +158,8 @@ app.notFound((c) => {
  * 「適用されたか分からない」500 と分けるため、503 d1_overloaded (retryable) に言い換える。
  *
  * ただし「未適用」と保証できるのは、書込みを 1 回の D1 batch で行う route だけ
- * (サブスクの操作は commitOperation の 1 batch)。複数の batch や個別の文に分けて書く route では、
+ * (サブスクの操作は commitOperation の 1 batch、明細の一括保存 POST /api/transactions/bulk は
+ * json_each で束ねた 1 batch)。複数の batch や個別の文に分けて書く route では、
  * 前の batch が適用済みのまま後の要求で拒否されうる。自動再送の対象を広げるときは、
  * その route が 1 batch で書くかを確かめる。
  */

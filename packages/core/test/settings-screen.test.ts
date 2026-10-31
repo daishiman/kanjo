@@ -5,11 +5,14 @@ import {
   type Dataset,
   type MfTx,
   NORM_RULE_CAT_SRC,
+  NO_CATEGORY,
   type NormRule,
   type Rule,
   SETTINGS_IMPACTS,
   type SettingsChangeLogRow,
   type SettingsState,
+  TAX_ACCOUNT_MAP_ROWS_MAX,
+  type TaxAccountMapRow,
   accountNormMap,
   applyCashOverrides,
   countSettingsChanges,
@@ -63,11 +66,18 @@ const FIXTURE_RULES: NormRule[] = [
   rule('a2', 'account', '通信費用', '通信費', 9),
 ];
 
+/** fixture: 勘定科目の対応表 2 行 (大項目のコード単位順) */
+const FIXTURE_MAP: TaxAccountMapRow[] = [
+  { categoryBig: '交通費', taxAccount: '旅費交通費' },
+  { categoryBig: '通信費', taxAccount: '通信費' },
+];
+
 const state = (over: Partial<SettingsState> = {}): SettingsState => ({
   normRules: FIXTURE_RULES.map((r) => ({ ...r })),
   ownerLabels: { ...DEFAULT_OWNER_LABELS },
   statMinMonths: 6,
   cashOverrides: [],
+  taxAccountMap: FIXTURE_MAP.map((r) => ({ ...r })),
   ...over,
 });
 
@@ -300,6 +310,49 @@ describe('入力の検証(BR-01〜BR-17)', () => {
     expect(v.ok).toBe(true);
   });
 
+  it('対応表は大項目の空白を除いてコード単位順に並べる', () => {
+    const v = validateSettingsInput({
+      taxAccountMap: [
+        { categoryBig: ' 通信費 ', taxAccount: '通信費' },
+        { categoryBig: '交通費', taxAccount: '旅費交通費' },
+      ],
+    });
+    expect(v.ok && v.value.taxAccountMap).toEqual(FIXTURE_MAP);
+  });
+
+  it('対応表の不正な欄を鍵だけで返す (予約の値・一覧に無い科目・重複・空・61 字)', () => {
+    const v = validateSettingsInput({
+      taxAccountMap: [
+        { categoryBig: NO_CATEGORY, taxAccount: '通信費' },
+        { categoryBig: '通信費', taxAccount: '通信料' },
+        { categoryBig: ' 通信費', taxAccount: '雑費' },
+        { categoryBig: '', taxAccount: '雑費' },
+        { categoryBig: 'あ'.repeat(61), taxAccount: '雑費' },
+        { categoryBig: 'a\u0007', taxAccount: '雑費' },
+      ],
+    });
+    expect(v.ok).toBe(false);
+    if (!v.ok)
+      expect(v.fields).toEqual({
+        'taxAccountMap.0.categoryBig': 'reserved',
+        'taxAccountMap.1.taxAccount': 'not_in_list',
+        'taxAccountMap.2.categoryBig': 'duplicate',
+        'taxAccountMap.3.categoryBig': 'required',
+        'taxAccountMap.4.categoryBig': 'too_long',
+        'taxAccountMap.5.categoryBig': 'control_char',
+      });
+  });
+
+  it('対応表の行数が上限を超えると too_many', () => {
+    const rows = Array.from({ length: TAX_ACCOUNT_MAP_ROWS_MAX + 1 }, (_, i) => ({
+      categoryBig: `大項目${i}`,
+      taxAccount: '雑費',
+    }));
+    const v = validateSettingsInput({ taxAccountMap: rows });
+    expect(v.ok).toBe(false);
+    if (!v.ok) expect(v.fields).toEqual({ taxAccountMap: 'too_many' });
+  });
+
   it('501 行は too_many', () => {
     const rows = Array.from({ length: 501 }, (_, i) => ({
       ruleId: `n${i}`,
@@ -328,6 +381,16 @@ describe('未保存件数(§7.14)', () => {
     draft.statMinMonths = 12; // 1
     draft.cashOverrides = [cash('o1', {})]; // 追加 1
     expect(countSettingsChanges(state(), draft)).toBe(7);
+  });
+
+  it('対応表は大項目で突き合わせ、追加・削除・科目の変更をそれぞれ 1 項目と数える', () => {
+    const draft = state({
+      taxAccountMap: [
+        { categoryBig: '日用品', taxAccount: '消耗品費' }, // 追加 1
+        { categoryBig: '通信費', taxAccount: '雑費' }, // 変更 1
+      ], // 交通費の削除 1
+    });
+    expect(countSettingsChanges(state(), draft)).toBe(3);
   });
 
   it('並べ替えは動いた行ごとに 1 項目(隣どうしの入れ替えは 2)', () => {
@@ -385,6 +448,30 @@ describe('差分(BR-27)', () => {
     expect(d.total).toBe(2);
   });
 
+  it('対応表は大項目で突き合わせ、追加・変更・削除を total に足す', () => {
+    const next = state({
+      taxAccountMap: [
+        { categoryBig: '日用品', taxAccount: '消耗品費' },
+        { categoryBig: '通信費', taxAccount: '雑費' },
+      ],
+    });
+    const d = diffSettings(state(), next);
+    expect(d.taxAccountMap.added.items).toEqual([
+      { key: '日用品', after: { categoryBig: '日用品', taxAccount: '消耗品費' } },
+    ]);
+    expect(d.taxAccountMap.changed.items).toEqual([
+      {
+        key: '通信費',
+        before: { categoryBig: '通信費', taxAccount: '通信費' },
+        after: { categoryBig: '通信費', taxAccount: '雑費' },
+      },
+    ]);
+    expect(d.taxAccountMap.removed.items).toEqual([
+      { key: '交通費', before: { categoryBig: '交通費', taxAccount: '旅費交通費' } },
+    ]);
+    expect(d.total).toBe(3);
+  });
+
   it('items は最大 50 件で、count は全件', () => {
     const many = Array.from({ length: 60 }, (_, i) => rule(`n${i}`, 'vendor', `r${i}`, 'x', i + 1));
     const d = diffSettings(state({ normRules: [] }), state({ normRules: many }));
@@ -440,6 +527,34 @@ describe('書込みと変更履歴(BR-19・BR-21)', () => {
     ]);
   });
 
+  it('対応表は target tax_account_map・targetKey は大項目・値は {categoryBig, taxAccount} で、件数は total と一致', () => {
+    const next = state({
+      taxAccountMap: [
+        { categoryBig: '日用品', taxAccount: '消耗品費' },
+        { categoryBig: '通信費', taxAccount: '雑費' },
+      ],
+    });
+    const written = settingsWriteState(state(), next);
+    expect(written.taxAccountMap.map((r) => r.categoryBig)).toEqual(['日用品', '通信費']);
+    const entries = settingsChangeEntries(state(), written);
+    expect(entries).toHaveLength(diffSettings(state(), written).total);
+    expect(entries.map((e) => [e.target, e.targetKey, e.before, e.after])).toEqual([
+      ['tax_account_map', '日用品', null, JSON.stringify({ categoryBig: '日用品', taxAccount: '消耗品費' })],
+      [
+        'tax_account_map',
+        '通信費',
+        JSON.stringify({ categoryBig: '通信費', taxAccount: '通信費' }),
+        JSON.stringify({ categoryBig: '通信費', taxAccount: '雑費' }),
+      ],
+      [
+        'tax_account_map',
+        '交通費',
+        JSON.stringify({ categoryBig: '交通費', taxAccount: '旅費交通費' }),
+        null,
+      ],
+    ]);
+  });
+
   it('打ち切らない(60 行の追加は 60 行)', () => {
     const many = Array.from({ length: 60 }, (_, i) => rule(`n${i}`, 'vendor', `r${i}`, 'x', i + 1));
     const empty = state({ normRules: [] });
@@ -491,6 +606,7 @@ describe('影響するもの・要約(§7.5・BR-31)', () => {
       ownerLabelsSet: true,
       statMinMonths: 6,
       cashOverrides: 1,
+      taxAccountMap: 2,
     });
   });
 });
@@ -522,6 +638,7 @@ describe('画面の値(GET /api/settings/screen)', () => {
     const view = settingsScreen({
       normRules: [...stored].reverse(),
       cashOverrides: [],
+      taxAccountMap: [...FIXTURE_MAP].reverse(),
       ownerLabels: null,
       statMinMonths: null,
       latestChanges: [
@@ -542,12 +659,14 @@ describe('画面の値(GET /api/settings/screen)', () => {
     expect(view.statMinMonths).toBe(6);
     expect(view.statMinMonthsRange).toEqual({ min: 3, max: 24, default: 6 });
     expect(view.limits).toEqual({ normRules: 500, text: 60, memo: 100 });
+    expect(view.taxAccountMap).toEqual(FIXTURE_MAP);
   });
 
-  it('画面の値から設定 4 種に戻すと差分 0 件(決定論)', () => {
+  it('画面の値から設定 5 種に戻すと差分 0 件(決定論)', () => {
     const input = {
       normRules: stored,
       cashOverrides: [{ ...cash('o1', {}), updatedAt: 'x', updatedBy: 'system' }],
+      taxAccountMap: FIXTURE_MAP,
       ownerLabels: { business: '仕事' },
       statMinMonths: 12,
       latestChanges: [],
@@ -557,6 +676,7 @@ describe('画面の値(GET /api/settings/screen)', () => {
     const s = settingsStateOf(a);
     expect(diffSettings(s, s).total).toBe(0);
     expect(s.ownerLabels.business).toBe('仕事');
+    expect(s.taxAccountMap).toEqual(FIXTURE_MAP);
     expect(a.savedAt).toBeNull();
     expect(settingsRevision([])).toBeNull();
   });

@@ -1,0 +1,50 @@
+{
+  "graph_node_id": "feat-classify-bulk-save",
+  "artifact_kind": "feature",
+  "purpose": "明細仕分け画面で選んだ明細を、提案の有無や表示中のページ・絞り込みに左右されずに、何がどの値で保存されるかを確かめたうえで一括で確定できるようにする。取込直後で取引先の記憶もルールも無い利用者でも未整理を月次クローズまで減らせるようにし、『選んだのに保存できない』『再試行を押しても何も起きない』『一覧が崩れて読めない』ことで仕分けが止まるのを無くす。",
+  "goal": "/classify で、提案の無い明細も一括指定欄で値を決めて保存でき、保存前の内訳で保存する件数と外す件数を確かめられる。選択は URL の sel に行の key で保たれ、サーバが明細を引き直して 1 回の batch (D1 クエリ 49 本以内) で書き、再試行は write_failed の明細と要求全体の失敗 (通信の失敗・5xx・409) にだけ出る。取込直後でも『MF の分類』の提案が付き、勘定科目の対応表を設定画面で編集でき、取引一覧は 1264px でも 6 列で崩れない。lint・typecheck・test・skills:test・初期 JS 予算・verify:full は緑のまま。",
+  "scope_in": [
+    "一括操作バーの一括指定欄 (区分・カテゴリ大/中・所有者・支払い方法) と保存前の内訳 (00 I1)",
+    "POST /api/transactions/bulk の拡張: サーバが明細を引き直して core で値を解決し、1 回の batch で書く (00 I2)",
+    "GET /api/transactions/selected の新設と、一覧の応答から絞り込み後の全件を外すこと (00 I3)",
+    "提案の最後の由来『MF の分類』『MF の分類 (対応表)』(00 I4)",
+    "選択の保持・選べない行の理由・見出しの全選択の 50 件での停止 (00 I5)",
+    "取引一覧の 6 列化・表示件数の選択・編集パネルの可変幅・明細仕分けの画面検査 (00 I6)",
+    "再試行を write_failed の明細と要求全体の失敗に限ること (00 I7)",
+    "勘定科目の対応表: 表・migration・API・設定画面・設定の変更履歴・設定の JSON とバックアップ (00 I8)",
+    "『カテゴリなし』の予約の値 (00 I9)",
+    "上記の認可・入力検証・履歴・テストと、画面検査の記録 (docs/classify-screen/)"
+  ],
+  "scope_out": [
+    "選択の上限 (URL の sel 50 件) と一括保存の上限 (100 件) の変更",
+    "要確認の閾値 80 と、既存の由来 (記憶・ルール・MF 中項目の対応表) の順位と信頼度の変更",
+    "分割・ルール作成・ルール適用・削除と取消・保存フィルタの仕様変更",
+    "絞り込み結果の全件 (表示外のページを含む) を一度に選ぶ操作",
+    "取込 (CSV の読み込み) の仕様変更、証憑の添付と保管",
+    "モバイル・タブレット・デスクトップ専用アプリ",
+    "Workers Paid などの有料プランへの変更"
+  ],
+  "acceptance": [
+    "O1 (G1): 提案の無い明細を一括指定で保存できる (測定基準は 00 U4 の O1)",
+    "O2 (G1): 失敗の種類ごとに、再試行の有無と理由が正しく出る (測定基準は 00 U4 の O2)",
+    "O3 (G2): 取込直後でも明細に提案が付く (測定基準は 00 U4 の O3)",
+    "O4 (G3): 選択がページと絞り込みをまたいで保たれ、サーバが値を解決する (測定基準は 00 U4 の O4)",
+    "O5 (G4): 1264px 幅で取引一覧が崩れない (測定基準は 00 U4 の O5)",
+    "O6 (G5): 保存の経路が認可と入力検証を通る (測定基準は 00 U4 の O6)",
+    "O7 (G1, G2, G3, G4, G5): 既存の品質ゲートを緑のまま保つ (測定基準は 00 U4 の O7)",
+    "O8 (G1): 一括保存が無料枠の 1 起動の上限に収まる (測定基準は 00 U4 の O8)",
+    "O9 (G1): 同じ要求を送り直しても二重に保存されない (測定基準は 00 U4 の O9)"
+  ],
+  "architecture_refs": [
+    "architecture/classify-bulk-save-ui-ux.md",
+    "architecture/classify-bulk-save-frontend.md",
+    "architecture/classify-bulk-save-backend.md",
+    "architecture/classify-bulk-save-database.md",
+    "architecture/classify-bulk-save-auth.md",
+    "architecture/classify-bulk-save-security.md",
+    "architecture/classify-bulk-save-infrastructure.md",
+    "architecture/classify-bulk-save-maintenance-ops.md",
+    "specs/spec-classify-bulk-save.md"
+  ],
+  "updated_at": "2026-10-01T12:17:32Z"
+}

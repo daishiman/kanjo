@@ -22,6 +22,7 @@ import {
   deletionScope,
 } from '@kanjo/core';
 import { type AuditScope, buildAuditStatements } from './audit-log.js';
+import { D1_INVOCATION_QUERY_LIMIT } from './d1-limits.js';
 import {
   type FullResetTable,
   type FullResetTombstoneRow,
@@ -30,7 +31,7 @@ import {
   isFullReset,
   readFullResetTombstones,
 } from './deletion-full-reset.js';
-import { D1_FREE_QUERY_LIMIT, chunkJsonRowsByBytes, insertJsonRows } from './import-lifecycle.js';
+import { chunkJsonRowsByBytes, insertJsonRows } from './import-lifecycle.js';
 import {
   type RecomputeCanonicalMutation,
   getDb,
@@ -118,7 +119,12 @@ export interface DeletionQueryPlan {
 
 const sumPlan = (breakdown: Record<string, number>): DeletionQueryPlan => {
   const total = Object.values(breakdown).reduce((sum, value) => sum + value, 0);
-  return { total, limit: D1_FREE_QUERY_LIMIT, accepted: total < D1_FREE_QUERY_LIMIT, breakdown };
+  return {
+    total,
+    limit: D1_INVOCATION_QUERY_LIMIT,
+    accepted: total < D1_INVOCATION_QUERY_LIMIT,
+    breakdown,
+  };
 };
 
 /**

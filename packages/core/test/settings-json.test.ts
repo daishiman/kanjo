@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_OWNER_LABELS,
+  DEFAULT_TAX_ACCOUNT_MAP,
+  NO_CATEGORY,
+  SETTINGS_JSON_VERSION,
   type SettingsState,
   diffSettings,
   exportSettings,
@@ -10,7 +13,7 @@ import {
   validateSettingsJson,
 } from '../src/index.js';
 
-/** 設定 JSON の書き出し・検証・版・バックアップからの取り出し(BR-23〜BR-29) */
+/** 設定 JSON の書き出し・検証・版・バックアップからの取り出し(BR-23〜BR-29)。版 2 は勘定科目の対応表を持つ (AC-17) */
 
 const STATE: SettingsState = {
   normRules: [
@@ -37,6 +40,10 @@ const STATE: SettingsState = {
       memo: '',
     },
   ],
+  taxAccountMap: [
+    { categoryBig: '通信費', taxAccount: '通信費' },
+    { categoryBig: '保険', taxAccount: '損害保険料' },
+  ],
 };
 
 const exported = () => JSON.parse(JSON.stringify(exportSettings(STATE, '2026-09-22T01:00:00.000Z')));
@@ -52,9 +59,25 @@ describe('書き出し → 検証の往復', () => {
     const json = exported();
     expect(Object.keys(json.cashOverrides[0]).sort()).toEqual(['amount', 'kind', 'memo', 'month', 'scope']);
     expect(Object.keys(json.normRules[0]).sort()).toEqual(['enabled', 'kind', 'norm', 'raw', 'ruleId']);
+    expect(Object.keys(json.taxAccountMap[0]).sort()).toEqual(['categoryBig', 'taxAccount']);
     expect(json).not.toHaveProperty('mfTx');
     expect(json).not.toHaveProperty('rules');
     expect(json).not.toHaveProperty('budgets');
+  });
+
+  it('版 2 で書き出し、対応表は大項目のコード単位順に並べる (D1 の ORDER BY と同じ)', () => {
+    const json = exported();
+    expect(SETTINGS_JSON_VERSION).toBe(2);
+    expect(json.version).toBe(2);
+    expect(json.taxAccountMap.map((r: { categoryBig: string }) => r.categoryBig)).toEqual(['保険', '通信費']);
+  });
+
+  it('対応表が空なら空のまま往復する (初期の 5 行で補わない)', () => {
+    const empty = { ...STATE, taxAccountMap: [] };
+    const v = validateSettingsJson(
+      JSON.parse(JSON.stringify(exportSettings(empty, '2026-09-22T01:00:00.000Z'))),
+    );
+    expect(v.ok && v.value.taxAccountMap).toEqual([]);
   });
 
   it('ファイル名は kanjo-settings-YYYY-MM-DD.json', () => {
@@ -131,27 +154,104 @@ describe('拒否(BR-24・BR-25)', () => {
     });
   });
 
+  it('対応表の行の形と値を拒否する (BR-09)', () => {
+    reject((j) => {
+      j.taxAccountMap[0].updatedAt = 'x';
+    });
+    reject((j) => {
+      j.taxAccountMap = 'x';
+    });
+    // 同じ大項目の 2 行目 (前後の空白は除いて比べる)
+    reject((j) => {
+      j.taxAccountMap.push({ categoryBig: ' 通信費 ', taxAccount: '雑費' });
+    });
+    // 対応先は TAX_ACCOUNTS の 32 件に限る
+    reject((j) => {
+      j.taxAccountMap[0].taxAccount = '通信料';
+    });
+    // 『カテゴリなし』は予約の値で、大項目に登録できない
+    reject((j) => {
+      j.taxAccountMap[0].categoryBig = NO_CATEGORY;
+    });
+    reject((j) => {
+      j.taxAccountMap[0].categoryBig = ' ';
+    });
+    reject((j) => {
+      j.taxAccountMap[0].categoryBig = 'あ'.repeat(61);
+    });
+  });
+
   it('新しすぎる版・古すぎる版は unsupported_settings_version', () => {
     reject((j) => {
-      j.version = 2;
+      j.version = 3;
     }, 'unsupported_settings_version');
     reject((j) => {
       j.version = -1;
     }, 'unsupported_settings_version');
-    // 1 世代前(版 0)は移行関数が無いので受けない(置き場はあるが現行は版 1 だけ)
+    // 2 世代前(版 0)は受けない。受けるのは現行(版 2)と 1 世代前(版 1)だけ
     reject((j) => {
       j.version = 0;
     }, 'unsupported_settings_version');
   });
 });
 
+describe('版 1 からの移行 (AC-17)', () => {
+  // biome-ignore lint/suspicious/noExplicitAny: 版 1 の形を作るため、JSON を型なしで書き換える
+  const v1 = (): Record<string, any> => {
+    const j = exported();
+    j.version = 1;
+    // biome-ignore lint/performance/noDelete: 版 1 は対応表のキーを持たない
+    delete j.taxAccountMap;
+    return j;
+  };
+
+  it('版 1 の JSON は通り、対応表は初期の 5 行になる', () => {
+    const v = validateSettingsJson(v1());
+    expect(v.ok).toBe(true);
+    if (!v.ok) return;
+    // 検査を通った値は版を問わず大項目のコード単位順 (版 2 の書き出し・D1 の ORDER BY と同じ並び)
+    expect(v.value.taxAccountMap.map((r) => r.categoryBig)).toEqual([
+      '交通費',
+      '交際費',
+      '日用品',
+      '水道・光熱費',
+      '通信費',
+    ]);
+    expect(v.value.taxAccountMap).toEqual(expect.arrayContaining([...DEFAULT_TAX_ACCOUNT_MAP]));
+    expect(diffSettings({ ...STATE, taxAccountMap: [...DEFAULT_TAX_ACCOUNT_MAP] }, v.value).total).toBe(0);
+  });
+
+  it('初期の 5 行は通信費・水道光熱費・旅費交通費・接待交際費・消耗品費', () => {
+    expect(DEFAULT_TAX_ACCOUNT_MAP.map((r) => [r.categoryBig, r.taxAccount])).toEqual([
+      ['通信費', '通信費'],
+      ['水道・光熱費', '水道光熱費'],
+      ['交通費', '旅費交通費'],
+      ['交際費', '接待交際費'],
+      ['日用品', '消耗品費'],
+    ]);
+  });
+
+  it('版 1 なのに対応表のキーを持つ JSON は不正 (版 1 に無いキー)', () => {
+    const j = v1();
+    j.taxAccountMap = [];
+    expect(validateSettingsJson(j)).toEqual({ ok: false, code: 'invalid_settings_file' });
+  });
+
+  it('版 1 の値の検査は版 2 と同じ', () => {
+    const j = v1();
+    j.statMinMonths = 2;
+    expect(validateSettingsJson(j)).toEqual({ ok: false, code: 'invalid_settings_file' });
+  });
+});
+
 describe('バックアップ本文からの取り出し(BR-28・BR-29)', () => {
-  it('新しい本文は 3 表・名義・統計をそのまま取り出す', () => {
+  it('新しい本文は 3 表・名義・統計・対応表をそのまま取り出す', () => {
     const body = {
       normRules: STATE.normRules,
       cashOverrideRules: STATE.cashOverrides,
       ownerLabels: STATE.ownerLabels,
       analysisSettings: { statMinMonths: 12 },
+      taxAccountMap: STATE.taxAccountMap,
     };
     const v = validateSettingsJson(settingsJsonFromBackup(body, '2026-09-22T00:00:00.000Z'));
     expect(v.ok).toBe(true);
@@ -177,7 +277,14 @@ describe('バックアップ本文からの取り出し(BR-28・BR-29)', () => {
     ]);
     expect(json.ownerLabels).toEqual(DEFAULT_OWNER_LABELS);
     expect(json.statMinMonths).toBe(6);
+    // 対応表を持たない旧いバックアップは初期の 5 行で補う (AC-17)
+    expect(json.taxAccountMap).toEqual([...DEFAULT_TAX_ACCOUNT_MAP]);
     expect(validateSettingsJson(json).ok).toBe(true);
+  });
+
+  it('対応表が空の新しい本文は空のまま (利用者が全部消した状態を戻す)', () => {
+    const body = { normRules: [], cashOverrideRules: [], taxAccountMap: [] };
+    expect(settingsJsonFromBackup(body, '2026-09-22T00:00:00.000Z').taxAccountMap).toEqual([]);
   });
 
   it('移行 id は migration の lower(hex(raw)) と同じ(UTF-8)', () => {

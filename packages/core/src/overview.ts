@@ -8,15 +8,20 @@
  * - 保留は明細本文を保存せず、内容指紋 (SHA-256) が一致する間だけ効く (BR-004)。
  */
 import { isCashTxId } from './cash.js';
-import { classifyStatus, classifySuggestion } from './classify-status.js';
-import { resolveTx, ruleMatches } from './classify.js';
+import {
+  type SuggestionBasis,
+  type SuggestionContext,
+  type SuggestionResolved,
+  classifyStatus,
+  classifySuggestion,
+} from './classify-status.js';
+import { resolveTx } from './classify.js';
 import { canonicalEncode } from './fingerprint.js';
 import { sha256Hex } from './improvement.js';
 import { monthIndex, monthLabel } from './month.js';
 import type { PeriodRange } from './period.js';
 import type { ReconcileReview, TotalCashflowMonth } from './total-cashflow.js';
-import { type Cls, type Dataset, type MfTx, type Rule, isMfBizByMid, isMfCountable } from './types.js';
-import { type VendorMemoryRecord, normalizeVendorKey, vendorConfidence } from './vendor-memory.js';
+import { type Dataset, type MfTx, isMfCountable } from './types.js';
 
 // ---- 入力検証 (BR-007) ----
 
@@ -196,7 +201,8 @@ export function overviewAggregate(
 
 // ---- 未処理キュー (FR-002・FR-005) ----
 
-export type RecommendationBasis = 'vendor_memory' | 'rule' | 'mf_mid' | 'none';
+/** 由来は仕分け画面と同じ集合 (別に持つと MF の分類だけ /review-queue に出ない) */
+export type RecommendationBasis = SuggestionBasis;
 
 export interface Recommendation {
   recommendation: string | null;
@@ -230,56 +236,27 @@ const NO_RECOMMENDATION: Recommendation = {
   confidence: null,
 };
 
-const CLS_LABEL: Record<Cls, string> = { biz: '事業', per: '家計' };
-
-const labelOf = (
-  cls: Cls | null | undefined,
-  big: string | null | undefined,
-  mid: string | null | undefined,
-) => [cls ? CLS_LABEL[cls] : null, big, mid].filter((x): x is string => !!x).join(' / ');
-
 /**
- * 推奨と根拠。vendor_memory → ルール → MF中項目 → なし の順で最初に当たったものだけを返す (BR-006)。
+ * 推奨と根拠。vendor_memory → ルール → MF中項目 → MF の分類 → なし の順で最初に当たったものだけを返す (BR-006)。
  *
  * 判定そのものは `classifySuggestion` が唯一の持ち主で、ここはその結果を
  * /review-queue の既存の形 (recommendation / basisLabel) へ写すだけである。
- * 優先順をこちらにも書くと、同じ明細に対して画面ごとに違う推奨が出る。
+ * 優先順も短い根拠文も組み直さない。こちらに書くと、同じ明細に対して画面ごとに違う推奨が出る。
  */
 export function recommendationFor(
   tx: MfTx | null,
+  resolved: SuggestionResolved,
+  ctx: SuggestionContext,
   content: string,
-  rules: readonly Rule[],
-  vendorMemories: readonly VendorMemoryRecord[],
 ): Recommendation {
-  const s = classifySuggestion(tx, content, rules, vendorMemories);
+  const s = classifySuggestion(tx, resolved, ctx, content);
   if (!s.suggestion || s.basis === 'none') return { ...NO_RECOMMENDATION };
   return {
     recommendation: s.label,
     basis: s.basis,
-    basisLabel: legacyBasisLabel(s.basis, tx, content, rules, vendorMemories),
+    basisLabel: s.shortLabel ?? NO_RECOMMENDATION.basisLabel,
     confidence: s.confidence,
   };
-}
-
-/** /review-queue が表示している短い根拠文。BR-08 の basisText とは別物なので分けて持つ */
-function legacyBasisLabel(
-  basis: Exclude<RecommendationBasis, 'none'>,
-  tx: MfTx | null,
-  content: string,
-  rules: readonly Rule[],
-  vendorMemories: readonly VendorMemoryRecord[],
-): string {
-  if (basis === 'vendor_memory') {
-    const key = normalizeVendorKey(content);
-    const memory = key ? vendorMemories.find((m) => !m.revoked && m.vendorKey === key) : undefined;
-    if (memory) return `過去 ${memory.hitCount + memory.disagreeCount} 件中 ${memory.hitCount} 件`;
-    return NO_RECOMMENDATION.basisLabel;
-  }
-  if (basis === 'rule') {
-    const rule = tx ? rules.find((r) => ruleMatches(tx, r) && !!labelOf(r.cls, r.big, r.mid)) : undefined;
-    return rule ? `ルール「${rule.k}」に一致` : NO_RECOMMENDATION.basisLabel;
-  }
-  return 'MF の中項目が「事業」';
 }
 
 const KIND_ORDER: Record<ReviewItemKind, number> = { reconciliation: 0, classification: 1, import: 2 };
@@ -306,19 +283,23 @@ export function buildReviewQueue({
   data,
   review,
   failedImports,
-  vendorMemories,
+  suggestionContext,
 }: {
   data: Dataset;
   review: readonly ReconcileReview[];
   failedImports: readonly FailedImportRun[];
-  vendorMemories: readonly VendorMemoryRecord[];
+  /** 仕分け画面と同じ提案の材料 (api の suggestionContextFor が作る) */
+  suggestionContext: SuggestionContext;
 }): ReviewQueueItem[] {
   const txById = new Map(data.mfTx.map((t) => [t.id, t]));
   const reviewIds = new Set(review.map((r) => r.mfTxId));
   const items: ReviewQueueItem[] = [];
+  // 仕分け画面 (classify-row) と同じ解決にする。片方だけ集計ルールを通すと、提案の区分が画面ごとにずれる
+  const resolve = (t: MfTx) => resolveTx(t, data.rules, data.edits, data.institutionOwners);
 
   for (const r of review) {
     const amount = r.mf.io === 'expense' ? -Math.abs(r.mf.amount) : Math.abs(r.mf.amount);
+    const tx = txById.get(r.mfTxId) ?? null;
     items.push({
       kind: 'reconciliation',
       itemKey: r.mfTxId,
@@ -326,7 +307,7 @@ export function buildReviewQueue({
       date: r.mf.date,
       month: r.mf.date.slice(0, 7),
       content: r.mf.content,
-      ...recommendationFor(txById.get(r.mfTxId) ?? null, r.mf.content, data.rules, vendorMemories),
+      ...recommendationFor(tx, tx ? resolve(tx) : null, suggestionContext, r.mf.content),
     });
   }
 
@@ -335,8 +316,8 @@ export function buildReviewQueue({
   for (const t of data.mfTx) {
     if (isCashTxId(t.id) || !isMfCountable(t) || t.splitProjection != null || reviewIds.has(t.id)) continue;
     const content = t.c ?? '';
-    const resolved = resolveTx(t, data.rules, data.edits, data.institutionOwners);
-    const suggestion = classifySuggestion(t, content, data.rules, vendorMemories);
+    const resolved = resolve(t);
+    const suggestion = classifySuggestion(t, resolved, suggestionContext, content);
     const edit = data.edits[t.id];
     if (
       classifyStatus({
@@ -356,7 +337,7 @@ export function buildReviewQueue({
       date: mfDate(t),
       month: t.m,
       content,
-      ...recommendationFor(t, content, data.rules, vendorMemories),
+      ...recommendationFor(t, resolved, suggestionContext, content),
     });
   }
 

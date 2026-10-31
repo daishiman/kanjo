@@ -1,0 +1,210 @@
+{
+ "edges": [
+  {
+   "from": "SYS-CLASSIFY-BULK-P02",
+   "to": "SYS-CLASSIFY-BULK-P01",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P03",
+   "to": "SYS-CLASSIFY-BULK-P02",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P04",
+   "to": "SYS-CLASSIFY-BULK-P03",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P05",
+   "to": "SYS-CLASSIFY-BULK-P04",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P06",
+   "to": "SYS-CLASSIFY-BULK-P05",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P07",
+   "to": "SYS-CLASSIFY-BULK-P06",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P08",
+   "to": "SYS-CLASSIFY-BULK-P07",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P09",
+   "to": "SYS-CLASSIFY-BULK-P08",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P10",
+   "to": "SYS-CLASSIFY-BULK-P09",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P11",
+   "to": "SYS-CLASSIFY-BULK-P10",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P12",
+   "to": "SYS-CLASSIFY-BULK-P11",
+   "type": "depends_on"
+  },
+  {
+   "from": "SYS-CLASSIFY-BULK-P13",
+   "to": "SYS-CLASSIFY-BULK-P12",
+   "type": "depends_on"
+  }
+ ],
+ "feature_package_id": "feature-package/feat-classify-bulk-save",
+ "nodes": [
+  {
+   "depends_on": [],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P01",
+   "lifecycle_role": "requirements",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P01",
+   "title": "一括保存の要件の棚卸し: FR・BR・AC と未決事項の担当 phase の確定"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P01"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P02",
+   "lifecycle_role": "preparation",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P02",
+   "title": "core の解決関数・行の key・D1 上限の名前・対応表の API と表の名前・『カテゴリなし』の字面の設計"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P02"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P03",
+   "lifecycle_role": "design-review",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P03",
+   "title": "設計の照合: spec・architecture 8 本・既存コードとの食い違いと重複の確認"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P03"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P04",
+   "lifecycle_role": "test-design",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P04",
+   "title": "解決関数・一括保存・選択の読み出し・一覧・対応表・migration・画面のテストを先に書き、旧実装で落ちることを確かめる"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P04"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P05",
+   "lifecycle_role": "mutation",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P05",
+   "title": "core の解決関数と『カテゴリなし』・一括保存と選択の読み出しと一覧 API・勘定科目の対応表と migration 2 本・取引一覧と一括操作バーと設定画面・check:classify-screen の実装"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P05"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P06",
+   "lifecycle_role": "test-run",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P06",
+   "title": "全テストと verify:full の実行: 緑の確認と、落ちたときの原因の切り分け"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P06"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P07",
+   "lifecycle_role": "acceptance",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P07",
+   "title": "受入の確認: AC-01〜AC-30 の根拠の表と、sel に 50 件を選んだ状態の再現"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P07"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P08",
+   "lifecycle_role": "refactoring-migration",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P08",
+   "title": "参照の消えた旧い定義の削除と migration の突き合わせ: 番号・承認の sha256・EXPECTED_D1_MIGRATION の一致"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P08"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P09",
+   "lifecycle_role": "quality-assurance",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P09",
+   "title": "品質ゲート: lint・typecheck・test・skills:test・初期 JS 予算・security:content"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P09"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P10",
+   "lifecycle_role": "independent-review",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P10",
+   "title": "独立レビュー: 認可・上限・本文の大きさ・予約の値・差分の範囲"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P10"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P11",
+   "lifecycle_role": "evidence",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P11",
+   "title": "証跡の索引: 設計・テスト・受入・品質・レビューの記録を 1 か所から辿れるようにする"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P11"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P12",
+   "lifecycle_role": "documentation-sync",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P12",
+   "title": "文書の同期: data-schema と architecture への対応表の記録と、未決事項の閉じ方の記録"
+  },
+  {
+   "depends_on": [
+    "SYS-CLASSIFY-BULK-P12"
+   ],
+   "feature_package_id": "feature-package/feat-classify-bulk-save",
+   "id": "SYS-CLASSIFY-BULK-P13",
+   "lifecycle_role": "release",
+   "parent_feature": "feat-classify-bulk-save",
+   "phase_ref": "P13",
+   "title": "リリース: merge 前の最終確認、deploy.yml での migration の適用、本番の /classify での確認"
+  }
+ ],
+ "parent_feature": "feat-classify-bulk-save",
+ "schema_version": "1.0.0"
+}

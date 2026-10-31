@@ -69,10 +69,12 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AuthEnv, AuthVariables } from '../auth.js';
 import { loadCashflowSources } from '../cashflow-sources.js';
+import { suggestionContextFor } from '../classify-row.js';
 import * as s from '../db/schema.js';
 import { invalidateJsonSnapshotQuery } from '../import-active.js';
 import { loadOwnerLabels } from '../owner-labels-store.js';
 import { dealFromRow, getDb, loadBackupPayload, loadDataset, loadVendorMemories } from '../store.js';
+import { loadCandidates } from './classify.js';
 import { loadSubscriptionsInput } from './subs.js';
 
 // 月次レビューの記録者 (actor) を読むため、ルートは認証ミドルウェアが載せる変数の型をそのまま使う
@@ -159,7 +161,7 @@ const apiError = (code: string, message: string) => ({ error: { code, message } 
 async function loadReviewSources<V extends { userId: string }>(c: Context<DataCtx<V>>, all: Dataset) {
   const userId = c.get('userId');
   const db = getDb(c.env.DB);
-  const [sources, failedRuns, vendorMemories] = await Promise.all([
+  const [sources, failedRuns, vendorMemories, candidates] = await Promise.all([
     loadCashflowSources(db, userId, all.mfTx),
     db
       .select({
@@ -170,6 +172,7 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
       .from(s.importRuns)
       .where(and(eq(s.importRuns.userId, userId), eq(s.importRuns.status, 'failed'))),
     loadVendorMemories(db, userId),
+    loadCandidates(db, userId, all.mfTx),
   ]);
   const { deals, verdicts, freeeExclusions: exclusions, mfExclusions } = sources;
   const report = totalCashflowReport(
@@ -183,7 +186,8 @@ async function loadReviewSources<V extends { userId: string }>(c: Context<DataCt
     data: all,
     review: report.review,
     failedImports: failedRuns,
-    vendorMemories,
+    // 仕分け画面と同じ材料で提案する。ここで別に組むと、概況の推奨と仕分けの提案が食い違う
+    suggestionContext: suggestionContextFor(all, vendorMemories, candidates),
   });
   return { report, items, cashflow: { deals, verdicts, exclusions, mfExclusions } };
 }

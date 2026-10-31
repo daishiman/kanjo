@@ -83,16 +83,35 @@
 
 /* -------- 3 枚の並び (7.2) -------- */
 
+/*
+ * 編集パネルは明細を開いたときだけ幅を取り、閉じている間は案内文の幅まで縮めて一覧へ渡す
+ * (spec-classify-bulk-save FR-13)。1264px は本文が約 980px で、両脇を固定幅にしていた頃は
+ * 一覧が約 330px まで縮み、内容が 1 字ずつ折り返した。閉じた状態で一覧が表の最小幅
+ * (.classify-transactions の min-width) を下回らない幅に両脇を抑える。
+ */
 .classify-body {
   display: grid;
-  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr) minmax(280px, 360px);
+  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) minmax(140px, 160px);
   gap: 16px;
   align-items: start;
 }
 
+.classify-body.has-open {
+  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) minmax(280px, 340px);
+}
+
+/*
+ * 3 面の幅では編集パネルを画面に貼り付け、一覧を送っても入力欄を見失わせない。
+ * 上端は固定ヘッダーの下から測る (16px だとヘッダーの裏へ潜る)。
+ * 貼り付いた要素はページを送っても動かないので、裏に入った操作はスクロールでは出てこない。
+ * 下端を一括バーの上で止め、入りきらない分はパネルの中だけで送る (.tcf-detail と同じ型・WCAG 2.4.11)。
+ */
 .classify-side {
   position: sticky;
-  top: 16px;
+  top: calc(var(--header-h) + 16px);
+  max-height: calc(100dvh - var(--header-h) - 32px - var(--classify-bulk-reserve, 0px));
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 
 /* 必要なときだけ現れる下段。分割とルールは同じ作業面を共有する。 */
@@ -197,9 +216,13 @@
   overscroll-behavior-x: contain;
 }
 
+/*
+ * 6 列の最小幅の和。これより狭い幅では表を縮めず、.classify-table-scroll の中だけを
+ * 横へ送る (FR-13)。本体 (ページ) は横にはみ出さない。
+ */
 .classify-transactions {
   width: 100%;
-  min-width: 0;
+  min-width: 560px;
   border-collapse: collapse;
   table-layout: fixed;
   font-size: var(--fs-sm);
@@ -220,34 +243,73 @@
   text-align: left;
 }
 
+/* 列: 1 選択 / 2 日付 / 3 取引先/内容 / 4 金額 / 5 提案カテゴリ / 6 信頼度。残りは 3 列目が取る */
 .classify-transactions th:nth-child(1) {
   width: 44px;
 }
 
 .classify-transactions th:nth-child(2) {
-  width: 13%;
+  width: 92px;
+}
+
+.classify-transactions th:nth-child(4) {
+  width: 96px;
 }
 
 .classify-transactions th:nth-child(5) {
-  width: 15%;
+  width: 22%;
 }
 
-.classify-transactions th:nth-child(7) {
-  width: 13%;
+.classify-transactions th:nth-child(6) {
+  width: 84px;
 }
 
 .classify-transactions :is(th, td):nth-child(2),
-.classify-transactions :is(th, td):nth-child(5) {
+.classify-transactions :is(th, td):nth-child(4) {
   white-space: nowrap;
 }
 
-.classify-transactions :is(th, td):nth-child(7) {
+.classify-transactions :is(th, td):nth-child(6) {
   white-space: normal;
 }
 
-.classify-transactions :is(th, td):nth-child(5),
-.classify-transactions :is(th, td):nth-child(7) {
+.classify-transactions :is(th, td):nth-child(4),
+.classify-transactions :is(th, td):nth-child(6) {
   text-align: right;
+}
+
+/* 2 段目 (内容) と、選べない行の理由。1 段目の取引先のボタンより控えめに出す */
+.classify-row-sub,
+.classify-row-reason {
+  display: block;
+  font-size: var(--fs-xs);
+  overflow-wrap: anywhere;
+}
+
+.classify-row-sub {
+  color: var(--ink-soft);
+}
+
+.classify-row-reason {
+  color: var(--warn);
+}
+
+/* 選べない行のチェックの位置。チェックと同じ幅に置き、列がずれないようにする */
+.classify-row-lock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  min-height: 28px;
+  color: var(--ink-soft);
+}
+
+.classify-page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: var(--fs-sm);
 }
 
 .classify-transactions td .btn.linklike {
@@ -361,17 +423,143 @@
 
 /* -------- 一括操作バー (7.8) -------- */
 
+/*
+ * バーが出ている間だけ、バーの高さ (BulkActionBar が ResizeObserver で渡す) と持ち上げ量の分を
+ * 画面下の予約にする。Tab で移った先はブラウザがこの予約より上へ送るので、バーの裏に残らない
+ * (WCAG 2.4.11・subscriptions の .subs-selection と同じ型)。持ち上げ量は幅ごとに下の media が上書きする。
+ * :root:has() は styles.css の狭い幅の :root より詳細度が高く、タブバーの分は持ち上げ量に含めてある。
+ */
+:root:has(.classify-bulk-bar) {
+  --classify-bulk-bottom: 0px;
+  --classify-bulk-reserve: calc(var(--classify-bulk-h, 0px) + var(--classify-bulk-bottom) + 12px);
+  scroll-padding-bottom: var(--classify-bulk-reserve);
+}
+
 .classify-bulk-bar {
   position: sticky;
-  bottom: 0;
+  bottom: var(--classify-bulk-bottom, 0px);
+  z-index: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
-  flex-wrap: wrap;
   padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
+}
+
+.classify-bulk-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.classify-bulk-count {
+  font-weight: 600;
+}
+
+.classify-bulk-capped,
+.classify-bulk-reason {
+  color: var(--warn);
+  font-size: var(--fs-xs);
+}
+
+/* 操作の組と開閉の組。折り返しはこの組の単位で起きる */
+.classify-bulk-actions,
+.classify-bulk-toggles {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 一括指定欄の開閉。欄を畳む 1023px 以下でだけ出す */
+.classify-bulk-fields-toggle {
+  display: none;
+  align-items: center;
+  min-height: var(--tap-target-min);
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+
+.classify-bulk-fields-toggle[aria-expanded="true"] {
+  border-color: var(--biz);
+  color: var(--biz);
+}
+
+/* 開閉の矢印。閉じている間は「上に開く」向き、開いたら逆向き */
+.classify-bulk-toggle {
+  min-width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.classify-bulk-toggle[aria-expanded="true"] {
+  transform: rotate(180deg);
+}
+
+.classify-bulk-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.classify-bulk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-size: var(--fs-sm);
+}
+
+.classify-bulk-field > select {
+  width: 100%;
+}
+
+/* 保存前の内訳。1 行 1 文で、件数の数え直しをさせない (FR-03・FR-04) */
+.classify-bulk-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--fs-sm);
+}
+
+/* 選択は最大 50 件。全件を並べてもバーが画面を覆わないよう、一覧の中だけを送る */
+.classify-bulk-list {
+  max-height: min(40vh, 320px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.classify-bulk-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.classify-notice-detail {
+  flex-basis: 100%;
+  font-size: var(--fs-sm);
+}
+
+.classify-notice-detail summary {
+  cursor: pointer;
+}
+
+.classify-notice-detail ul {
+  margin: 4px 0 0;
+  padding-inline-start: 20px;
 }
 
 /* -------- 共通シェル込みで本文が狭い幅 (7.2・7.12) -------- */
@@ -379,12 +567,17 @@
 /*
  * 1024〜1199px は常設 220px サイドバーとページ余白を引くと、本文は 740〜915px。
  * 1024px の参照画像どおり3面を保ち、入力欄を読める左右幅を固定して一覧へ残りを渡す。
- * 一覧は固定レイアウトで7列をセル内折返しにするため、ページ幅を押し広げない。
+ * 編集パネルは開いたときだけ広げる。.has-open は詳細度が高いので、この帯でも書き直す。
+ * 一覧の最小幅を下回る幅では .classify-table-scroll の中だけが横へ動き、ページ幅は増えない。
  */
 @media (min-width: 1024px) and (max-width: 1199px) {
   .classify-body {
-    grid-template-columns: 150px minmax(0, 1fr) 200px;
+    grid-template-columns: 150px minmax(0, 1fr) 140px;
     gap: 10px;
+  }
+
+  .classify-body.has-open {
+    grid-template-columns: 150px minmax(0, 1fr) 200px;
   }
 
   .classify-filters,
@@ -393,7 +586,20 @@
   }
 
   .classify-transactions {
+    min-width: 520px;
     font-size: var(--fs-2xs);
+  }
+
+  .classify-transactions th:nth-child(2) {
+    width: 80px;
+  }
+
+  .classify-transactions th:nth-child(4) {
+    width: 84px;
+  }
+
+  .classify-transactions th:nth-child(6) {
+    width: 68px;
   }
 
   .classify-transactions th,
@@ -421,7 +627,8 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .classify-body {
+  .classify-body,
+  .classify-body.has-open {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -432,6 +639,8 @@
   .classify-side {
     position: static;
     order: 2;
+    max-height: none;
+    overflow-y: visible;
   }
 
   .classify-filters {
@@ -441,11 +650,49 @@
   .classify-lower {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  /*
+   * 1 列に積む幅では、絞り込みと同じく一括指定欄も畳んで始める (7.2 レスポンシブ)。
+   * 常に見せるのは件数・クリア・保存・内訳だけ。5 欄を出したままだとバーが画面の 1/3 を覆い、
+   * 狭い幅では一覧の行を押せなくなる。
+   */
+  .classify-bulk-toggles {
+    margin-inline-start: auto;
+  }
+
+  .classify-bulk-fields-toggle {
+    display: inline-flex;
+  }
+
+  .classify-bulk-fields:not(.is-open) {
+    display: none;
+  }
+}
+
+/* 「改善を送る」が本文の右下に固定される幅。その上に置き、バーの内訳と操作を隠さない */
+@media (min-width: 641px) and (max-width: 1023px) {
+  :root:has(.classify-bulk-bar) {
+    --classify-bulk-bottom: calc(var(--tap-target-min) + 22px);
+  }
 }
 
 @media (max-width: 640px) {
   /* 小さい画面では表の情報量を削らず、表自身だけを横へ送る。ページ幅は増やさない。 */
   .classify-transactions {
     min-width: 680px;
+  }
+
+  /* 下端のタブバーと「改善を送る」の上に置く (.tcf-selection-bar・.review-action-bar と同じ式) */
+  :root:has(.classify-bulk-bar) {
+    --classify-bulk-bottom: calc(
+      var(--tabbar-h) +
+      env(safe-area-inset-bottom, 0px) +
+      var(--tap-target-min) +
+      22px
+    );
+  }
+
+  .classify-bulk-list {
+    max-height: min(30vh, 240px);
   }
 }

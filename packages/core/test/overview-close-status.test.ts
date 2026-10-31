@@ -12,13 +12,16 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
+  DEFAULT_TAX_ACCOUNT_MAP,
   type Dataset,
   type FreeeDeal,
   type MfTx,
   REVIEW_ITEM_KEY_MAX,
   type ReconcileReview,
+  type SuggestionContext,
   type VendorMemoryRecord,
   applyReviewSnoozes,
+  buildCandidates,
   buildReviewQueue,
   emptyDataset,
   isCloseMonth,
@@ -29,6 +32,7 @@ import {
   overviewAggregate,
   overviewScopeMonths,
   recommendationFor,
+  resolveTx,
   reviewItemFingerprint,
   totalCashflowReport,
 } from '../src/index.js';
@@ -270,7 +274,21 @@ function queueFixture() {
   const failedImports = [
     { id: 'run-1', createdAt: '2026-09-11T01:02:03.000Z', failureReason: '列が足りません' },
   ];
-  return { data, review, vendorMemories, failedImports };
+  // 提案の材料は仕分け画面と同じ 1 つの入力にまとめる (api の suggestionContextFor と同じ形)
+  const suggestionContext: SuggestionContext = {
+    rules: data.rules,
+    vendorMemories,
+    normRules: [],
+    taxAccountMap: DEFAULT_TAX_ACCOUNT_MAP,
+    categoryCandidates: buildCandidates([], [], []),
+  };
+  return { data, review, suggestionContext, failedImports };
+}
+
+/** 本番と同じく、明細を解決してから提案を求める */
+function recommend(data: Dataset, tx: MfTx | null, content: string, ctx: SuggestionContext) {
+  const resolved = tx ? resolveTx(tx, data.rules, data.edits, data.institutionOwners) : null;
+  return recommendationFor(tx, resolved, ctx, content);
 }
 
 describe('未処理キューの順序と材料 (FR-002)', () => {
@@ -291,6 +309,13 @@ describe('未処理キューの順序と材料 (FR-002)', () => {
       content: '架空工房',
     });
     expect(q[5]).toMatchObject({ amount: 0, date: '2026-09-11', recommendation: null, basis: 'none' });
+    // 仕分け画面と同じ提案が出る。他の由来が無い明細は MF の分類を信頼度 60 で提案する (AC-11)
+    expect(q.find((x) => x.itemKey === 'mf-large')).toMatchObject({
+      recommendation: '家計 / 食費 / 書籍',
+      basis: 'mf_category',
+      basisLabel: 'MF の分類',
+      confidence: 60,
+    });
     expect(q.find((x) => x.itemKey === 'mf-same-old')).toMatchObject({
       date: '2026-08-20',
       month: '2026-08',
@@ -306,10 +331,10 @@ describe('未処理キューの順序と材料 (FR-002)', () => {
 });
 
 describe('AC-006 推奨と信頼度は決定論', () => {
-  it('vendor_memory → ルール → MF中項目 → 推奨なし', () => {
-    const { data, vendorMemories } = queueFixture();
+  it('vendor_memory → ルール → MF中項目 → MF の分類 → 推奨なし', () => {
+    const { data, suggestionContext } = queueFixture();
     const byId = new Map(data.mfTx.map((t) => [t.id, t]));
-    const vm = recommendationFor(byId.get('mf-small') ?? null, '架空商店', data.rules, vendorMemories);
+    const vm = recommend(data, byId.get('mf-small') ?? null, '架空商店', suggestionContext);
     expect(vm).toEqual({
       recommendation: '家計 / 食費',
       basis: 'vendor_memory',
@@ -317,25 +342,40 @@ describe('AC-006 推奨と信頼度は決定論', () => {
       confidence: 90,
     });
 
-    const rule = recommendationFor(byId.get('mf-same-new') ?? null, '架空雑貨', data.rules, vendorMemories);
+    const rule = recommend(data, byId.get('mf-same-new') ?? null, '架空雑貨', suggestionContext);
     // BR-04: 由来ごとの信頼度が決まったので、ルールは 85・MF 中項目は 70 になる (旧実装は null)
     expect(rule).toMatchObject({ recommendation: '消耗品費', basis: 'rule', confidence: 85 });
 
     const midTx = { ...(byId.get('mf-large') as MfTx), mid: '事業用品' };
-    const mid = recommendationFor(midTx, '架空書店', data.rules, vendorMemories);
+    const mid = recommend(data, midTx, '架空書店', suggestionContext);
     expect(mid).toMatchObject({ recommendation: '事業', basis: 'mf_mid', confidence: 70 });
 
-    const none = recommendationFor(byId.get('mf-same-old') ?? null, '架空文具', data.rules, vendorMemories);
+    // 他の由来が無くても、MF が付けた大・中項目をそのまま提案する (AC-11)
+    const mf = recommend(data, byId.get('mf-same-old') ?? null, '架空文具', suggestionContext);
+    expect(mf).toEqual({
+      recommendation: '家計 / 食費 / 食料品',
+      basis: 'mf_category',
+      basisLabel: 'MF の分類',
+      confidence: 60,
+    });
+
+    // MF も未分類のまま渡した明細には推奨を付けない (AC-13)
+    const unsorted = { ...(byId.get('mf-same-old') as MfTx), big: '未分類', mid: '' };
+    const none = recommend(data, unsorted, '架空文具', suggestionContext);
     expect(none).toEqual({ recommendation: null, basis: 'none', basisLabel: '根拠なし', confidence: null });
   });
 
   it('取り消し済みの決め事は根拠にしない', () => {
-    const { data } = queueFixture();
+    const { data, suggestionContext } = queueFixture();
     const revoked: VendorMemoryRecord[] = [
       { vendorKey: '架空文具', cls: 'biz', hitCount: 5, disagreeCount: 0, revoked: true },
     ];
+    const ctx = { ...suggestionContext, vendorMemories: revoked };
     const tx = data.mfTx.find((t) => t.id === 'mf-same-old') ?? null;
-    expect(recommendationFor(tx, '架空文具', data.rules, revoked).basis).toBe('none');
+    // 取り消した記憶を飛ばし、最後の由来 (MF の分類) まで下りる
+    expect(recommend(data, tx, '架空文具', ctx).basis).toBe('mf_category');
+    const unsorted = tx ? { ...tx, big: '未分類', mid: '' } : null;
+    expect(recommend(data, unsorted, '架空文具', ctx).basis).toBe('none');
   });
 
   it('同じ入力を 2 回渡すと同じキューになる', () => {

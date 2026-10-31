@@ -10,11 +10,19 @@
  * 置換前の設定画面 (`pages/Settings.tsx`) は分類ルール・名義・夜間バックアップをそれぞれの API で個別に保存し、
  * `/api/settings/screen` を読まず、節ナビ・説明パネル・保存バー・下書きを持たない。`./SettingsPage.js` 自体が存在しない。
  */
-import type { SettingsScreenView } from '@kanjo/core';
+import {
+  DEFAULT_TAX_ACCOUNT_MAP,
+  NO_CATEGORY,
+  type SettingsScreenView,
+  TAX_ACCOUNT_MAP_ROWS_MAX,
+  type TaxAccountMapRow,
+  sortTaxAccountMap,
+} from '@kanjo/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ApiError } from '../../api.js';
 import { PeriodProvider } from '../../period.js';
 import { SettingsPage } from './SettingsPage.js';
 import { settingsDraftKey } from './draft.js';
@@ -31,8 +39,15 @@ import {
   SAVE_TEXT,
   SECTION_NAV,
   STATS_TEXT,
+  TAX_MAP_TEXT,
   deleteRuleTitle,
   resetTitle,
+  taxMapAdded,
+  taxMapErrorMessage,
+  taxMapFieldText,
+  taxMapRemoveLabel,
+  taxMapRemoveTitle,
+  taxMapRemoved,
   unsavedLabel,
 } from './view-model.js';
 
@@ -65,6 +80,8 @@ function screenView(patch: Partial<SettingsScreenView> = {}): SettingsScreenView
     statMinMonths: 6,
     statMinMonthsRange: { min: 1, max: 60, default: 6 },
     cashOverrides: [],
+    // 版 2 の設定は勘定科目の対応表を持つ (spec-classify-bulk-save AC-17)。api は常に返す
+    taxAccountMap: DEFAULT_TAX_ACCOUNT_MAP.map((row) => ({ ...row })),
     impacts: { account: ['損益計算書'], vendor: ['支出分析', '明細仕分け'] },
     limits: { normRules: 500, text: 60, memo: 100 },
     ...patch,
@@ -110,7 +127,7 @@ function renderPage(opts: { view?: SettingsScreenView; handle?: Handler; period?
       {opts.period ? <PeriodProvider>{page}</PeriodProvider> : page}
     </QueryClientProvider>,
   );
-  return { calls, view };
+  return { calls, view, client };
 }
 
 const loaded = () => screen.findByRole('heading', { level: 2, name: NORM_RULES_TEXT.heading });
@@ -139,12 +156,16 @@ describe('見出しと節 (AT-01・AT-02・AT-20)', () => {
     for (const line of LEAD_LINES) expect(screen.getByText(line, { exact: false })).toBeTruthy();
   });
 
-  it('節ナビは 8 項目で、各項目の宛先の節が画面にある', async () => {
+  it('節ナビは勘定科目の対応表を含む 9 項目で、各項目の宛先の節が画面にある', async () => {
     renderPage();
     await loaded();
     const nav = screen.getByRole('navigation', { name: '設定の節' });
     const links = within(nav).getAllByRole('link');
+    expect(links).toHaveLength(9);
     expect(links.map((a) => a.textContent)).toEqual(SECTION_NAV.map((s) => s.label));
+    expect(within(nav).getByRole('link', { name: TAX_MAP_TEXT.heading }).getAttribute('href')).toBe(
+      '#tax-account-map',
+    );
     for (const s of SECTION_NAV) expect(document.getElementById(s.id), s.id).not.toBeNull();
     expect(links.filter((a) => a.getAttribute('aria-current')).length).toBe(1);
   });
@@ -468,5 +489,261 @@ describe('状態と通信先 (AT-12・AT-22)', () => {
     await loaded();
     await waitFor(() => expect(calls.length).toBeGreaterThan(2));
     for (const c of calls) expect(c.url.pathname.startsWith('/api/'), c.url.pathname).toBe(true);
+  });
+});
+
+describe('勘定科目の対応表 (spec-classify-bulk-save FR-17・AC-16)', () => {
+  const MAP_PATH = '/api/settings/tax-account-map';
+  const BUSY = '別の取込みまたは更新が進行中です。完了後に再試行してください';
+
+  /** 対応表をサーバ側の状態として持ち、追加・削除と設定の読み出しをその状態で答える */
+  function taxMapServer(reply: { post?: () => Response | undefined; del?: () => Response | undefined } = {}) {
+    const state = {
+      rows: DEFAULT_TAX_ACCOUNT_MAP.map((r) => ({ ...r })) as TaxAccountMapRow[],
+      screenReads: 0,
+    };
+    const handle: Handler = (url, init) => {
+      if (url.pathname.endsWith('/settings/screen') && init?.method !== 'PUT') {
+        state.screenReads += 1;
+        return json(screenView({ taxAccountMap: state.rows.map((r) => ({ ...r })) }));
+      }
+      if (url.pathname === MAP_PATH && init?.method === 'POST') {
+        const custom = reply.post?.();
+        if (custom) return custom;
+        state.rows = sortTaxAccountMap([...state.rows, JSON.parse(String(init.body)) as TaxAccountMapRow]);
+        return json({ rows: state.rows });
+      }
+      if (url.pathname.startsWith(`${MAP_PATH}/`) && init?.method === 'DELETE') {
+        const custom = reply.del?.();
+        if (custom) return custom;
+        const big = decodeURIComponent(url.pathname.slice(MAP_PATH.length + 1));
+        state.rows = state.rows.filter((r) => r.categoryBig !== big);
+        return json({ rows: state.rows });
+      }
+      return undefined;
+    };
+    return { state, handle };
+  }
+
+  const section = () => document.getElementById('tax-account-map') as HTMLElement;
+  const bigInput = () => within(section()).getByLabelText(TAX_MAP_TEXT.big) as HTMLInputElement;
+  const accountSelect = () => within(section()).getByLabelText(TAX_MAP_TEXT.account) as HTMLSelectElement;
+  const addButton = () =>
+    within(section()).getByRole('button', { name: TAX_MAP_TEXT.add }) as HTMLButtonElement;
+  const mapCalls = (calls: Call[], method: 'POST' | 'DELETE') =>
+    calls.filter((c) => c.init?.method === method && c.url.pathname.startsWith(MAP_PATH));
+  const fill = (big: string, account: string) => {
+    fireEvent.change(bigInput(), { target: { value: big } });
+    fireEvent.change(accountSelect(), { target: { value: account } });
+  };
+  const bodyRows = () =>
+    within(within(section()).getByRole('table', { name: TAX_MAP_TEXT.heading }))
+      .getAllByRole('row')
+      .slice(1)
+      .map((tr) =>
+        within(tr)
+          .getAllByRole('cell')
+          .slice(0, 2)
+          .map((td) => td.textContent),
+      );
+
+  it('表は大項目・勘定科目・操作の 3 列で、保存済みの対応表を行ごとに出す', async () => {
+    renderPage();
+    await loaded();
+    expect(within(section()).getByRole('heading', { level: 2, name: TAX_MAP_TEXT.heading })).toBeTruthy();
+    const table = within(section()).getByRole('table', { name: TAX_MAP_TEXT.heading });
+    expect(
+      within(table)
+        .getAllByRole('columnheader')
+        .map((th) => th.textContent),
+    ).toEqual([TAX_MAP_TEXT.big, TAX_MAP_TEXT.account, TAX_MAP_TEXT.actions]);
+    expect(bodyRows()).toEqual(DEFAULT_TAX_ACCOUNT_MAP.map((r) => [r.categoryBig, r.taxAccount]));
+    for (const r of DEFAULT_TAX_ACCOUNT_MAP) {
+      expect(within(table).getByRole('button', { name: taxMapRemoveLabel(r.categoryBig) })).toBeTruthy();
+    }
+    // 勘定科目は一覧から選ぶ (自由入力にしない)
+    expect(within(accountSelect()).getByRole('option', { name: '損害保険料' })).toBeTruthy();
+  });
+
+  it('追加は前後の空白を除いた行を専用の API で送り、設定と提案を含む読み出しを取り直し、保存バーを汚さない', async () => {
+    const server = taxMapServer();
+    const { calls, client } = renderPage({ handle: server.handle });
+    await loaded();
+    client.setQueryData(['classify', 'list-probe'], { rows: [] });
+    const readsBefore = server.state.screenReads;
+
+    fill('  保険  ', '損害保険料');
+    fireEvent.click(addButton());
+    expect(await within(section()).findByText(taxMapAdded('保険'))).toBeTruthy();
+
+    expect(mapCalls(calls, 'POST')).toHaveLength(1);
+    expect(JSON.parse(String(mapCalls(calls, 'POST')[0]?.init?.body))).toEqual({
+      categoryBig: '保険',
+      taxAccount: '損害保険料',
+    });
+    expect(server.state.screenReads).toBeGreaterThan(readsBefore);
+    expect(bodyRows()).toContainEqual(['保険', '損害保険料']);
+    expect(bigInput().value).toBe('');
+    expect(accountSelect().value).toBe('');
+    expect(document.activeElement).toBe(bigInput());
+    // 事業の明細の提案が変わるので、明細仕分けの読み出しを古いものとして扱う
+    expect(client.getQueryState(['classify', 'list-probe'])?.isInvalidated).toBe(true);
+    expect(within(saveBar()).getByText(SAVE_TEXT.clean)).toBeTruthy();
+    expect(puts(calls)).toHaveLength(0);
+  });
+
+  it('対応表は保存バーの PUT に含めない', async () => {
+    const { calls } = renderPage();
+    await loaded();
+    fireEvent.change(screen.getByLabelText(STATS_TEXT.label), { target: { value: '12' } });
+    fireEvent.click(screen.getByRole('button', { name: SAVE_TEXT.save }));
+    await screen.findByText(SAVE_TEXT.saved);
+    const body = JSON.parse(String(puts(calls)[0]?.init?.body));
+    expect(body.statMinMonths).toBe(12);
+    expect(body).not.toHaveProperty('taxAccountMap');
+  });
+
+  it('欄の誤りは送る前に欄の下に示し、誤りのある欄へフォーカスする', async () => {
+    const { calls } = renderPage();
+    await loaded();
+    const expectFieldError = async (field: HTMLElement, text: string) => {
+      expect(await within(section()).findByText(text)).toBeTruthy();
+      expect(field.getAttribute('aria-invalid')).toBe('true');
+      const describedBy = field.getAttribute('aria-describedby');
+      expect(describedBy && document.getElementById(describedBy)?.textContent).toBe(text);
+      expect(document.activeElement).toBe(field);
+    };
+
+    fireEvent.click(addButton());
+    await expectFieldError(bigInput(), taxMapFieldText('categoryBig', 'required'));
+
+    fill(` ${NO_CATEGORY} `, '損害保険料');
+    fireEvent.click(addButton());
+    await expectFieldError(bigInput(), taxMapFieldText('categoryBig', 'reserved'));
+
+    fill('通信費', '損害保険料');
+    fireEvent.click(addButton());
+    await expectFieldError(bigInput(), taxMapFieldText('categoryBig', 'duplicate'));
+
+    fill('保険', '');
+    fireEvent.click(addButton());
+    await expectFieldError(accountSelect(), taxMapFieldText('taxAccount', 'not_in_list'));
+    expect(bigInput().getAttribute('aria-invalid')).toBeNull();
+
+    expect(mapCalls(calls, 'POST')).toHaveLength(0);
+  });
+
+  it('サーバが欄の問題として返した 400 (duplicate_category・invalid_request の fields) を欄に出す', async () => {
+    const replies = [
+      json({ error: { code: 'duplicate_category', message: 'duplicate' } }, 400),
+      json(
+        { error: { code: 'invalid_request', message: 'invalid', fields: { taxAccount: 'not_in_list' } } },
+        400,
+      ),
+    ];
+    const server = taxMapServer({ post: () => replies.shift() });
+    const { calls } = renderPage({ handle: server.handle });
+    await loaded();
+
+    fill('保険', '損害保険料');
+    fireEvent.click(addButton());
+    expect(await within(section()).findByText(taxMapFieldText('categoryBig', 'duplicate'))).toBeTruthy();
+    expect(document.activeElement).toBe(bigInput());
+    // 欄の問題は入力を残して直せるようにする
+    expect(bigInput().value).toBe('保険');
+
+    fireEvent.change(bigInput(), { target: { value: '保険料' } });
+    fireEvent.click(addButton());
+    expect(await within(section()).findByText(taxMapFieldText('taxAccount', 'not_in_list'))).toBeTruthy();
+    expect(document.activeElement).toBe(accountSelect());
+    expect(within(section()).queryByRole('alert')).toBeNull();
+    expect(mapCalls(calls, 'POST')).toHaveLength(2);
+  });
+
+  it('上限の 400 too_many_rows は案内を出し、対応表を読み直す', async () => {
+    const server = taxMapServer({
+      post: () => json({ error: { code: 'too_many_rows', message: 'too many' } }, 400),
+    });
+    renderPage({ handle: server.handle });
+    await loaded();
+    const readsBefore = server.state.screenReads;
+    fill('保険', '損害保険料');
+    fireEvent.click(addButton());
+    expect((await within(section()).findByRole('alert')).textContent).toBe(TAX_MAP_TEXT.limit);
+    await waitFor(() => expect(server.state.screenReads).toBeGreaterThan(readsBefore));
+  });
+
+  it(`${TAX_ACCOUNT_MAP_ROWS_MAX} 行あると追加を押せず、上限の案内を出す`, async () => {
+    const rows = Array.from({ length: TAX_ACCOUNT_MAP_ROWS_MAX }, (_, i) => ({
+      categoryBig: `大項目${String(i).padStart(3, '0')}`,
+      taxAccount: '通信費',
+    }));
+    renderPage({ view: screenView({ taxAccountMap: rows }) });
+    await loaded();
+    expect(addButton().disabled).toBe(true);
+    expect(within(section()).getByText(TAX_MAP_TEXT.limit)).toBeTruthy();
+  });
+
+  it('削除は確認してから、大項目を encode した path へ送り、行を消して知らせる', async () => {
+    const big = '水道・光熱費';
+    const server = taxMapServer();
+    const { calls, client } = renderPage({ handle: server.handle });
+    await loaded();
+    client.setQueryData(['review-queue', 'probe'], { items: [] });
+
+    fireEvent.click(within(section()).getByRole('button', { name: taxMapRemoveLabel(big) }));
+    let dialog = await screen.findByRole('dialog', { name: taxMapRemoveTitle(big) });
+    expect(within(dialog).getByText(TAX_MAP_TEXT.removeBody)).toBeTruthy();
+    fireEvent.click(within(dialog).getByRole('button', { name: TAX_MAP_TEXT.cancel }));
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: taxMapRemoveTitle(big) })).toBeNull());
+    expect(mapCalls(calls, 'DELETE')).toHaveLength(0);
+
+    fireEvent.click(within(section()).getByRole('button', { name: taxMapRemoveLabel(big) }));
+    dialog = await screen.findByRole('dialog', { name: taxMapRemoveTitle(big) });
+    fireEvent.click(within(dialog).getByRole('button', { name: TAX_MAP_TEXT.removeConfirm }));
+    expect(await within(section()).findByText(taxMapRemoved(big))).toBeTruthy();
+
+    expect(mapCalls(calls, 'DELETE').map((c) => c.url.pathname)).toEqual([
+      `${MAP_PATH}/${encodeURIComponent(big)}`,
+    ]);
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: taxMapRemoveTitle(big) })).toBeNull());
+    expect(bodyRows().map(([b]) => b)).not.toContain(big);
+    expect(document.activeElement).toBe(bigInput());
+    expect(client.getQueryState(['review-queue', 'probe'])?.isInvalidated).toBe(true);
+  });
+
+  it('削除の 404 は確認を閉じて読み直し、節に知らせる', async () => {
+    const server = taxMapServer({
+      del: () => json({ error: { code: 'not_found', message: 'not found' } }, 404),
+    });
+    renderPage({ handle: server.handle });
+    await loaded();
+    const readsBefore = server.state.screenReads;
+    fireEvent.click(within(section()).getByRole('button', { name: taxMapRemoveLabel('通信費') }));
+    const dialog = await screen.findByRole('dialog', { name: taxMapRemoveTitle('通信費') });
+    fireEvent.click(within(dialog).getByRole('button', { name: TAX_MAP_TEXT.removeConfirm }));
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog', { name: taxMapRemoveTitle('通信費') })).toBeNull(),
+    );
+    expect((await within(section()).findByRole('alert')).textContent).toBe(
+      taxMapErrorMessage(new ApiError(404, 'not_found', 'not found', undefined)),
+    );
+    await waitFor(() => expect(server.state.screenReads).toBeGreaterThan(readsBefore));
+  });
+
+  it('削除の 409 は確認に残してサーバの文を出し、そのまま送り直せる', async () => {
+    const replies = [json({ error: { code: 'canonical_write_busy', message: BUSY } }, 409)];
+    const server = taxMapServer({ del: () => replies.shift() });
+    const { calls } = renderPage({ handle: server.handle });
+    await loaded();
+    fireEvent.click(within(section()).getByRole('button', { name: taxMapRemoveLabel('通信費') }));
+    const dialog = await screen.findByRole('dialog', { name: taxMapRemoveTitle('通信費') });
+    fireEvent.click(within(dialog).getByRole('button', { name: TAX_MAP_TEXT.removeConfirm }));
+    expect((await within(dialog).findByRole('alert')).textContent).toBe(BUSY);
+    expect(screen.getByRole('dialog', { name: taxMapRemoveTitle('通信費') })).toBe(dialog);
+
+    fireEvent.click(within(dialog).getByRole('button', { name: TAX_MAP_TEXT.removeConfirm }));
+    expect(await within(section()).findByText(taxMapRemoved('通信費'))).toBeTruthy();
+    expect(mapCalls(calls, 'DELETE')).toHaveLength(2);
   });
 });
