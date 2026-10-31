@@ -221,7 +221,7 @@ reconciliationRoute.post('/reconciliation/actions', zValidator('json', actionSch
   const { all } = await loadScoped(c);
 
   const [dealRows, verdictRows, mfExclusionRows, freeeExclusionRows] = await Promise.all([
-    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
+    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)).orderBy(s.freeeDeals.id),
     db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
     db.select().from(s.mfTxExclusions).where(eq(s.mfTxExclusions.userId, userId)),
     db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),

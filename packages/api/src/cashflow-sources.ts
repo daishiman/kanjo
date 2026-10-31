@@ -25,7 +25,7 @@ export async function loadCashflowSources(
   mfTx: readonly MfTx[],
 ): Promise<CashflowSources> {
   const [dealRows, verdictRows, exclusionRows, mfExclusionRows] = await Promise.all([
-    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)),
+    db.select().from(s.freeeDeals).where(eq(s.freeeDeals.userId, userId)).orderBy(s.freeeDeals.id),
     db.select().from(s.duplicateVerdicts).where(eq(s.duplicateVerdicts.userId, userId)),
     db.select().from(s.freeeDealExclusions).where(eq(s.freeeDealExclusions.userId, userId)),
     db.select().from(s.mfTxExclusions).where(eq(s.mfTxExclusions.userId, userId)),

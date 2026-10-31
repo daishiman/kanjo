@@ -71,6 +71,13 @@ async function reimportContinuation(
 const RESULT_TONE = { success: 'calm', partial: 'warn', failed: 'alert', undone: 'neutral' } as const;
 const RESULT_ICON = { success: '✓', partial: '!', failed: '✕', undone: '↺' } as const;
 
+type DeletePlan = {
+  fingerprint: string;
+  fileCount: number;
+  counts: { mfTx: number; freeeDeals: number; balanceEntries: number };
+  originals: { delete: number; shared: number };
+};
+
 type Pending =
   | { kind: 'replace' | 'undo' | 'delete'; run: ImportRunRowView }
   | { kind: 'bulk'; ids: string[] };
@@ -127,6 +134,10 @@ export function ImportHistory({
   const [notice, setNotice] = useState<{ tone: 'info' | 'warn'; text: string } | null>(null);
   const [preflight, setPreflight] = useState<ImportRunUndoPreflight | null>(null);
 
+  const checkingRef = useRef(false);
+  const [checking, setChecking] = useState(false);
+  const [deletePlan, setDeletePlan] = useState<DeletePlan | null>(null);
+
   const refresh = () => void qc.invalidateQueries();
 
   const action = useMutation({
@@ -165,14 +176,18 @@ export function ImportHistory({
             fingerprints: plan.imports.map(({ importId, fingerprint }) => ({ importId, fingerprint })),
           }),
         });
-        return `取り消しました。${plan.undoRetentionDays}日以内なら「取込の削除」から元に戻せます。`;
+        return `取り消しました。${plan.undoRetentionDays}日以内なら画面下部の削除履歴で元に戻せます。`;
       }
       const ids = target.kind === 'bulk' ? target.ids : [target.run.id];
-      const body = await api<{ hidden: number }>('/imports/runs/hide', {
+      const body = await api<{
+        deletedRuns: number;
+        originals: { deleted: number; pending: number; shared: number };
+        sharedReason: string | null;
+      }>('/imports/runs/delete', {
         method: 'POST',
-        body: JSON.stringify({ ids }),
+        body: JSON.stringify({ ids, fingerprint: deletePlan?.fingerprint }),
       });
-      return `${body.hidden}件の履歴を削除しました。取り込んだデータは変わりません。`;
+      return `${body.deletedRuns}件の取込と、そのCSVに属する明細・個別の補正を削除しました。原本: 削除${body.originals.deleted}件、削除待ち${body.originals.pending}件、共有のため保持${body.originals.shared}件。${body.originals.pending ? '削除待ちの原本は自動で再試行します。' : ''}${body.sharedReason ?? ''}`;
     },
     onSuccess: (text, target) => {
       setNotice({ tone: 'info', text });
@@ -208,24 +223,46 @@ export function ImportHistory({
   });
 
   const ask = async (event: MouseEvent<HTMLButtonElement>, target: Pending) => {
-    dialog.triggerRef.current = event.currentTarget;
-    setNotice(null);
-    setPreflight(null);
-    if (target.kind === 'undo') {
-      // 何が消えるかを数えてから確認する。数えられなければ確認を開かない
-      try {
-        setPreflight(
-          await api<ImportRunUndoPreflight>(`/imports/runs/${target.run.id}/undo/preflight`, {
-            method: 'POST',
-          }),
-        );
-      } catch (error) {
-        setNotice({ tone: 'warn', text: importCommitErrorText(error) });
-        return;
+    if (checkingRef.current) return;
+    checkingRef.current = true;
+    setChecking(true);
+    try {
+      dialog.triggerRef.current = event.currentTarget;
+      setNotice(null);
+      setPreflight(null);
+      setDeletePlan(null);
+      if (target.kind === 'undo') {
+        // 何が消えるかを数えてから確認する。数えられなければ確認を開かない
+        try {
+          setPreflight(
+            await api<ImportRunUndoPreflight>(`/imports/runs/${target.run.id}/undo/preflight`, {
+              method: 'POST',
+            }),
+          );
+        } catch (error) {
+          setNotice({ tone: 'warn', text: importCommitErrorText(error) });
+          return;
+        }
       }
+      if (target.kind === 'delete' || target.kind === 'bulk') {
+        try {
+          setDeletePlan(
+            await api<DeletePlan>('/imports/runs/delete/preflight', {
+              method: 'POST',
+              body: JSON.stringify({ ids: target.kind === 'bulk' ? target.ids : [target.run.id] }),
+            }),
+          );
+        } catch (error) {
+          setNotice({ tone: 'warn', text: importCommitErrorText(error) });
+          return;
+        }
+      }
+      setPending(target);
+      dialog.setOpen(true);
+    } finally {
+      checkingRef.current = false;
+      setChecking(false);
     }
-    setPending(target);
-    dialog.setOpen(true);
   };
 
   const onRowAction = (
@@ -257,10 +294,10 @@ export function ImportHistory({
           </div>
           <Button
             variant="danger"
-            disabled={disabled || checkedIds.length === 0 || action.isPending}
+            disabled={disabled || checkedIds.length === 0 || action.isPending || checking}
             onClick={(event) => void ask(event, { kind: 'bulk', ids: checkedIds })}
           >
-            選択した履歴を一括削除
+            選択した取込とCSVデータを削除
           </Button>
         </div>
         {notice && (
@@ -309,9 +346,9 @@ export function ImportHistory({
                     <tr key={run.id} aria-current={run.id === selectedRunId ? 'true' : undefined}>
                       <td className="import-col-check">
                         <SelectionCheckbox
-                          label={`${formatImportDateTime(run.createdAt)} の履歴を一括削除に含める`}
+                          label={`${formatImportDateTime(run.createdAt)} の取込とCSVデータを削除対象に含める`}
                           labelHidden
-                          disabled={!canHide || disabled}
+                          disabled={!canHide || disabled || checking}
                           checked={canHide && checked.has(run.id)}
                           onChange={(event) =>
                             setChecked((current) => {
@@ -353,6 +390,7 @@ export function ImportHistory({
                             disabled={
                               (name !== 'detail' && disabled) ||
                               action.isPending ||
+                              checking ||
                               (name === 'files' && (!run.hasOriginal || download.isPending)) ||
                               (name === 'replace' && !run.replaceable) ||
                               (name === 'undo' && !run.undoable) ||
@@ -364,6 +402,12 @@ export function ImportHistory({
                             {IMPORT_HISTORY_ACTION_LABEL[name]}
                           </Button>
                         ))}
+                        {!canHide && run.deleteBlockedReason && (
+                          <small className="sub">
+                            {run.deleteBlockedReason}{' '}
+                            <a href="#import-data-maintenance">取込データの管理へ</a>
+                          </small>
+                        )}
                       </td>
                     </tr>
                   );
@@ -406,7 +450,22 @@ export function ImportHistory({
           </>
         )}
         {(pending?.kind === 'delete' || pending?.kind === 'bulk') && (
-          <p>履歴の行を一覧から消します。取り込んだデータ・取り消しの記録は変わりません。</p>
+          <>
+            <p>
+              この取込に含まれるCSV {deletePlan?.fileCount ?? 0}
+              ファイルと、現在そのCSVに属する明細（マネーフォワード {deletePlan?.counts.mfTx ?? 0}件・freee{' '}
+              {deletePlan?.counts.freeeDeals ?? 0}件・残高 {deletePlan?.counts.balanceEntries ?? 0}
+              件）を全画面・集計から削除します。
+            </p>
+            <p>
+              個別の補正・分割・照合判断、保存原本、過去の取り消し用の控えも削除します。この操作は元に戻せません。復旧用バックアップには最長30日残ります。
+            </p>
+            <p>
+              他のCSV・共通の仕分けルール・アカウント設定は保持します。他のCSVと共有する原本{' '}
+              {deletePlan?.originals.shared ?? 0}
+              件は保持します。原本の削除に失敗した場合は削除待ちとなり、自動で再試行します。
+            </p>
+          </>
         )}
       </ImportConfirm>
     </>
@@ -417,14 +476,14 @@ function confirmTitle(pending: Pending | null): string {
   if (!pending) return '';
   if (pending.kind === 'replace') return 'この取込を保存した原本で置換しますか？';
   if (pending.kind === 'undo') return 'この取込を取り消しますか？';
-  if (pending.kind === 'bulk') return `選択した${pending.ids.length}件の履歴を削除しますか？`;
-  return 'この履歴を削除しますか？';
+  if (pending.kind === 'bulk') return `選択した${pending.ids.length}件の取込とCSVデータを削除しますか？`;
+  return 'この取込のCSVと元データを削除しますか？';
 }
 
 function confirmLabel(pending: Pending | null): string {
   if (pending?.kind === 'replace') return '原本で置換する';
   if (pending?.kind === 'undo') return '明細を消して取り消す';
-  return '履歴を一覧から消す';
+  return 'CSVと元データを削除する';
 }
 
 /** 履歴の詳細ペイン。開いたら見出しへフォーカスを移し、× で閉じて一覧へ戻す */

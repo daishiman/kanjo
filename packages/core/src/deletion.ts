@@ -111,6 +111,8 @@ export interface DeletionRequest {
   txIds?: readonly string[];
   /** granularity='import' のときの対象取込 */
   importId?: number;
+  /** 内部のCSV一括削除。公開の汎用削除APIでは受け付けない。 */
+  importIds?: readonly number[];
   /** granularity='period' のときの対象期間 */
   period?: MonthRange;
   /** granularity='period' / 'all' のときの対象種別。空・未指定は全種別。 */
@@ -218,7 +220,9 @@ const affectedTargetKeys = (
         case 'transaction':
           return parsed.kind === 'mf' && selectedMfMonths.has(parsed.month);
         case 'import':
-          return req.importId !== undefined && target.importId === req.importId;
+          return (req.importIds ?? (req.importId === undefined ? [] : [req.importId])).includes(
+            target.importId,
+          );
         case 'period':
           return !!req.period && inRange(parsed.month, req.period) && kindAllowed(parsed.kind, req.kinds);
         case 'all':
@@ -243,7 +247,10 @@ export function deletionScope(input: DeletionScopeInput): DeletionTargets {
       case 'transaction':
         return wantedTxIds.has(row.id);
       case 'import':
-        return row.importId !== null && row.importId === req.importId;
+        return (
+          row.importId !== null &&
+          (req.importIds ?? (req.importId === undefined ? [] : [req.importId])).includes(row.importId)
+        );
       case 'period':
         return (
           !!req.period &&
@@ -260,7 +267,10 @@ export function deletionScope(input: DeletionScopeInput): DeletionTargets {
       case 'transaction':
         return false;
       case 'import':
-        return row.importId !== null && row.importId === req.importId;
+        return (
+          row.importId !== null &&
+          (req.importIds ?? (req.importId === undefined ? [] : [req.importId])).includes(row.importId)
+        );
       case 'period':
         return (
           !!req.period &&

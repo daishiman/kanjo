@@ -353,7 +353,7 @@ deletionsRoute.get('/data/operations', async (c) => {
   // 400日履歴のaudit_logが正本。30日のundo metadataはdeleteの取消可否にだけ参照する。
   // detail/request/fingerprintはjoinせず、この応答経路へ持ち込まない。
   const rows = await c.env.DB.prepare(
-    `SELECT a.operation_id AS id, a.action AS kind, a.scope, a.counts_json, a.result,
+    `SELECT a.operation_id AS id, a.action AS kind, a.scope, COALESCE(o.counts_json,a.counts_json) AS counts_json, a.result,
             a.occurred_at AS created_at, o.undone_by, o.expires_at,
             (o.id IS NOT NULL AND o.expires_at > ? AND o.undone_by IS NULL
               AND (EXISTS (SELECT 1 FROM import_deleted_rows r
