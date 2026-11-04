@@ -18,7 +18,7 @@
     "@hono/zod-validator": "^0.4.2",
     "@kanjo/core": "workspace:*",
     "@better-auth/utils": "0.4.2",
-    "better-auth": "1.7.5",
+    "better-auth": "1.7.7",
     "drizzle-orm": "^0.45.2",
     "fflate": "^0.8.2",
     "hono": "^4.13.11",
